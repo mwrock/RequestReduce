@@ -1,0 +1,16 @@
+_*
+bin
+obj
+*.suo
+*.user
+*.cache
+*.dbmdl
+debug
+release
+.svn
+BuildResults.xml
+*.results.xml
+test-results.html
+.tfs-ignore
+*.orig
+.hg
