@@ -99,6 +99,7 @@ namespace RequestReduce.Filter
                     BaseStream.Write(buffer, offset, startTransformPosition);
                     return;
                 case SearchState.MatchingFinished:
+                    if ((startTransformPosition - offset) >= 0)
                     BaseStream.Write(buffer, offset, startTransformPosition-offset);
                     var transformed = responseTransformer.Transform(transformBuffer.ToArray(), encoding);
                     BaseStream.Write(transformed, 0, transformed.Length);
