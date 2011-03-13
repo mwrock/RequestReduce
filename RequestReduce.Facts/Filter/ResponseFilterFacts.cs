@@ -44,11 +44,11 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInSingleWrite()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, testBuffer.Length);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
             }
@@ -57,11 +57,11 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadAtBeginningOfResponse()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, testBuffer.Length);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("<head>thead</head>after", testable.FilteredResult);
             }
@@ -70,11 +70,11 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadAtEndOfResponse()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>head</head>");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>head</head>";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, testBuffer.Length);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("before<head>thead</head>", testable.FilteredResult);
             }
@@ -83,11 +83,11 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadWhenAllResponse()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("<head>head</head>");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "<head>head</head>";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, testBuffer.Length);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("<head>thead</head>", testable.FilteredResult);
             }
@@ -96,12 +96,12 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInmultipleWritesBrokenAtStartToken()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, 9);
-                testable.ClassUnderTest.Write(testBuffer, 9, testBuffer.Length-9);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 9);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 9, testBuffer.Length-9);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
             }
@@ -110,12 +110,12 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInmultipleWritesBrokenBeforeStartToken()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, 3);
-                testable.ClassUnderTest.Write(testBuffer, 3, testBuffer.Length - 3);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 3);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 3, testBuffer.Length - 3);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
             }
@@ -124,12 +124,12 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInmultipleWritesBrokenBetweenToken()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, 15);
-                testable.ClassUnderTest.Write(testBuffer, 15, testBuffer.Length - 15);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 15);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 15, testBuffer.Length - 15);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
             }
@@ -138,12 +138,12 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInmultipleWritesBrokenAtEndToken()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, 26);
-                testable.ClassUnderTest.Write(testBuffer, 26, testBuffer.Length - 26);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 26);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 26, testBuffer.Length - 26);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
             }
@@ -152,11 +152,11 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInsingleWriteWithPartialMatchBeforeStart()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("be<h1>fo</h1>re<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "be<h1>fo</h1>re<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, testBuffer.Length);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("be<h1>fo</h1>re<head>thead</head>after", testable.FilteredResult);
             }
@@ -165,11 +165,11 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInsingleWriteWithPartialMatchBeforeEnd()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("before<head>h<h1>ea</h1>d</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("h<h1>ea</h1>d</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "before<head>h<h1>ea</h1>d</head>after";
+                var testTransform = "h<h1>ea</h1>d</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, testBuffer.Length);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
             }
@@ -177,13 +177,13 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformHeadInMultipleWritesWithPartialMatchBeforeStart()
             {
                 var testable = new TestableResponseFilter();
-                var testBuffer = Encoding.UTF8.GetBytes("be<h1>fo</h1>re<head>head</head>after");
-                var testTransform = Encoding.UTF8.GetBytes("head</head>");
-                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(Match<byte[]>.Create(b => testable.ByteArrayMatch(b, testTransform)), Encoding.UTF8)).Returns(Encoding.UTF8.GetBytes("thead</head>"));
+                var testBuffer = "be<h1>fo</h1>re<head>head</head>after";
+                var testTransform = "head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
-                testable.ClassUnderTest.Write(testBuffer, 0, 4);
-                testable.ClassUnderTest.Write(testBuffer, 4, 10);
-                testable.ClassUnderTest.Write(testBuffer, 14, testBuffer.Length - 14);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 4);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 4, 10);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 14, testBuffer.Length - 14);
 
                 Assert.Equal("be<h1>fo</h1>re<head>thead</head>after", testable.FilteredResult);
             }

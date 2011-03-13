@@ -22,23 +22,43 @@ namespace RequestReduce.Facts.Filter
             public void WillTransformToSingleCssOnMatch()
             {
                 var testable = new TestableResponseTransformer();
-                var transformBytes = Encoding.UTF8.GetBytes(@"
+                var transform = @"
 <meta name=""description"" content="""" />
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
-                ");
-                var transformedBytes = Encoding.UTF8.GetBytes(@"
+                ";
+                var transformed = @"
 <meta name=""description"" content="""" />
 <link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+
 <title>site</title></head>
-                ");
-                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css")).Returns("http://server/Me3.css");
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
 
-                var result = testable.ClassUnderTest.Transform(transformBytes, Encoding.UTF8);
+                var result = testable.ClassUnderTest.Transform(transform);
 
-                Assert.Equal(transformedBytes, result);
+                Assert.Equal(transformed, result);
             }
+
+            [Fact]
+            public void WillNotTransformIfRepoReturnsNull()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(
+                    x => x.FindReduction("http://server/Me.css::http://server/Me2.css::"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transform, result);
+            }
+
         }
     }
 }
