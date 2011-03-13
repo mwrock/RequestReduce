@@ -218,7 +218,7 @@ namespace RequestReduce.Filter
                 upper = EndStringUpper;
                 lower = EndStringLower;
             }
-            return b == upper[matchPosition] || b == lower[matchPosition];
+            return b == lower[matchPosition] || b == upper[matchPosition];
         }
 
         public override int Read(byte[] buffer, int offset, int count)
