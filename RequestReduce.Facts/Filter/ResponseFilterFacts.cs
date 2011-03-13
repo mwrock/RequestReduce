@@ -26,16 +26,6 @@ namespace RequestReduce.Facts.Filter
             }
 
             public string FilteredResult { get; set; }
-
-            public bool ByteArrayMatch(byte[] a, byte[] b)
-            {
-                for (int i = 0; i < a.Length; i++)
-                {
-                    if (a[i] != b[i])
-                        return false;
-                }
-                return true;
-            }
         }
 
         public class Write
@@ -186,6 +176,19 @@ namespace RequestReduce.Facts.Filter
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 14, testBuffer.Length - 14);
 
                 Assert.Equal("be<h1>fo</h1>re<head>thead</head>after", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillTransformHeadWithAttribute()
+            {
+                var testable = new TestableResponseFilter();
+                var testBuffer = @"before<head id=""id"">head</head>after";
+                var testTransform = @"id=""id"">head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns(@"id=""id"">thead</head>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(@"before<head id=""id"">thead</head>after", testable.FilteredResult);
             }
 
         }

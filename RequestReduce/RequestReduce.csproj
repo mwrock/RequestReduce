@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filter\AbstractFilter.cs" />
-    <Compile Include="Filter\IReductionRepository.cs" />
+    <Compile Include="Filter\ReductionRepository.cs" />
     <Compile Include="Filter\ResponseTransformer.cs" />
     <Compile Include="RequestReduceModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

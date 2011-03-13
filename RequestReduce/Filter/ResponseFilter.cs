@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace RequestReduce.Filter
@@ -11,6 +12,7 @@ namespace RequestReduce.Filter
         private readonly IResponseTransformer responseTransformer;
         private byte[] StartStringUpper;
         private byte[] StartStringLower;
+        private byte[] StartCloseChar;
         private byte[] EndStringUpper;
         private byte[] EndStringLower;
         private SearchState state = SearchState.LookForStart;
@@ -21,6 +23,7 @@ namespace RequestReduce.Filter
         {
             LookForStart,
             MatchingStart,
+            MatchingStartClose,
             LookForStop,
             MatchingStop,
             MatchingFinished
@@ -38,8 +41,9 @@ namespace RequestReduce.Filter
             this.responseTransformer = responseTransformer;
             BaseStream = baseStream;
 
-            StartStringUpper = encoding.GetBytes("<HEAD>");
-            StartStringLower = encoding.GetBytes("<head>");
+            StartStringUpper = encoding.GetBytes("<HEAD");
+            StartStringLower = encoding.GetBytes("<head");
+            StartCloseChar = encoding.GetBytes("> ");
             EndStringUpper = encoding.GetBytes("</HEAD>");
             EndStringLower = encoding.GetBytes("</head>");
         }
@@ -92,6 +96,7 @@ namespace RequestReduce.Filter
             {
                 case SearchState.LookForStart:
                 case SearchState.MatchingStart:
+                case SearchState.MatchingStartClose:
                     BaseStream.Write(buffer, offset, count);
                     return;
                 case SearchState.LookForStop:
@@ -114,16 +119,30 @@ namespace RequestReduce.Filter
             switch (state)
             {
                 case SearchState.LookForStart:
-                    return HandleLookForStartMatch(i, b, ref startTransformPosition);
+                    return HandleLookForStartMatch(i, b);
                 case SearchState.MatchingStart:
-                    return HandleMatchingStartMatch(i, b, ref startTransformPosition);
+                    return HandleMatchingStartMatch(i, b);
+                case SearchState.MatchingStartClose:
+                    return HandleMatchingStartCloseMatch(i, b, ref startTransformPosition);
                 case SearchState.LookForStop:
-                    return HandleLookForStopMatch(i, b, ref endTransformPosition);
+                    return HandleLookForStopMatch(i, b);
                 case SearchState.MatchingStop:
                     return HandleMatchingStopMatch(i, b, ref endTransformPosition);
             }
 
             return matchPosition;
+        }
+
+        private int HandleMatchingStartCloseMatch(int i, byte b, ref int startTransformPosition)
+        {
+            if (StartCloseChar.Contains(b))
+            {
+                state = SearchState.LookForStop;
+                startTransformPosition = ++i;
+                return 0;
+            }
+            state = SearchState.LookForStart;
+            return 0;
         }
 
         private int HandleMatchingStopMatch(int i, byte b, ref int endTransformPosition)
@@ -147,7 +166,7 @@ namespace RequestReduce.Filter
             return matchPosition;
         }
 
-        private int HandleLookForStopMatch(int i, byte b, ref int endTransformPosition)
+        private int HandleLookForStopMatch(int i, byte b)
         {
             transformBuffer.Add(b);
             if(IsMatch(MatchingEnd.End, b))
@@ -158,7 +177,7 @@ namespace RequestReduce.Filter
             return matchPosition;
         }
 
-        private int HandleMatchingStartMatch(int i, byte b, ref int startTransformPosition)
+        private int HandleMatchingStartMatch(int i, byte b)
         {
             if(IsMatch(MatchingEnd.Start, b))
             {
@@ -166,8 +185,7 @@ namespace RequestReduce.Filter
                 if (matchPosition == StartStringUpper.Length)
                 {
                     matchPosition = 0;
-                    state = SearchState.LookForStop;
-                    startTransformPosition = ++i;
+                    state = SearchState.MatchingStartClose;
                 }
                 return matchPosition;
             }
@@ -175,13 +193,13 @@ namespace RequestReduce.Filter
             return 0;
         }
 
-        private int HandleLookForStartMatch(int i, byte b, ref int startTransformPosition)
+        private int HandleLookForStartMatch(int i, byte b)
         {
             if(IsMatch(MatchingEnd.Start, b))
             {
                 state = SearchState.MatchingStart;
                 transformBuffer.Clear();
-                return HandleMatchingStartMatch(i, b, ref startTransformPosition);
+                return HandleMatchingStartMatch(i, b);
             }
             return matchPosition;
         }
