@@ -1,21 +1,8 @@
-﻿using System;
-
-namespace RequestReduce.Filter
+﻿namespace RequestReduce.Filter
 {
     public interface IReductionRepository
     {
         string FindReduction(string urls);
-    }
-
-    public class ReductionRepository : IReductionRepository
-    {
-        public ReductionRepository()
-        {
-            
-        }
-        public string FindReduction(string urls)
-        {
-            throw new NotImplementedException();
-        }
+        void AddReduction(string originalUrlList, string reducedUrl);
     }
 }

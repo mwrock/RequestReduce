@@ -1,19 +1,32 @@
 ﻿using System;
+using System.Collections;
+using RequestReduce.Reducer;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Filter
 {
-    public interface IReductionRepository
-    {
-        string FindReduction(string urls);
-    }
-
     public class ReductionRepository : IReductionRepository
     {
-        public ReductionRepository()
+        private readonly IDictionary dictionary;
+        private readonly IReducingQueue reducingQueue;
+
+        public ReductionRepository(IDictionary dictionary, IReducingQueue reducingQueue)
         {
-            
+            this.dictionary = dictionary;
+            this.reducingQueue = reducingQueue;
         }
+
         public string FindReduction(string urls)
+        {
+            var hash = Hasher.Hash(urls);
+            if (dictionary.Contains(hash))
+                return dictionary[hash] as string;
+
+            reducingQueue.Enqueue(urls);
+            return null;
+        }
+
+        public void AddReduction(string originalUrlList, string reducedUrl)
         {
             throw new NotImplementedException();
         }

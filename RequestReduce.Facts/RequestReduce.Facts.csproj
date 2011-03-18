@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filter\ReductionRepositoryFacts.cs" />
     <Compile Include="Filter\ResponseFilterFacts.cs" />
     <Compile Include="Filter\ResponseTransformerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

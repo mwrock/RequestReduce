@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
 using RequestReduce.Filter;
+using RequestReduce.Reducer;
 using StructureMap;
 
 namespace RequestReduce
@@ -14,13 +16,20 @@ namespace RequestReduce
 
         private static IContainer InitContainer()
         {
-           var container = new Container();
-           container.Configure(x => x.Scan(y => 
-               { 
-                   y.TheCallingAssembly();
-                   y.WithDefaultConventions();
-               }
-           ));
+            var container = new Container();
+            container.Configure(x =>
+                                    {
+                                        x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
+                                        x.For<IReductionRepository>().Singleton().Use<ReductionRepository>().Ctor<IDictionary>("dictionary").Is(new Hashtable());
+                                    });
+            container.Configure(x => x.Scan(y =>
+            {
+                y.TheCallingAssembly();
+                y.ExcludeType<ReductionRepository>();
+                y.ExcludeType<ReducingQueue>();
+                y.WithDefaultConventions();
+            }
+            ));
             container.Configure(
                 x =>
                 x.For<AbstractFilter>().Use(
