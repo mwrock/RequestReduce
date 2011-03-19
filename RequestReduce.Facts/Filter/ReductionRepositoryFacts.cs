@@ -7,6 +7,7 @@ using Moq;
 using RequestReduce.Filter;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
+using StructureMap;
 using Xunit;
 
 namespace RequestReduce.Facts.Filter
@@ -17,6 +18,7 @@ namespace RequestReduce.Facts.Filter
         {
             public TestableReductionRepository()
             {
+
             }
         }
 
@@ -58,10 +60,12 @@ namespace RequestReduce.Facts.Filter
                 var dic = new Hashtable();
                 dic.Add(md5, "newUrl");
                 testable.Inject<IDictionary>(dic);
+                var queue = new Mock<IReducingQueue>();
+                RRContainer.Current = new Container(x => x.For<IReducingQueue>().Use(queue.Object));
 
                 var result = testable.ClassUnderTest.FindReduction("urls");
 
-                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue("urls"), Times.Once());
+                queue.Verify(x => x.Enqueue("urls"), Times.Once());
             }
         }
     }

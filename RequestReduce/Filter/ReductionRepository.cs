@@ -8,12 +8,11 @@ namespace RequestReduce.Filter
     public class ReductionRepository : IReductionRepository
     {
         private readonly IDictionary dictionary;
-        private readonly IReducingQueue reducingQueue;
+        private readonly IReducingQueue reducingQueue = RRContainer.Current.GetInstance<IReducingQueue>();
 
-        public ReductionRepository(IDictionary dictionary, IReducingQueue reducingQueue)
+        public ReductionRepository(IDictionary dictionary)
         {
             this.dictionary = dictionary;
-            this.reducingQueue = reducingQueue;
         }
 
         public string FindReduction(string urls)
