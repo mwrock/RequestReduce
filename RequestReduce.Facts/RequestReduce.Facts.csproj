@@ -60,6 +60,7 @@
     <Compile Include="RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="Testable.cs" />
+    <Compile Include="Utilities\UrlSplitterFacts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
