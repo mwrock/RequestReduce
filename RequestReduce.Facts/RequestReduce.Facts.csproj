@@ -57,10 +57,10 @@
     <Compile Include="Filter\ResponseFilterFacts.cs" />
     <Compile Include="Filter\ResponseTransformerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reducer\ReducerFacts.cs" />
     <Compile Include="RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="Testable.cs" />
-    <Compile Include="Utilities\UrlSplitterFacts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
