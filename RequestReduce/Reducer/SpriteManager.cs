@@ -4,22 +4,22 @@ namespace RequestReduce.Reducer
 {
     public class SpriteManager : ISpriteManager
     {
-        public bool Contains(string imageUrl)
+        public virtual bool Contains(string imageUrl)
         {
             throw new NotImplementedException();
         }
 
-        public Sprite this[string imageUrl]
+        public virtual Sprite this[string imageUrl]
         {
             get { throw new NotImplementedException(); }
         }
 
-        public Sprite Add(string imageUrl)
+        public virtual Sprite Add(string imageUrl)
         {
             throw new NotImplementedException();
         }
 
-        public void Flush()
+        public virtual void Flush()
         {
             throw new NotImplementedException();
         }

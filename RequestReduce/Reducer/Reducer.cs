@@ -8,7 +8,7 @@ using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
-    public class Reducer
+    public class Reducer : IReducer
     {
         private readonly IWebClientWrapper webClientWrapper;
         private IConfigurationWrapper configWrapper;
@@ -27,7 +27,7 @@ namespace RequestReduce.Reducer
             this.configWrapper = configWrapper;
         }
 
-        public string Process(string urls)
+        public virtual string Process(string urls)
         {
             var urlList = SplitUrls(urls);
             var fileName = string.Format("{0}/{1}.css", configWrapper.SpriteDirectory, Guid.NewGuid().ToString());
@@ -55,7 +55,7 @@ namespace RequestReduce.Reducer
             return cssContent;
         }
 
-        private static IEnumerable<string> SplitUrls(string urls)
+        protected static IEnumerable<string> SplitUrls(string urls)
         {
             return urls.Split(new string[] { "::" }, StringSplitOptions.RemoveEmptyEntries);
         }

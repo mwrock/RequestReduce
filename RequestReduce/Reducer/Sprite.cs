@@ -8,7 +8,7 @@
             Url = url;
         }
 
-        public int Position { get; private set; }
-        public string Url { get; private set; }
+        public virtual int Position { get; private set; }
+        public virtual string Url { get; private set; }
     }
 }
