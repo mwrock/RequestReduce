@@ -73,7 +73,17 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                testable.Mock<IFileWrapper>().Verify(x => x.Save("min", It.IsAny<string>()), Times.Once());
+                testable.Mock<IFileWrapper>().Verify(x => x.Save("min", result), Times.Once());
+            }
+
+            [Fact]
+            public void WillFlushSpriteManager()
+            {
+                var testable = new TestableReducer();
+
+                testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
+
+                testable.Mock<ISpriteManager>().Verify(x => x.Flush(), Times.AtLeastOnce());
             }
 
         }
