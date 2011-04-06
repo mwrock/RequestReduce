@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filter\CssImageTransformerFacts.cs" />
     <Compile Include="Filter\ReductionRepositoryFacts.cs" />
     <Compile Include="Filter\ResponseFilterFacts.cs" />
     <Compile Include="Filter\ResponseTransformerFacts.cs" />
