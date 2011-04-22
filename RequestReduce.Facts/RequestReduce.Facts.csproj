@@ -48,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -59,12 +60,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Filter\CssImageTransformerFacts.cs" />
+    <Compile Include="Reducer\CssImageTransformerFacts.cs" />
     <Compile Include="Filter\ReductionRepositoryFacts.cs" />
     <Compile Include="Filter\ResponseFilterFacts.cs" />
     <Compile Include="Filter\ResponseTransformerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reducer\ReducerFacts.cs" />
+    <Compile Include="Reducer\SpriteManagerFacts.cs" />
     <Compile Include="RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="Testable.cs" />

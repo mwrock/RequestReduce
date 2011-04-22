@@ -14,7 +14,7 @@ namespace RequestReduce.Configuration
 
         public string SpriteDirectory
         {
-            get { return config.SpriteDirectory; }
+            get { return config == null ? null : config.SpriteDirectory; }
         }
     }
 }

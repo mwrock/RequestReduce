@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
@@ -14,7 +15,7 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableReducer()
             {
-                
+                Mock<HttpContextBase>().Setup(x => x.Server.MapPath(It.IsAny<string>())).Returns((string s) => s);
             }
         }
 

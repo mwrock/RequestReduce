@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 
@@ -16,10 +17,12 @@ namespace RequestReduce.Reducer
         private IMinifier minifier;
         private ISpriteManager spriteManager;
         private ICssImageTransformer cssImageTransformer;
+        private readonly HttpContextBase httpContextWrapper;
 
-        public Reducer(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer)
+        public Reducer(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, HttpContextBase httpContextWrapper)
         {
             this.webClientWrapper = webClientWrapper;
+            this.httpContextWrapper = httpContextWrapper;
             this.cssImageTransformer = cssImageTransformer;
             this.spriteManager = spriteManager;
             this.minifier = minifier;
@@ -34,7 +37,7 @@ namespace RequestReduce.Reducer
             var mergedCss = new StringBuilder();
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));
-            fileWrapper.Save(minifier.Minify(mergedCss.ToString()), fileName);
+            fileWrapper.Save(minifier.Minify(mergedCss.ToString()), httpContextWrapper.Server.MapPath(fileName));
             return fileName;
         }
 

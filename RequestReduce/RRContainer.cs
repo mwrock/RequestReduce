@@ -21,6 +21,7 @@ namespace RequestReduce
                                     {
                                         x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                         x.For<IReductionRepository>().Singleton().Use<ReductionRepository>().Ctor<IDictionary>("dictionary").Is(new Hashtable());
+                                        x.For<HttpContextBase>().Use(() => HttpContext.Current == null ? null : new HttpContextWrapper(HttpContext.Current));
                                     });
             container.Configure(x => x.Scan(y =>
             {
