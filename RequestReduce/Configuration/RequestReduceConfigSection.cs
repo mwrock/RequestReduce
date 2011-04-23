@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 
 namespace RequestReduce.Configuration
 {
@@ -10,6 +11,17 @@ namespace RequestReduce.Configuration
             get
             {
                 return base["spriteDirectory"].ToString();
+            }
+        }
+
+        [ConfigurationProperty("spriteSizeLimit")]
+        public int SpriteSizeLimit
+        {
+            get
+            {
+                var limit = 500*1024;
+                Int32.TryParse(base["spriteSizeLimit"].ToString(), out limit);
+                return limit;
             }
         }
     }

@@ -6,6 +6,7 @@ namespace RequestReduce.Configuration
     public interface IConfigurationWrapper
     {
         string SpriteDirectory { get; }
+        int SpriteSizeLimit { get; }
     }
 
     public class ConfigurationWrapper : IConfigurationWrapper
@@ -15,6 +16,11 @@ namespace RequestReduce.Configuration
         public string SpriteDirectory
         {
             get { return config == null ? null : config.SpriteDirectory; }
+        }
+
+        public int SpriteSizeLimit
+        {
+            get { return config == null ? 0 : config.SpriteSizeLimit; }
         }
     }
 }

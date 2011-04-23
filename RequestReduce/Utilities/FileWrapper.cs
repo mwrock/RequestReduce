@@ -9,5 +9,15 @@ namespace RequestReduce.Utilities
         {
             File.WriteAllText(fileName, content);
         }
+
+        public void Save(byte[] content, string fileName)
+        {
+            File.WriteAllBytes(fileName, content);
+        }
+
+        public Stream OpenStream(string fileName)
+        {
+            return File.Create(fileName);
+        }
     }
 }

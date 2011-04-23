@@ -7,7 +7,7 @@ namespace RequestReduce.Utilities
     public interface IWebClientWrapper
     {
         string DownloadString(string url);
-        Bitmap DownloadImage(string imageUrl);
+        Bitmap DownloadImage(string url, out int size);
     }
 
     public class WebClientWrapper : IWebClientWrapper
@@ -20,11 +20,12 @@ namespace RequestReduce.Utilities
             }
         }
 
-        public Bitmap DownloadImage(string url)
+        public Bitmap DownloadImage(string url, out int size)
         {
             using(var client = new WebClient())
             {
                 var bytes = client.DownloadData(url);
+                size = bytes.Length;
                 return new Bitmap(new MemoryStream(bytes));
             }
         }
