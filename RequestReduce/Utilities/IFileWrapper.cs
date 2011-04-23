@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using StructureMap;
 
 namespace RequestReduce.Utilities
 {

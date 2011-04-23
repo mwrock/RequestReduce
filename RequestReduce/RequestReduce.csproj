@@ -61,9 +61,12 @@
     <Compile Include="Reducer\IMinifier.cs" />
     <Compile Include="Reducer\IReducer.cs" />
     <Compile Include="Reducer\ISpriteManager.cs" />
+    <Compile Include="Reducer\ISpriteWriter.cs" />
     <Compile Include="Reducer\Minifier.cs" />
     <Compile Include="Reducer\Sprite.cs" />
     <Compile Include="Reducer\SpriteContainer.cs" />
+    <Compile Include="Reducer\SpriteWriter.cs" />
+    <Compile Include="Reducer\SpriteWriterFactory.cs" />
     <Compile Include="Utilities\FileWrapper.cs" />
     <Compile Include="Utilities\IFileWrapper.cs" />
     <Compile Include="Reducer\SpriteManager.cs" />

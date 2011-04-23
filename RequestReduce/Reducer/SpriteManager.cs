@@ -17,10 +17,12 @@ namespace RequestReduce.Reducer
         private IConfigurationWrapper configWrapper = null;
         private readonly IFileWrapper fileWrapper;
         private readonly HttpContextBase httpContext;
+        private readonly ISpriteWriterFactory spriteWriterFactory;
 
-        public SpriteManager(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, HttpContextBase httpContext)
+        public SpriteManager(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory)
         {
             this.webClientWrapper = webClientWrapper;
+            this.spriteWriterFactory = spriteWriterFactory;
             this.httpContext = httpContext;
             this.fileWrapper = fileWrapper;
             this.configWrapper = configWrapper;
@@ -39,14 +41,9 @@ namespace RequestReduce.Reducer
 
         public virtual Sprite Add(string imageUrl)
         {
-            int size;
-            var bitmap = webClientWrapper.DownloadImage(imageUrl, out size);
-            SpriteContainer.Size += size;
-            SpriteContainer.Images.Add(bitmap);
             var currentPositionToReturn = SpriteContainer.Width;
             var currentUrlToReturn = SpriteContainer.Url;
-            SpriteContainer.Width += bitmap.Width;
-            if(SpriteContainer.Height < bitmap.Height) SpriteContainer.Height= bitmap.Height;
+            SpriteContainer.AddImage(imageUrl);
             if (SpriteContainer.Size >= configWrapper.SpriteSizeLimit)
                 Flush();
             return new Sprite(currentPositionToReturn, currentUrlToReturn);
@@ -54,26 +51,14 @@ namespace RequestReduce.Reducer
 
         public virtual void Flush()
         {
-            using (Bitmap sprite = new Bitmap(SpriteContainer.Width, SpriteContainer.Height))
-            using (Graphics drawingSurface = Graphics.FromImage(sprite))
+            using (var spriteWriter = spriteWriterFactory.CreateWriter(SpriteContainer.Width, SpriteContainer.Height))
             {
-                drawingSurface.Clear(Color.Transparent);
-
-                var xOffset = 0;
-                foreach (var image in SpriteContainer.Images)
+                foreach (var image in SpriteContainer)
                 {
-                    drawingSurface.DrawImage(image, new Rectangle(xOffset, 0, image.Width, image.Height));
-                    xOffset += image.Width;
+                    spriteWriter.WriteImage(image);
                 }
 
-                using (var spriteEncoderParameters = new EncoderParameters(1))
-                {
-                    spriteEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 90);
-                    using (var stream = fileWrapper.OpenStream(httpContext.Server.MapPath(SpriteContainer.Url)))
-                    {
-                        sprite.Save(stream, ImageCodecInfo.GetImageEncoders().First(x => x.MimeType == "image/png"), spriteEncoderParameters);
-                    }
-                }
+                spriteWriter.Save(httpContext.Server.MapPath(SpriteContainer.Url), "image/png");
             }
             return;
         }

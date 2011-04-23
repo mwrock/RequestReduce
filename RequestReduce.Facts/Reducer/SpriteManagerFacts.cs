@@ -16,7 +16,7 @@ namespace RequestReduce.Facts.Reducer
     {
         class SpriteManagerToTest: SpriteManager
         {
-            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, HttpContextBase httpContext) : base(webClientWrapper, configWrapper, fileWrapper, httpContext)
+            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, configWrapper, fileWrapper, httpContext, spriteWriterFactory)
             {
             }
 
@@ -79,7 +79,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Add("imageUrl");
 
-                Assert.True(testable.ClassUnderTest.SpriteContainer.Images.Contains(imageBitmap));
+                Assert.True(testable.ClassUnderTest.SpriteContainer.Contains(imageBitmap));
             }
 
             [Fact]
@@ -101,6 +101,16 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1);
+
+                var result = testable.ClassUnderTest.Add("imageUrl");
+
+                testable.Mock<IFileWrapper>().Verify(x => x.OpenStream(result.Url), Times.Exactly(1));
+            }
+
+            [Fact]
+            public void WillSpriteContainerAreaHaveAccurateWidthAndHeight()
+            {
+                var testable = new TestableSpriteManager();
 
                 var result = testable.ClassUnderTest.Add("imageUrl");
 

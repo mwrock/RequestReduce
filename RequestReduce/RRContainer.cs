@@ -7,6 +7,8 @@ using System.Web;
 using RequestReduce.Filter;
 using RequestReduce.Reducer;
 using StructureMap;
+using StructureMap.Configuration.DSL;
+using StructureMap.Graph;
 
 namespace RequestReduce
 {
@@ -26,9 +28,17 @@ namespace RequestReduce
             container.Configure(x => x.Scan(y =>
             {
                 y.TheCallingAssembly();
+                y.ExcludeNamespace("RequestReduce.Utilities");
                 y.ExcludeType<ReductionRepository>();
                 y.ExcludeType<ReducingQueue>();
                 y.WithDefaultConventions();
+            }
+            ));
+            container.Configure(x => x.Scan(y =>
+            {
+                y.TheCallingAssembly();
+                y.IncludeNamespace("RequestReduce.Utilities");
+                y.With(new SingletonConvention());
             }
             ));
             container.Configure(
@@ -47,5 +57,18 @@ namespace RequestReduce
             set { container = value; }
         }
 
+    }
+
+    public class SingletonConvention : DefaultConventionScanner
+    {
+        public override void Process(Type type, Registry registry)
+        {
+            base.Process(type, registry);
+            var pluginType = FindPluginType(type);
+            if ((pluginType != null))
+            {
+                registry.For(pluginType).Singleton();
+            }
+        }
     }
 }
