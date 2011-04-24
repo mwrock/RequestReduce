@@ -26,9 +26,9 @@ namespace RequestReduce.Reducer
             return urls;
         }
 
-        public string InjectSprite(string imageUrl, Sprite sprite)
+        public string InjectSprite(string originalCss, string imageUrl, Sprite sprite)
         {
-            throw new NotImplementedException();
+            return originalCss.Replace(imageUrl, sprite.Url);
         }
     }
 }

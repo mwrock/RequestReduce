@@ -146,5 +146,29 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(1, result.Count());
             }
         }
+
+        public class InjectSprite
+        {
+            [Fact]
+            public void WillReplaceFormerUrlWithSpriteUrl()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation {    
+    background-image: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png');
+}";
+                var expected =
+    @"
+.LocalNavigation {    
+    background-image: url('spriteUrl');
+}";
+                var sprite = new Sprite(120, "spriteUrl");
+
+                var result = testable.ClassUnderTest.InjectSprite(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png", sprite);
+
+                Assert.Equal(expected, result);
+            }
+        }
     }
 }

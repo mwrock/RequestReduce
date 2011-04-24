@@ -113,8 +113,8 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
-                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite("image1", sprite1), Times.Once());
-                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite("image2", sprite2), Times.Once());
+                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), "image1", sprite1), Times.Once());
+                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), "image2", sprite2), Times.Once());
             }
 
         }
