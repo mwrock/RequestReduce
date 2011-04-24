@@ -10,12 +10,14 @@ namespace RequestReduce.Reducer
     {
         public Bitmap SpriteImage { get; private set; }
         private readonly Graphics drawingSurface = null;
+        private readonly IFileWrapper fileWrapper;
 
-        public SpriteWriter(int surfaceWidth, int surfaceHeight)
+        public SpriteWriter(int surfaceWidth, int surfaceHeight, IFileWrapper fileWrapper)
         {
             SpriteImage = new Bitmap(surfaceWidth, surfaceHeight);
             drawingSurface = Graphics.FromImage(SpriteImage);
             drawingSurface.Clear(Color.Transparent);
+            this.fileWrapper = fileWrapper;
         }
 
         public void WriteImage(Bitmap image)
@@ -26,7 +28,6 @@ namespace RequestReduce.Reducer
 
         public void Save(string fileName, string mimeType)
         {
-            var fileWrapper = RRContainer.Current.GetInstance<IFileWrapper>();
             using (var spriteEncoderParameters = new EncoderParameters(1))
             {
                 spriteEncoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 90);

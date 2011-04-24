@@ -2,21 +2,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
-    public class SpriteContainer : IEnumerable<Bitmap>
+    public class SpriteContainer : ISpriteContainer
     {
         private readonly IList<Bitmap> images = new List<Bitmap>();
 
-        public void AddImage (string imageUrl)
+        public SpriteContainer(IConfigurationWrapper configWrapper)
         {
-            var webClientWrapper = RRContainer.Current.GetInstance<IWebClientWrapper>();
-            int size;
-            var bitmap = webClientWrapper.DownloadImage(imageUrl, out size);
+            Url = string.Format("{0}/{1}.png", configWrapper.SpriteDirectory, Guid.NewGuid().ToString());
+        }
+
+        public void AddImage (byte[] image)
+        {
+            var bitmap = new Bitmap(new MemoryStream(image));
             images.Add(bitmap);
-            Size += size;
+            Size += image.Length;
             Width += bitmap.Width;
             if (Height < bitmap.Height) Height = bitmap.Height;
         }

@@ -66,6 +66,7 @@
     <Compile Include="Filter\ResponseTransformerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reducer\ReducerFacts.cs" />
+    <Compile Include="Reducer\SpriteContainerFacts.cs" />
     <Compile Include="Reducer\SpriteManagerFacts.cs" />
     <Compile Include="RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />

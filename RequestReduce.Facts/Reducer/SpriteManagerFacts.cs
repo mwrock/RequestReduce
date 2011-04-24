@@ -16,80 +16,48 @@ namespace RequestReduce.Facts.Reducer
     {
         class SpriteManagerToTest: SpriteManager
         {
-            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, configWrapper, fileWrapper, httpContext, spriteWriterFactory)
+            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, configWrapper, httpContext, spriteWriterFactory)
             {
+                MockSpriteContainer = new Mock<ISpriteContainer>();
+                MockSpriteContainer.Setup(x => x.Url).Returns(SpriteContainer.Url);
+                MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                base.SpriteContainer = MockSpriteContainer.Object;
             }
 
-            public new SpriteContainer SpriteContainer { get { return base.SpriteContainer; } }
+            public Mock<ISpriteContainer> MockSpriteContainer { get; private set; }
+            public new ISpriteContainer SpriteContainer { get { return base.SpriteContainer; } }
         }
         class TestableSpriteManager : Testable<SpriteManagerToTest>
         {
             public TestableSpriteManager()
             {
-                int size = 1;
-                Mock<IWebClientWrapper>().Setup(x => x.DownloadImage(It.IsAny<string>(), out size)).Returns(new Bitmap(1,1));
+                Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes(It.IsAny<string>())).Returns(new byte[0]);
                 Mock<HttpContextBase>().Setup(x => x.Server.MapPath(It.IsAny<string>())).Returns((string s) => s);
-                Mock<IFileWrapper>().Setup(x => x.OpenStream(It.IsAny<string>())).Returns(new MemoryStream());
                 Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1000);
+                Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(
+                    new Mock<ISpriteWriter>().Object);
             }
         }
 
         public class Add
         {
             [Fact]
-            public void WillReturnSpriteUrlInCorrectConfigDirectory()
+            public void WillAddImageToSpriteContainer()
             {
                 var testable = new TestableSpriteManager();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteDirectory).Returns("spritedir");
+                var imageBytes = new byte[0];
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("imageUrl")).Returns(imageBytes);
 
-                var result = testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Add("imageUrl");
 
-                Assert.True(result.Url.StartsWith("spritedir/"));
-            }
-
-            [Fact]
-            public void WillReturnSpriteUrlWithAGuidName()
-            {
-                var testable = new TestableSpriteManager();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteDirectory).Returns("spritedir");
-                Guid guid;
-
-                var result = testable.ClassUnderTest.Add("imageUrl");
-
-                Assert.True(Guid.TryParse(result.Url.Substring("spritedir/".Length, result.Url.Length - "spritedir/".Length - ".css".Length), out guid));
-            }
-
-            [Fact]
-            public void WillReturnSpriteUrlWithApngExtension()
-            {
-                var testable = new TestableSpriteManager();
-
-                var result = testable.ClassUnderTest.Add("imageUrl");
-
-                Assert.True(result.Url.EndsWith(".png"));
-            }
-
-            [Fact]
-            public void WillAddImageToUnflushedImages()
-            {
-                var testable = new TestableSpriteManager();
-                var imageBitmap = new Bitmap(1,1);
-                int size;
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadImage("imageUrl", out size)).Returns(imageBitmap);
-
-                var result = testable.ClassUnderTest.Add("imageUrl");
-
-                Assert.True(testable.ClassUnderTest.SpriteContainer.Contains(imageBitmap));
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(imageBytes), Times.Exactly(1));
             }
 
             [Fact]
             public void WillIncrementPositionByWidthOfPreviousImage()
             {
                 var testable = new TestableSpriteManager();
-                var imageBitmap = new Bitmap(20, 1);
-                int size;
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadImage(It.IsAny<string>(), out size)).Returns(imageBitmap);
-                testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(20);
 
                 var result = testable.ClassUnderTest.Add("imageUrl2");
 
@@ -97,25 +65,71 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillFlushToFileWhenSizePassesThreshold()
+            public void WillFlushWhenSizePassesThreshold()
             {
                 var testable = new TestableSpriteManager();
                 testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
-                var result = testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Add("imageUrl");
 
-                testable.Mock<IFileWrapper>().Verify(x => x.OpenStream(result.Url), Times.Exactly(1));
+                testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(1));
+            }
+        }
+
+        public class Flush
+        {
+            [Fact]
+            public void WillCreateImageWriterWithCorrectDimensions()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(1);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(1);
+
+                testable.ClassUnderTest.Flush();
+
+                testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(1, 1), Times.Exactly(1));
             }
 
             [Fact]
-            public void WillSpriteContainerAreaHaveAccurateWidthAndHeight()
+            public void WillWriteEachImage()
             {
                 var testable = new TestableSpriteManager();
+                var images = new List<Bitmap>() {new Bitmap(1, 1), new Bitmap(2, 2)};
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
 
-                var result = testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Flush();
 
-                testable.Mock<IFileWrapper>().Verify(x => x.OpenStream(result.Url), Times.Exactly(1));
+                mockWriter.Verify(x => x.WriteImage(images[0]), Times.Exactly(1));
+                mockWriter.Verify(x => x.WriteImage(images[1]), Times.Exactly(1));
             }
+
+            [Fact]
+            public void WillSaveWriterToContainerUrlUsingPngMimeType()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Url).Returns("myurl");
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+
+                testable.ClassUnderTest.Flush();
+
+                mockWriter.Verify(x => x.Save("myurl", "image/png"));
+            }
+
+            [Fact]
+            public void WillResetSpriteContainerAfterFlush()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(20);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(0, testable.ClassUnderTest.SpriteContainer.Width);
+            }
+
         }
     }
 }

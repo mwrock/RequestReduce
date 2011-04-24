@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
@@ -12,21 +7,19 @@ namespace RequestReduce.Reducer
 {
     public class SpriteManager : ISpriteManager
     {
-        protected SpriteContainer SpriteContainer = new SpriteContainer();
+        protected ISpriteContainer SpriteContainer = null;
         private IWebClientWrapper webClientWrapper = null;
         private IConfigurationWrapper configWrapper = null;
-        private readonly IFileWrapper fileWrapper;
         private readonly HttpContextBase httpContext;
         private readonly ISpriteWriterFactory spriteWriterFactory;
 
-        public SpriteManager(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, IFileWrapper fileWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory)
+        public SpriteManager(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory)
         {
             this.webClientWrapper = webClientWrapper;
             this.spriteWriterFactory = spriteWriterFactory;
             this.httpContext = httpContext;
-            this.fileWrapper = fileWrapper;
             this.configWrapper = configWrapper;
-            SpriteContainer.Url = string.Format("{0}/{1}.png", configWrapper.SpriteDirectory, Guid.NewGuid().ToString());
+            SpriteContainer = new SpriteContainer(configWrapper);
         }
 
         public virtual bool Contains(string imageUrl)
@@ -43,7 +36,7 @@ namespace RequestReduce.Reducer
         {
             var currentPositionToReturn = SpriteContainer.Width;
             var currentUrlToReturn = SpriteContainer.Url;
-            SpriteContainer.AddImage(imageUrl);
+            SpriteContainer.AddImage(webClientWrapper.DownloadBytes(imageUrl));
             if (SpriteContainer.Size >= configWrapper.SpriteSizeLimit)
                 Flush();
             return new Sprite(currentPositionToReturn, currentUrlToReturn);
@@ -60,6 +53,7 @@ namespace RequestReduce.Reducer
 
                 spriteWriter.Save(httpContext.Server.MapPath(SpriteContainer.Url), "image/png");
             }
+            SpriteContainer = new SpriteContainer(configWrapper);
             return;
         }
     }

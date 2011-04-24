@@ -60,6 +60,7 @@
     <Compile Include="Reducer\ICssImageTransformer.cs" />
     <Compile Include="Reducer\IMinifier.cs" />
     <Compile Include="Reducer\IReducer.cs" />
+    <Compile Include="Reducer\ISpriteContainer.cs" />
     <Compile Include="Reducer\ISpriteManager.cs" />
     <Compile Include="Reducer\ISpriteWriter.cs" />
     <Compile Include="Reducer\Minifier.cs" />
