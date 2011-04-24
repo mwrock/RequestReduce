@@ -47,11 +47,7 @@ namespace RequestReduce.Reducer
             var imageUrls = cssImageTransformer.ExtractImageUrls(cssContent);
             foreach (var imageUrl in imageUrls)
             {
-                Sprite sprite;
-                if (spriteManager.Contains(imageUrl))
-                    sprite = spriteManager[imageUrl];
-                else
-                    sprite = spriteManager.Add(imageUrl);
+                var sprite = spriteManager.Add(imageUrl);
                 cssContent = cssImageTransformer.InjectSprite(imageUrl, sprite);
             }
             spriteManager.Flush();

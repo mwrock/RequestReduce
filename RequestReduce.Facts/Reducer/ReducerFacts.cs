@@ -89,25 +89,11 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillGetSpriteFromSpriteManagerIfItHasIt()
+            public void WillAddSpriteToSpriteManager()
             {
                 var testable = new TestableReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>())).Returns("css");
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new string[] { "image1", "image2" });
-                testable.Mock<ISpriteManager>().Setup(x => x.Contains("image1")).Returns(true);
-
-                testable.ClassUnderTest.Process("http://host/css2.css");
-
-                testable.Mock<ISpriteManager>().Verify(x => x["image1"], Times.Once());
-            }
-
-            [Fact]
-            public void WillAddSpriteToSpriteManagerIfItIsMissing()
-            {
-                var testable = new TestableReducer();
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>())).Returns("css");
-                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new string[] { "image1", "image2" });
-                testable.Mock<ISpriteManager>().Setup(x => x.Contains("image1")).Returns(false);
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
@@ -120,12 +106,10 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>())).Returns("css");
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new string[] { "image1", "image2" });
-                testable.Mock<ISpriteManager>().Setup(x => x.Contains("image1")).Returns(true);
-                testable.Mock<ISpriteManager>().Setup(x => x.Contains("image2")).Returns(true);
                 var sprite1 = new Sprite(-100, "sprite1");
                 var sprite2 = new Sprite(-100, "sprite2");
-                testable.Mock<ISpriteManager>().Setup(x => x["image1"]).Returns(sprite1);
-                testable.Mock<ISpriteManager>().Setup(x => x["image2"]).Returns(sprite2);
+                testable.Mock<ISpriteManager>().Setup(x => x.Add("image1")).Returns(sprite1);
+                testable.Mock<ISpriteManager>().Setup(x => x.Add("image2")).Returns(sprite2);
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 

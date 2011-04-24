@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitmapPixelComparer.cs" />
     <Compile Include="Reducer\CssImageTransformerFacts.cs" />
     <Compile Include="Filter\ReductionRepositoryFacts.cs" />
     <Compile Include="Filter\ResponseFilterFacts.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Reducer\ReducerFacts.cs" />
     <Compile Include="Reducer\SpriteContainerFacts.cs" />
     <Compile Include="Reducer\SpriteManagerFacts.cs" />
+    <Compile Include="Reducer\SpriteWriterFacts.cs" />
     <Compile Include="RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="Testable.cs" />
@@ -83,6 +85,15 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TestImages\delete.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestImages\emptyStar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

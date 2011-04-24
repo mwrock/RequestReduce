@@ -75,6 +75,30 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(1));
             }
+
+            [Fact]
+            public void WillReturnPreviousSpriteIfUrlWasSprited()
+            {
+                var testable = new TestableSpriteManager();
+                var sprite = testable.ClassUnderTest.Add("image1");
+
+                var result = testable.ClassUnderTest.Add("image1");
+
+                Assert.Equal(sprite, result);
+            }
+
+            [Fact]
+            public void WillNotAddImageToSpriteContainerIfImageAlreadySprited()
+            {
+                var testable = new TestableSpriteManager();
+                var imageBytes = new byte[0];
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("imageUrl")).Returns(imageBytes);
+                testable.ClassUnderTest.Add("imageUrl");
+
+                testable.ClassUnderTest.Add("imageUrl");
+
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(imageBytes), Times.Exactly(1));
+            }
         }
 
         public class Flush
@@ -129,7 +153,20 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.Equal(0, testable.ClassUnderTest.SpriteContainer.Width);
             }
+        }
 
+        public class Indexer
+        {
+            [Fact]
+            public void WillRetrieveSpriteByOriginalUrl()
+            {
+                var testable = new TestableSpriteManager();
+                var sprite = testable.ClassUnderTest.Add("image1");
+
+                var result = testable.ClassUnderTest["image1"];
+
+                Assert.Equal(sprite, result);
+            }
         }
     }
 }
