@@ -28,7 +28,16 @@ namespace RequestReduce.Reducer
 
         public string InjectSprite(string originalCss, string imageUrl, Sprite sprite)
         {
+            /*
+            var urlClassPattern = new Regex(string.Format(@"\{[^\}]*{0}[^\}]*\}", imageUrl), RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            foreach (var classMatch in urlClassPattern.Matches(originalCss))
+            {
+                if (!positionUrlPattern.Match(classMatch.ToString()).Success && !repeatUrlPattern.Match(classMatch.ToString()).Success)
+                    urls.Add(urlMatch.Groups["url"].ToString().Replace("'", "").Replace("\"", ""));
+            }
             return originalCss.Replace(imageUrl, sprite.Url);
+             * */
+            return null;
         }
     }
 }

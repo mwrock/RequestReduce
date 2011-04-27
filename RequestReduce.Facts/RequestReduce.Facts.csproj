@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitmapPixelComparer.cs" />
+    <Compile Include="Reducer\BackgroundImageClassFacts.cs" />
     <Compile Include="Reducer\CssImageTransformerFacts.cs" />
     <Compile Include="Filter\ReductionRepositoryFacts.cs" />
     <Compile Include="Filter\ResponseFilterFacts.cs" />

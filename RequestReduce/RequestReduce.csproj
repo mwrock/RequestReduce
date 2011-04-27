@@ -56,6 +56,7 @@
     <Compile Include="Filter\ReductionRepository.cs" />
     <Compile Include="Filter\ResponseTransformer.cs" />
     <Compile Include="Configuration\ConfigurationWrapper.cs" />
+    <Compile Include="Reducer\BackgroungImageClass.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />
     <Compile Include="Reducer\IMinifier.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Reducer\SpriteContainer.cs" />
     <Compile Include="Reducer\SpriteWriter.cs" />
     <Compile Include="Reducer\SpriteWriterFactory.cs" />
+    <Compile Include="Reducer\Position.cs" />
     <Compile Include="Utilities\FileWrapper.cs" />
     <Compile Include="Utilities\IFileWrapper.cs" />
     <Compile Include="Reducer\SpriteManager.cs" />
