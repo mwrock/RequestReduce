@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace RequestReduce.Reducer
 {
@@ -19,6 +21,7 @@ namespace RequestReduce.Reducer
 
     public enum Direction
     {
+        Center,
         Left,
         Right,
         Top,
@@ -28,13 +31,21 @@ namespace RequestReduce.Reducer
     public class BackgroungImageClass
     {
         private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
+        private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        
         public BackgroungImageClass(string originalClassString)
         {
             OriginalClassString = originalClassString;
             var match = imageUrlPattern.Match(originalClassString);
             if (match.Success)
                 ImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
+            var repeatMatch = repeatPattern.Matches(originalClassString);
+            if(repeatMatch.Count > 0)
+            {
+                RepeatStyle rep;
+                Enum.TryParse(repeatMatch[repeatMatch.Count-1].Value.Replace("-",""), true, out rep);
+                Repeat = rep;
+            }
         }
 
         public string OriginalClassString { get; set; }
