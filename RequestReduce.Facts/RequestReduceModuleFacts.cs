@@ -5,6 +5,7 @@ using System.Text;
 using Moq;
 using StructureMap;
 using Xunit;
+using System.IO;
 
 namespace RequestReduce.Facts
 {
@@ -19,7 +20,7 @@ namespace RequestReduce.Facts
 
             module.InstallFilter(context.Object);
 
-            context.VerifySet(x => x.Response.Filter, Times.Never());
+            context.VerifySet((x => x.Response.Filter = It.IsAny<Stream>()), Times.Never());
         }
 
         [Fact]
@@ -32,7 +33,7 @@ namespace RequestReduce.Facts
 
             module.InstallFilter(context.Object);
 
-            context.VerifySet(x => x.Response.Filter, Times.Once());
+            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
         }
 
         [Fact]

@@ -10,6 +10,6 @@ namespace RequestReduce.Reducer
         int Size { get; }
         int Width { get; }
         int Height { get; }
-        IEnumerator<Bitmap> GetEnumerator();
+        //IEnumerator<Bitmap> GetEnumerator();
     }
 }
