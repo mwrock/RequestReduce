@@ -53,7 +53,12 @@ namespace RequestReduce
 
         public static IContainer Current
         {
-            get { return container; }
+            get 
+            { 
+                if(container == null)
+                    container = InitContainer();
+                return container;
+            }
             set { container = value; }
         }
 

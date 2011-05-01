@@ -127,10 +127,10 @@ namespace RequestReduce.Facts.Reducer
             {
                 var css =
     @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
     width: {0};
-}";
+}}";
 
                 var testable = new BackgroungImageClass(string.Format(css, statedWidth));
 

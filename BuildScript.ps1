@@ -29,14 +29,15 @@ task Clean-BuildFiles {
 task Build-Nuget {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
-    exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework64\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\*.dll }
+	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
+    exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\*.dll }
 	create $nugetDir
     exec { .\Tools\nuget.exe p "RequestReduce\Nuget\RequestReduce.nuspec" -o $nugetDir }
 }
 
 
 task Test-Solution {
-    exec { .\packages\xunit.1.7.0.1540\Tools\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
+    exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
 }
 
 function roboexec([scriptblock]$cmd) {

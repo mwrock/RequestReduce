@@ -66,6 +66,7 @@ namespace RequestReduce.Facts.Filter
                 var result = testable.ClassUnderTest.FindReduction("urls");
 
                 queue.Verify(x => x.Enqueue("urls"), Times.Once());
+                RRContainer.Current = null;
             }
         }
     }
