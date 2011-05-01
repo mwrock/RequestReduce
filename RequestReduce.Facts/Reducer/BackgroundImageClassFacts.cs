@@ -194,6 +194,42 @@ InlineData("50em", null)]
                 Assert.Equal(expectedHeight, testable.Height);
             }
 
+            [Fact]
+            public void OffsetsWillDefaultTo0Percent()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+}}";
+
+                var testable = new BackgroungImageClass(css);
+
+                Assert.Equal(new Position(){PositionMode = PositionMode.Percent, Offset = 0}, testable.XOffset);
+            }
+
+            [Theory,
+            InlineData("left", PositionMode.Direction, Direction.Left),
+            InlineData("right", PositionMode.Direction, Direction.Right),
+            InlineData("center", PositionMode.Direction, Direction.Center),
+            InlineData("50%", PositionMode.Percent, 50),
+            InlineData("50", PositionMode.Unit, 50),
+            InlineData("50px", PositionMode.Unit, 50),
+            InlineData("50em", PositionMode.Percent, 0)]
+            public void WillSetLeftOffsetFromShortcut(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedOffset));
+
+                Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
+                Assert.Equal(expectedOffset, testable.XOffset.Offset);
+            }
+
         }
     }
 }

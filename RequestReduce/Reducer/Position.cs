@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RequestReduce.Reducer
 {
-    public class Position
+    public struct Position
     {
         public PositionMode PositionMode { get; set; }
         public int Offset { get; set; }

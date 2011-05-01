@@ -51,6 +51,7 @@ namespace RequestReduce.Reducer
             var widthMatch = widthPattern.Matches(originalClassString);
             if (widthMatch.Count > 0)
                 Width = Int32.Parse(widthMatch[widthMatch.Count - 1].Groups["width"].Value);
+
             var heightMatch = heightPattern.Matches(originalClassString);
             if (heightMatch.Count > 0)
                 Height = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
