@@ -1,5 +1,6 @@
 ﻿using RequestReduce.Reducer;
 using Xunit;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -115,6 +116,25 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new BackgroungImageClass(css);
 
                 Assert.Equal(RepeatStyle.YRepeat, testable.Repeat);
+            }
+
+            [Theory,
+            InlineData("50", 50),
+            InlineData("50px", 50),
+            InlineData("50%", null),
+            InlineData("50em", null)]
+            public void WillSetWidth(string statedWidth, int? expectedWidth)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    width: {0};
+}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedWidth));
+
+                Assert.Equal(expectedWidth, testable.Width);
             }
 
         }
