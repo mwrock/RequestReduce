@@ -15,4 +15,4 @@ test-results.html
 *.orig
 .hg
 *.nupkg
-Nuget/Lib
+RequestReduce/Nuget/Lib/*

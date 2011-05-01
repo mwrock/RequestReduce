@@ -123,7 +123,7 @@ namespace RequestReduce.Facts.Reducer
             InlineData("50px", 50),
             InlineData("50%", null),
             InlineData("50em", null)]
-            public void WillSetWidth(string statedWidth, int? expectedWidth)
+            public void WillSetWidthFromWidth(string statedWidth, int? expectedWidth)
             {
                 var css =
     @"
@@ -135,6 +135,63 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new BackgroungImageClass(string.Format(css, statedWidth));
 
                 Assert.Equal(expectedWidth, testable.Width);
+            }
+
+            [Theory,
+            InlineData("50", 50),
+            InlineData("50px", 50),
+            InlineData("50%", null),
+            InlineData("50em", null)]
+            public void WillSetWidthFromMaxWidth(string statedWidth, int? expectedWidth)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    max-width: {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedWidth));
+
+                Assert.Equal(expectedWidth, testable.Width);
+            }
+
+            [Theory,
+InlineData("50", 50),
+InlineData("50px", 50),
+InlineData("50%", null),
+InlineData("50em", null)]
+            public void WillSetHeightFromHeight(string statedHeight, int? expectedHeight)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedHeight));
+
+                Assert.Equal(expectedHeight, testable.Height);
+            }
+
+            [Theory,
+            InlineData("50", 50),
+            InlineData("50px", 50),
+            InlineData("50%", null),
+            InlineData("50em", null)]
+            public void WillSetHeightFromMaxHeight(string statedHeight, int? expectedHeight)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    max-height: {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedHeight));
+
+                Assert.Equal(expectedHeight, testable.Height);
             }
 
         }

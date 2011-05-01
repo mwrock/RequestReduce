@@ -33,6 +33,7 @@ namespace RequestReduce.Reducer
         private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public BackgroungImageClass(string originalClassString)
         {
@@ -50,6 +51,9 @@ namespace RequestReduce.Reducer
             var widthMatch = widthPattern.Matches(originalClassString);
             if (widthMatch.Count > 0)
                 Width = Int32.Parse(widthMatch[widthMatch.Count - 1].Groups["width"].Value);
+            var heightMatch = heightPattern.Matches(originalClassString);
+            if (heightMatch.Count > 0)
+                Height = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
         }
 
         public string OriginalClassString { get; set; }
@@ -58,6 +62,7 @@ namespace RequestReduce.Reducer
         public Position XOffset { get; set; }
         public Position YOffset { get; set; }
         public int? Width { get; set; }
+        public int? Height { get; set; }
 
         public string Render()
         {
