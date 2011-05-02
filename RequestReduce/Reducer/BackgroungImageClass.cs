@@ -31,6 +31,7 @@ namespace RequestReduce.Reducer
     public class BackgroungImageClass
     {
         private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex shortcutOffsetPattern = new Regex(@"background:[\s\w]*url[\s]*\([^\)]*\)[\s\-a-z]+(?<offset1>right|left|bottom|top|center|(?:\-?\d+(%|px)?))(\s+(?<offset2>right|left|bottom|top|center|(?:\-?\d+(%|px)?)))?[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
