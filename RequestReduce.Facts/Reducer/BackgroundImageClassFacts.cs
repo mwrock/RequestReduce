@@ -221,13 +221,13 @@ InlineData("50em", null)]
                 var css =
     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
-    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
 }}";
 
                 var testable = new BackgroungImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
-                Assert.Equal(expectedOffset, testable.XOffset.Offset);
+                Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
             }
 
         }
