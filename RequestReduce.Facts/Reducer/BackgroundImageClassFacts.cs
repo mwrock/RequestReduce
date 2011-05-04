@@ -230,6 +230,28 @@ InlineData("50em", null)]
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
             }
 
+            [Theory,
+            InlineData("top", PositionMode.Direction, Direction.Top),
+            InlineData("bottom", PositionMode.Direction, Direction.Bottom),
+            InlineData("center", PositionMode.Direction, Direction.Center),
+            InlineData("50%", PositionMode.Percent, 50),
+            InlineData("50", PositionMode.Unit, 50),
+            InlineData("50px", PositionMode.Unit, 50),
+            InlineData("50em", PositionMode.Percent, 0)]
+            public void WillSetRightOffsetFromShortcut(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat center {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedOffset));
+
+                Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
+                Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
+            }
+
         }
     }
 }

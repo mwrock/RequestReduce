@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace RequestReduce.Reducer
@@ -31,7 +30,7 @@ namespace RequestReduce.Reducer
     public class BackgroungImageClass
     {
         private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly Regex shortcutOffsetPattern = new Regex(@"background:[\s\w]*url[\s]*\([^\)]*\)[\s\-a-z]+(?<offset1>right|left|bottom|top|center|(?:\-?\d+(%|px|\b)))(\s+(?<offset2>right|left|bottom|top|center|(?:\-?\d+(%|px|\b))))?[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex shortcutOffsetPattern = new Regex(@"background:[\s\w]*url[\s]*\([^\)]*\)[\s]+(?:[\-a-z]+[\s]+)?(?<offset1>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;](?:(?<offset2>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -64,12 +63,15 @@ namespace RequestReduce.Reducer
                 if(offset1.ToLower() == "top" || offset1.ToLower() == "bottom")
                     YOffset = ParseStringOffset(offset1);
                 else
-                {
-                    var offset = new Position();
-                    XOffset = "right,left,center".IndexOf(offset1.ToLower()) > -1
+                    XOffset = ",right,left,center".IndexOf(offset1.ToLower()) > 0
                                   ? ParseStringOffset(offset1)
                                   : ParseNumericOffset(offset1);
-                }
+                if (offset2.ToLower() == "right" || offset2.ToLower() == "left")
+                    XOffset = ParseStringOffset(offset2);
+                else
+                    YOffset = ",top,bottom,center".IndexOf(offset2.ToLower()) > 0
+                                  ? ParseStringOffset(offset2)
+                                  : ParseNumericOffset(offset2);
             }
         }
 
@@ -86,6 +88,8 @@ namespace RequestReduce.Reducer
         private Position ParseNumericOffset(string offsetString)
         {
             var offset = new Position();
+            if (offsetString.Length > 2 && "|in|cm|mm|em|ex|pt|pc".IndexOf(offsetString.Substring(offsetString.Length-2,2).ToLower()) > -1)
+                return offset;
             var trim = 0;
             if (offsetString.EndsWith("%"))
             {
