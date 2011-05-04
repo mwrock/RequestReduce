@@ -62,43 +62,44 @@ namespace RequestReduce.Reducer
                 var offset1 = offsetMatch.Groups["offset1"].Value;
                 var offset2 = offsetMatch.Groups["offset2"].Value;
                 if(offset1.ToLower() == "top" || offset1.ToLower() == "bottom")
-                {
-                    Direction direction;
-                    Enum.TryParse(offset1, true, out direction);
-                    YOffset = new Position(){PositionMode = PositionMode.Direction, Direction = direction};
-                }
+                    YOffset = ParseStringOffset(offset1);
                 else
                 {
                     var offset = new Position();
-                    if("right,left,center".IndexOf(offset1.ToLower()) >-1)
-                    {
-                        offset.PositionMode = PositionMode.Direction;
-                        Direction direction;
-                        Enum.TryParse(offset1, true, out direction);
-                        offset.Direction = direction;
-                        XOffset = offset;
-                    }
-                    else if(offset1.EndsWith("%"))
-                    {
-                        offset.PositionMode = PositionMode.Percent;
-                        int units;
-                        Int32.TryParse(offset1.Substring(0,offset1.Length-1), out units);
-                        offset.Offset = units;
-                        XOffset = offset;
-                    }
-                    else
-                    {
-                        offset.PositionMode = PositionMode.Unit;
-                        var trim = 0;
-                        if (offset1.ToLower().EndsWith("px"))
-                            trim = 2;
-                        int units;
-                        Int32.TryParse(offset1.Substring(0, offset1.Length - trim), out units);
-                        offset.Offset = units;
-                        XOffset = offset;
-                    }
+                    XOffset = "right,left,center".IndexOf(offset1.ToLower()) > -1
+                                  ? ParseStringOffset(offset1)
+                                  : ParseNumericOffset(offset1);
                 }
             }
+        }
+
+        private Position ParseStringOffset(string offsetString)
+        {
+            var offset = new Position();
+            offset.PositionMode = PositionMode.Direction;
+            Direction direction;
+            Enum.TryParse(offsetString, true, out direction);
+            offset.Direction = direction;
+            return offset;
+        }
+
+        private Position ParseNumericOffset(string offsetString)
+        {
+            var offset = new Position();
+            var trim = 0;
+            if (offsetString.EndsWith("%"))
+            {
+                trim = 1;
+                offset.PositionMode = PositionMode.Percent;
+            }
+            else 
+                offset.PositionMode = PositionMode.Unit;
+            if (offsetString.ToLower().EndsWith("px"))
+                trim = 2;
+            int units;
+            Int32.TryParse(offsetString.Substring(0, offsetString.Length - trim), out units);
+            offset.Offset = units;
+            return offset;
         }
 
         public string OriginalClassString { get; set; }
