@@ -216,7 +216,7 @@ InlineData("50em", null)]
             InlineData("50", PositionMode.Unit, 50),
             InlineData("50px", PositionMode.Unit, 50),
             InlineData("50em", PositionMode.Percent, 0)]
-            public void WillSetLeftOffsetFromShortcut(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            public void WillSetXOffsetFromShortcut(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
             {
                 var css =
     @"
@@ -238,12 +238,100 @@ InlineData("50em", null)]
             InlineData("50", PositionMode.Unit, 50),
             InlineData("50px", PositionMode.Unit, 50),
             InlineData("50em", PositionMode.Percent, 0)]
-            public void WillSetRightOffsetFromShortcut(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            public void WillSetYOffsetFromShortcut(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
             {
                 var css =
     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat center {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedOffset));
+
+                Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
+                Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
+            }
+
+            [Theory,
+            InlineData("left", PositionMode.Direction, Direction.Left),
+            InlineData("right", PositionMode.Direction, Direction.Right),
+            InlineData("center", PositionMode.Direction, Direction.Center),
+            InlineData("50%", PositionMode.Percent, 50),
+            InlineData("50", PositionMode.Unit, 50),
+            InlineData("50px", PositionMode.Unit, 50),
+            InlineData("50em", PositionMode.Percent, 0)]
+            public void WillSetSecondOffsetAsXOffsetFromShortcutWhenFirstOffsetIsTop(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat top {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedOffset));
+
+                Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
+                Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
+            }
+
+            [Theory,
+            InlineData("left", PositionMode.Direction, Direction.Left),
+            InlineData("right", PositionMode.Direction, Direction.Right),
+            InlineData("center", PositionMode.Direction, Direction.Center),
+            InlineData("50%", PositionMode.Percent, 50),
+            InlineData("50", PositionMode.Unit, 50),
+            InlineData("50px", PositionMode.Unit, 50),
+            InlineData("50em", PositionMode.Percent, 0)]
+            public void WillSetSecondOffsetAsXOffsetFromShortcutWhenFirstOffsetIsBottom(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat bottom {0};
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedOffset));
+
+                Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
+                Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
+            }
+
+            [Theory,
+            InlineData("top", PositionMode.Direction, Direction.Top),
+            InlineData("bottom", PositionMode.Direction, Direction.Bottom),
+            InlineData("center", PositionMode.Direction, Direction.Center),
+            InlineData("50%", PositionMode.Percent, 50),
+            InlineData("50", PositionMode.Unit, 50),
+            InlineData("50px", PositionMode.Unit, 50),
+            InlineData("50em", PositionMode.Percent, 0)]
+            public void WillSetFirstOffsetAsYOffsetFromShortcutWhenSecondOffsetIsLeft(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0} left;
+}}";
+
+                var testable = new BackgroungImageClass(string.Format(css, statedOffset));
+
+                Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
+                Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
+            }
+
+            [Theory,
+            InlineData("top", PositionMode.Direction, Direction.Top),
+            InlineData("bottom", PositionMode.Direction, Direction.Bottom),
+            InlineData("center", PositionMode.Direction, Direction.Center),
+            InlineData("50%", PositionMode.Percent, 50),
+            InlineData("50", PositionMode.Unit, 50),
+            InlineData("50px", PositionMode.Unit, 50),
+            InlineData("50em", PositionMode.Percent, 0)]
+            public void WillSetFirstOffsetAsYOffsetFromShortcutWhenSecondOffsetIsRight(string statedOffset, PositionMode expectedPositionMode, int expectedOffset)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0} right;
 }}";
 
                 var testable = new BackgroungImageClass(string.Format(css, statedOffset));

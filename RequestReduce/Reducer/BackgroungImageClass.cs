@@ -60,18 +60,25 @@ namespace RequestReduce.Reducer
             {
                 var offset1 = offsetMatch.Groups["offset1"].Value;
                 var offset2 = offsetMatch.Groups["offset2"].Value;
-                if(offset1.ToLower() == "top" || offset1.ToLower() == "bottom")
-                    YOffset = ParseStringOffset(offset1);
+                var flip = false;
+                if (offset1.ToLower() == "top" || offset1.ToLower() == "bottom" || offset2.ToLower() == "right" || offset2.ToLower() == "left")
+                    flip = true;
+                var offset1Position = ",top,bottom,right,left,center".IndexOf(offset1.ToLower()) > 0
+                                               ? ParseStringOffset(offset1)
+                                               : ParseNumericOffset(offset1);
+                var offset2Position = ",top,bottom,right,left,center".IndexOf(offset2.ToLower()) > 0
+                                               ? ParseStringOffset(offset2)
+                                               : ParseNumericOffset(offset2);
+                if (flip)
+                {
+                    XOffset = offset2Position;
+                    YOffset = offset1Position;
+                }
                 else
-                    XOffset = ",right,left,center".IndexOf(offset1.ToLower()) > 0
-                                  ? ParseStringOffset(offset1)
-                                  : ParseNumericOffset(offset1);
-                if (offset2.ToLower() == "right" || offset2.ToLower() == "left")
-                    XOffset = ParseStringOffset(offset2);
-                else
-                    YOffset = ",top,bottom,center".IndexOf(offset2.ToLower()) > 0
-                                  ? ParseStringOffset(offset2)
-                                  : ParseNumericOffset(offset2);
+                {
+                    XOffset = offset1Position;
+                    YOffset = offset2Position;
+                }
             }
         }
 
