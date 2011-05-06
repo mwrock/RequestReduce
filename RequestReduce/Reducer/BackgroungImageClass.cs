@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace RequestReduce.Reducer
@@ -55,29 +56,32 @@ namespace RequestReduce.Reducer
             var heightMatch = heightPattern.Matches(originalClassString);
             if (heightMatch.Count > 0)
                 Height = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
-            var offsetMatch = offsetPattern.Match(originalClassString);
-            if (offsetMatch.Success)
+            var offsetMatches = offsetPattern.Matches(originalClassString);
+            if (offsetMatches.Count > 0)
             {
-                var offset1 = offsetMatch.Groups["offset1"].Value;
-                var offset2 = offsetMatch.Groups["offset2"].Value;
-                var flip = false;
-                if (offset1.ToLower() == "top" || offset1.ToLower() == "bottom" || offset2.ToLower() == "right" || offset2.ToLower() == "left")
-                    flip = true;
-                var offset1Position = ",top,bottom,right,left,center".IndexOf(offset1.ToLower()) > 0
-                                               ? ParseStringOffset(offset1)
-                                               : ParseNumericOffset(offset1);
-                var offset2Position = ",top,bottom,right,left,center".IndexOf(offset2.ToLower()) > 0
-                                               ? ParseStringOffset(offset2)
-                                               : ParseNumericOffset(offset2);
-                if (flip)
+                foreach (Match offsetMatch in offsetMatches)
                 {
-                    XOffset = offset2Position;
-                    YOffset = offset1Position;
-                }
-                else
-                {
-                    XOffset = offset1Position;
-                    YOffset = offset2Position;
+                    var offset1 = offsetMatch.Groups["offset1"].Value;
+                    var offset2 = offsetMatch.Groups["offset2"].Value;
+                    var flip = false;
+                    if (offset1.ToLower() == "top" || offset1.ToLower() == "bottom" || offset2.ToLower() == "right" || offset2.ToLower() == "left")
+                        flip = true;
+                    var offset1Position = ",top,bottom,right,left,center".IndexOf(offset1.ToLower()) > 0
+                                                   ? ParseStringOffset(offset1)
+                                                   : ParseNumericOffset(offset1);
+                    var offset2Position = ",top,bottom,right,left,center".IndexOf(offset2.ToLower()) > 0
+                                                   ? ParseStringOffset(offset2)
+                                                   : ParseNumericOffset(offset2);
+                    if (flip)
+                    {
+                        if(offset2Position.PositionMode != PositionMode.Percent || offset2Position.Offset > 0) XOffset = offset2Position;
+                        if(offset1Position.PositionMode != PositionMode.Percent || offset1Position.Offset > 0) YOffset = offset1Position;
+                    }
+                    else
+                    {
+                        if(offset1Position.PositionMode != PositionMode.Percent || offset1Position.Offset > 0) XOffset = offset1Position;
+                        if(offset2Position.PositionMode != PositionMode.Percent || offset2Position.Offset > 0) YOffset = offset2Position;
+                    }
                 }
             }
         }
