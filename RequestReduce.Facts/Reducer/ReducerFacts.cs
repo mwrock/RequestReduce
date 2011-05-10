@@ -93,28 +93,32 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>())).Returns("css");
-                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new string[] { "image1", "image2" });
+                var image1 = new BackgroungImageClass("") {ImageUrl = "image1"};
+                var image2 = new BackgroungImageClass("") { ImageUrl = "image2" };
+                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new BackgroungImageClass[] { image1, image2});
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
-                testable.Mock<ISpriteManager>().Verify(x => x.Add("image1"), Times.Once());
+                testable.Mock<ISpriteManager>().Verify(x => x.Add(image1), Times.Once());
             }
 
             [Fact]
             public void WillInjectSpritesToCss()
             {
                 var testable = new TestableReducer();
+                var image1 = new BackgroungImageClass("") {ImageUrl = "image1"};
+                var image2 = new BackgroungImageClass("") { ImageUrl = "image2" };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>())).Returns("css");
-                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new string[] { "image1", "image2" });
+                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls("css")).Returns(new BackgroungImageClass[] { image1, image2 });
                 var sprite1 = new Sprite(-100, "sprite1");
                 var sprite2 = new Sprite(-100, "sprite2");
-                testable.Mock<ISpriteManager>().Setup(x => x.Add("image1")).Returns(sprite1);
-                testable.Mock<ISpriteManager>().Setup(x => x.Add("image2")).Returns(sprite2);
+                testable.Mock<ISpriteManager>().Setup(x => x.Add(image1)).Returns(sprite1);
+                testable.Mock<ISpriteManager>().Setup(x => x.Add(image2)).Returns(sprite2);
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
-                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), "image1", sprite1), Times.Once());
-                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), "image2", sprite2), Times.Once());
+                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), image1, sprite1), Times.Once());
+                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), image2, sprite2), Times.Once());
             }
 
         }

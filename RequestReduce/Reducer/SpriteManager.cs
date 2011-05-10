@@ -29,17 +29,17 @@ namespace RequestReduce.Reducer
             get { return spriteList.ContainsKey(imageUrl) ? spriteList[imageUrl] : null; }
         }
 
-        public virtual Sprite Add(string imageUrl)
+        public virtual Sprite Add(BackgroungImageClass imageUrl)
         {
-            if (spriteList.ContainsKey(imageUrl))
-                return spriteList[imageUrl];
+            if (spriteList.ContainsKey(imageUrl.ImageUrl))
+                return spriteList[imageUrl.ImageUrl];
             var currentPositionToReturn = SpriteContainer.Width;
             var currentUrlToReturn = SpriteContainer.Url;
-            SpriteContainer.AddImage(webClientWrapper.DownloadBytes(imageUrl));
+            SpriteContainer.AddImage(webClientWrapper.DownloadBytes(imageUrl.ImageUrl));
             if (SpriteContainer.Size >= configWrapper.SpriteSizeLimit)
                 Flush();
             var sprite = new Sprite(currentPositionToReturn, currentUrlToReturn);
-            spriteList.Add(imageUrl, sprite);
+            spriteList.Add(imageUrl.ImageUrl, sprite);
             return sprite;
         }
 

@@ -36,7 +36,7 @@ namespace RequestReduce.Facts.Reducer
                 var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
-                Assert.True(result.Contains("http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png"));
+                Assert.True(result.Any(x => x.ImageUrl == "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png"));
             }
 
             [Theory,
@@ -165,7 +165,7 @@ namespace RequestReduce.Facts.Reducer
 }";
                 var sprite = new Sprite(120, "spriteUrl");
 
-                var result = testable.ClassUnderTest.InjectSprite(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png", sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroungImageClass(css), sprite);
 
                 Assert.Equal(expected, result);
             }

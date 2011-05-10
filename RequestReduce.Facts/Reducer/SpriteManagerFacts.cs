@@ -48,7 +48,7 @@ namespace RequestReduce.Facts.Reducer
                 var imageBytes = new byte[0];
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("imageUrl")).Returns(imageBytes);
 
-                testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
 
                 testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(imageBytes), Times.Exactly(1));
             }
@@ -59,7 +59,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(20);
 
-                var result = testable.ClassUnderTest.Add("imageUrl2");
+                var result = testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl2" });
 
                 Assert.Equal(20, result.Position);
             }
@@ -71,7 +71,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
-                testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
 
                 testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(1));
             }
@@ -80,9 +80,9 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnPreviousSpriteIfUrlWasSprited()
             {
                 var testable = new TestableSpriteManager();
-                var sprite = testable.ClassUnderTest.Add("image1");
+                var sprite = testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "image1" });
 
-                var result = testable.ClassUnderTest.Add("image1");
+                var result = testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "image1" });
 
                 Assert.Equal(sprite, result);
             }
@@ -93,9 +93,9 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 var imageBytes = new byte[0];
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("imageUrl")).Returns(imageBytes);
-                testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
 
-                testable.ClassUnderTest.Add("imageUrl");
+                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
 
                 testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(imageBytes), Times.Exactly(1));
             }
@@ -161,7 +161,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillRetrieveSpriteByOriginalUrl()
             {
                 var testable = new TestableSpriteManager();
-                var sprite = testable.ClassUnderTest.Add("image1");
+                var sprite = testable.ClassUnderTest.Add(new BackgroungImageClass("") {ImageUrl = "image1"});
 
                 var result = testable.ClassUnderTest["image1"];
 
