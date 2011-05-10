@@ -102,6 +102,8 @@ namespace RequestReduce.Reducer
         private Position ParseNumericOffset(string offsetString)
         {
             var offset = new Position();
+            if (string.IsNullOrEmpty(offsetString))
+                return offset;
             if (offsetString.Length > 2 && "|in|cm|mm|em|ex|pt|pc".IndexOf(offsetString.Substring(offsetString.Length-2,2).ToLower()) > -1)
                 return offset;
             var trim = 0;

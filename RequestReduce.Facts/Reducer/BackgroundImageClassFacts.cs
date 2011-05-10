@@ -226,6 +226,24 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(100, testable.YOffset.Offset);
             }
 
+            [Fact]
+            public void WillSetflippedOffsets()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 50 60;
+    background-position: top;
+}}";
+
+                var testable = new BackgroungImageClass(css);
+
+                Assert.Equal(PositionMode.Unit, testable.XOffset.PositionMode);
+                Assert.Equal(50, testable.XOffset.Offset);
+                Assert.Equal(PositionMode.Direction, testable.YOffset.PositionMode);
+                Assert.Equal(Direction.Top, testable.YOffset.Direction);
+            }
+
         }
 
         public class ShortcutOffsets
