@@ -11,17 +11,20 @@ namespace RequestReduce.Reducer
     public class SpriteContainer : ISpriteContainer
     {
         private readonly IList<Bitmap> images = new List<Bitmap>();
+        private readonly IWebClientWrapper webClientWrapper;
 
-        public SpriteContainer(IConfigurationWrapper configWrapper)
+        public SpriteContainer(IConfigurationWrapper configWrapper, IWebClientWrapper webClientWrapper)
         {
+            this.webClientWrapper = webClientWrapper;
             Url = string.Format("{0}/{1}.png", configWrapper.SpriteDirectory, Guid.NewGuid().ToString());
         }
 
-        public void AddImage (byte[] image)
+        public void AddImage (BackgroungImageClass image)
         {
-            var bitmap = new Bitmap(new MemoryStream(image));
+            var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
+            var bitmap = new Bitmap(new MemoryStream(imageBytes));
             images.Add(bitmap);
-            Size += image.Length;
+            Size += imageBytes.Length;
             Width += bitmap.Width;
             if (Height < bitmap.Height) Height = bitmap.Height;
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
+using RequestReduce.Utilities;
 using Xunit;
 
 namespace RequestReduce.Facts.Reducer
@@ -63,9 +64,15 @@ namespace RequestReduce.Facts.Reducer
             public void SizeWillBeAggregateOfAddedImages()
             {
                 var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass(""){ImageUrl = "url1"};
+                var image2 = new BackgroungImageClass("") { ImageUrl = "url2" };
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
+                    testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(testable.Image15X17);
-                testable.ClassUnderTest.AddImage(testable.Image18X18);
+                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image2);
 
                 Assert.Equal(testable.Image15X17.Length + testable.Image18X18.Length, testable.ClassUnderTest.Size);
             }
@@ -74,9 +81,15 @@ namespace RequestReduce.Facts.Reducer
             public void WidthWillBeAggregateOfAddedImageWidths()
             {
                 var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1" };
+                var image2 = new BackgroungImageClass("") { ImageUrl = "url2" };
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
+                    testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(testable.Image15X17);
-                testable.ClassUnderTest.AddImage(testable.Image18X18);
+                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image2);
 
                 Assert.Equal(33, testable.ClassUnderTest.Width);
             }
@@ -85,9 +98,15 @@ namespace RequestReduce.Facts.Reducer
             public void HeightWillBeTheTallestOfAddedImages()
             {
                 var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1" };
+                var image2 = new BackgroungImageClass("") { ImageUrl = "url2" };
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
+                    testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(testable.Image15X17);
-                testable.ClassUnderTest.AddImage(testable.Image18X18);
+                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image2);
 
                 Assert.Equal(18, testable.ClassUnderTest.Height);
             }
@@ -101,9 +120,15 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteContainer();
                 var bitmap1 = new Bitmap(new MemoryStream(testable.Image15X17));
                 var bitmap2 = new Bitmap(new MemoryStream(testable.Image18X18));
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1" };
+                var image2 = new BackgroungImageClass("") { ImageUrl = "url2" };
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
+                    testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(testable.Image15X17);
-                testable.ClassUnderTest.AddImage(testable.Image18X18);
+                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image2);
 
                 Assert.Contains(bitmap1, testable.ClassUnderTest, new BitmapPixelComparer());
                 Assert.Contains(bitmap2, testable.ClassUnderTest, new BitmapPixelComparer());

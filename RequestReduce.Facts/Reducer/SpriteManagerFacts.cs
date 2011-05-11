@@ -9,6 +9,7 @@ using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -31,7 +32,6 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableSpriteManager()
             {
-                Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes(It.IsAny<string>())).Returns(new byte[0]);
                 Mock<HttpContextBase>().Setup(x => x.Server.MapPath(It.IsAny<string>())).Returns((string s) => s);
                 Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1000);
                 Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(
@@ -45,12 +45,11 @@ namespace RequestReduce.Facts.Reducer
             public void WillAddImageToSpriteContainer()
             {
                 var testable = new TestableSpriteManager();
-                var imageBytes = new byte[0];
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("imageUrl")).Returns(imageBytes);
+                var image = new BackgroungImageClass(""){ImageUrl = ""};
 
-                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(image);
 
-                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(imageBytes), Times.Exactly(1));
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Exactly(1));
             }
 
             [Fact]
@@ -87,17 +86,30 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(sprite, result);
             }
 
+            [Theory,
+            InlineData(40, 40, 0, 50, 40, 0),
+            InlineData(40, 40, 0, 40, 50, 0),
+            InlineData(40, 40, 0, 40, 40, -10)]
+            public void WillTreatSameUrlwithDifferentWidthHeightOrXOffsetAsDifferentImagesAndReturnDistinctSprite(int image1Width, int image1Height, int image1XOffset, int image2Width, int image2Height, int image2XOffset)
+            {
+                var testable = new TestableSpriteManager();
+                var sprite = testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "image1", Width = image1Width, Height = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
+
+                var result = testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "image1", Width = image2Width, Height = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
+
+                Assert.NotEqual(sprite, result);
+            }
+
             [Fact]
             public void WillNotAddImageToSpriteContainerIfImageAlreadySprited()
             {
                 var testable = new TestableSpriteManager();
-                var imageBytes = new byte[0];
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("imageUrl")).Returns(imageBytes);
-                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
+                var image = new BackgroungImageClass("") { ImageUrl = "" };
+                testable.ClassUnderTest.Add(image);
 
-                testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(image);
 
-                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(imageBytes), Times.Exactly(1));
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Exactly(1));
             }
         }
 
@@ -161,9 +173,10 @@ namespace RequestReduce.Facts.Reducer
             public void WillRetrieveSpriteByOriginalUrl()
             {
                 var testable = new TestableSpriteManager();
-                var sprite = testable.ClassUnderTest.Add(new BackgroungImageClass("") {ImageUrl = "image1"});
+                var image = new BackgroungImageClass("") { ImageUrl = "" };
+                var sprite = testable.ClassUnderTest.Add(image);
 
-                var result = testable.ClassUnderTest["image1"];
+                var result = testable.ClassUnderTest[image];
 
                 Assert.Equal(sprite, result);
             }
