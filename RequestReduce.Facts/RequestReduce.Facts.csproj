@@ -71,6 +71,7 @@
     <Compile Include="Filter\ResponseFilterFacts.cs" />
     <Compile Include="Filter\ResponseTransformerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reducer\ImageTestHelper.cs" />
     <Compile Include="Reducer\ReducerFacts.cs" />
     <Compile Include="Reducer\SpriteContainerFacts.cs" />
     <Compile Include="Reducer\SpriteManagerFacts.cs" />

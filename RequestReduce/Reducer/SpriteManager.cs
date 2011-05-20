@@ -59,6 +59,7 @@ namespace RequestReduce.Reducer
 
                 spriteWriter.Save(httpContext.Server.MapPath(SpriteContainer.Url), "image/png");
             }
+            SpriteContainer.Dispose();
             SpriteContainer = new SpriteContainer(configWrapper, webClientWrapper);
             return;
         }

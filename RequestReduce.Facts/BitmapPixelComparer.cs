@@ -12,16 +12,17 @@ namespace RequestReduce.Facts
             
         }
 
-        public BitmapPixelComparer(bool WhiteIsTransparent)
+        public BitmapPixelComparer(bool whiteIsTransparent)
         {
-            this.whiteIsTransparent = WhiteIsTransparent;
+            this.whiteIsTransparent = whiteIsTransparent;
         }
 
         public bool Equals(Bitmap bitmap1, Bitmap bitmap2)
         {
             if (bitmap1.PhysicalDimension != bitmap2.PhysicalDimension)
                 return false;
-            for(var x=0; x < bitmap1.Width; x++)
+
+            for (var x = 0; x < bitmap1.Width; x++)
             {
                 for (var y = 0; y < bitmap1.Height; y++)
                 {

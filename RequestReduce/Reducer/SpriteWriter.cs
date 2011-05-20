@@ -44,8 +44,6 @@ namespace RequestReduce.Reducer
         {
             if (drawingSurface != null)
                 drawingSurface.Dispose();
-            if (SpriteImage != null)
-                SpriteImage.Dispose();
         }
     }
 }

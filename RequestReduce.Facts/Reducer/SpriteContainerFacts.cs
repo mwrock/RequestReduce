@@ -6,6 +6,7 @@ using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -94,6 +95,36 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(33, testable.ClassUnderTest.Width);
             }
 
+            [Theory,
+            InlineData(10),
+            InlineData(20)]
+            public void WidthWillBeSizeOfBackgroundClassIfDifferentThanImageWidth(int width)
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1", Width = width};
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                Assert.Equal(width, testable.ClassUnderTest.Width);
+            }
+
+            [Theory,
+            InlineData(10),
+            InlineData(20)]
+            public void HeightWillBeSizeOfBackgroundClassIfDifferentThanImageHeight(int height)
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1", Height = height };
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                Assert.Equal(height, testable.ClassUnderTest.Height);
+            }
+
             [Fact]
             public void HeightWillBeTheTallestOfAddedImages()
             {
@@ -130,8 +161,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.AddImage(image1);
                 testable.ClassUnderTest.AddImage(image2);
 
-                Assert.Contains(bitmap1, testable.ClassUnderTest, new BitmapPixelComparer());
-                Assert.Contains(bitmap2, testable.ClassUnderTest, new BitmapPixelComparer());
+                Assert.Contains(bitmap1.GraphicsImage(), testable.ClassUnderTest, new BitmapPixelComparer(true));
+                Assert.Contains(bitmap2.GraphicsImage(), testable.ClassUnderTest, new BitmapPixelComparer());
             }
         }
     }

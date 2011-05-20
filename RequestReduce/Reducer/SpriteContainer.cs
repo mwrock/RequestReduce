@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 
@@ -22,7 +23,15 @@ namespace RequestReduce.Reducer
         public void AddImage (BackgroungImageClass image)
         {
             var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
-            var bitmap = new Bitmap(new MemoryStream(imageBytes));
+            Bitmap bitmap = null;
+            using (var originalBitmap = new Bitmap(new MemoryStream(imageBytes)))
+            {
+                using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height, null))
+                {
+                    writer.WriteImage(originalBitmap);
+                    bitmap = writer.SpriteImage;
+                }
+            }
             images.Add(bitmap);
             Size += imageBytes.Length;
             Width += bitmap.Width;
@@ -41,6 +50,11 @@ namespace RequestReduce.Reducer
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Dispose()
+        {
+            images.ToList().ForEach(x => x.Dispose());
         }
     }
 }

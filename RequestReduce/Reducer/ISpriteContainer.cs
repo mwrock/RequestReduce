@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
 namespace RequestReduce.Reducer
 {
-    public interface ISpriteContainer : IEnumerable<Bitmap>
+    public interface ISpriteContainer : IEnumerable<Bitmap>, IDisposable
     {
         void AddImage (BackgroungImageClass image);
         string Url { get; set; }

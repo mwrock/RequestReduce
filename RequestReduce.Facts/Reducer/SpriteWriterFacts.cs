@@ -13,8 +13,13 @@ namespace RequestReduce.Facts.Reducer
             {
                 
             }
-            public static Bitmap Image15X17 = new Bitmap(new MemoryStream(File.ReadAllBytes("testimages\\delete.png")));
-            public static Bitmap Image18X18 = new Bitmap(new MemoryStream(File.ReadAllBytes("testimages\\emptyStar.png")));
+            public static Bitmap Image15X17 = CreateFileImage("testimages\\delete.png");
+            public static Bitmap Image18X18 = CreateFileImage("testimages\\emptyStar.png");
+
+            private static Bitmap CreateFileImage(string path)
+            {
+                return new Bitmap(new MemoryStream(File.ReadAllBytes(path)));
+            }
         }
 
         public class Ctor
@@ -39,7 +44,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.WriteImage(TestableSpriteWriter.Image18X18);
 
-                Assert.Equal(TestableSpriteWriter.Image18X18, testable.SpriteImage.Clone(new Rectangle(15, 0, 18, 18), TestableSpriteWriter.Image18X18.PixelFormat), new BitmapPixelComparer(true));
+                Assert.Equal(TestableSpriteWriter.Image18X18.GraphicsImage(), testable.SpriteImage.Clone(new Rectangle(15, 0, 18, 18), TestableSpriteWriter.Image18X18.PixelFormat), new BitmapPixelComparer(true));
             }
         }
     }
