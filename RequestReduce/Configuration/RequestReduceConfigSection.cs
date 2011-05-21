@@ -5,12 +5,21 @@ namespace RequestReduce.Configuration
 {
     public class RequestReduceConfigSection : ConfigurationSection
     {
-        [ConfigurationProperty("spriteDirectory")]
-        public string SpriteDirectory
+        [ConfigurationProperty("spriteVirtualPath")]
+        public string SpriteVirtualPath
         {
             get
             {
-                return base["spriteDirectory"].ToString();
+                return base["spriteVirtualPath"].ToString();
+            }
+        }
+
+        [ConfigurationProperty("spritePhysicalPath")]
+        public string SpritePhysicalPath
+        {
+            get
+            {
+                return base["spritePhysicalPath"].ToString();
             }
         }
 

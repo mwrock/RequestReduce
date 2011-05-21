@@ -14,10 +14,12 @@ namespace RequestReduce.Reducer
         private readonly IList<Bitmap> images = new List<Bitmap>();
         private readonly IWebClientWrapper webClientWrapper;
 
-        public SpriteContainer(IConfigurationWrapper configWrapper, IWebClientWrapper webClientWrapper)
+        public SpriteContainer(IRRConfiguration config, IWebClientWrapper webClientWrapper)
         {
             this.webClientWrapper = webClientWrapper;
-            Url = string.Format("{0}/{1}.png", configWrapper.SpriteDirectory, Guid.NewGuid().ToString());
+            var guid = Guid.NewGuid().ToString();
+            Url = string.Format("{0}/{1}.png", config.SpriteVirtualPath, guid);
+            FilePath = string.Format("{0}\\{1}.png", config.SpritePhysicalPath, guid);
         }
 
         public void AddImage (BackgroungImageClass image)
@@ -48,6 +50,7 @@ namespace RequestReduce.Reducer
             if (Height < bitmap.Height) Height = bitmap.Height;
         }
 
+        public string FilePath { get; set; }
         public string Url { get; set; }
         public int Size { get; private set; }
         public int Width { get; private set; }

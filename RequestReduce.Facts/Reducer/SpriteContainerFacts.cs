@@ -29,7 +29,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnSpriteUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableSpriteContainer();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteDirectory).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest;
 
@@ -40,7 +40,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnSpriteUrlWithAGuidName()
             {
                 var testable = new TestableSpriteContainer();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteDirectory).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 Guid guid;
 
                 var result = testable.ClassUnderTest;

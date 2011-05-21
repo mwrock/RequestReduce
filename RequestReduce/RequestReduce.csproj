@@ -56,7 +56,7 @@
     <Compile Include="Filter\IReductionRepository.cs" />
     <Compile Include="Filter\ReductionRepository.cs" />
     <Compile Include="Filter\ResponseTransformer.cs" />
-    <Compile Include="Configuration\ConfigurationWrapper.cs" />
+    <Compile Include="Configuration\RRConfiguration.cs" />
     <Compile Include="Reducer\BackgroungImageClass.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />

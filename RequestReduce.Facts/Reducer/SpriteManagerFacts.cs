@@ -17,10 +17,11 @@ namespace RequestReduce.Facts.Reducer
     {
         class SpriteManagerToTest: SpriteManager
         {
-            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, configWrapper, httpContext, spriteWriterFactory)
+            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, config, spriteWriterFactory)
             {
                 MockSpriteContainer = new Mock<ISpriteContainer>();
                 MockSpriteContainer.Setup(x => x.Url).Returns(SpriteContainer.Url);
+                MockSpriteContainer.Setup(x => x.FilePath).Returns(SpriteContainer.FilePath);
                 MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
                 base.SpriteContainer = MockSpriteContainer.Object;
             }
@@ -32,8 +33,7 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableSpriteManager()
             {
-                Mock<HttpContextBase>().Setup(x => x.Server.MapPath(It.IsAny<string>())).Returns((string s) => s);
-                Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1000);
+                Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1000);
                 Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(
                     new Mock<ISpriteWriter>().Object);
             }
@@ -67,7 +67,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillFlushWhenSizePassesThreshold()
             {
                 var testable = new TestableSpriteManager();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteSizeLimit).Returns(1);
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Add(new BackgroungImageClass("") { ImageUrl = "imageUrl" });
@@ -146,7 +146,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveWriterToContainerUrlUsingPngMimeType()
             {
                 var testable = new TestableSpriteManager();
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Url).Returns("myurl");
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.FilePath).Returns("myurl");
                 var mockWriter = new Mock<ISpriteWriter>();
                 testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
 

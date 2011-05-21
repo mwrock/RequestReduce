@@ -15,7 +15,6 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableReducer()
             {
-                Mock<HttpContextBase>().Setup(x => x.Server.MapPath(It.IsAny<string>())).Returns((string s) => s);
             }
         }
 
@@ -25,7 +24,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedCssUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableReducer();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteDirectory).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
@@ -36,7 +35,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedCssUrlWithAGuidName()
             {
                 var testable = new TestableReducer();
-                testable.Mock<IConfigurationWrapper>().Setup(x => x.SpriteDirectory).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 Guid guid;
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
@@ -75,7 +74,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                testable.Mock<IFileWrapper>().Verify(x => x.Save("min", result), Times.Once());
+                testable.Mock<IFileWrapper>().Verify(x => x.Save("min", result.Replace("/","\\")), Times.Once());
             }
 
             [Fact]

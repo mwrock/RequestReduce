@@ -10,18 +10,16 @@ namespace RequestReduce.Reducer
     {
         protected ISpriteContainer SpriteContainer = null;
         private IWebClientWrapper webClientWrapper = null;
-        private IConfigurationWrapper configWrapper = null;
-        private readonly HttpContextBase httpContext;
+        private IRRConfiguration config = null;
         private readonly ISpriteWriterFactory spriteWriterFactory;
         private IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
 
-        public SpriteManager(IWebClientWrapper webClientWrapper, IConfigurationWrapper configWrapper, HttpContextBase httpContext, ISpriteWriterFactory spriteWriterFactory)
+        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory)
         {
             this.webClientWrapper = webClientWrapper;
             this.spriteWriterFactory = spriteWriterFactory;
-            this.httpContext = httpContext;
-            this.configWrapper = configWrapper;
-            SpriteContainer = new SpriteContainer(configWrapper, webClientWrapper);
+            this.config = config;
+            SpriteContainer = new SpriteContainer(config, webClientWrapper);
         }
 
         public virtual Sprite this[BackgroungImageClass image]
@@ -41,7 +39,7 @@ namespace RequestReduce.Reducer
             var currentPositionToReturn = SpriteContainer.Width;
             var currentUrlToReturn = SpriteContainer.Url;
             SpriteContainer.AddImage(image);
-            if (SpriteContainer.Size >= configWrapper.SpriteSizeLimit)
+            if (SpriteContainer.Size >= config.SpriteSizeLimit)
                 Flush();
             var sprite = new Sprite(currentPositionToReturn, currentUrlToReturn);
             spriteList.Add(imageKey, sprite);
@@ -57,10 +55,10 @@ namespace RequestReduce.Reducer
                     spriteWriter.WriteImage(image);
                 }
 
-                spriteWriter.Save(httpContext.Server.MapPath(SpriteContainer.Url), "image/png");
+                spriteWriter.Save(SpriteContainer.FilePath, "image/png");
             }
             SpriteContainer.Dispose();
-            SpriteContainer = new SpriteContainer(configWrapper, webClientWrapper);
+            SpriteContainer = new SpriteContainer(config, webClientWrapper);
             return;
         }
 
