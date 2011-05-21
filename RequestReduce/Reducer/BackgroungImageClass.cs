@@ -130,9 +130,13 @@ namespace RequestReduce.Reducer
         public int? Width { get; set; }
         public int? Height { get; set; }
 
-        public string Render()
+        public string Render(Sprite sprite)
         {
-            return null;
+            var newClass = OriginalClassString.ToLower().Replace(ImageUrl.ToLower(), sprite.Url);
+            newClass = newClass.Replace("}",
+                                        string.Format("background-position: -{0} 0;}}",
+                                                      sprite.Position));
+            return newClass;
         }
     }
 }

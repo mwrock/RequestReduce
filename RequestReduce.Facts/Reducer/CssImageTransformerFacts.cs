@@ -149,21 +149,26 @@ namespace RequestReduce.Facts.Reducer
 
         public class InjectSprite
         {
-            [Fact(Skip = "refactoring")]
-            public void WillReplaceFormerUrlWithSpriteUrl()
+            [Fact]
+            public void WillReplaceFormerUrlWithSpriteUrlAndPositionOffset()
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
                     @"
-.LocalNavigation {    
+.localnavigation {    
     background-image: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png');
+    background-repeat: no-repeat;
+    width: 50;
 }";
                 var expected =
     @"
-.LocalNavigation {    
+.localnavigation {    
     background-image: url('spriteUrl');
-}";
+    background-repeat: no-repeat;
+    width: 50;
+background-position: -120 0;}";
                 var sprite = new Sprite(120, "spriteUrl");
+
 
                 var result = testable.ClassUnderTest.InjectSprite(css, new BackgroungImageClass(css), sprite);
 
