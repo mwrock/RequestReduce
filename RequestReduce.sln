@@ -10,6 +10,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		BuildScript.ps1 = BuildScript.ps1
 	EndProjectSection
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RequestReduce.SampleWeb", "RequestReduce.SampleWeb\", "{7232660D-66C1-45AA-B1E6-6D01A0150810}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/RequestReduce.SampleWeb"
+		Debug.AspNetCompiler.PhysicalPath = "RequestReduce.SampleWeb\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\RequestReduce.SampleWeb\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/RequestReduce.SampleWeb"
+		Release.AspNetCompiler.PhysicalPath = "RequestReduce.SampleWeb\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\RequestReduce.SampleWeb\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "21788"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +45,10 @@ Global
 		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
