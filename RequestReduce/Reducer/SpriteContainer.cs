@@ -28,7 +28,17 @@ namespace RequestReduce.Reducer
             {
                 using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height, null))
                 {
-                    writer.WriteImage(originalBitmap);
+                    var width = image.Width ?? originalBitmap.Width;
+                    if (width > originalBitmap.Width)
+                        width = originalBitmap.Width;
+                    var height = image.Height ?? originalBitmap.Height;
+                    if (height > originalBitmap.Height)
+                        height = originalBitmap.Height;
+
+                    writer.WriteImage(
+                        originalBitmap.Clone(
+                            new Rectangle(Math.Abs(image.XOffset.Offset), Math.Abs(image.YOffset.Offset),
+                                          width, height), originalBitmap.PixelFormat));
                     bitmap = writer.SpriteImage;
                 }
             }
