@@ -125,6 +125,20 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillNotClipLeftEdgeOfBackgroundClassWhenOffsetIsPositive()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1", Width = 5, XOffset = new Position() { PositionMode = PositionMode.Percent, Offset = 50 } };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+                var bitMap = new Bitmap(new MemoryStream(testable.Image15X17));
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                Assert.Equal(bitMap.Clone(new Rectangle(0, 0, 5, 17), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
             public void WillClipUpperEdgeOfBackgroundClassWhenOffsetIsNegative()
             {
                 var testable = new TestableSpriteContainer();
@@ -136,6 +150,20 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.AddImage(image1);
 
                 Assert.Equal(bitMap.Clone(new Rectangle(0, 5, 15, 5), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
+            public void WillNotClipUpperEdgeOfBackgroundClassWhenOffsetIsPositive()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroungImageClass("") { ImageUrl = "url1", Height = 5, YOffset = new Position() { PositionMode = PositionMode.Percent, Offset = 50 } };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+                var bitMap = new Bitmap(new MemoryStream(testable.Image15X17));
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                Assert.Equal(bitMap.Clone(new Rectangle(0, 0, 15, 5), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new BitmapPixelComparer(true));
             }
 
             [Theory,

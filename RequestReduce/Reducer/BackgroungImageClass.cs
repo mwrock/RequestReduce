@@ -133,9 +133,12 @@ namespace RequestReduce.Reducer
         public string Render(Sprite sprite)
         {
             var newClass = OriginalClassString.ToLower().Replace(ImageUrl.ToLower(), sprite.Url);
+            var yOffset = YOffset.Direction.ToString();
+            if (YOffset.PositionMode == PositionMode.Unit)
+                yOffset = "0";
             newClass = newClass.Replace("}",
-                                        string.Format("background-position: -{0} 0;}}",
-                                                      sprite.Position));
+                                        string.Format("background-position: -{0}px {1};}}",
+                                                      sprite.Position, yOffset));
             return newClass;
         }
     }

@@ -12,7 +12,7 @@ namespace RequestReduce.Configuration
 
     public class RRConfiguration : IRRConfiguration
     {
-        private RequestReduceConfigSection config = ConfigurationManager.GetSection("requestReduce") as RequestReduceConfigSection;
+        private RequestReduceConfigSection config = ConfigurationManager.GetSection("RequestReduce") as RequestReduceConfigSection;
 
         public string SpriteVirtualPath
         {
@@ -26,7 +26,10 @@ namespace RequestReduce.Configuration
 
         public int SpriteSizeLimit
         {
-            get { return config == null ? 0 : config.SpriteSizeLimit; }
+            get { 
+                var val =  config == null ? 0 : config.SpriteSizeLimit;
+                return val == 0 ? 50000 : val;
+            }
         }
     }
 }

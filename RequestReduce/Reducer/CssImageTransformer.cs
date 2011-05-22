@@ -17,8 +17,9 @@ namespace RequestReduce.Reducer
                 if (imageClass.ImageUrl != null)
                 {
                     if (imageClass.Width > 0 && imageClass.Repeat == RepeatStyle.NoRepeat 
-                        && ((imageClass.XOffset.PositionMode == PositionMode.Direction && imageClass.XOffset.Direction == Direction.Left) 
-                        || (imageClass.XOffset.PositionMode != PositionMode.Direction && imageClass.XOffset.Offset <= 0)))
+                        && ((imageClass.XOffset.PositionMode == PositionMode.Direction && imageClass.XOffset.Direction == Direction.Left)
+                        || (imageClass.XOffset.PositionMode != PositionMode.Direction && imageClass.XOffset.Offset <= 0)) && ((imageClass.YOffset.PositionMode == PositionMode.Direction && imageClass.YOffset.Direction == Direction.Top)
+                        || (imageClass.YOffset.PositionMode != PositionMode.Direction && imageClass.YOffset.Offset <= 0)))
                             urls.Add(imageClass);
                 }
             }

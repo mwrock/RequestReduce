@@ -156,17 +156,15 @@ namespace RequestReduce.Facts.Reducer
                 var css =
                     @"
 .localnavigation {    
-    background-image: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png');
-    background-repeat: no-repeat;
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 -30px;
     width: 50;
 }";
                 var expected =
     @"
 .localnavigation {    
-    background-image: url('spriteUrl');
-    background-repeat: no-repeat;
+    background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
-background-position: -120 0;}";
+background-position: -120px 0;}";
                 var sprite = new Sprite(120, "spriteUrl");
 
 

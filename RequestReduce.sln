@@ -13,6 +13,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RequestReduce.SampleWeb", "RequestReduce.SampleWeb\", "{7232660D-66C1-45AA-B1E6-6D01A0150810}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		ProjectReferences = "{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}|RequestReduce.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/RequestReduce.SampleWeb"
 		Debug.AspNetCompiler.PhysicalPath = "RequestReduce.SampleWeb\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\RequestReduce.SampleWeb\"
@@ -27,7 +28,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RequestReduce.SampleWeb", "
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "21788"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject

@@ -36,11 +36,10 @@ namespace RequestReduce.Reducer
                     var height = image.Height ?? originalBitmap.Height;
                     if (height > originalBitmap.Height)
                         height = originalBitmap.Height;
+                    var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0;
+                    var y = image.YOffset.Offset < 0 ? Math.Abs(image.YOffset.Offset) : 0;
 
-                    writer.WriteImage(
-                        originalBitmap.Clone(
-                            new Rectangle(Math.Abs(image.XOffset.Offset), Math.Abs(image.YOffset.Offset),
-                                          width, height), originalBitmap.PixelFormat));
+                    writer.WriteImage(originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat));
                     bitmap = writer.SpriteImage;
                 }
             }
