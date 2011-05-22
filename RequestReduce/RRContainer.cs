@@ -29,6 +29,7 @@ namespace RequestReduce
             {
                 y.TheCallingAssembly();
                 y.ExcludeNamespace("RequestReduce.Utilities");
+                y.ExcludeNamespace("RequestReduce.Configuration");
                 y.ExcludeType<ReductionRepository>();
                 y.ExcludeType<ReducingQueue>();
                 y.WithDefaultConventions();
@@ -38,6 +39,7 @@ namespace RequestReduce
             {
                 y.TheCallingAssembly();
                 y.IncludeNamespace("RequestReduce.Utilities");
+                y.IncludeNamespace("RequestReduce.Configuration");
                 y.With(new SingletonConvention());
             }
             ));
@@ -53,12 +55,7 @@ namespace RequestReduce
 
         public static IContainer Current
         {
-            get 
-            { 
-                if(container == null)
-                    container = InitContainer();
-                return container;
-            }
+            get { return container ?? (container = InitContainer()); }
             set { container = value; }
         }
 

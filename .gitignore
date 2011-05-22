@@ -16,3 +16,5 @@ test-results.html
 .hg
 *.nupkg
 RequestReduce/Nuget/Lib/*
+RequestReduce.SampleWeb/RRContent/*
+PrecompiledWeb/*
