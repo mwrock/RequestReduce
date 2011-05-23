@@ -37,6 +37,7 @@ namespace RequestReduce.Reducer
             var mergedCss = new StringBuilder();
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));
+            spriteManager.Flush();
             fileWrapper.Save(minifier.Minify(mergedCss.ToString()), fileName);
             return virtualfileName;
         }
@@ -50,7 +51,6 @@ namespace RequestReduce.Reducer
                 var sprite = spriteManager.Add(imageUrl);
                 cssContent = cssImageTransformer.InjectSprite(cssContent, imageUrl, sprite);
             }
-            spriteManager.Flush();
             return cssContent;
         }
 

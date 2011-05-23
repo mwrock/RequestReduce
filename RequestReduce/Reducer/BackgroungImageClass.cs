@@ -30,7 +30,7 @@ namespace RequestReduce.Reducer
 
     public class BackgroungImageClass
     {
-        private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w#]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex offsetPattern = new Regex(@"background(?:-position)?:(?:.*?)(?<offset1>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;](?:(?<offset2>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -136,8 +136,10 @@ namespace RequestReduce.Reducer
             var yOffset = YOffset.Direction.ToString();
             if (YOffset.PositionMode == PositionMode.Unit)
                 yOffset = "0";
+            if (YOffset.PositionMode == PositionMode.Unit && YOffset.Offset > 0)
+                yOffset = string.Format("{0}px", YOffset.Offset);
             newClass = newClass.Replace("}",
-                                        string.Format("background-position: -{0}px {1};}}",
+                                        string.Format(";background-position: -{0}px {1};}}",
                                                       sprite.Position, yOffset));
             return newClass;
         }

@@ -59,7 +59,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillReturnNegativelyPositionedBackgroundImages()
+            public void WillReturnNegativelyXPositionedBackgroundImages()
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
@@ -74,8 +74,46 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(1, result.Count());
             }
 
+            [Theory,
+            InlineDataAttribute(-20),
+            InlineDataAttribute(0),
+            InlineDataAttribute(20)]
+            public void WillReturnUnitYPositionedBackgroundImages(int y)
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    string.Format(@"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat -150px {0}px;
+    width: 20;
+}}", y);
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+
+                Assert.Equal(1, result.Count());
+            }
+
+            [Theory,
+            InlineDataAttribute("10%"),
+            InlineDataAttribute("center"),
+            InlineDataAttribute("bottom")]
+            public void WillNotReturnYPositionedBackgroundImagesNotTopPositionedAndOfPercentOrDirection(string y)
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    string.Format(@"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat -150px {0};
+    width: 20;
+}}", y);
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+
+                Assert.Equal(0, result.Count());
+            }
+
             [Fact]
-            public void WillReturnZeroPositionedBackgroundImages()
+            public void WillReturnZeroPositionedXBackgroundImages()
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
@@ -164,7 +202,7 @@ namespace RequestReduce.Facts.Reducer
 .localnavigation {    
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
-background-position: -120px 0;}";
+;background-position: -120px 0;}";
                 var sprite = new Sprite(120, "spriteUrl");
 
 
