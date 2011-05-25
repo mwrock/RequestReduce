@@ -1,0 +1,12 @@
+﻿.RatingStar
+{
+    background: url('http://localhost:8888/images/Star.png') no-repeat;
+    width: 18px;
+    height: 18px;
+}
+.Up
+{
+    background: url('http://localhost:8888/images/up.png') no-repeat;
+    width: 40px;
+    height: 40px;
+}

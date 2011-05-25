@@ -48,14 +48,17 @@ namespace RequestReduce.Reducer
 
         public virtual void Flush()
         {
-            using (var spriteWriter = spriteWriterFactory.CreateWriter(SpriteContainer.Width, SpriteContainer.Height))
+            if(SpriteContainer.Size > 0)
             {
-                foreach (var image in SpriteContainer)
+                using (var spriteWriter = spriteWriterFactory.CreateWriter(SpriteContainer.Width, SpriteContainer.Height))
                 {
-                    spriteWriter.WriteImage(image);
-                }
+                    foreach (var image in SpriteContainer)
+                    {
+                        spriteWriter.WriteImage(image);
+                    }
 
-                spriteWriter.Save(SpriteContainer.FilePath, "image/png");
+                    spriteWriter.Save(SpriteContainer.FilePath, "image/png");
+                }
             }
             SpriteContainer.Dispose();
             SpriteContainer = new SpriteContainer(config, webClientWrapper);

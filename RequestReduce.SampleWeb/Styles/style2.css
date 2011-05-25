@@ -1,0 +1,12 @@
+﻿.Rss
+{
+    background: url('http://localhost:8888/images/rss.png') no-repeat;
+    width: 17px;
+    height: 17px;
+}
+.Search
+{
+    background: url('http://localhost:8888/images/search.png') no-repeat;
+    width: 22px;
+    height: 22px;
+}

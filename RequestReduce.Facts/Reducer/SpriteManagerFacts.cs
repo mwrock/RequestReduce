@@ -116,11 +116,23 @@ namespace RequestReduce.Facts.Reducer
         public class Flush
         {
             [Fact]
+            public void WillNotCreateImageWriterIfContainerIsEmpty()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(0);
+
+                testable.ClassUnderTest.Flush();
+
+                testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>()), Times.Never());
+            }
+
+            [Fact]
             public void WillCreateImageWriterWithCorrectDimensions()
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(1);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
 
@@ -135,6 +147,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
                 var mockWriter = new Mock<ISpriteWriter>();
                 testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
 
@@ -149,6 +162,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.FilePath).Returns("myurl");
                 var mockWriter = new Mock<ISpriteWriter>();
                 testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
 
