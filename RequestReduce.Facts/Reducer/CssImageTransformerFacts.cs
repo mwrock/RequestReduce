@@ -206,7 +206,31 @@ namespace RequestReduce.Facts.Reducer
                 var sprite = new Sprite(120, "spriteUrl");
 
 
-                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroungImageClass(css), sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css), sprite);
+
+                Assert.Equal(expected, result);
+            }
+
+            [Fact]
+            public void WillDefaultYOffsetToZero()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.localnavigation {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat;
+    width: 50;
+}";
+                var expected =
+    @"
+.localnavigation {    
+    background: url('spriteUrl') no-repeat;
+    width: 50;
+;background-position: -120px 0;}";
+                var sprite = new Sprite(120, "spriteUrl");
+
+
+                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css), sprite);
 
                 Assert.Equal(expected, result);
             }

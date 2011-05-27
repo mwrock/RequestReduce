@@ -6,7 +6,7 @@ namespace RequestReduce.Reducer
 {
     public interface ISpriteContainer : IEnumerable<Bitmap>, IDisposable
     {
-        void AddImage (BackgroungImageClass image);
+        void AddImage (BackgroundImageClass image);
         string FilePath { get; set; }
         string Url { get; set; }
         int Size { get; }

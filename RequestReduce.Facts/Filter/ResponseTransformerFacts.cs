@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Moq;
 using RequestReduce.Filter;
+using RequestReduce.Reducer;
 using Xunit;
 
 namespace RequestReduce.Facts.Filter
@@ -57,6 +59,24 @@ namespace RequestReduce.Facts.Filter
                 var result = testable.ClassUnderTest.Transform(transform);
 
                 Assert.Equal(transform, result);
+            }
+
+            [Fact]
+            public void WillQueueUrlsIfRepoReturnsNull()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(
+                    x => x.FindReduction("http://server/Me.css::http://server/Me2.css::"));
+
+                testable.ClassUnderTest.Transform(transform);
+
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue("http://server/Me.css::http://server/Me2.css::"), Times.Once());
             }
 
         }

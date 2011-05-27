@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Web;
+using RequestReduce.Configuration;
 using RequestReduce.Filter;
 
 namespace RequestReduce
@@ -22,9 +23,11 @@ namespace RequestReduce
         {
             if (!context.Items.Contains(CONTEXT_KEY))
             {
+                var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+                config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
                 var response = context.Response;
 
-                if (response.ContentType == "text/html")
+                if (response.ContentType == "text/html" && context.Request.QueryString["RRFilter"] != "disabled")
                     response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
 
                 context.Items.Add(CONTEXT_KEY, new object());

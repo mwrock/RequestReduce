@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
+using System.Web;
 
 namespace RequestReduce.Configuration
 {
@@ -17,12 +19,13 @@ namespace RequestReduce.Configuration
         private string spritePhysicalPath;
         private int spriteSizeLimit;
 
-        public RRConfiguration()
+        public RRConfiguration(HttpContextBase httpContextBase)
         {
             var val = config == null ? 0 : config.SpriteSizeLimit;
             spriteSizeLimit =  val == 0 ? 50000 : val;
-            spritePhysicalPath = config == null ? null : config.SpritePhysicalPath;
             spriteVirtualPath = config == null ? null : config.SpriteVirtualPath;
+            spritePhysicalPath = config == null ? null : config.SpritePhysicalPath;
+            CreatePhysicalPath();
         }
 
         public string SpriteVirtualPath
@@ -34,13 +37,23 @@ namespace RequestReduce.Configuration
         public string SpritePhysicalPath
         {
             get { return spritePhysicalPath; }
-            set { spritePhysicalPath = value; }
+            set 
+            { 
+                spritePhysicalPath = value;
+                CreatePhysicalPath();
+            }
         }
 
         public int SpriteSizeLimit
         {
             get { return spriteSizeLimit; }
             set { spriteSizeLimit = value; }
+        }
+
+        private void CreatePhysicalPath()
+        {
+            if (!string.IsNullOrEmpty(spritePhysicalPath) && !Directory.Exists(spritePhysicalPath))
+                Directory.CreateDirectory(spritePhysicalPath);
         }
     }
 }

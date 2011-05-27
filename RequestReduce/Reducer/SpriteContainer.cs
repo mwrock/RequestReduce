@@ -22,7 +22,7 @@ namespace RequestReduce.Reducer
             FilePath = string.Format("{0}\\{1}.png", config.SpritePhysicalPath, guid);
         }
 
-        public void AddImage (BackgroungImageClass image)
+        public void AddImage (BackgroundImageClass image)
         {
             var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
             Bitmap bitmap = null;

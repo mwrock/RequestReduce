@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using RequestReduce.Reducer;
 
 namespace RequestReduce.Filter
 {
@@ -16,10 +17,12 @@ namespace RequestReduce.Filter
         private readonly IReductionRepository reductionRepository;
         private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex UrlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly IReducingQueue reducingQueue;
 
-        public ResponseTransformer(IReductionRepository reductionRepository)
+        public ResponseTransformer(IReductionRepository reductionRepository, IReducingQueue reducingQueue)
         {
             this.reductionRepository = reductionRepository;
+            this.reducingQueue = reducingQueue;
         }
 
         public string Transform(string preTransform)
@@ -59,6 +62,7 @@ namespace RequestReduce.Filter
                     }
                     return preTransform;
                 }
+                reducingQueue.Enqueue(urls.ToString());
             }
             return preTransform;
         }

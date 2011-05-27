@@ -28,7 +28,7 @@ namespace RequestReduce.Reducer
         Bottom
     }
 
-    public class BackgroungImageClass
+    public class BackgroundImageClass
     {
         private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w#]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex offsetPattern = new Regex(@"background(?:-position)?:(?:[^;]*?)(?<offset1>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;](?:(?<offset2>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -36,7 +36,7 @@ namespace RequestReduce.Reducer
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public BackgroungImageClass(string originalClassString)
+        public BackgroundImageClass(string originalClassString)
         {
             OriginalClassString = originalClassString;
             var match = imageUrlPattern.Match(originalClassString);
@@ -134,10 +134,11 @@ namespace RequestReduce.Reducer
         {
             var newClass = OriginalClassString.ToLower().Replace(ImageUrl.ToLower(), sprite.Url);
             var yOffset = YOffset.Direction.ToString();
-            if (YOffset.PositionMode == PositionMode.Unit)
+            if (YOffset.PositionMode != PositionMode.Direction)
                 yOffset = "0";
             if (YOffset.PositionMode == PositionMode.Unit && YOffset.Offset > 0)
                 yOffset = string.Format("{0}px", YOffset.Offset);
+
             newClass = newClass.Replace("}",
                                         string.Format(";background-position: -{0}px {1};}}",
                                                       sprite.Position, yOffset));

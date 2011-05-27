@@ -22,7 +22,7 @@ namespace RequestReduce
             container.Configure(x =>
                                     {
                                         x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
-                                        x.For<IReductionRepository>().Singleton().Use<ReductionRepository>().Ctor<IDictionary>("dictionary").Is(new Hashtable());
+                                        x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                                         x.For<HttpContextBase>().Use(() => HttpContext.Current == null ? null : new HttpContextWrapper(HttpContext.Current));
                                     });
             container.Configure(x => x.Scan(y =>
@@ -30,8 +30,8 @@ namespace RequestReduce
                 y.TheCallingAssembly();
                 y.ExcludeNamespace("RequestReduce.Utilities");
                 y.ExcludeNamespace("RequestReduce.Configuration");
-                y.ExcludeType<ReductionRepository>();
-                y.ExcludeType<ReducingQueue>();
+                y.ExcludeType<IReductionRepository>();
+                y.ExcludeType<IReducingQueue>();
                 y.WithDefaultConventions();
             }
             ));

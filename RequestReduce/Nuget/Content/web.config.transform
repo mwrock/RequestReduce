@@ -1,7 +1,11 @@
 ﻿<configuration>
-	<system.webServer>
+  <configSections>
+    <section name="RequestReduce" type="RequestReduce.Configuration.RequestReduceConfigSection, RequestReduce"/>
+  </configSections>
+  <RequestReduce spriteVirtualPath="/RRContent" />
+  <system.webServer>
 		<modules runAllManagedModulesForAllRequests="true">
-            <add name="RequestReduce" type="RequestReduce.RequestReduceModule, RequestReduce"/>
+      <add name="RequestReduce" type="RequestReduce.RequestReduceModule, RequestReduce"/>
 		</modules>
 	</system.webServer>
 </configuration>

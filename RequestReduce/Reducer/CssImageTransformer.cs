@@ -8,12 +8,12 @@ namespace RequestReduce.Reducer
     {
         private static readonly Regex classPattern = new Regex("\\{[^\\}]+\\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-        public IEnumerable<BackgroungImageClass> ExtractImageUrls(string cssContent)
+        public IEnumerable<BackgroundImageClass> ExtractImageUrls(string cssContent)
         {
-            var urls = new List<BackgroungImageClass>();
+            var urls = new List<BackgroundImageClass>();
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
-                var imageClass = new BackgroungImageClass(classMatch.ToString());
+                var imageClass = new BackgroundImageClass(classMatch.ToString());
                 if (imageClass.ImageUrl != null)
                 {
                     if (imageClass.Width > 0 && imageClass.Repeat == RepeatStyle.NoRepeat 
@@ -26,7 +26,7 @@ namespace RequestReduce.Reducer
             return urls;
         }
 
-        public string InjectSprite(string originalCss, BackgroungImageClass image, Sprite sprite)
+        public string InjectSprite(string originalCss, BackgroundImageClass image, Sprite sprite)
         {
             return originalCss.Replace(image.OriginalClassString, image.Render(sprite));
         }

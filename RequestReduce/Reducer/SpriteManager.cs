@@ -22,7 +22,7 @@ namespace RequestReduce.Reducer
             SpriteContainer = new SpriteContainer(config, webClientWrapper);
         }
 
-        public virtual Sprite this[BackgroungImageClass image]
+        public virtual Sprite this[BackgroundImageClass image]
         {
             get
             {
@@ -31,7 +31,7 @@ namespace RequestReduce.Reducer
             }
         }
 
-        public virtual Sprite Add(BackgroungImageClass image)
+        public virtual Sprite Add(BackgroundImageClass image)
         {
             var imageKey = new ImageMetadata(image);
             if (spriteList.ContainsKey(imageKey))
@@ -67,7 +67,7 @@ namespace RequestReduce.Reducer
 
         private struct ImageMetadata
         {
-            public ImageMetadata(BackgroungImageClass image) : this()
+            public ImageMetadata(BackgroundImageClass image) : this()
             {
                 Url = image.ImageUrl;
                 Width = image.Width ?? 0;

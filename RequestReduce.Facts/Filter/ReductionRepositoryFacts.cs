@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Moq;
 using RequestReduce.Filter;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
-using StructureMap;
 using Xunit;
 
 namespace RequestReduce.Facts.Filter
 {
     public class ReductionRepositoryFacts
     {
-        private class TestableReductionRepository : Testable<ReductionRepository>
+        class FakeReductionRepository : ReductionRepository
+        {
+            public IDictionary Dictionary { get { return dictionary; } }
+        }
+
+        private class TestableReductionRepository : Testable<FakeReductionRepository>
         {
             public TestableReductionRepository()
             {
@@ -29,9 +31,7 @@ namespace RequestReduce.Facts.Filter
             {
                 var testable = new TestableReductionRepository();
                 var md5 = Hasher.Hash("urls");
-                var dic = new Hashtable();
-                dic.Add(md5, "newUrl");
-                testable.Inject<IDictionary>(dic);
+                testable.ClassUnderTest.Dictionary.Add(md5, "newUrl");
 
                 var result = testable.ClassUnderTest.FindReduction("urls");
 
@@ -43,31 +43,39 @@ namespace RequestReduce.Facts.Filter
             {
                 var testable = new TestableReductionRepository();
                 var md5 = Hasher.Hash("urlssss");
-                var dic = new Hashtable();
-                dic.Add(md5, "newUrl");
-                testable.Inject<IDictionary>(dic);
+                testable.ClassUnderTest.Dictionary.Add(md5, "newUrl");
 
                 var result = testable.ClassUnderTest.FindReduction("urls");
 
                 Assert.Null(result);
             }
+        }
 
+        public class AddReduction
+        {
             [Fact]
-            public void WillQueueUrlsIfNotInRepo()
+            public void WillAddHashedOriginalUrlsAsKey()
             {
                 var testable = new TestableReductionRepository();
                 var md5 = Hasher.Hash("urlssss");
-                var dic = new Hashtable();
-                dic.Add(md5, "newUrl");
-                testable.Inject<IDictionary>(dic);
-                var queue = new Mock<IReducingQueue>();
-                RRContainer.Current = new Container(x => x.For<IReducingQueue>().Use(queue.Object));
 
-                var result = testable.ClassUnderTest.FindReduction("urls");
+                testable.ClassUnderTest.AddReduction("urlssss","urls");
 
-                queue.Verify(x => x.Enqueue("urls"), Times.Once());
-                RRContainer.Current = null;
+                Assert.Equal("urls", testable.ClassUnderTest.Dictionary[md5]);
             }
+
+            [Fact]
+            public void WillNotAddDuplicateKeys()
+            {
+                var testable = new TestableReductionRepository();
+                var md5 = Hasher.Hash("urlssss");
+                testable.ClassUnderTest.Dictionary.Add(md5, "urls");
+
+                testable.ClassUnderTest.AddReduction("urlssss", "urls");
+
+                Assert.Equal(1, testable.ClassUnderTest.Dictionary.Keys.Cast<Guid>().Where(x => x == md5).Count());
+            }
+
         }
     }
 }
