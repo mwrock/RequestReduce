@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using RequestReduce.Filter;
 
@@ -11,6 +12,7 @@ namespace RequestReduce.Reducer
         protected ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
         protected Thread backgroundThread;
         protected bool isRunning = true;
+        protected Action<Exception> CaptureErrorAction;
 
         public ReducingQueue(IReducer reducer, IReductionRepository reductionRepository)
         {
@@ -25,6 +27,16 @@ namespace RequestReduce.Reducer
             queue.Enqueue(urls);
         }
 
+        public int Count
+        {
+            get { return queue.Count; }
+        }
+
+        public void CaptureError(Action<Exception> captureAction)
+        {
+            CaptureErrorAction = captureAction;
+        }
+
         private void ProcessQueue()
         {
             while(isRunning)
@@ -36,11 +48,19 @@ namespace RequestReduce.Reducer
 
         protected void ProcessQueuedItem()
         {
-            string urlsToReduce = null;
-            if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
+            try
             {
-                var reducedUrl = reducer.Process(urlsToReduce);
-                reductionRepository.AddReduction(urlsToReduce, reducedUrl);
+                string urlsToReduce = null;
+                if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
+                {
+                    var reducedUrl = reducer.Process(urlsToReduce);
+                    reductionRepository.AddReduction(urlsToReduce, reducedUrl);
+                }
+            }
+            catch(Exception e)
+            {
+                if (CaptureErrorAction != null)
+                    CaptureErrorAction(e);
             }
         }
     }

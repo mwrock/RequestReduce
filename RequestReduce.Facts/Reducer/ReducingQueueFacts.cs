@@ -107,5 +107,37 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IReducer>().Verify(x => x.Process("url"), Times.Once());
             }
         }
+
+        public class Count
+        {
+            [Fact]
+            public void WillReturnTheCountOfTheBaseQueue()
+            {
+                var testable = new TestableReducingQueue();
+                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.Enqueue("url");
+
+                var result = testable.ClassUnderTest.Count;
+
+                Assert.Equal(2, result);
+            }
+        }
+
+        public class CaptureErrors
+        {
+            [Fact]
+            public void WillCaptureErrorsIfAnErrorActionIsRegistered()
+            {
+                var testable = new TestableReducingQueue();
+                Exception error = null;
+                testable.ClassUnderTest.CaptureError(x => error= x);
+                testable.Mock<IReducer>().Setup(x => x.Process("url")).Throws(new ApplicationException());
+                testable.ClassUnderTest.Enqueue("url");
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                Assert.True(error is ApplicationException);
+            }
+        }
     }
 }

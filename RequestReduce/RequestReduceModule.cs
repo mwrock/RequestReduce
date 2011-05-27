@@ -3,6 +3,7 @@ using System.IO;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Filter;
+using RequestReduce.Reducer;
 
 namespace RequestReduce
 {
@@ -32,6 +33,16 @@ namespace RequestReduce
 
                 context.Items.Add(CONTEXT_KEY, new object());
             }
+        }
+
+        public static int QueueCount
+        {
+            get { return RRContainer.Current.GetInstance<IReducingQueue>().Count; }
+        }
+
+        public static void CaptureError(Action<Exception> captureAction)
+        {
+            RRContainer.Current.GetInstance<IReducingQueue>().CaptureError(captureAction);
         }
     }
 }

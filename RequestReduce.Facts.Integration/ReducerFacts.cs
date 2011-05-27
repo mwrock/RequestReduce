@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using Xunit;
@@ -40,7 +42,7 @@ namespace RequestReduce.Facts.Integration
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
 
-            var result = reducer.Process("http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css");
+            reducer.Process("http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css");
 
             Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath).Single(x => x.EndsWith(".png")));
         }
