@@ -1,8 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using RequestReduce.Reducer;
 
-namespace RequestReduce.Filter
+namespace RequestReduce.Module
 {
     public interface IResponseTransformer
     {

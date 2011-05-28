@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using RequestReduce.Filter;
+using RequestReduce.Reducer;
 
-namespace RequestReduce.Reducer
+namespace RequestReduce.Module
 {
     public class ReducingQueue : IReducingQueue
     {

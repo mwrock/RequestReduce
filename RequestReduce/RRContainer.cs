@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
-using RequestReduce.Filter;
+using RequestReduce.Module;
 using RequestReduce.Reducer;
 using StructureMap;
 using StructureMap.Configuration.DSL;

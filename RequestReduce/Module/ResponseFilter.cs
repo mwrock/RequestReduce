@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace RequestReduce.Filter
+namespace RequestReduce.Module
 {
     public class ResponseFilter : AbstractFilter
     {

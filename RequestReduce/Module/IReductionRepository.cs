@@ -1,4 +1,4 @@
-﻿namespace RequestReduce.Filter
+﻿namespace RequestReduce.Module
 {
     public interface IReductionRepository
     {

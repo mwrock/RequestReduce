@@ -52,20 +52,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\RequestReduceConfigSection.cs" />
-    <Compile Include="Filter\AbstractFilter.cs" />
-    <Compile Include="Filter\IReductionRepository.cs" />
-    <Compile Include="Filter\ReductionRepository.cs" />
-    <Compile Include="Filter\ResponseTransformer.cs" />
+    <Compile Include="Module\AbstractFilter.cs" />
+    <Compile Include="Module\IReductionRepository.cs" />
+    <Compile Include="Module\ReductionRepository.cs" />
+    <Compile Include="Module\ResponseTransformer.cs" />
     <Compile Include="Configuration\RRConfiguration.cs" />
     <Compile Include="Reducer\BackgroundImageClass.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />
-    <Compile Include="Reducer\IMinifier.cs" />
+    <Compile Include="Utilities\IMinifier.cs" />
     <Compile Include="Reducer\IReducer.cs" />
     <Compile Include="Reducer\ISpriteContainer.cs" />
     <Compile Include="Reducer\ISpriteManager.cs" />
     <Compile Include="Reducer\ISpriteWriter.cs" />
-    <Compile Include="Reducer\Minifier.cs" />
+    <Compile Include="Utilities\Minifier.cs" />
     <Compile Include="Reducer\Sprite.cs" />
     <Compile Include="Reducer\SpriteContainer.cs" />
     <Compile Include="Reducer\SpriteWriter.cs" />
@@ -74,12 +74,12 @@
     <Compile Include="Utilities\FileWrapper.cs" />
     <Compile Include="Utilities\IFileWrapper.cs" />
     <Compile Include="Reducer\SpriteManager.cs" />
-    <Compile Include="Reducer\IReducingQueue.cs" />
+    <Compile Include="Module\IReducingQueue.cs" />
     <Compile Include="Reducer\Reducer.cs" />
-    <Compile Include="Reducer\ReducingQueue.cs" />
-    <Compile Include="RequestReduceModule.cs" />
+    <Compile Include="Module\ReducingQueue.cs" />
+    <Compile Include="Module\RequestReduceModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Filter\ResponseFilter.cs" />
+    <Compile Include="Module\ResponseFilter.cs" />
     <Compile Include="RRContainer.cs" />
     <Compile Include="Utilities\Hasher.cs" />
     <Compile Include="Utilities\WebClientWrapper.cs" />

@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
-using RequestReduce.Filter;
+using RequestReduce.Module;
 using StructureMap;
 using Xunit;
 using System.IO;

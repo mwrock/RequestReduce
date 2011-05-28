@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.Ajax.Utilities;
+﻿using Microsoft.Ajax.Utilities;
 
-namespace RequestReduce.Reducer
+namespace RequestReduce.Utilities
 {
     public class Minifier : IMinifier
     {

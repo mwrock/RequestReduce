@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
-using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 
-namespace RequestReduce.Filter
+namespace RequestReduce.Module
 {
     public class ReductionRepository : IReductionRepository
     {

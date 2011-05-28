@@ -5,7 +5,7 @@
   <RequestReduce spriteVirtualPath="/RRContent" />
   <system.webServer>
 		<modules runAllManagedModulesForAllRequests="true">
-      <add name="RequestReduce" type="RequestReduce.RequestReduceModule, RequestReduce"/>
+      <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce"/>
 		</modules>
 	</system.webServer>
 </configuration>

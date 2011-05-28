@@ -1,4 +1,4 @@
-﻿namespace RequestReduce.Reducer
+﻿namespace RequestReduce.Utilities
 {
     public interface IMinifier
     {

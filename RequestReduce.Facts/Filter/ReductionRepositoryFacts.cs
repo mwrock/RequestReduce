@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Moq;
-using RequestReduce.Filter;
+using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;

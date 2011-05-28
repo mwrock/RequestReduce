@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Moq;
-using RequestReduce.Filter;
+using RequestReduce.Module;
 using Xunit;
 
 namespace RequestReduce.Facts.Filter

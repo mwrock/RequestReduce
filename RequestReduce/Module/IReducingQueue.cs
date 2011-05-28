@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RequestReduce.Reducer
+namespace RequestReduce.Module
 {
     public interface IReducingQueue
     {

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Web;
 using RequestReduce.Configuration;
-using RequestReduce.Filter;
-using RequestReduce.Reducer;
 
-namespace RequestReduce
+namespace RequestReduce.Module
 {
     public class RequestReduceModule : IHttpModule
     {

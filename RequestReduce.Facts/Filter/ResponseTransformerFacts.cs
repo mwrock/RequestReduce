@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Moq;
-using RequestReduce.Filter;
+using RequestReduce.Module;
 using RequestReduce.Reducer;
 using Xunit;
 

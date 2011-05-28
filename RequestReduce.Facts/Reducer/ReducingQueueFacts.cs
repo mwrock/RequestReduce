@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Threading;
 using Moq;
-using RequestReduce.Filter;
+using RequestReduce.Module;
 using RequestReduce.Reducer;
 using Xunit;
 
