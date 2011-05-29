@@ -17,13 +17,13 @@ namespace RequestReduce.Facts.Integration
         public void WillReduceToOneCss()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
-            new WebClient().DownloadString("http://localhost:8888/Local.cshtml");
+            new WebClient().DownloadString("http://localhost:8888/Local.html");
             var watch = new Stopwatch();
             watch.Start();
             while(watch.ElapsedMilliseconds < 5000)
                 Thread.Sleep(0);
 
-            var response = new WebClient().DownloadString("http://localhost:8888/Local.cshtml");
+            var response = new WebClient().DownloadString("http://localhost:8888/Local.html");
 
             Assert.Equal(1, cssPattern.Matches(response).Count);
         }
