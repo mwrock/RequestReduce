@@ -17,12 +17,11 @@ namespace RequestReduce.Module
             return null;
         }
 
-        public void AddReduction(string originalUrlList, string reducedUrl)
+        public void AddReduction(Guid key, string reducedUrl)
         {
-            var hash = Hasher.Hash(originalUrlList);
             try
             {
-                dictionary.Add(hash, reducedUrl);
+                dictionary.Add(key, reducedUrl);
             }
             catch (ArgumentException)
             {

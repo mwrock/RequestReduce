@@ -8,6 +8,6 @@ namespace RequestReduce.Reducer
         Bitmap SpriteImage { get; }
         int OffsetWidth { get; }
         void WriteImage(Bitmap image);
-        void Save(string fileName, string mimeType);
+        void Save(string url, string mimeType);
     }
 }

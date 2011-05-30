@@ -13,13 +13,14 @@ namespace RequestReduce.Reducer
         private IRRConfiguration config = null;
         private readonly ISpriteWriterFactory spriteWriterFactory;
         private IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
+        private int spriteIndex = 1;
 
         public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory)
         {
             this.webClientWrapper = webClientWrapper;
             this.spriteWriterFactory = spriteWriterFactory;
             this.config = config;
-            SpriteContainer = new SpriteContainer(config, webClientWrapper);
+            SpriteContainer = new SpriteContainer(webClientWrapper);
         }
 
         public virtual Sprite this[BackgroundImageClass image]
@@ -37,11 +38,10 @@ namespace RequestReduce.Reducer
             if (spriteList.ContainsKey(imageKey))
                 return spriteList[imageKey];
             var currentPositionToReturn = SpriteContainer.Width;
-            var currentUrlToReturn = SpriteContainer.Url;
             SpriteContainer.AddImage(image);
             if (SpriteContainer.Size >= config.SpriteSizeLimit)
                 Flush();
-            var sprite = new Sprite(currentPositionToReturn, currentUrlToReturn);
+            var sprite = new Sprite(currentPositionToReturn, GetSpriteUrl());
             spriteList.Add(imageKey, sprite);
             return sprite;
         }
@@ -57,12 +57,22 @@ namespace RequestReduce.Reducer
                         spriteWriter.WriteImage(image);
                     }
 
-                    spriteWriter.Save(SpriteContainer.FilePath, "image/png");
+                    spriteWriter.Save(GetSpriteUrl(), "image/png");
                 }
             }
             SpriteContainer.Dispose();
-            SpriteContainer = new SpriteContainer(config, webClientWrapper);
+            ++spriteIndex;
+            SpriteContainer = new SpriteContainer(webClientWrapper);
             return;
+        }
+
+        public Guid SpritedCssKey { get; set; }
+
+        private string GetSpriteUrl()
+        {
+            if (SpritedCssKey == Guid.Empty)
+                throw new InvalidOperationException("The SpritedCssKey must be set before using the SprieManager.");
+            return string.Format("{0}/{1}/sprite{2}.png", config.SpriteVirtualPath, SpritedCssKey, spriteIndex);
         }
 
         private struct ImageMetadata

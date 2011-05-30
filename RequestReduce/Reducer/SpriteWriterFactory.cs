@@ -1,4 +1,5 @@
-﻿using RequestReduce.Utilities;
+﻿using RequestReduce.Store;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
@@ -9,16 +10,16 @@ namespace RequestReduce.Reducer
 
     public class SpriteWriterFactory : ISpriteWriterFactory
     {
-        private readonly IFileWrapper fileWrapper;
+        private readonly IStore store;
 
-        public SpriteWriterFactory(IFileWrapper fileWrapper)
+        public SpriteWriterFactory(IStore store)
         {
-            this.fileWrapper = fileWrapper;
+            this.store = store;
         }
 
         public ISpriteWriter CreateWriter(int surfaceWidth, int surfaceHeight)
         {
-            return new SpriteWriter(surfaceWidth, surfaceHeight, fileWrapper);
+            return new SpriteWriter(surfaceWidth, surfaceHeight, store);
         }
     }
 }

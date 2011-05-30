@@ -59,7 +59,7 @@ namespace RequestReduce.Facts.Filter
                 var testable = new TestableReductionRepository();
                 var md5 = Hasher.Hash("urlssss");
 
-                testable.ClassUnderTest.AddReduction("urlssss","urls");
+                testable.ClassUnderTest.AddReduction(md5,"urls");
 
                 Assert.Equal("urls", testable.ClassUnderTest.Dictionary[md5]);
             }
@@ -71,7 +71,7 @@ namespace RequestReduce.Facts.Filter
                 var md5 = Hasher.Hash("urlssss");
                 testable.ClassUnderTest.Dictionary.Add(md5, "urls");
 
-                testable.ClassUnderTest.AddReduction("urlssss", "urls");
+                testable.ClassUnderTest.AddReduction(md5, "urls");
 
                 Assert.Equal(1, testable.ClassUnderTest.Dictionary.Keys.Cast<Guid>().Where(x => x == md5).Count());
             }

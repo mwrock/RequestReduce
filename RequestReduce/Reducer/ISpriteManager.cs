@@ -1,3 +1,5 @@
+using System;
+
 namespace RequestReduce.Reducer
 {
     public interface ISpriteManager
@@ -5,5 +7,6 @@ namespace RequestReduce.Reducer
         Sprite this[BackgroundImageClass image] { get; }
         Sprite Add(BackgroundImageClass imageUrl);
         void Flush();
+        Guid SpritedCssKey { get; set; }
     }
 }

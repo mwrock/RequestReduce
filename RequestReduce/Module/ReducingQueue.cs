@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using RequestReduce.Reducer;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
@@ -53,8 +54,9 @@ namespace RequestReduce.Module
                 string urlsToReduce = null;
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
-                    var reducedUrl = reducer.Process(urlsToReduce);
-                    reductionRepository.AddReduction(urlsToReduce, reducedUrl);
+                    var key = Hasher.Hash(urlsToReduce);
+                    var reducedUrl = reducer.Process(key, urlsToReduce);
+                    reductionRepository.AddReduction(key, reducedUrl);
                 }
             }
             catch(Exception e)

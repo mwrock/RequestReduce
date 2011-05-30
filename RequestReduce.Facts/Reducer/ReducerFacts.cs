@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web;
+using System.Text;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 
@@ -15,7 +15,9 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableReducer()
             {
+                Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>())).Returns("minified");
             }
+
         }
 
         public class Process
@@ -32,25 +34,48 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillReturnProcessedCssUrlWithAGuidName()
+            public void WillReturnProcessedCssUrlWithKeyInPath()
             {
                 var testable = new TestableReducer();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
-                Guid guid;
+                var guid = Guid.NewGuid();
 
-                var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
+                var result = testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
 
-                Assert.True(Guid.TryParse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - ".css".Length), out guid));
+                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - "/RequestReducedStyle.css".Length)));
             }
 
             [Fact]
-            public void WillReturnProcessedCssUrlWithAcssExtension()
+            public void WillSetSpriteManagerCssKey()
+            {
+                var testable = new TestableReducer();
+                var guid = Guid.NewGuid();
+
+                testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
+
+                testable.Mock<ISpriteManager>().VerifySet(x => x.SpritedCssKey = guid);
+            }
+
+            [Fact]
+            public void WillUseHashOfUrlsIfNoKeyIsGiven()
+            {
+                var testable = new TestableReducer();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                var guid = Hasher.Hash("http://host/css1.css::http://host/css2.css");
+
+                var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
+
+                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - "/RequestReducedStyle.css".Length)));
+            }
+
+            [Fact]
+            public void WillReturnProcessedCssUrlWithARequestReducedFileName()
             {
                 var testable = new TestableReducer();
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                Assert.True(result.EndsWith(".css"));
+                Assert.True(result.EndsWith("/RequestReducedStyle.css"));
             }
 
             [Fact]
@@ -74,7 +99,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                testable.Mock<IFileWrapper>().Verify(x => x.Save("min", result.Replace("/","\\")), Times.Once());
+                testable.Mock<IStore>().Verify(x => x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result), Times.Once());
             }
 
             [Fact]

@@ -19,5 +19,15 @@ namespace RequestReduce.Utilities
         {
             return File.Create(fileName);
         }
+
+        public bool DirectoryExists(string directoryName)
+        {
+            return Directory.Exists(directoryName);
+        }
+
+        public void CreateDirectory(string directoryName)
+        {
+            Directory.CreateDirectory(directoryName);
+        }
     }
 }

@@ -8,5 +8,7 @@ namespace RequestReduce.Utilities
         void Save(string content, string fileName);
         void Save(byte[] content, string fileName);
         Stream OpenStream(string fileName);
+        bool DirectoryExists(string directoryName);
+        void CreateDirectory(string directoryName);
     }
 }

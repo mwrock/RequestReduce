@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
+using RequestReduce.Utilities;
 using Xunit;
 
 namespace RequestReduce.Facts.Integration
@@ -29,11 +30,13 @@ namespace RequestReduce.Facts.Integration
         public void WillReturnSavedCSS()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var urls = "http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css";
+            var key = Hasher.Hash(urls);
 
-            var result = reducer.Process("http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css");
+            var result = reducer.Process(urls);
 
             Assert.Equal(result,
-                         Directory.GetFiles(config.SpritePhysicalPath).Single(x => x.EndsWith(".css")).Replace(
+                         Directory.GetFiles(config.SpritePhysicalPath + "\\" + key.ToString()).Single(x => x.EndsWith(".css")).Replace(
                              config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"));
         }
 
@@ -41,10 +44,12 @@ namespace RequestReduce.Facts.Integration
         public void WillSaveSprite()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var urls = "http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css";
+            var key = Hasher.Hash(urls);
 
-            reducer.Process("http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css");
+            var result = reducer.Process(urls);
 
-            Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath).Single(x => x.EndsWith(".png")));
+            Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath + "\\" + key.ToString()).Single(x => x.EndsWith(".png")));
         }
 
         public void Dispose()

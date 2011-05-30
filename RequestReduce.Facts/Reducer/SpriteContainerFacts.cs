@@ -23,42 +23,6 @@ namespace RequestReduce.Facts.Reducer
             public byte[] Image18X18 = File.ReadAllBytes("testimages\\emptyStar.png");
         }
 
-        public class Ctor
-        {
-            [Fact]
-            public void WillReturnSpriteUrlInCorrectConfigDirectory()
-            {
-                var testable = new TestableSpriteContainer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
-
-                var result = testable.ClassUnderTest;
-
-                Assert.True(result.Url.StartsWith("spritedir/"));
-            }
-
-            [Fact]
-            public void WillReturnSpriteUrlWithAGuidName()
-            {
-                var testable = new TestableSpriteContainer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
-                Guid guid;
-
-                var result = testable.ClassUnderTest;
-
-                Assert.True(Guid.TryParse(result.Url.Substring("spritedir/".Length, result.Url.Length - "spritedir/".Length - ".css".Length), out guid));
-            }
-
-            [Fact]
-            public void WillReturnSpriteUrlWithApngExtension()
-            {
-                var testable = new TestableSpriteContainer();
-
-                var result = testable.ClassUnderTest;
-
-                Assert.True(result.Url.EndsWith(".png"));
-            }
-        }
-
         public class AddImage
         {
             [Fact]

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Text;
-using System.Web;
 using RequestReduce.Configuration;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
@@ -13,32 +11,37 @@ namespace RequestReduce.Reducer
     {
         private readonly IWebClientWrapper webClientWrapper;
         private IRRConfiguration config;
-        private IFileWrapper fileWrapper;
+        private readonly IStore store;
         private IMinifier minifier;
         private ISpriteManager spriteManager;
         private ICssImageTransformer cssImageTransformer;
 
-        public Reducer(IWebClientWrapper webClientWrapper, IRRConfiguration config, IFileWrapper fileWrapper, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer)
+        public Reducer(IWebClientWrapper webClientWrapper, IRRConfiguration config, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer)
         {
             this.webClientWrapper = webClientWrapper;
             this.cssImageTransformer = cssImageTransformer;
             this.spriteManager = spriteManager;
             this.minifier = minifier;
-            this.fileWrapper = fileWrapper;
             this.config = config;
+            this.store = store;
         }
 
         public virtual string Process(string urls)
         {
+            var guid = Hasher.Hash(urls);
+            return Process(guid, urls);
+        }
+
+        public virtual string Process(Guid key, string urls)
+        {
+            spriteManager.SpritedCssKey = key;
             var urlList = SplitUrls(urls);
-            var guid = Guid.NewGuid();
-            var virtualfileName = string.Format("{0}/{1}.css", config.SpriteVirtualPath, guid);
-            var fileName = string.Format("{0}\\{1}.css", config.SpritePhysicalPath, guid);
+            var virtualfileName = string.Format("{0}/{1}/RequestReducedStyle.css", config.SpriteVirtualPath, key);
             var mergedCss = new StringBuilder();
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));
             spriteManager.Flush();
-            fileWrapper.Save(minifier.Minify(mergedCss.ToString()), fileName);
+            store.Save(Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString())), virtualfileName);
             return virtualfileName;
         }
 

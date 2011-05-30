@@ -8,7 +8,7 @@ using StructureMap;
 using Xunit;
 using System.IO;
 
-namespace RequestReduce.Facts
+namespace RequestReduce.Facts.Filter
 {
     public class RequestReduceModuleFacts
     {

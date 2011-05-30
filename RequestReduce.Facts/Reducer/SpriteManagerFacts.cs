@@ -20,14 +20,13 @@ namespace RequestReduce.Facts.Reducer
             public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, config, spriteWriterFactory)
             {
                 MockSpriteContainer = new Mock<ISpriteContainer>();
-                MockSpriteContainer.Setup(x => x.Url).Returns(SpriteContainer.Url);
-                MockSpriteContainer.Setup(x => x.FilePath).Returns(SpriteContainer.FilePath);
                 MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
                 base.SpriteContainer = MockSpriteContainer.Object;
+                SpritedCssKey = Guid.NewGuid();
             }
 
-            public Mock<ISpriteContainer> MockSpriteContainer { get; private set; }
-            public new ISpriteContainer SpriteContainer { get { return base.SpriteContainer; } }
+            public Mock<ISpriteContainer> MockSpriteContainer { get; set; }
+            public new ISpriteContainer SpriteContainer { get { return base.SpriteContainer; } set { base.SpriteContainer = value; } }
         }
         class TestableSpriteManager : Testable<SpriteManagerToTest>
         {
@@ -111,6 +110,70 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Exactly(1));
             }
+
+            [Fact]
+            public void WillSaveSpriteUrlInCorrectConfigDirectory()
+            {
+                var testable = new TestableSpriteManager();
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+
+                var result = testable.ClassUnderTest.Add(image);
+
+                Assert.True(result.Url.StartsWith("spritedir/"));
+            }
+
+            [Fact]
+            public void WillSaveSpriteUrlWithKeyInPath()
+            {
+                var testable = new TestableSpriteManager();
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+
+                var result = testable.ClassUnderTest.Add(image);
+
+                Assert.True(result.Url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "/"));
+            }
+
+            [Fact]
+            public void WillSaveSpriteUrlWithApngExtension()
+            {
+                var testable = new TestableSpriteManager();
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
+
+                var result = testable.ClassUnderTest.Add(image);
+
+                Assert.True(result.Url.EndsWith(".png"));
+            }
+
+            [Fact]
+            public void WillThrowInvalidOperationExceptionIfCssKeyIsEmpty()
+            {
+                var testable = new TestableSpriteManager();
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                testable.ClassUnderTest.SpritedCssKey = Guid.Empty;
+
+                var ex = Assert.Throws<InvalidOperationException>(() => testable.ClassUnderTest.Add(image));
+
+                Assert.NotNull(ex);
+            }
+
+            [Fact]
+            public void WillSaveSpriteWithAFileNameWithTheSpriteIndex()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                testable.ClassUnderTest.Flush();
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
+
+                var result = testable.ClassUnderTest.Add(image);
+
+                Assert.True(result.Url.EndsWith("/sprite2.png"));
+            }
         }
 
         public class Flush
@@ -159,14 +222,13 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveWriterToContainerUrlUsingPngMimeType()
             {
                 var testable = new TestableSpriteManager();
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.FilePath).Returns("myurl");
                 var mockWriter = new Mock<ISpriteWriter>();
                 testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.Save("myurl", "image/png"));
+                mockWriter.Verify(x => x.Save(It.IsAny<string>(), "image/png"));
             }
 
             [Fact]
@@ -178,6 +240,80 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.Flush();
 
                 Assert.Equal(0, testable.ClassUnderTest.SpriteContainer.Width);
+            }
+
+            [Fact]
+            public void WillSaveSpriteUrlInCorrectConfigDirectory()
+            {
+                var testable = new TestableSpriteManager();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+
+                testable.ClassUnderTest.Flush();
+
+                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.StartsWith("spritedir/")), It.IsAny<string>()));
+            }
+
+            [Fact]
+            public void WillSaveSpriteUrlWithKeyInPath()
+            {
+                var testable = new TestableSpriteManager();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+
+                testable.ClassUnderTest.Flush();
+
+                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "/")), It.IsAny<string>()));
+            }
+
+            [Fact]
+            public void WillSaveSpriteUrlWithApngExtension()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+
+                testable.ClassUnderTest.Flush();
+
+                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.EndsWith(".png")), It.IsAny<string>()));
+            }
+
+            [Fact]
+            public void WillThrowInvalidOperationExceptionIfCssKeyIsEmpry()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                testable.ClassUnderTest.SpritedCssKey = Guid.Empty;
+
+                var ex = Assert.Throws<InvalidOperationException>(() => testable.ClassUnderTest.Flush());
+
+                Assert.NotNull(ex);
+            }
+
+            [Fact]
+            public void WillSaveSpriteWithAFileNameWithTheSpriteIndex()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                testable.ClassUnderTest.Flush();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                mockWriter = new Mock<ISpriteWriter>();
+                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+
+                testable.ClassUnderTest.Flush();
+
+                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.EndsWith("/sprite2.png")), It.IsAny<string>()));
             }
         }
 

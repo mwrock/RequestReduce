@@ -1,8 +1,10 @@
-﻿namespace RequestReduce.Module
+﻿using System;
+
+namespace RequestReduce.Module
 {
     public interface IReductionRepository
     {
         string FindReduction(string urls);
-        void AddReduction(string originalUrlList, string reducedUrl);
+        void AddReduction(Guid key, string reducedUrl);
     }
 }

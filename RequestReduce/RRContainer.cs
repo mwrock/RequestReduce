@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
+using RequestReduce.Store;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using StructureMap.Graph;
@@ -23,6 +24,7 @@ namespace RequestReduce
                                     {
                                         x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                         x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
+                                        x.For<IStore>().Singleton().Add<LocalDiskStore>();
                                         x.For<HttpContextBase>().Use(() => HttpContext.Current == null ? null : new HttpContextWrapper(HttpContext.Current));
                                     });
             container.Configure(x => x.Scan(y =>
