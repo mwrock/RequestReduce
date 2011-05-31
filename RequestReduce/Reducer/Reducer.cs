@@ -10,19 +10,19 @@ namespace RequestReduce.Reducer
     public class Reducer : IReducer
     {
         private readonly IWebClientWrapper webClientWrapper;
-        private IRRConfiguration config;
         private readonly IStore store;
         private IMinifier minifier;
         private ISpriteManager spriteManager;
         private ICssImageTransformer cssImageTransformer;
+        private readonly IUriBuilder uriBuilder;
 
-        public Reducer(IWebClientWrapper webClientWrapper, IRRConfiguration config, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer)
+        public Reducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder)
         {
             this.webClientWrapper = webClientWrapper;
             this.cssImageTransformer = cssImageTransformer;
+            this.uriBuilder = uriBuilder;
             this.spriteManager = spriteManager;
             this.minifier = minifier;
-            this.config = config;
             this.store = store;
         }
 
@@ -36,7 +36,7 @@ namespace RequestReduce.Reducer
         {
             spriteManager.SpritedCssKey = key;
             var urlList = SplitUrls(urls);
-            var virtualfileName = string.Format("{0}/{1}/RequestReducedStyle.css", config.SpriteVirtualPath, key);
+            var virtualfileName = uriBuilder.BuildCssUrl(key);
             var mergedCss = new StringBuilder();
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));

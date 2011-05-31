@@ -6,6 +6,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -16,6 +17,7 @@ namespace RequestReduce.Facts.Reducer
             public TestableReducer()
             {
                 Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>())).Returns("minified");
+                Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
         }

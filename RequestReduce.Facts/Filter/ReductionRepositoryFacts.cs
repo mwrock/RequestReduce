@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Moq;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 
@@ -13,6 +16,10 @@ namespace RequestReduce.Facts.Filter
     {
         class FakeReductionRepository : ReductionRepository
         {
+            public FakeReductionRepository(IStore store) : base(store)
+            {
+            }
+
             public IDictionary Dictionary { get { return dictionary; } }
         }
 
@@ -21,6 +28,23 @@ namespace RequestReduce.Facts.Filter
             public TestableReductionRepository()
             {
 
+            }
+        }
+
+        public class ctor
+        {
+            [Fact]
+            public void WillGetPreviouslySavedEntriesFromStore()
+            {
+                var testable = new TestableReductionRepository();
+                var key = Hasher.Hash("url1");
+                testable.Mock<IStore>().Setup(x => x.GetSavedUrls()).Returns(new Dictionary<Guid, string>()
+                                                                                 {{key, "url1"}});
+
+                var result = testable.ClassUnderTest;
+                Thread.Sleep(200);
+
+                Assert.True(result.Dictionary[key] as string == "url1");
             }
         }
 

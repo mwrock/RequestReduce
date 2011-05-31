@@ -10,5 +10,6 @@ namespace RequestReduce.Utilities
         Stream OpenStream(string fileName);
         bool DirectoryExists(string directoryName);
         void CreateDirectory(string directoryName);
+        string[] GetDirectories(string dir);
     }
 }

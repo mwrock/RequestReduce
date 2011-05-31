@@ -84,6 +84,7 @@
     <Compile Include="Module\ResponseFilter.cs" />
     <Compile Include="RRContainer.cs" />
     <Compile Include="Utilities\Hasher.cs" />
+    <Compile Include="Utilities\UriBuilder.cs" />
     <Compile Include="Utilities\WebClientWrapper.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using RequestReduce.Configuration;
+﻿using System;
+using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
@@ -70,6 +71,31 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.OpenStream("/url/myid/style.cc");
 
                 testable.Mock<IFileWrapper>().Verify(x => x.CreateDirectory("c:\\web\\url\\myid"));
+            }
+        }
+
+        public class GetExistingUrls
+        {
+            [Fact]
+            public void WillCreateUrlsFromAllKeysInDirectory()
+            {
+                var testable = new TestableLocalDiskStore();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                var guid1 = Guid.NewGuid();
+                var guid2 = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2)).Returns("url2");
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDirectories("dir")).Returns(new string[]
+                                                                                              {
+                                                                                                  "dir\\" + guid1.ToString(),
+                                                                                                  "dir\\" + guid2.ToString()
+                                                                                              });
+
+                var result = testable.ClassUnderTest.GetSavedUrls();
+
+                Assert.Equal(2, result.Count);
+                Assert.True(result[guid1] == "url1");
+                Assert.True(result[guid2] == "url2");
             }
         }
     }

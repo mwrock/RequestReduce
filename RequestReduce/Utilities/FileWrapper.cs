@@ -29,5 +29,10 @@ namespace RequestReduce.Utilities
         {
             Directory.CreateDirectory(directoryName);
         }
+
+        public string[] GetDirectories(string dir)
+        {
+            return Directory.GetDirectories(dir);
+        }
     }
 }
