@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Moq;
 using RequestReduce.Module;
-using RequestReduce.Reducer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 
-namespace RequestReduce.Facts.Filter
+namespace RequestReduce.Facts.Module
 {
     public class ReductionRepositoryFacts
     {

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Web;
 using Moq;
 using RequestReduce.Module;
 using Xunit;
 
-namespace RequestReduce.Facts.Filter
+namespace RequestReduce.Facts.Module
 {
     public class ResponseFilterFacts
     {

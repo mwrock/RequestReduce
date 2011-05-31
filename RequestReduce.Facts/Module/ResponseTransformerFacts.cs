@@ -2,7 +2,7 @@
 using RequestReduce.Module;
 using Xunit;
 
-namespace RequestReduce.Facts.Filter
+namespace RequestReduce.Facts.Module
 {
     public class ResponseTransformerFacts
     {

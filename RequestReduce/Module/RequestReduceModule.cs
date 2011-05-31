@@ -15,6 +15,22 @@ namespace RequestReduce.Module
         {
             context.ReleaseRequestState += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.PreSendRequestHeaders += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
+            context.PreSendRequestHeaders += (sender, e) => SetCacheHeaders(new HttpContextWrapper(((HttpApplication)sender).Context));
+        }
+
+        public void SetCacheHeaders(HttpContextBase httpContextWrapper)
+        {
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var rrPath = config.SpriteVirtualPath.ToLower();
+            var url = httpContextWrapper.Request.RawUrl.ToLower();
+            if(rrPath.StartsWith("http"))
+                url = httpContextWrapper.Request.Url.AbsoluteUri.ToLower();
+            if(url.StartsWith(rrPath))
+            {
+                httpContextWrapper.Response.Headers.Remove("ETag");
+                httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
+                httpContextWrapper.Response.Expires = 44000;
+            }
         }
 
         public void InstallFilter(HttpContextBase context)
@@ -22,9 +38,9 @@ namespace RequestReduce.Module
             if (!context.Items.Contains(CONTEXT_KEY))
             {
                 var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-                config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
+                if(string.IsNullOrEmpty(config.SpritePhysicalPath))
+                    config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
                 var response = context.Response;
-
                 if (response.ContentType == "text/html" && context.Request.QueryString["RRFilter"] != "disabled")
                     response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
 

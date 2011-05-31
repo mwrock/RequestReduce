@@ -7,7 +7,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;
 
-namespace RequestReduce.Facts.Filter
+namespace RequestReduce.Facts.Module
 {
     public class ReducingQueueFacts
     {
