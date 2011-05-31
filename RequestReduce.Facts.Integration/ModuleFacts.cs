@@ -18,7 +18,10 @@ namespace RequestReduce.Facts.Integration
         {
             rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\RRContent";
             if (Directory.Exists(rrFolder))
+            {
+                Thread.Sleep(100);
                 Directory.Delete(rrFolder, true);
+            }
             RecyclePool();
         }
 
@@ -54,6 +57,29 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(createTime, new FileInfo(file).LastWriteTime);
         }
 
+        [Fact]
+        public void WillSetCacheHeadersOnContent()
+        {
+            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
+            var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            string url;
+            using (var client = new WebClient())
+            {
+                client.DownloadString("http://localhost:8888/Local.html");
+                Thread.Sleep(5000);
+                var response = client.DownloadString("http://localhost:8888/Local.html");
+                var css = cssPattern.Match(response).ToString();
+                url = urlPattern.Match(css).Groups["url"].Value;
+            }
+
+            var req = HttpWebRequest.Create("http://localhost:8888" + url);
+            var response2 = req.GetResponse();
+
+            Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
+            Assert.Null(response2.Headers["ETag"]);
+            response2.Close();
+        }
+
         private void RecyclePool()
         {
             var pool = new DirectoryEntry("IIS://localhost/W3SVC/AppPools/RequestReduce");
@@ -64,7 +90,17 @@ namespace RequestReduce.Facts.Integration
         public void Dispose()
         {
             if (Directory.Exists(rrFolder))
-                Directory.Delete(rrFolder, true);
+            {
+                try
+                {
+                    Directory.Delete(rrFolder, true);
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(0);
+                    Directory.Delete(rrFolder, true);
+                }
+            }
             RecyclePool();
         }
     }
