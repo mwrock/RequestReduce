@@ -23,9 +23,10 @@ namespace RequestReduce.Module
         private void LoadDictionaryWithExistingItems()
         {
             var content = store.GetSavedUrls();
-            foreach (var pair in content)
+            if(content != null)
             {
-                AddReduction(pair.Key, pair.Value);
+                foreach (var pair in content)
+                    AddReduction(pair.Key, pair.Value);
             }
         }
 

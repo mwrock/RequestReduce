@@ -30,7 +30,7 @@ namespace RequestReduce.Facts.Integration
         public void WillReturnSavedCSS()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
-            var urls = "http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css";
+            var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
             var key = Hasher.Hash(urls);
 
             var result = reducer.Process(urls);
@@ -44,7 +44,7 @@ namespace RequestReduce.Facts.Integration
         public void WillSaveSprite()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
-            var urls = "http://localhost:8888/Styles/style1.css::http://localhost:8888/Styles/style2.css";
+            var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
             var key = Hasher.Hash(urls);
 
             var result = reducer.Process(urls);

@@ -1,7 +1,7 @@
 $psake.use_exit_on_error = $true
 properties {
     $baseDir = resolve-path .
-	$port = "8888"
+	$port = "8877"
     $configuration = "debug"
 	# Package Directories
 	$filesDir = "$baseDir\BuildFiles"
