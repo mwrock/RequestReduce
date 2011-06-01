@@ -82,6 +82,7 @@
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="Store\LocalDiskStoreFacts.cs" />
     <Compile Include="Testable.cs" />
+    <Compile Include="Utilities\UriBuilderFacts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

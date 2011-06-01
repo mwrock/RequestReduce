@@ -2,7 +2,6 @@
   <configSections>
     <section name="RequestReduce" type="RequestReduce.Configuration.RequestReduceConfigSection, RequestReduce"/>
   </configSections>
-  <RequestReduce spriteVirtualPath="/RRContent" />
   <system.webServer>
 		<modules runAllManagedModulesForAllRequests="true">
       <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce"/>

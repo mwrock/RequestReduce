@@ -12,12 +12,13 @@ namespace RequestReduce.Facts.Module
 {
     public class RequestReduceModuleFacts
     {
+
         [Fact]
         public void WillSetResponseFilterOnce()
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(module.CONTEXT_KEY)).Returns(true);
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(true);
 
             module.InstallFilter(context.Object);
 
@@ -29,7 +30,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(module.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -46,7 +47,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(module.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Server.MapPath("/Virtual")).Returns("physical");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
@@ -67,7 +68,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(module.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection() {{"RRFilter", "disabled"}});
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -82,14 +83,14 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(module.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("type");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
 
             module.InstallFilter(context.Object);
 
-            context.Verify(x => x.Items.Add(module.CONTEXT_KEY, It.IsAny<Object>()), Times.Once());
+            context.Verify(x => x.Items.Add(RequestReduceModule.CONTEXT_KEY, It.IsAny<Object>()), Times.Once());
         }
 
         [Fact]
@@ -174,6 +175,28 @@ namespace RequestReduce.Facts.Module
 
             Assert.NotNull(context.Object.Response.Headers["ETag"]);
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillNotSetPhysicalPathToMappedPathOfVirtualPathIfPhysicalPathIsNotEmpty()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpritePhysicalPath).Returns("physicalPath");
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Response.ContentType).Returns("text/html");
+
+            module.InstallFilter(context.Object);
+
+            config.VerifySet(x => x.SpritePhysicalPath = It.IsAny<string>(), Times.Never());
             RRContainer.Current = null;
         }
 

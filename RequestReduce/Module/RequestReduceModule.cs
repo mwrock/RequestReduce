@@ -6,7 +6,7 @@ namespace RequestReduce.Module
 {
     public class RequestReduceModule : IHttpModule
     {
-        public readonly string CONTEXT_KEY = "HttpOnlyFilteringModuleInstalled";
+        public const string CONTEXT_KEY = "HttpOnlyFilteringModuleInstalled";
         public void Dispose()
         {
         }

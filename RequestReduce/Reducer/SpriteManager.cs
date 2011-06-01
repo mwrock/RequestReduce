@@ -12,13 +12,15 @@ namespace RequestReduce.Reducer
         private IWebClientWrapper webClientWrapper = null;
         private IRRConfiguration config = null;
         private readonly ISpriteWriterFactory spriteWriterFactory;
+        private readonly IUriBuilder uriBuilder;
         private IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
         private int spriteIndex = 1;
 
-        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory)
+        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory, IUriBuilder uriBuilder)
         {
             this.webClientWrapper = webClientWrapper;
             this.spriteWriterFactory = spriteWriterFactory;
+            this.uriBuilder = uriBuilder;
             this.config = config;
             SpriteContainer = new SpriteContainer(webClientWrapper);
         }
@@ -72,7 +74,7 @@ namespace RequestReduce.Reducer
         {
             if (SpritedCssKey == Guid.Empty)
                 throw new InvalidOperationException("The SpritedCssKey must be set before using the SprieManager.");
-            return string.Format("{0}/{1}/sprite{2}.png", config.SpriteVirtualPath, SpritedCssKey, spriteIndex);
+            return uriBuilder.BuildSpriteUrl(SpritedCssKey, spriteIndex);
         }
 
         private struct ImageMetadata

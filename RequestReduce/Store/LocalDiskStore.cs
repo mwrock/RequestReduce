@@ -52,7 +52,10 @@ namespace RequestReduce.Store
 
         private string GetFileNameFromConfig(string url)
         {
-            var fileName =  url.Replace(configuration.SpriteVirtualPath, configuration.SpritePhysicalPath).Replace('/', '\\');
+            var fileName = url;
+            if (!string.IsNullOrEmpty(configuration.ContentHost))
+                fileName = url.Replace(configuration.ContentHost, "");
+            fileName = fileName.Replace(configuration.SpriteVirtualPath, configuration.SpritePhysicalPath).Replace('/', '\\');
             var dir = fileName.Substring(0, fileName.LastIndexOf('\\'));
             if(!fileWrapper.DirectoryExists(dir))
                 fileWrapper.CreateDirectory(dir);

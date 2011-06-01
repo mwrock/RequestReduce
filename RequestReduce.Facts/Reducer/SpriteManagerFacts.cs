@@ -10,6 +10,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -17,7 +18,7 @@ namespace RequestReduce.Facts.Reducer
     {
         class SpriteManagerToTest: SpriteManager
         {
-            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory) : base(webClientWrapper, config, spriteWriterFactory)
+            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory, IUriBuilder uriBuilder) : base(webClientWrapper, config, spriteWriterFactory, uriBuilder)
             {
                 MockSpriteContainer = new Mock<ISpriteContainer>();
                 MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
@@ -35,6 +36,7 @@ namespace RequestReduce.Facts.Reducer
                 Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1000);
                 Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(
                     new Mock<ISpriteWriter>().Object);
+                Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
         }
 

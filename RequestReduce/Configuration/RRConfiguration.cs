@@ -10,6 +10,7 @@ namespace RequestReduce.Configuration
     {
         string SpriteVirtualPath { get; set; }
         string SpritePhysicalPath { get; set; }
+        string ContentHost { get; }
         int SpriteSizeLimit { get; set; }
     }
 
@@ -20,11 +21,11 @@ namespace RequestReduce.Configuration
         private string spritePhysicalPath;
         private int spriteSizeLimit;
 
-        public RRConfiguration(HttpContextBase httpContextBase)
+        public RRConfiguration()
         {
             var val = config == null ? 0 : config.SpriteSizeLimit;
             spriteSizeLimit =  val == 0 ? 50000 : val;
-            spriteVirtualPath = config == null ? null : config.SpriteVirtualPath;
+            spriteVirtualPath = config == null ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : config.SpritePhysicalPath;
             CreatePhysicalPath();
         }
@@ -43,6 +44,11 @@ namespace RequestReduce.Configuration
                 spritePhysicalPath = value;
                 CreatePhysicalPath();
             }
+        }
+
+        public string ContentHost
+        {
+            get { return config.ContentHost; }
         }
 
         public int SpriteSizeLimit

@@ -32,6 +32,20 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
+            public void WillGetPhysicalPathFromAbsoluteUrl()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+
+                testable.ClassUnderTest.Save(content, "http://host/url/myid/style.cc");
+
+                testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid\\style.cc"));
+            }
+
+            [Fact]
             public void WillCreateKeyDirectoryIfMissing()
             {
                 var testable = new TestableLocalDiskStore();
@@ -56,6 +70,19 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
 
                 testable.ClassUnderTest.OpenStream("/url/myid/style.cc");
+
+                testable.Mock<IFileWrapper>().Verify(x => x.OpenStream("c:\\web\\url\\myid\\style.cc"));
+            }
+
+            [Fact]
+            public void WillGetPhysicalPathFromAbsoluteUrl()
+            {
+                var testable = new TestableLocalDiskStore();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+
+                testable.ClassUnderTest.OpenStream("http://host/url/myid/style.cc");
 
                 testable.Mock<IFileWrapper>().Verify(x => x.OpenStream("c:\\web\\url\\myid\\style.cc"));
             }

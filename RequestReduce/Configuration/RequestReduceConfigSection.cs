@@ -23,6 +23,15 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("contentHost")]
+        public string ContentHost
+        {
+            get
+            {
+                return base["contentHost"].ToString();
+            }
+        }
+
         [ConfigurationProperty("spriteSizeLimit")]
         public int SpriteSizeLimit
         {
