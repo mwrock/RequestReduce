@@ -11,8 +11,7 @@
     Directory.CreateDirectory(resourcePath);
     var config = RRContainer.Current.GetInstance<IRRConfiguration>();
     config.SpritePhysicalPath = resourcePath;
-    var reducedCss = RRContainer.Current.GetInstance<IReducer>().Process(TODO,
-"http://i4.social.s-msft.com/contentservice/274f1460-cf18-4ed7-b1df-9ee1013a9f9d/Msdn.css::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=masterstylessa");
+    var reducedCss = RRContainer.Current.GetInstance<IReducer>().Process("http://i4.social.s-msft.com/contentservice/274f1460-cf18-4ed7-b1df-9ee1013a9f9d/Msdn.css::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=masterstylessa");
 }
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
