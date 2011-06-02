@@ -28,7 +28,7 @@ namespace RequestReduce.Facts.Module
                 base.ProcessQueuedItem();
             }
 
-            public IReductionRepository ReductionRepository { get { return reductionRepository;  } }
+            public FakeReductionRepository ReductionRepository { get { return reductionRepository as FakeReductionRepository;  } }
 
             public void Dispose()
             {
@@ -84,27 +84,26 @@ namespace RequestReduce.Facts.Module
         public class ProcessQueuedItem
         {
             [Fact]
-            public void WillPlaceReducedCSSInRepo()
+            public void WillReduceQueuedCSS()
             {
                 var testable = new TestableReducingQueue();
                 testable.ClassUnderTest.Enqueue("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
-                Assert.Equal("reducedUrl", testable.ClassUnderTest.ReductionRepository.FindReduction("url"));
+                testable.Mock<IReducer>().Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Once());
             }
 
             [Fact]
             public void WillNotReduceItemIfAlreadyReduced()
             {
                 var testable = new TestableReducingQueue();
+                testable.ClassUnderTest.ReductionRepository.AddReduction(Hasher.Hash("url"), "url");
                 testable.ClassUnderTest.Enqueue("url");
-                testable.ClassUnderTest.Enqueue("url");
-                testable.ClassUnderTest.ProcessQueuedItem();
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
-                testable.Mock<IReducer>().Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Once());
+                testable.Mock<IReducer>().Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
             }
         }
 

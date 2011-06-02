@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -12,6 +13,26 @@ namespace RequestReduce.Facts.Module
 {
     public class ReductionRepositoryFacts
     {
+        class FakeLocalDiskStore : LocalDiskStore
+        {
+            public FakeLocalDiskStore() : base()
+            {
+            }
+
+            protected override void SetupWatcher()
+            {
+                return;
+            }
+
+            public void TriggerChange(string change, Guid key)
+            {
+                if (change == "delete")
+                    DeleteCssAction(key);
+                if (change == "add")
+                    AddCssAction(key, "url");
+            }
+        }
+
         class FakeReductionRepository : ReductionRepository
         {
             public FakeReductionRepository(IStore store) : base(store)
@@ -19,14 +40,16 @@ namespace RequestReduce.Facts.Module
             }
 
             public IDictionary Dictionary { get { return dictionary; } }
+
+            public FakeLocalDiskStore LocalDiskStore { get { return store as FakeLocalDiskStore; } }
         }
 
         private class TestableReductionRepository : Testable<FakeReductionRepository>
         {
             public TestableReductionRepository()
             {
-
             }
+
         }
 
         public class ctor
@@ -43,6 +66,31 @@ namespace RequestReduce.Facts.Module
                 Thread.Sleep(200);
 
                 Assert.True(result.Dictionary[key] as string == "url1");
+            }
+
+            [Fact]
+            public void WillRegisterDeleteCssAction()
+            {
+                var testable = new TestableReductionRepository();
+                testable.Inject<IStore>(new FakeLocalDiskStore());
+                var key = Hasher.Hash("url1");
+                testable.ClassUnderTest.Dictionary.Add(key, "val");
+
+                testable.ClassUnderTest.LocalDiskStore.TriggerChange("delete", key);
+
+                Assert.Null(testable.ClassUnderTest.Dictionary[key]);
+            }
+
+            [Fact]
+            public void WillRegisterAddCssAction()
+            {
+                var testable = new TestableReductionRepository();
+                testable.Inject<IStore>(new FakeLocalDiskStore());
+                var key = Hasher.Hash("url1");
+
+                testable.ClassUnderTest.LocalDiskStore.TriggerChange("add", key);
+
+                Assert.NotNull(testable.ClassUnderTest.Dictionary[key]);
             }
         }
 
@@ -97,7 +145,6 @@ namespace RequestReduce.Facts.Module
 
                 Assert.Equal(1, testable.ClassUnderTest.Dictionary.Keys.Cast<Guid>().Where(x => x == md5).Count());
             }
-
         }
     }
 }

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
@@ -54,7 +49,15 @@ namespace RequestReduce.Facts.Integration
 
         public void Dispose()
         {
-            Directory.Delete(config.SpritePhysicalPath, true);
+            try
+            {
+                Directory.Delete(config.SpritePhysicalPath, true);
+            }
+            catch(IOException)
+            {
+                Thread.Sleep(100);
+                Directory.Delete(config.SpritePhysicalPath, true);
+            }
         }
     }
 }

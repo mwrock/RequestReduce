@@ -55,8 +55,7 @@ namespace RequestReduce.Module
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
                     var key = Hasher.Hash(urlsToReduce);
-                    var reducedUrl = reducer.Process(key, urlsToReduce);
-                    reductionRepository.AddReduction(key, reducedUrl);
+                    reducer.Process(key, urlsToReduce);
                 }
             }
             catch(Exception e)

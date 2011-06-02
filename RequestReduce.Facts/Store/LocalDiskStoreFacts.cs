@@ -8,7 +8,28 @@ namespace RequestReduce.Facts.Store
 {
     public class LocalDiskStoreFacts
     {
-        class TestableLocalDiskStore : Testable<LocalDiskStore>
+        class FakeLocalDiskStore : LocalDiskStore
+        {
+            public FakeLocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder)
+                : base(fileWrapper, configuration, uriBuilder)
+            {
+            }
+
+            protected override void SetupWatcher()
+            {
+                return;
+            }
+
+            public void TriggerChange(string change, Guid key)
+            {
+                if (change == "delete")
+                    DeleteCssAction(key);
+                if (change == "add")
+                    AddCssAction(key, "url");
+            }
+        }
+
+        class TestableLocalDiskStore : Testable<FakeLocalDiskStore>
         {
             public TestableLocalDiskStore()
             {
@@ -123,6 +144,38 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(2, result.Count);
                 Assert.True(result[guid1] == "url1");
                 Assert.True(result[guid2] == "url2");
+            }
+        }
+
+        public class RegisterDeleteCsAction
+        {
+            [Fact]
+            public void WillRegisterAction()
+            {
+                var testable = new TestableLocalDiskStore();
+                Guid key = new Guid();
+                var expectedGuid = Guid.NewGuid();
+                testable.ClassUnderTest.RegisterDeleteCssAction(x => key = x);
+
+                testable.ClassUnderTest.TriggerChange("delete", expectedGuid);
+
+                Assert.Equal(expectedGuid, key);
+            }
+        }
+
+        public class RegisterAddCsAction
+        {
+            [Fact]
+            public void WillRegisterAction()
+            {
+                var testable = new TestableLocalDiskStore();
+                Guid key = new Guid();
+                var expectedGuid = Guid.NewGuid();
+                testable.ClassUnderTest.RegisterAddCssAction((x,y) => key = x);
+
+                testable.ClassUnderTest.TriggerChange("add", expectedGuid);
+
+                Assert.Equal(expectedGuid, key);
             }
         }
     }

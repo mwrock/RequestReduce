@@ -8,16 +8,26 @@ namespace RequestReduce.Module
 {
     public class ReductionRepository : IReductionRepository
     {
-        private readonly IStore store;
+        protected readonly IStore store;
         protected readonly IDictionary dictionary = new Hashtable();
         private object lockObject = new object();
 
         public ReductionRepository(IStore store)
         {
             this.store = store;
+            store.RegisterAddCssAction(AddReduction);
+            store.RegisterDeleteCssAction(RemoveReduction);
             var thread = new Thread(LoadDictionaryWithExistingItems);
             thread.IsBackground = true;
             thread.Start();
+        }
+
+        private void RemoveReduction(Guid key)
+        {
+            lock (lockObject)
+            {
+                dictionary.Remove(key);
+            }
         }
 
         private void LoadDictionaryWithExistingItems()

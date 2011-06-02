@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using RequestReduce.Configuration;
 using Xunit;
+using TimeoutException = Xunit.Sdk.TimeoutException;
 
 namespace RequestReduce.Facts.Integration
 {
@@ -19,10 +20,12 @@ namespace RequestReduce.Facts.Integration
             rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\RRContent";
             if (Directory.Exists(rrFolder))
             {
-                Thread.Sleep(100);
-                Directory.Delete(rrFolder, true);
+                RecyclePool();
+                if (Directory.Exists(rrFolder))
+                    Directory.Delete(rrFolder, true);
+                while (Directory.Exists(rrFolder))
+                    Thread.Sleep(0);
             }
-            RecyclePool();
         }
 
         [Fact]
@@ -30,7 +33,7 @@ namespace RequestReduce.Facts.Integration
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
-            Thread.Sleep(5000);
+            WaitToCreateCss();
 
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
@@ -43,7 +46,7 @@ namespace RequestReduce.Facts.Integration
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
             var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
-            Thread.Sleep(5000);
+            WaitToCreateCss();
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
@@ -52,7 +55,7 @@ namespace RequestReduce.Facts.Integration
 
             RecyclePool();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
-            Thread.Sleep(5000);
+            WaitToCreateCss();
 
             Assert.Equal(createTime, new FileInfo(file).LastWriteTime);
         }
@@ -66,7 +69,7 @@ namespace RequestReduce.Facts.Integration
             using (var client = new WebClient())
             {
                 client.DownloadString("http://localhost:8877/Local.html");
-                Thread.Sleep(5000);
+                WaitToCreateCss();
                 var response = client.DownloadString("http://localhost:8877/Local.html");
                 var css = cssPattern.Match(response).ToString();
                 url = urlPattern.Match(css).Groups["url"].Value;
@@ -78,6 +81,45 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
             Assert.Null(response2.Headers["ETag"]);
             response2.Close();
+        }
+
+        [Fact]
+        public void WillReReduceCssAfterFileDeletion()
+        {
+            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
+            var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateCss();
+            var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            var css = cssPattern.Match(response).ToString();
+            var url = urlPattern.Match(css).Groups["url"].Value;
+            var file = url.Replace("/RRContent", rrFolder).Replace("/", "\\");
+            var createTime = new FileInfo(file).LastWriteTime;
+
+            File.Delete(file);
+            while (File.Exists(file))
+                Thread.Sleep(0);
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateCss();
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+
+            Assert.True(createTime < new FileInfo(file).LastWriteTime);
+        }
+
+        private void WaitToCreateCss()
+        {
+            var watch = new Stopwatch();
+            watch.Start();
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 5000)
+                Thread.Sleep(0);
+            while (Directory.GetDirectories(rrFolder).Length == 0 && watch.ElapsedMilliseconds < 5000)
+                Thread.Sleep(0);
+            var newDir = Directory.GetDirectories(rrFolder)[0];
+            while (Directory.GetFiles(newDir, "*.css").Length == 0 && watch.ElapsedMilliseconds < 5000)
+                Thread.Sleep(0);
+            if(watch.ElapsedMilliseconds >= 5000)
+                throw new TimeoutException(5000);
+            Thread.Sleep(100);
         }
 
         private void RecyclePool()
@@ -93,15 +135,15 @@ namespace RequestReduce.Facts.Integration
             {
                 try
                 {
+                    RecyclePool();
                     Directory.Delete(rrFolder, true);
                 }
                 catch (IOException)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(100);
                     Directory.Delete(rrFolder, true);
                 }
             }
-            RecyclePool();
         }
     }
 }

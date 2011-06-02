@@ -32,6 +32,7 @@ namespace RequestReduce
                 y.TheCallingAssembly();
                 y.ExcludeNamespace("RequestReduce.Utilities");
                 y.ExcludeNamespace("RequestReduce.Configuration");
+                y.ExcludeNamespace("RequestReduce.Store");
                 y.ExcludeType<IReductionRepository>();
                 y.ExcludeType<IReducingQueue>();
                 y.WithDefaultConventions();
