@@ -17,6 +17,7 @@ namespace RequestReduce.Configuration
         string SpriteVirtualPath { get; set; }
         string SpritePhysicalPath { get; set; }
         string ContentHost { get; }
+        string ConnectionStringName { get; }
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         event Action PhysicalPathChange; 
@@ -67,6 +68,11 @@ namespace RequestReduce.Configuration
         public string ContentHost
         {
             get { return config.ContentHost; }
+        }
+
+        public string ConnectionStringName
+        {
+            get { return config.ConnectionStringName; }
         }
 
         public Store ContentStore

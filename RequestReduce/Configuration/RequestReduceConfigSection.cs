@@ -41,6 +41,15 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("connectionStringName")]
+        public string ConnectionStringName
+        {
+            get
+            {
+                return base["connectionStringName"].ToString();
+            }
+        }
+
         [ConfigurationProperty("spriteSizeLimit")]
         public int SpriteSizeLimit
         {
