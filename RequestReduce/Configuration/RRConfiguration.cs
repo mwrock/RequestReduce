@@ -7,11 +7,17 @@ using System.Web;
 
 namespace RequestReduce.Configuration
 {
+    public enum Store
+    {
+        LocalDiskStore,
+        SqlServerStore
+    }
     public interface IRRConfiguration
     {
         string SpriteVirtualPath { get; set; }
         string SpritePhysicalPath { get; set; }
         string ContentHost { get; }
+        Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         event Action PhysicalPathChange; 
     }
@@ -21,6 +27,7 @@ namespace RequestReduce.Configuration
         private readonly RequestReduceConfigSection config = ConfigurationManager.GetSection("RequestReduce") as RequestReduceConfigSection;
         private string spriteVirtualPath;
         private string spritePhysicalPath;
+        private Store contentStore = Store.LocalDiskStore;
         private int spriteSizeLimit;
         public event Action PhysicalPathChange;  
 
@@ -30,6 +37,12 @@ namespace RequestReduce.Configuration
             spriteSizeLimit =  val == 0 ? 50000 : val;
             spriteVirtualPath = config == null ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : config.SpritePhysicalPath;
+            if(config != null && !string.IsNullOrEmpty(config.ContentStore))
+            {
+                var success = Enum.TryParse(config.ContentStore, true, out contentStore);
+                if(!success)
+                    throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore));
+            }
             CreatePhysicalPath();
         }
 
@@ -54,6 +67,11 @@ namespace RequestReduce.Configuration
         public string ContentHost
         {
             get { return config.ContentHost; }
+        }
+
+        public Store ContentStore
+        {
+            get { return contentStore; }
         }
 
         public int SpriteSizeLimit

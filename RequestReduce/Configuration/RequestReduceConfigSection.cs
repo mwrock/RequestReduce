@@ -32,6 +32,15 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("contentStore")]
+        public string ContentStore
+        {
+            get
+            {
+                return base["contentStore"].ToString();
+            }
+        }
+
         [ConfigurationProperty("spriteSizeLimit")]
         public int SpriteSizeLimit
         {

@@ -62,6 +62,7 @@
     <Compile Include="Reducer\ICssImageTransformer.cs" />
     <Compile Include="Store\IStore.cs" />
     <Compile Include="Store\LocalDiskStore.cs" />
+    <Compile Include="Store\SqlServerStore.cs" />
     <Compile Include="Utilities\IMinifier.cs" />
     <Compile Include="Reducer\IReducer.cs" />
     <Compile Include="Reducer\ISpriteContainer.cs" />

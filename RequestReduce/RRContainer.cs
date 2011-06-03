@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
@@ -24,7 +25,27 @@ namespace RequestReduce
                                     {
                                         x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                         x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
-                                        x.For<IStore>().Singleton().Add<LocalDiskStore>();
+                                        x.For<IStore>().Singleton().Use((y) =>
+                                                                            {
+                                                                                switch (
+                                                                                    y.GetInstance<IRRConfiguration>().
+                                                                                        ContentStore)
+                                                                                {
+                                                                                    case
+                                                                                        Configuration.Store.
+                                                                                            SqlServerStore:
+                                                                                        return
+                                                                                            y.GetInstance
+                                                                                                <SqlServerStore>();
+                                                                                    case
+                                                                                        Configuration.Store.
+                                                                                            LocalDiskStore:
+                                                                                    default:
+                                                                                        return
+                                                                                            y.GetInstance
+                                                                                                <LocalDiskStore>();
+                                                                                }
+                                                                            });
                                         x.For<HttpContextBase>().Use(() => HttpContext.Current == null ? null : new HttpContextWrapper(HttpContext.Current));
                                     });
             container.Configure(x => x.Scan(y =>
