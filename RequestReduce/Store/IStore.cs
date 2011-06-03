@@ -8,7 +8,7 @@ namespace RequestReduce.Store
 
     public delegate void DeleeCsAction(Guid key);
 
-    public interface IStore
+    public interface IStore : IDisposable
     {
         void Save(byte[] content, string url);
         byte[] GetContent(string url);

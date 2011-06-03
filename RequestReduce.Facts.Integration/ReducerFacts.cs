@@ -33,6 +33,7 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(result,
                          Directory.GetFiles(config.SpritePhysicalPath + "\\" + key.ToString()).Single(x => x.EndsWith(".css")).Replace(
                              config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"));
+            reducer.Dispose();
         }
 
         [Fact]
@@ -45,6 +46,7 @@ namespace RequestReduce.Facts.Integration
             var result = reducer.Process(urls);
 
             Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath + "\\" + key.ToString()).Single(x => x.EndsWith(".png")));
+            reducer.Dispose();
         }
 
         public void Dispose()
@@ -58,6 +60,7 @@ namespace RequestReduce.Facts.Integration
                 Thread.Sleep(100);
                 Directory.Delete(config.SpritePhysicalPath, true);
             }
+            RRContainer.Current = null;
         }
     }
 }

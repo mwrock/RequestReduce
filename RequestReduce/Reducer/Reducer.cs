@@ -62,5 +62,9 @@ namespace RequestReduce.Reducer
             return urls.Split(new string[] { "::" }, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public void Dispose()
+        {
+            store.Dispose();
+        }
     }
 }

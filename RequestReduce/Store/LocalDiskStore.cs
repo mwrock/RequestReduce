@@ -72,7 +72,7 @@ namespace RequestReduce.Store
         public IDictionary<Guid, string> GetSavedUrls()
         {
             var dic = new Dictionary<Guid, string>();
-            if (string.IsNullOrEmpty(configuration.SpritePhysicalPath))
+            if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
             var keys = fileWrapper.GetDirectories(configuration.SpritePhysicalPath);
             foreach (var key in keys)
@@ -105,6 +105,12 @@ namespace RequestReduce.Store
             if(!fileWrapper.DirectoryExists(dir))
                 fileWrapper.CreateDirectory(dir);
             return fileName;
+        }
+
+        public void Dispose()
+        {
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
         }
     }
 }

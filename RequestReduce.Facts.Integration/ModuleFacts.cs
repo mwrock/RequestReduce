@@ -110,15 +110,15 @@ namespace RequestReduce.Facts.Integration
         {
             var watch = new Stopwatch();
             watch.Start();
-            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 5000)
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
-            while (Directory.GetDirectories(rrFolder).Length == 0 && watch.ElapsedMilliseconds < 5000)
+            while (Directory.GetDirectories(rrFolder).Length == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             var newDir = Directory.GetDirectories(rrFolder)[0];
-            while (Directory.GetFiles(newDir, "*.css").Length == 0 && watch.ElapsedMilliseconds < 5000)
+            while (Directory.GetFiles(newDir, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
-            if(watch.ElapsedMilliseconds >= 5000)
-                throw new TimeoutException(5000);
+            if(watch.ElapsedMilliseconds >= 10000)
+                throw new TimeoutException(10000);
             Thread.Sleep(100);
         }
 
@@ -126,7 +126,7 @@ namespace RequestReduce.Facts.Integration
         {
             var pool = new DirectoryEntry("IIS://localhost/W3SVC/AppPools/RequestReduce");
             pool.Invoke("Recycle", null);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
         }
 
         public void Dispose()
