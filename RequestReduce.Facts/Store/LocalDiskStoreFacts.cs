@@ -14,6 +14,8 @@ namespace RequestReduce.Facts.Store
                 : base(fileWrapper, configuration, uriBuilder)
             {
             }
+            public override event DeleeCsAction CssDeleted;
+            public override event AddCssAction CssAded;
 
             protected override void SetupWatcher()
             {
@@ -23,9 +25,9 @@ namespace RequestReduce.Facts.Store
             public void TriggerChange(string change, Guid key)
             {
                 if (change == "delete")
-                    DeleteCssAction(key);
+                    CssDeleted(key);
                 if (change == "add")
-                    AddCssAction(key, "url");
+                    CssAded(key, "url");
             }
         }
 
@@ -47,7 +49,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
 
-                testable.ClassUnderTest.Save(content, "/url/myid/style.cc");
+                testable.ClassUnderTest.Save(content, "/url/myid/style.cc", null);
 
                 testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid\\style.cc"));
             }
@@ -61,7 +63,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
 
-                testable.ClassUnderTest.Save(content, "http://host/url/myid/style.cc");
+                testable.ClassUnderTest.Save(content, "http://host/url/myid/style.cc", null);
 
                 testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid\\style.cc"));
             }
@@ -75,7 +77,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IFileWrapper>().Setup(x => x.DirectoryExists("c:\\web\\url\\myid")).Returns(false);
 
-                testable.ClassUnderTest.Save(content, "/url/myid/style.cc");
+                testable.ClassUnderTest.Save(content, "/url/myid/style.cc", null);
 
                 testable.Mock<IFileWrapper>().Verify(x => x.CreateDirectory("c:\\web\\url\\myid"));
             }
@@ -155,7 +157,7 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableLocalDiskStore();
                 Guid key = new Guid();
                 var expectedGuid = Guid.NewGuid();
-                testable.ClassUnderTest.RegisterDeleteCssAction(x => key = x);
+                testable.ClassUnderTest.CssDeleted += (x => key = x);
 
                 testable.ClassUnderTest.TriggerChange("delete", expectedGuid);
 
@@ -171,7 +173,7 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableLocalDiskStore();
                 Guid key = new Guid();
                 var expectedGuid = Guid.NewGuid();
-                testable.ClassUnderTest.RegisterAddCssAction((x,y) => key = x);
+                testable.ClassUnderTest.CssAded += ((x,y) => key = x);
 
                 testable.ClassUnderTest.TriggerChange("add", expectedGuid);
 

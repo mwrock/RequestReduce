@@ -41,7 +41,7 @@ namespace RequestReduce.Reducer
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));
             spriteManager.Flush();
-            store.Save(Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString())), virtualfileName);
+            store.Save(Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString())), virtualfileName, urls);
             return virtualfileName;
         }
 

@@ -101,7 +101,10 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                testable.Mock<IStore>().Verify(x => x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result), Times.Once());
+                testable.Mock<IStore>().Verify(
+                    x =>
+                    x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result,
+                           "http://host/css1.css::http://host/css2.css"), Times.Once());
             }
 
             [Fact]

@@ -15,8 +15,8 @@ namespace RequestReduce.Module
         public ReductionRepository(IStore store)
         {
             this.store = store;
-            store.RegisterAddCssAction(AddReduction);
-            store.RegisterDeleteCssAction(RemoveReduction);
+            store.CssAded += AddReduction;
+            store.CssDeleted += RemoveReduction;
             var thread = new Thread(LoadDictionaryWithExistingItems);
             thread.IsBackground = true;
             thread.Start();

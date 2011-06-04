@@ -12,8 +12,6 @@ namespace RequestReduce.Store
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
         private FileSystemWatcher watcher = new FileSystemWatcher();
-        protected DeleeCsAction DeleteCssAction;
-        protected AddCssAction AddCssAction;
 
         public LocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder)
         {
@@ -47,14 +45,14 @@ namespace RequestReduce.Store
             Guid guid;
             if(Guid.TryParse(keyDir, out guid))
             {
-                if (e.ChangeType == WatcherChangeTypes.Deleted && DeleteCssAction != null)
-                    DeleteCssAction(guid);
-                if (e.ChangeType == WatcherChangeTypes.Created && AddCssAction != null)
-                    AddCssAction(guid, uriBuilder.BuildCssUrl(guid));
+                if (e.ChangeType == WatcherChangeTypes.Deleted)
+                    CssDeleted(guid);
+                if (e.ChangeType == WatcherChangeTypes.Created)
+                    CssAded(guid, uriBuilder.BuildCssUrl(guid));
             }
         }
 
-        public void Save(byte[] content, string url)
+        public void Save(byte[] content, string url, string originalUrls)
         {
             fileWrapper.Save(content, GetFileNameFromConfig(url));
         }
@@ -85,15 +83,8 @@ namespace RequestReduce.Store
             return dic;
         }
 
-        public void RegisterDeleteCssAction(DeleeCsAction deleteAction)
-        {
-            DeleteCssAction = deleteAction;
-        }
-
-        public void RegisterAddCssAction(AddCssAction addAction)
-        {
-            AddCssAction = addAction;
-        }
+        public virtual event DeleeCsAction CssDeleted;
+        public virtual event AddCssAction CssAded;
 
         private string GetFileNameFromConfig(string url)
         {

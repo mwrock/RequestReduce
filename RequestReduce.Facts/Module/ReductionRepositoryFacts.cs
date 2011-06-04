@@ -19,6 +19,9 @@ namespace RequestReduce.Facts.Module
             {
             }
 
+            public override event DeleeCsAction CssDeleted;
+            public override event AddCssAction CssAded;
+
             protected override void SetupWatcher()
             {
                 return;
@@ -27,9 +30,9 @@ namespace RequestReduce.Facts.Module
             public void TriggerChange(string change, Guid key)
             {
                 if (change == "delete")
-                    DeleteCssAction(key);
+                    CssDeleted(key);
                 if (change == "add")
-                    AddCssAction(key, "url");
+                    CssAded(key, "url");
             }
         }
 

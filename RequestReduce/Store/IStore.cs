@@ -10,11 +10,11 @@ namespace RequestReduce.Store
 
     public interface IStore : IDisposable
     {
-        void Save(byte[] content, string url);
+        void Save(byte[] content, string url, string originalUrls);
         byte[] GetContent(string url);
         Stream OpenStream(string url);
         IDictionary<Guid, string> GetSavedUrls();
-        void RegisterDeleteCssAction(DeleeCsAction deleteAction);
-        void RegisterAddCssAction(AddCssAction addAction);
+        event DeleeCsAction CssDeleted;
+        event AddCssAction CssAded;
     }
 }
