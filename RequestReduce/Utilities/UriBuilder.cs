@@ -32,12 +32,14 @@ namespace RequestReduce.Utilities
 
         public string ParseFileName(string url)
         {
-            return null;
+            return url.Substring(url.LastIndexOf('/') + 1);
         }
 
         public Guid ParseKey(string url)
         {
-            return Guid.Empty;
+            var dir = url.Substring(0, url.LastIndexOf('/'));
+            var keyDir = dir.Substring(dir.LastIndexOf('/') + 1);
+            return Guid.Parse(keyDir);
         }
     }
 }

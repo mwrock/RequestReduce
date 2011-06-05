@@ -47,6 +47,32 @@ namespace RequestReduce.Facts.Utilities
             }
         }
 
+        public class ParseFileName
+        {
+            [Fact]
+            public void WillParseFileName()
+            {
+                var testable = new TestableUriBuilder();
+
+                var result = testable.ClassUnderTest.ParseFileName("http://host/path/key/file.css");
+
+                Assert.Equal("file.css", result);
+            }
+        }
+
+        public class ParseKey
+        {
+            [Fact]
+            public void WillParseKey()
+            {
+                var testable = new TestableUriBuilder();
+                var key = Guid.NewGuid();
+
+                var result = testable.ClassUnderTest.ParseKey("http://host/path/" + key + "/file.css");
+
+                Assert.Equal(key, result);
+            }
+        }
     }
 
 }

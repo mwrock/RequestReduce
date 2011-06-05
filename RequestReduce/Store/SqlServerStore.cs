@@ -13,6 +13,8 @@ namespace RequestReduce.Store
         private readonly IUriBuilder uriBuilder;
         private readonly IRepository<RequestReduceFile> repository;
         private readonly IStore fileStore;
+        public event DeleeCsAction CssDeleted;
+        public event AddCssAction CssAded;
 
         public SqlServerStore(IUriBuilder uriBuilder, IRepository<RequestReduceFile> repository, IStore fileStore)
         {
@@ -42,7 +44,8 @@ namespace RequestReduce.Store
                            };
             repository.Save(file);
             fileStore.Save(content, url, originalUrls);
-            CssAded(key, url);
+            if(CssAded != null)
+                CssAded(key, url);
         }
 
         public byte[] GetContent(string url)
@@ -59,9 +62,6 @@ namespace RequestReduce.Store
         {
             throw new NotImplementedException();
         }
-
-        public event DeleeCsAction CssDeleted;
-        public event AddCssAction CssAded;
 
         public void RegisterDeleteCssAction(DeleeCsAction deleteAction)
         {

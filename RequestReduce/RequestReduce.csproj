@@ -65,7 +65,7 @@
     <Compile Include="Reducer\BackgroundImageClass.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />
-    <Compile Include="Store\IRepository.cs" />
+    <Compile Include="Store\Repository.cs" />
     <Compile Include="Store\IStore.cs" />
     <Compile Include="Store\LocalDiskStore.cs" />
     <Compile Include="Store\RequestReduceContext.cs" />
