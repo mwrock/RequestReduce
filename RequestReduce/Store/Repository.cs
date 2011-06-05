@@ -10,26 +10,34 @@ namespace RequestReduce.Store
         T this[object id] { get; }
     }
 
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IDisposable, IRepository<T> where T : class
     {
+        private readonly IRRConfiguration config;
+        private readonly RequestReduceContext context = null;
+
+        public Repository(IRRConfiguration config)
+        {
+            this.config = config;
+            context = new RequestReduceContext(config.ConnectionStringName);
+        }
+
         public void Save(T entity)
         {
-            using(var db = new RequestReduceContext())
-            {
-                db.Set<T>().Add(entity);
-                db.SaveChanges();
-            }
+            context.Set<T>().Add(entity);
+            context.SaveChanges();
         }
 
         public T this[object id]
         {
             get 
             {
-                using (var db = new RequestReduceContext())
-                {
-                    return db.Set<T>().Find(id);
-                }                
+                return context.Set<T>().Find(id);
             }
+        }
+
+        public void Dispose()
+        {
+            context.Dispose();
         }
     }
 }

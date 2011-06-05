@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using Xunit;
@@ -11,6 +12,7 @@ namespace RequestReduce.Facts.Store
         {
             public TestableRepository()
             {
+                Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseAlways<RequestReduceContext>());
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns("RequestReduce");
             }
         }
