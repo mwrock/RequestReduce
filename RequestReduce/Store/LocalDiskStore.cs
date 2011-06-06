@@ -45,9 +45,9 @@ namespace RequestReduce.Store
             Guid guid;
             if(Guid.TryParse(keyDir, out guid))
             {
-                if (e.ChangeType == WatcherChangeTypes.Deleted)
+                if (e.ChangeType == WatcherChangeTypes.Deleted && CssDeleted != null)
                     CssDeleted(guid);
-                if (e.ChangeType == WatcherChangeTypes.Created)
+                if (e.ChangeType == WatcherChangeTypes.Created && CssAded != null)
                     CssAded(guid, uriBuilder.BuildCssUrl(guid));
             }
         }
