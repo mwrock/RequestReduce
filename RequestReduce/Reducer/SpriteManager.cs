@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using RequestReduce.Configuration;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
@@ -11,16 +12,16 @@ namespace RequestReduce.Reducer
         protected ISpriteContainer SpriteContainer = null;
         private IWebClientWrapper webClientWrapper = null;
         private IRRConfiguration config = null;
-        private readonly ISpriteWriterFactory spriteWriterFactory;
         private readonly IUriBuilder uriBuilder;
+        private readonly IStore store;
         private IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
-        private int spriteIndex = 1;
+        protected int spriteIndex = 1;
 
-        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory, IUriBuilder uriBuilder)
+        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store)
         {
             this.webClientWrapper = webClientWrapper;
-            this.spriteWriterFactory = spriteWriterFactory;
             this.uriBuilder = uriBuilder;
+            this.store = store;
             this.config = config;
             SpriteContainer = new SpriteContainer(webClientWrapper);
         }
@@ -52,18 +53,17 @@ namespace RequestReduce.Reducer
         {
             if(SpriteContainer.Size > 0)
             {
-                using (var spriteWriter = spriteWriterFactory.CreateWriter(SpriteContainer.Width, SpriteContainer.Height))
+                using (var spriteWriter = new SpriteWriter(SpriteContainer.Width, SpriteContainer.Height))
                 {
                     foreach (var image in SpriteContainer)
-                    {
                         spriteWriter.WriteImage(image);
-                    }
 
-                    spriteWriter.Save(GetSpriteUrl(), "image/png");
+                    var bytes = spriteWriter.GetBytes("image/png");
+                    store.Save(bytes, GetSpriteUrl(), null);
                 }
+                ++spriteIndex;
             }
             SpriteContainer.Dispose();
-            ++spriteIndex;
             SpriteContainer = new SpriteContainer(webClientWrapper);
             return;
         }

@@ -62,11 +62,6 @@ namespace RequestReduce.Store
             throw new NotImplementedException();
         }
 
-        public Stream OpenStream(string url)
-        {
-            return fileWrapper.OpenStream(GetFileNameFromConfig(url));
-        }
-
         public IDictionary<Guid, string> GetSavedUrls()
         {
             var dic = new Dictionary<Guid, string>();

@@ -25,7 +25,7 @@ namespace RequestReduce.Reducer
             Bitmap bitmap = null;
             using (var originalBitmap = new Bitmap(new MemoryStream(imageBytes)))
             {
-                using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height, null))
+                using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height))
                 {
                     var width = image.Width ?? originalBitmap.Width;
                     if (width > originalBitmap.Width)

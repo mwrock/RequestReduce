@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Web;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
@@ -18,25 +18,34 @@ namespace RequestReduce.Facts.Reducer
     {
         class SpriteManagerToTest: SpriteManager
         {
-            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, ISpriteWriterFactory spriteWriterFactory, IUriBuilder uriBuilder) : base(webClientWrapper, config, spriteWriterFactory, uriBuilder)
+            public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store) : base(webClientWrapper, config, uriBuilder, store)
             {
                 MockSpriteContainer = new Mock<ISpriteContainer>();
                 MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                MockSpriteContainer.Setup(x => x.Width).Returns(1);
+                MockSpriteContainer.Setup(x => x.Height).Returns(1);
                 base.SpriteContainer = MockSpriteContainer.Object;
                 SpritedCssKey = Guid.NewGuid();
             }
 
             public Mock<ISpriteContainer> MockSpriteContainer { get; set; }
             public new ISpriteContainer SpriteContainer { get { return base.SpriteContainer; } set { base.SpriteContainer = value; } }
+            public int SpriteIndex { get { return spriteIndex; } }
         }
         class TestableSpriteManager : Testable<SpriteManagerToTest>
         {
             public TestableSpriteManager()
             {
                 Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1000);
-                Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(
-                    new Mock<ISpriteWriter>().Object);
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
+            }
+
+            public static Bitmap Image15X17 = CreateFileImage("testimages\\delete.png");
+            public static Bitmap Image18X18 = CreateFileImage("testimages\\emptyStar.png");
+
+            private static Bitmap CreateFileImage(string path)
+            {
+                return new Bitmap(new MemoryStream(File.ReadAllBytes(path)));
             }
         }
 
@@ -73,7 +82,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl" });
 
-                testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(1));
+                Assert.Equal(2, testable.ClassUnderTest.SpriteIndex);
             }
 
             [Fact]
@@ -165,8 +174,6 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
                 testable.ClassUnderTest.Flush();
                 var image = new BackgroundImageClass("") { ImageUrl = "" };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
@@ -188,7 +195,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Flush();
 
-                testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>()), Times.Never());
+                Assert.Equal(1, testable.ClassUnderTest.SpriteIndex);
             }
 
             [Fact]
@@ -198,39 +205,50 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                byte[] bytes = null;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[],string,string>((a,b,c) => bytes = a);
 
                 testable.ClassUnderTest.Flush();
 
-                testable.Mock<ISpriteWriterFactory>().Verify(x => x.CreateWriter(1, 1), Times.Exactly(1));
+                var bitMap = new Bitmap(new MemoryStream(bytes));
+                Assert.Equal(1, bitMap.Width);
+                Assert.Equal(1, bitMap.Height);
             }
 
             [Fact]
             public void WillWriteEachImage()
             {
                 var testable = new TestableSpriteManager();
-                var images = new List<Bitmap>() {new Bitmap(1, 1), new Bitmap(2, 2)};
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(33);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(18);
+                var images = new List<Bitmap>() { TestableSpriteManager.Image15X17, TestableSpriteManager.Image18X18 };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                byte[] bytes = null;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => bytes = a);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.WriteImage(images[0]), Times.Exactly(1));
-                mockWriter.Verify(x => x.WriteImage(images[1]), Times.Exactly(1));
+                var bitMap = new Bitmap(new MemoryStream(bytes));
+                Assert.Equal(TestableSpriteManager.Image15X17.GraphicsImage(), bitMap.Clone(new Rectangle(0, 0, 15, 17), TestableSpriteManager.Image15X17.PixelFormat), new BitmapPixelComparer(true));
+                Assert.Equal(TestableSpriteManager.Image18X18.GraphicsImage(), bitMap.Clone(new Rectangle(15, 0, 18, 18), TestableSpriteManager.Image18X18.PixelFormat), new BitmapPixelComparer(true));
             }
 
             [Fact]
             public void WillSaveWriterToContainerUrlUsingPngMimeType()
             {
                 var testable = new TestableSpriteManager();
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                byte[] bytes = null;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => bytes = a);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.Save(It.IsAny<string>(), "image/png"));
+                var bitMap = new Bitmap(new MemoryStream(bytes));
+                Assert.Equal(ImageFormat.Png, bitMap.RawFormat);
             }
 
             [Fact]
@@ -250,12 +268,13 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                var url = string.Empty;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => url = b);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.StartsWith("spritedir/")), It.IsAny<string>()));
+                Assert.True(url.StartsWith("spritedir/"));
             }
 
             [Fact]
@@ -264,12 +283,13 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                var url = string.Empty;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => url = b);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "/")), It.IsAny<string>()));
+                Assert.True(url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "/"));
             }
 
             [Fact]
@@ -277,21 +297,20 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                var url = string.Empty;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => url = b);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.EndsWith(".png")), It.IsAny<string>()));
+                Assert.True(url.EndsWith(".png"));
             }
 
             [Fact]
-            public void WillThrowInvalidOperationExceptionIfCssKeyIsEmpry()
+            public void WillThrowInvalidOperationExceptionIfCssKeyIsEmpty()
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
                 testable.ClassUnderTest.SpritedCssKey = Guid.Empty;
 
                 var ex = Assert.Throws<InvalidOperationException>(() => testable.ClassUnderTest.Flush());
@@ -304,18 +323,17 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
                 testable.ClassUnderTest.Flush();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
                 testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                mockWriter = new Mock<ISpriteWriter>();
-                testable.Mock<ISpriteWriterFactory>().Setup(x => x.CreateWriter(It.IsAny<int>(), It.IsAny<int>())).Returns(mockWriter.Object);
+                var url = string.Empty;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => url = b);
 
                 testable.ClassUnderTest.Flush();
 
-                mockWriter.Verify(x => x.Save(It.Is<string>(y => y.EndsWith("/sprite2.png")), It.IsAny<string>()));
+                Assert.True(url.EndsWith("/sprite2.png"));
             }
         }
 

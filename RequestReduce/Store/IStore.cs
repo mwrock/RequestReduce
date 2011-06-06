@@ -12,7 +12,6 @@ namespace RequestReduce.Store
     {
         void Save(byte[] content, string url, string originalUrls);
         byte[] GetContent(string url);
-        Stream OpenStream(string url);
         IDictionary<Guid, string> GetSavedUrls();
         event DeleeCsAction CssDeleted;
         event AddCssAction CssAded;

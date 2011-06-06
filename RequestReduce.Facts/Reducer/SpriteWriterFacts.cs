@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillCreateDrawingSurfaceWithDimensionsPassed()
             {
-                var testable = new SpriteWriter(10, 20, null);
+                var testable = new SpriteWriter(10, 20);
 
                 Assert.Equal(10, testable.SpriteImage.Width);
                 Assert.Equal(20, testable.SpriteImage.Height);
@@ -39,7 +39,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillWriteImageToSurfaceAtTheCorrectOffset()
             {
-                var testable = new SpriteWriter(33, 18, null);
+                var testable = new SpriteWriter(33, 18);
                 testable.WriteImage(TestableSpriteWriter.Image15X17);
 
                 testable.WriteImage(TestableSpriteWriter.Image18X18);

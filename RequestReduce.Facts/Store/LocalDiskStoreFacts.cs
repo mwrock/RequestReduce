@@ -83,47 +83,6 @@ namespace RequestReduce.Facts.Store
             }
         }
 
-        public class OpenStream
-        {
-            [Fact]
-            public void WillGetPhysicalPathFromUrl()
-            {
-                var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
-
-                testable.ClassUnderTest.OpenStream("/url/myid/style.cc");
-
-                testable.Mock<IFileWrapper>().Verify(x => x.OpenStream("c:\\web\\url\\myid\\style.cc"));
-            }
-
-            [Fact]
-            public void WillGetPhysicalPathFromAbsoluteUrl()
-            {
-                var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
-
-                testable.ClassUnderTest.OpenStream("http://host/url/myid/style.cc");
-
-                testable.Mock<IFileWrapper>().Verify(x => x.OpenStream("c:\\web\\url\\myid\\style.cc"));
-            }
-
-            [Fact]
-            public void WillCreateKeyDirectoryIfMissing()
-            {
-                var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
-                testable.Mock<IFileWrapper>().Setup(x => x.DirectoryExists("c:\\web\\url\\myid")).Returns(false);
-
-                testable.ClassUnderTest.OpenStream("/url/myid/style.cc");
-
-                testable.Mock<IFileWrapper>().Verify(x => x.CreateDirectory("c:\\web\\url\\myid"));
-            }
-        }
-
         public class GetExistingUrls
         {
             [Fact]

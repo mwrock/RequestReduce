@@ -72,7 +72,7 @@ namespace RequestReduce.Configuration
 
         public string ConnectionStringName
         {
-            get { return config.ConnectionStringName; }
+            get { return config != null ? config.ConnectionStringName : null; }
         }
 
         public Store ContentStore

@@ -75,12 +75,10 @@
     <Compile Include="Reducer\IReducer.cs" />
     <Compile Include="Reducer\ISpriteContainer.cs" />
     <Compile Include="Reducer\ISpriteManager.cs" />
-    <Compile Include="Reducer\ISpriteWriter.cs" />
     <Compile Include="Utilities\Minifier.cs" />
     <Compile Include="Reducer\Sprite.cs" />
     <Compile Include="Reducer\SpriteContainer.cs" />
     <Compile Include="Reducer\SpriteWriter.cs" />
-    <Compile Include="Reducer\SpriteWriterFactory.cs" />
     <Compile Include="Reducer\Position.cs" />
     <Compile Include="Utilities\FileWrapper.cs" />
     <Compile Include="Utilities\IFileWrapper.cs" />
