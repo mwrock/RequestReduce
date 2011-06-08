@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using Xunit;
@@ -8,7 +9,7 @@ namespace RequestReduce.Facts.Store
 {
     public class RepositoryFacts
     {
-        class TestableRepository : Testable<Repository<RequestReduceFile>>
+        class TestableRepository : Testable<FileRepository>
         {
             public TestableRepository()
             {
@@ -47,6 +48,52 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(file.LastAccessed, savedFile.LastAccessed);
                 Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
             }
+        }
+
+        [Fact]
+        public void WillReturnDistinctListOfKeys()
+        {
+            var testable = new TestableRepository();
+            var id = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var file = new RequestReduceFile()
+            {
+                Content = new byte[] { 1 },
+                FileName = "fileName",
+                Key = id,
+                LastAccessed = DateTime.Now,
+                LastUpdated = DateTime.Now,
+                OriginalName = "originalName",
+                RequestReduceFileId = Guid.NewGuid()
+            };
+            var file2 = new RequestReduceFile()
+            {
+                Content = new byte[] { 1 },
+                FileName = "fileName2",
+                Key = id,
+                LastAccessed = DateTime.Now,
+                LastUpdated = DateTime.Now,
+                RequestReduceFileId = Guid.NewGuid()
+            };
+            var file3 = new RequestReduceFile()
+            {
+                Content = new byte[] { 1 },
+                FileName = "fileName3",
+                Key = id2,
+                LastAccessed = DateTime.Now,
+                LastUpdated = DateTime.Now,
+                OriginalName = "originalName2",
+                RequestReduceFileId = Guid.NewGuid()
+            };
+            testable.ClassUnderTest.Save(file);
+            testable.ClassUnderTest.Save(file2);
+            testable.ClassUnderTest.Save(file3);
+
+            var result = testable.ClassUnderTest.GetKeys();
+
+            Assert.Equal(2, result.Count());
+            Assert.True(result.Contains(id));
+            Assert.True(result.Contains(id2));
         }
     }
 }

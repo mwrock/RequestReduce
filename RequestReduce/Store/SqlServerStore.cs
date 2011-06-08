@@ -11,12 +11,12 @@ namespace RequestReduce.Store
     public class SqlServerStore : IStore
     {
         private readonly IUriBuilder uriBuilder;
-        private readonly IRepository<RequestReduceFile> repository;
+        private readonly IFileRepository repository;
         private readonly IStore fileStore;
         public event DeleeCsAction CssDeleted;
         public event AddCssAction CssAded;
 
-        public SqlServerStore(IUriBuilder uriBuilder, IRepository<RequestReduceFile> repository, IStore fileStore)
+        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore)
         {
             this.uriBuilder = uriBuilder;
             this.repository = repository;
@@ -55,7 +55,8 @@ namespace RequestReduce.Store
 
         public IDictionary<Guid, string> GetSavedUrls()
         {
-            throw new NotImplementedException();
+            var keys = repository.GetKeys();
+            return keys.ToDictionary(key => key, key => uriBuilder.BuildCssUrl(key));
         }
     }
 }

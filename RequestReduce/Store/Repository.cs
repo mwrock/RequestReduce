@@ -1,5 +1,5 @@
 using System;
-using System.Data.Entity;
+using System.Linq;
 using RequestReduce.Configuration;
 
 namespace RequestReduce.Store
@@ -9,6 +9,7 @@ namespace RequestReduce.Store
         void Save(T entity);
         T this[object id] { get; }
         RequestReduceContext Context { get; }
+        IQueryable<T> AsQueryable();
     }
 
     public class Repository<T> : IDisposable, IRepository<T> where T : class
@@ -38,6 +39,11 @@ namespace RequestReduce.Store
             {
                 return Context.Set<T>().Find(id);
             }
+        }
+
+        public IQueryable<T> AsQueryable()
+        {
+            return Context.Set<T>();
         }
 
         public void Dispose()
