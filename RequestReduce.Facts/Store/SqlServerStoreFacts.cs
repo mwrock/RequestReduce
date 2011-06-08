@@ -45,11 +45,30 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillFireAddedEvent()
+            public void WillNotFireAddedEventIfFileIsPng()
             {
                 var testable = new TestableSqlServerStore();
                 var content = new byte[] { 1 };
-                var expectedUrl = "url";
+                var expectedUrl = "url.png";
+                var originalUrls = "originalUrls";
+                var expectedKey = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(expectedUrl)).Returns(expectedKey);
+                var key = new Guid();
+                var url = string.Empty;
+                testable.ClassUnderTest.CssAded += ((x, y) => { key = x; url = y; });
+
+                testable.ClassUnderTest.Save(content, expectedUrl, originalUrls);
+
+                Assert.Equal(string.Empty, url);
+                Assert.Equal(Guid.Empty, key);
+            }
+
+            [Fact]
+            public void WillFireAddedEventIfFileIsNotPng()
+            {
+                var testable = new TestableSqlServerStore();
+                var content = new byte[] { 1 };
+                var expectedUrl = "url.css";
                 var originalUrls = "originalUrls";
                 var expectedKey = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(expectedUrl)).Returns(expectedKey);

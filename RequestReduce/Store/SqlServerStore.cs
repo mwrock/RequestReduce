@@ -44,7 +44,7 @@ namespace RequestReduce.Store
                            };
             repository.Save(file);
             fileStore.Save(content, url, originalUrls);
-            if(CssAded != null)
+            if(CssAded != null && !url.ToLower().EndsWith(".png"))
                 CssAded(key, url);
         }
 
