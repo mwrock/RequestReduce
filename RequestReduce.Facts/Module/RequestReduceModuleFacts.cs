@@ -4,9 +4,11 @@ using System.Web;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
+using RequestReduce.Store;
 using StructureMap;
 using Xunit;
 using System.IO;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Module
 {
@@ -93,20 +95,31 @@ namespace RequestReduce.Facts.Module
             context.Verify(x => x.Items.Add(RequestReduceModule.CONTEXT_KEY, It.IsAny<Object>()), Times.Once());
         }
 
-        [Fact]
-        public void WillSetCachabilityIfInRRPathOnRelativeVirtualRRPath()
+        [Theory]
+        [InlineData("/RRContent")]
+        [InlineData("http://localhost/RRContent")]
+        public void WillSetCachabilityIfInRRPathAndStoreSendsContent(string path)
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection(){{"ETag", "tag"}});
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
-            RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+            config.Setup(x => x.SpriteVirtualPath).Returns(path);
+            var store = new Mock<IStore>();
+            store.Setup(
+                x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
+                Returns(true);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+            });
 
-            module.SetCacheHeaders(context.Object);
+            module.HandleRRContent(context.Object);
 
             Assert.Equal(44000, context.Object.Response.Expires);
             Assert.Null(context.Object.Response.Headers["ETag"]);
@@ -114,51 +127,13 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
-        [Fact]
-        public void WillSetCachabilityIfInRRPathOnAbsoluteVirtualRRPath()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
-            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
-            var headers = new NameValueCollection() {{"ETag", "tag"}};
-            context.Setup(x => x.Response.Headers).Returns(headers);
-            var cache = new Mock<HttpCachePolicyBase>();
-            context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("http://localhost/RRContent");
-            RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
 
-            module.SetCacheHeaders(context.Object);
-
-            Assert.Equal(44000, context.Object.Response.Expires);
-            Assert.Null(headers["ETag"]);
-            cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotSetCachabilityIfNotInRRPathOnRelativeVirtualRRPath()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
-            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection() { { "ETag", "tag" } });
-            var cache = new Mock<HttpCachePolicyBase>();
-            context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Content");
-            RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
-
-            module.SetCacheHeaders(context.Object);
-
-            Assert.NotNull(context.Object.Response.Headers["ETag"]);
-            cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotSetCachabilityIfNotInRRPathOnAbsoluteVirtualRRPath()
+        [Theory]
+        [InlineData("/Content", true)]
+        [InlineData("http://localhost/Content", true)]
+        [InlineData("/RRContent", false)]
+        [InlineData("http://localhost/RRContent", false)]
+        public void WillNotSetCachabilityIfNotInRRPatOrStoreDoesNotSendContent(string path, bool contentSent)
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
@@ -168,10 +143,18 @@ namespace RequestReduce.Facts.Module
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("http://localhost/Content");
-            RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+            config.Setup(x => x.SpriteVirtualPath).Returns(path);
+            var store = new Mock<IStore>();
+            store.Setup(
+                x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
+                Returns(contentSent);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+            });
 
-            module.SetCacheHeaders(context.Object);
+            module.HandleRRContent(context.Object);
 
             Assert.NotNull(context.Object.Response.Headers["ETag"]);
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());

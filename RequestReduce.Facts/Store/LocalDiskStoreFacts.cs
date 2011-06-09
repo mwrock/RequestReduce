@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Web;
+using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -81,6 +84,40 @@ namespace RequestReduce.Facts.Store
 
                 testable.Mock<IFileWrapper>().Verify(x => x.CreateDirectory("c:\\web\\url\\myid"));
             }
+        }
+
+        public class SendContent
+        {
+            [Fact]
+            public void WillTransmitFileToResponseAndReturnTrue()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                var response = new Mock<HttpResponseBase>();
+
+                var result = testable.ClassUnderTest.SendContent("/url/myid/style.cc", response.Object);
+
+                Assert.True(result);
+                response.Verify(x => x.TransmitFile("c:\\web\\url\\myid\\style.cc"), Times.Once());
+            }
+
+            [Fact]
+            public void WillReturnFalseIfFileotFound()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                var response = new Mock<HttpResponseBase>();
+                response.Setup(x => x.TransmitFile("c:\\web\\url\\myid\\style.cc")).Throws(new FileNotFoundException());
+
+                var result = testable.ClassUnderTest.SendContent("/url/myid/style.cc", response.Object);
+
+                Assert.False(result);
+            }
+
         }
 
         public class GetExistingUrls

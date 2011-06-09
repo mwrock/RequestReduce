@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 
 namespace RequestReduce.Store
 {
@@ -11,7 +12,7 @@ namespace RequestReduce.Store
     public interface IStore : IDisposable
     {
         void Save(byte[] content, string url, string originalUrls);
-        byte[] GetContent(string url);
+        bool SendContent(string url, HttpResponseBase response);
         IDictionary<Guid, string> GetSavedUrls();
         event DeleeCsAction CssDeleted;
         event AddCssAction CssAded;

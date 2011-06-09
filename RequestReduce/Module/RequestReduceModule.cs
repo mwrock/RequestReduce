@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using RequestReduce.Configuration;
+using RequestReduce.Store;
 
 namespace RequestReduce.Module
 {
@@ -15,22 +16,33 @@ namespace RequestReduce.Module
         {
             context.ReleaseRequestState += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.PreSendRequestHeaders += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
-            context.PreSendRequestHeaders += (sender, e) => SetCacheHeaders(new HttpContextWrapper(((HttpApplication)sender).Context));
+            context.BeginRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
         }
 
-        public void SetCacheHeaders(HttpContextBase httpContextWrapper)
+        public void HandleRRContent(HttpContextBase httpContextWrapper)
+        {
+            if (IsInRRContentDirectory(httpContextWrapper))
+            {
+                var store = RRContainer.Current.GetInstance<IStore>();
+                if(store.SendContent(httpContextWrapper.Request.RawUrl, httpContextWrapper.Response))
+                {
+                    httpContextWrapper.Response.Headers.Remove("ETag");
+                    httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
+                    httpContextWrapper.Response.Expires = 44000;
+                    if (httpContextWrapper.ApplicationInstance != null) 
+                        httpContextWrapper.ApplicationInstance.CompleteRequest();
+                }
+            }
+        }
+
+        private bool IsInRRContentDirectory(HttpContextBase httpContextWrapper)
         {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var rrPath = config.SpriteVirtualPath.ToLower();
             var url = httpContextWrapper.Request.RawUrl.ToLower();
             if(rrPath.StartsWith("http"))
                 url = httpContextWrapper.Request.Url.AbsoluteUri.ToLower();
-            if(url.StartsWith(rrPath))
-            {
-                httpContextWrapper.Response.Headers.Remove("ETag");
-                httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
-                httpContextWrapper.Response.Expires = 44000;
-            }
+            return url.StartsWith(rrPath);
         }
 
         public void InstallFilter(HttpContextBase context)

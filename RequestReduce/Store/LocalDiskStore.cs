@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 
@@ -57,9 +58,17 @@ namespace RequestReduce.Store
             fileWrapper.Save(content, GetFileNameFromConfig(url));
         }
 
-        public byte[] GetContent(string url)
+        public bool SendContent(string url, HttpResponseBase response)
         {
-            throw new NotImplementedException();
+            try
+            {
+                response.TransmitFile(GetFileNameFromConfig(url));
+                return true;
+            }
+            catch (FileNotFoundException)
+            {
+                return false;
+            }
         }
 
         public IDictionary<Guid, string> GetSavedUrls()

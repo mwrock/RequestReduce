@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
 
@@ -18,6 +19,17 @@ namespace RequestReduce.Store
         public IEnumerable<Guid> GetKeys()
         {
             return AsQueryable().Select(y => y.Key).Distinct().ToList();
+        }
+
+        public override void Save(RequestReduceFile entity)
+        {
+            try
+            {
+                base.Save(entity);
+            }
+            catch (DbUpdateException)
+            {
+            }
         }
     }
 }

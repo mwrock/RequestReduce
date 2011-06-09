@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using RequestReduce.Utilities;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
@@ -48,7 +49,7 @@ namespace RequestReduce.Store
                 CssAded(key, url);
         }
 
-        public byte[] GetContent(string url)
+        public bool SendContent(string url, HttpResponseBase response)
         {
             throw new NotImplementedException();
         }

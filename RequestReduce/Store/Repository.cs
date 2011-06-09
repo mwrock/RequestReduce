@@ -27,7 +27,7 @@ namespace RequestReduce.Store
             get { return context ?? (context = new RequestReduceContext(config.ConnectionStringName)); }
         }
 
-        public void Save(T entity)
+        public virtual void Save(T entity)
         {
             Context.Set<T>().Add(entity);
             Context.SaveChanges();

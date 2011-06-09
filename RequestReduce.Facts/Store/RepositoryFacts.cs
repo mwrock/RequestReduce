@@ -48,6 +48,27 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(file.LastAccessed, savedFile.LastAccessed);
                 Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
             }
+
+            [Fact]
+            public void WillGracefullyHandleDuplicateSave()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "fileName",
+                    Key = Guid.NewGuid(),
+                    LastAccessed = DateTime.Now,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                testable.ClassUnderTest.Save(file);
+                Assert.DoesNotThrow(() => testable.ClassUnderTest.Save(file));
+            }
+
         }
 
         [Fact]
