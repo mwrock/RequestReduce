@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Moq;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -96,6 +97,60 @@ namespace RequestReduce.Facts.Store
 
                 testable.Mock<IStore>().Verify(x => x.Save(content, expectedUrl, originalUrls), Times.Once());
             }
+        }
+
+        public class SendContent
+        {
+            [Fact]
+            public void WillSendThroughFileCachedIfFileIsCached()
+            {
+                var testable = new TestableSqlServerStore();
+                var response = new Mock<HttpResponseBase>();
+                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(true);
+
+                var result = testable.ClassUnderTest.SendContent("url", response.Object);
+
+                Assert.True(result);
+                testable.Mock<IFileRepository>().Verify(x => x[It.IsAny<Guid>()], Times.Never());
+            }
+
+            [Fact]
+            public void WillGoToDBAndWriteBytesIfFileIsNotCached()
+            {
+                var testable = new TestableSqlServerStore();
+                var response = new Mock<HttpResponseBase>();
+                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
+                var key = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
+                var id = Hasher.Hash(key + "file.css");
+                var bytes = new byte[]{1};
+                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile(){Content = bytes});
+
+                var result = testable.ClassUnderTest.SendContent("url", response.Object);
+
+                Assert.True(result);
+                response.Verify(x => x.BinaryWrite(bytes), Times.Once());
+                testable.Mock<IStore>().Verify(x => x.Save(bytes, "url", null), Times.Once());
+            }
+
+            [Fact]
+            public void WillReturnFalseAndFireDeletedEventIfFileIsNotInDepo()
+            {
+                var testable = new TestableSqlServerStore();
+                var response = new Mock<HttpResponseBase>();
+                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                var key = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
+                Guid triggeredKey = Guid.Empty;
+                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
+
+                var result = testable.ClassUnderTest.SendContent("url", response.Object);
+
+                Assert.False(result);
+                Assert.Equal(key, triggeredKey);
+            }
+
         }
 
         public class GetSavedUrls

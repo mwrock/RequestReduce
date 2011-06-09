@@ -51,7 +51,24 @@ namespace RequestReduce.Store
 
         public bool SendContent(string url, HttpResponseBase response)
         {
-            throw new NotImplementedException();
+            if (fileStore.SendContent(url, response))
+                return true;
+
+            var fileName = uriBuilder.ParseFileName(url);
+            var key = uriBuilder.ParseKey(url);
+            var id = Hasher.Hash(key + fileName);
+            var file = repository[id];
+
+            if(file != null)
+            {
+                response.BinaryWrite(file.Content);
+                fileStore.Save(file.Content, url, null);
+                return true;
+            }
+
+            if (CssDeleted != null)
+                CssDeleted(key);
+            return false;
         }
 
         public IDictionary<Guid, string> GetSavedUrls()
