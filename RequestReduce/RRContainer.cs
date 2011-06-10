@@ -25,6 +25,7 @@ namespace RequestReduce
                                     {
                                         x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                         x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
+                                        x.For<LocalDiskStore>().Singleton();
                                         x.For<SqlServerStore>().Singleton().Use<SqlServerStore>().Ctor<IStore>().Is<DbDiskCache>();
                                         x.For<IFileRepository>().Use<FileRepository>();
                                         x.For<IStore>().Singleton().Use((y) =>

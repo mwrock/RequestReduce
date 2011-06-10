@@ -34,5 +34,11 @@ namespace RequestReduce.Utilities
         {
             return Directory.GetDirectories(dir);
         }
+
+        public void DeleteDirectory(string path)
+        {
+            if(!string.IsNullOrEmpty(path))
+                Directory.Delete(path);
+        }
     }
 }

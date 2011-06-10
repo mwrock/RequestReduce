@@ -53,12 +53,12 @@ namespace RequestReduce.Store
             }
         }
 
-        public void Save(byte[] content, string url, string originalUrls)
+        public virtual void Save(byte[] content, string url, string originalUrls)
         {
             fileWrapper.Save(content, GetFileNameFromConfig(url));
         }
 
-        public bool SendContent(string url, HttpResponseBase response)
+        public virtual bool SendContent(string url, HttpResponseBase response)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace RequestReduce.Store
             return fileName;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();

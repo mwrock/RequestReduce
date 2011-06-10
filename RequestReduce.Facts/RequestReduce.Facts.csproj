@@ -81,6 +81,7 @@
     <Compile Include="Reducer\SpriteWriterFacts.cs" />
     <Compile Include="Module\RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
+    <Compile Include="Store\DbDiskCacheFacts.cs" />
     <Compile Include="Store\LocalDiskStoreFacts.cs" />
     <Compile Include="Store\RepositoryFacts.cs" />
     <Compile Include="Store\SqlServerStoreFacts.cs" />

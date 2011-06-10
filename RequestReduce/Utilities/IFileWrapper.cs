@@ -11,5 +11,6 @@ namespace RequestReduce.Utilities
         bool DirectoryExists(string directoryName);
         void CreateDirectory(string directoryName);
         string[] GetDirectories(string dir);
+        void DeleteDirectory(string path);
     }
 }

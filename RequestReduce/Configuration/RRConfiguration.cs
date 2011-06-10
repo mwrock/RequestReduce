@@ -37,7 +37,7 @@ namespace RequestReduce.Configuration
             var val = config == null ? 0 : config.SpriteSizeLimit;
             spriteSizeLimit =  val == 0 ? 50000 : val;
             spriteVirtualPath = config == null ? "/RequestReduceContent" : config.SpriteVirtualPath;
-            spritePhysicalPath = config == null ? null : config.SpritePhysicalPath;
+            spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
                 var success = Enum.TryParse(config.ContentStore, true, out contentStore);
