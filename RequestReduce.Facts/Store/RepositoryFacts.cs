@@ -10,11 +10,20 @@ namespace RequestReduce.Facts.Store
 {
     public class RepositoryFacts
     {
-        class TestableRepository : Testable<FileRepository>
+
+        class FakeFileRepository : FileRepository
+        {
+            public FakeFileRepository(IRRConfiguration config)
+                : base(config)
+            {
+                Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseAlways<RequestReduceContext>());
+            }
+        }
+
+        class TestableRepository : Testable<FakeFileRepository>
         {
             public TestableRepository()
             {
-                Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseAlways<RequestReduceContext>());
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns("RRConnection");
             }
         }
