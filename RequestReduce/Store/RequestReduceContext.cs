@@ -20,17 +20,20 @@ namespace RequestReduce.Store
             modelBuilder.Entity<RequestReduceFile>()
                 .Property(s => s.FileName)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(50);
 
-            modelBuilder.Entity<RequestReduceFile>()
-                .Property(s => s.LastAccessed)
-                .IsRequired()
-                .HasColumnType("datetime2");
+            if (!(base.Database.Connection is System.Data.SqlServerCe.SqlCeConnection))
+            {
+                modelBuilder.Entity<RequestReduceFile>()
+                    .Property(s => s.LastAccessed)
+                    .IsRequired()
+                    .HasColumnType("datetime2");
 
-            modelBuilder.Entity<RequestReduceFile>()
-                .Property(s => s.LastUpdated)
-                .IsRequired()
-                .HasColumnType("datetime2");
+                modelBuilder.Entity<RequestReduceFile>()
+                    .Property(s => s.LastUpdated)
+                    .IsRequired()
+                    .HasColumnType("datetime2");
+            }
         }
     }
 }

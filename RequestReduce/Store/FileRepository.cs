@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
@@ -14,6 +15,7 @@ namespace RequestReduce.Store
     {
         public FileRepository(IRRConfiguration config) : base(config)
         {
+            Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
         }
 
         public IEnumerable<Guid> GetKeys()

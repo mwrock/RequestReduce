@@ -9,7 +9,7 @@ namespace RequestReduce.Store
 {
     public class LocalDiskStore : IStore
     {
-        private readonly IFileWrapper fileWrapper;
+        protected readonly IFileWrapper fileWrapper;
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
         private FileSystemWatcher watcher = new FileSystemWatcher();
@@ -53,12 +53,12 @@ namespace RequestReduce.Store
             }
         }
 
-        public void Save(byte[] content, string url, string originalUrls)
+        public virtual void Save(byte[] content, string url, string originalUrls)
         {
             fileWrapper.Save(content, GetFileNameFromConfig(url));
         }
 
-        public bool SendContent(string url, HttpResponseBase response)
+        public virtual bool SendContent(string url, HttpResponseBase response)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace RequestReduce.Store
         public virtual event DeleeCsAction CssDeleted;
         public virtual event AddCssAction CssAded;
 
-        private string GetFileNameFromConfig(string url)
+        protected virtual string GetFileNameFromConfig(string url)
         {
             var fileName = url;
             if (!string.IsNullOrEmpty(configuration.ContentHost))
@@ -102,7 +102,7 @@ namespace RequestReduce.Store
             return fileName;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();

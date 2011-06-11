@@ -26,6 +26,7 @@ namespace RequestReduce.Store
 
         public void Dispose()
         {
+            fileStore.Dispose();
         }
 
         public void Save(byte[] content, string url, string originalUrls)
