@@ -38,7 +38,7 @@ namespace RequestReduce.Utilities
         public void DeleteDirectory(string path)
         {
             if(!string.IsNullOrEmpty(path))
-                Directory.Delete(path);
+                Directory.Delete(path, true);
         }
 
         public void DeleteFile(string path)

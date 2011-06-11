@@ -4,18 +4,6 @@
         <name>StructureMap.AutoMocking</name>
     </assembly>
     <members>
-        <member name="T:StructureMap.AutoMocking.RhinoAutoMocker`1">
-            <summary>
-            Provides an "Auto Mocking Container" for the concrete class TARGETCLASS using Rhino.Mocks
-            </summary>
-            <typeparam name="TARGETCLASS">The concrete class being tested</typeparam>
-        </member>
-        <member name="T:StructureMap.AutoMocking.AutoMocker`1">
-            <summary>
-            The Auto Mocking Container for StructureMap
-            </summary>
-            <typeparam name="TARGETCLASS"></typeparam>
-        </member>
         <member name="M:StructureMap.AutoMocking.IAutoMocker`1.MockObjectFactory">
             <summary>
             Use this with EXTREME caution.  This will replace the active "Container" in accessed
@@ -94,6 +82,12 @@
             <summary>
             Accesses the underlying AutoMockedContainer
             </summary>
+        </member>
+        <member name="T:StructureMap.AutoMocking.AutoMocker`1">
+            <summary>
+            The Auto Mocking Container for StructureMap
+            </summary>
+            <typeparam name="TARGETCLASS"></typeparam>
         </member>
         <member name="M:StructureMap.AutoMocking.AutoMocker`1.MockObjectFactory">
             <summary>
@@ -177,6 +171,12 @@
         <member name="T:StructureMap.AutoMocking.MoqAutoMocker`1">
             <summary>
             Provides an "Auto Mocking Container" for the concrete class TARGETCLASS using Moq
+            </summary>
+            <typeparam name="TARGETCLASS">The concrete class being tested</typeparam>
+        </member>
+        <member name="T:StructureMap.AutoMocking.RhinoAutoMocker`1">
+            <summary>
+            Provides an "Auto Mocking Container" for the concrete class TARGETCLASS using Rhino.Mocks
             </summary>
             <typeparam name="TARGETCLASS">The concrete class being tested</typeparam>
         </member>
