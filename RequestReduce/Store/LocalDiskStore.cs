@@ -9,7 +9,7 @@ namespace RequestReduce.Store
 {
     public class LocalDiskStore : IStore
     {
-        private readonly IFileWrapper fileWrapper;
+        protected readonly IFileWrapper fileWrapper;
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
         private FileSystemWatcher watcher = new FileSystemWatcher();
@@ -90,7 +90,7 @@ namespace RequestReduce.Store
         public virtual event DeleeCsAction CssDeleted;
         public virtual event AddCssAction CssAded;
 
-        private string GetFileNameFromConfig(string url)
+        protected virtual string GetFileNameFromConfig(string url)
         {
             var fileName = url;
             if (!string.IsNullOrEmpty(configuration.ContentHost))

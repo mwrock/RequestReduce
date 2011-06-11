@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
+using System.Collections.Concurrent;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 
@@ -8,6 +10,7 @@ namespace RequestReduce.Store
     public class DbDiskCache : LocalDiskStore
     {
         protected Timer timer = null;
+        protected ConcurrentDictionary<string, DateTime> fileList = new ConcurrentDictionary<string, DateTime>();
 
         public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder)
         {
@@ -18,20 +21,27 @@ namespace RequestReduce.Store
 
         protected virtual void PurgeOldFiles(object state)
         {
-            //delete files older than 10 minutes and remove from check list
-            throw new NotImplementedException();
+            var date = DateTime.MinValue;
+            var oldEntries = fileList.Where(x => DateTime.Now.Subtract(x.Value).TotalMinutes > 5);
+            foreach (var entry in oldEntries)
+            {
+                fileWrapper.DeleteFile(GetFileNameFromConfig(entry.Key));
+                fileList.TryRemove(entry.Key, out date);
+            }
         }
 
         public override void Save(byte[] content, string url, string originalUrls)
         {
             base.Save(content, url, originalUrls);
-            //add url to to check list
+            fileList.TryAdd(url, DateTime.Now);
         }
 
         public override bool SendContent(string url, System.Web.HttpResponseBase response)
         {
-            //if url is not in checklist, return false
-            return base.SendContent(url, response);
+            if(fileList.ContainsKey(url))
+                return base.SendContent(url, response);
+
+            return false;
         }
 
         public override void Dispose()

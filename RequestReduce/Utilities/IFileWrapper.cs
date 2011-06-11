@@ -12,5 +12,6 @@ namespace RequestReduce.Utilities
         void CreateDirectory(string directoryName);
         string[] GetDirectories(string dir);
         void DeleteDirectory(string path);
+        void DeleteFile(string path);
     }
 }

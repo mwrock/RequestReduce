@@ -40,5 +40,10 @@ namespace RequestReduce.Utilities
             if(!string.IsNullOrEmpty(path))
                 Directory.Delete(path);
         }
+
+        public void DeleteFile(string path)
+        {
+            File.Delete(path);
+        }
     }
 }
