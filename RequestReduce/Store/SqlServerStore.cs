@@ -27,6 +27,7 @@ namespace RequestReduce.Store
         public void Dispose()
         {
             fileStore.Dispose();
+            RRTracer.Trace("Sql Server Store Disposed.");
         }
 
         public void Save(byte[] content, string url, string originalUrls)
@@ -48,6 +49,7 @@ namespace RequestReduce.Store
             fileStore.Save(content, url, originalUrls);
             if(CssAded != null && !url.ToLower().EndsWith(".png"))
                 CssAded(key, url);
+            RRTracer.Trace("{0} saved to db.", url);
         }
 
         public bool SendContent(string url, HttpResponseBase response)
@@ -64,9 +66,11 @@ namespace RequestReduce.Store
             {
                 response.BinaryWrite(file.Content);
                 fileStore.Save(file.Content, url, null);
+                RRTracer.Trace("{0} transmitted from db.", url);
                 return true;
             }
 
+            RRTracer.Trace("{0} not found on file or db.", url);
             if (CssDeleted != null)
                 CssDeleted(key);
             return false;

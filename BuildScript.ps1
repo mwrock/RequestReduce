@@ -43,7 +43,13 @@ task Build-Nuget {
 
 task Test-Solution {
     exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
-    exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" }
+    & .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll"
+	if ($LastExitCode -ne 0) {
+		$client = New-Object Net.Webclient
+		$output = "Reducer Error:`r`n" + $client.DownloadString("http://localhost:8877/local.html?OutputError=1&OutputTrace=1")
+		Write-Host $output
+		throw "Integration Tests Failed"
+	}
 }
 
 function roboexec([scriptblock]$cmd) {

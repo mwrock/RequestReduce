@@ -30,7 +30,11 @@ namespace RequestReduce.Store
         protected virtual void SetupWatcher()
         {
             if (string.IsNullOrEmpty(configuration.SpritePhysicalPath)) return;
-            watcher.Path = configuration.SpritePhysicalPath;
+            if (configuration != null)
+            {
+                RRTracer.Trace("Setting up File System Watcher for {0}", configuration.SpritePhysicalPath);
+                watcher.Path = configuration.SpritePhysicalPath;
+            }
             watcher.IncludeSubdirectories = true;
             watcher.Filter = "*.css";
             watcher.Created += new FileSystemEventHandler(OnChange);
@@ -46,6 +50,7 @@ namespace RequestReduce.Store
             Guid guid;
             if(Guid.TryParse(keyDir, out guid))
             {
+                RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
                 if (e.ChangeType == WatcherChangeTypes.Deleted && CssDeleted != null)
                     CssDeleted(guid);
                 if (e.ChangeType == WatcherChangeTypes.Created && CssAded != null)
@@ -56,6 +61,7 @@ namespace RequestReduce.Store
         public virtual void Save(byte[] content, string url, string originalUrls)
         {
             fileWrapper.Save(content, GetFileNameFromConfig(url));
+            RRTracer.Trace("{0} saved to disk.", url);
         }
 
         public virtual bool SendContent(string url, HttpResponseBase response)
@@ -63,6 +69,7 @@ namespace RequestReduce.Store
             try
             {
                 response.TransmitFile(GetFileNameFromConfig(url));
+                RRTracer.Trace("{0} transmitted from disk.", url);
                 return true;
             }
             catch (FileNotFoundException)
@@ -106,6 +113,7 @@ namespace RequestReduce.Store
         {
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();
+            RRTracer.Trace("Local Disk Store Disposed.");
         }
     }
 }

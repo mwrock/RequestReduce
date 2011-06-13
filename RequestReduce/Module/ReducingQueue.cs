@@ -55,7 +55,9 @@ namespace RequestReduce.Module
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
                     var key = Hasher.Hash(urlsToReduce);
+                    RRTracer.Trace("dequeued and processing {0}.", urlsToReduce);
                     reducer.Process(key, urlsToReduce);
+                    RRTracer.Trace("dequeued and processed {0}.", urlsToReduce);
                 }
             }
             catch(Exception e)

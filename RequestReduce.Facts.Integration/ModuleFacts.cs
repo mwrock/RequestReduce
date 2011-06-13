@@ -5,7 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using RequestReduce.Configuration;
+using System.Xml.Linq;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;
 
@@ -17,14 +17,32 @@ namespace RequestReduce.Facts.Integration
 
         public ModuleFacts()
         {
+            var poolRecycled = false;
             rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\RRContent";
             if (Directory.Exists(rrFolder))
             {
                 RecyclePool();
+                poolRecycled = true;
                 if (Directory.Exists(rrFolder))
                     Directory.Delete(rrFolder, true);
                 while (Directory.Exists(rrFolder))
                     Thread.Sleep(0);
+            }
+
+            XDocument doc = null;
+            using (var stream = File.OpenText(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                              "\\RequestReduce.SampleWeb\\web.config"))
+            {
+                doc = XDocument.Load(stream);
+            }
+            var cs = doc.Element("configuration").Element("RequestReduce").Attribute("contentStore");
+            if(cs != null)
+            {
+                cs.Remove();
+                if(!poolRecycled)
+                    RecyclePool();
+                doc.Save(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                                  "\\RequestReduce.SampleWeb\\web.config");
             }
         }
 
@@ -99,6 +117,7 @@ namespace RequestReduce.Facts.Integration
             File.Delete(file);
             while (File.Exists(file))
                 Thread.Sleep(0);
+            Thread.Sleep(100);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateCss();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
@@ -117,7 +136,7 @@ namespace RequestReduce.Facts.Integration
             var newDir = Directory.GetDirectories(rrFolder)[0];
             while (Directory.GetFiles(newDir, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
-            if(watch.ElapsedMilliseconds >= 10000)
+            if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);
             Thread.Sleep(100);
         }

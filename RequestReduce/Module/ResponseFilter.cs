@@ -75,10 +75,12 @@ namespace RequestReduce.Module
         public override void Flush()
         {
             BaseStream.Flush();
+            RRTracer.Trace("Flushing Filter");
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            RRTracer.Trace("Beginning Filter Write");
             if (Closed) throw new ObjectDisposedException("ResponseFilter");
             if(state==SearchState.MatchingFinished)
             {

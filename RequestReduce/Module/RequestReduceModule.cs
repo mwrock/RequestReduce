@@ -23,8 +23,10 @@ namespace RequestReduce.Module
         {
             if (IsInRRContentDirectory(httpContextWrapper))
             {
+                var url = httpContextWrapper.Request.RawUrl;
+                RRTracer.Trace("Beginning to serve {0}", url);
                 var store = RRContainer.Current.GetInstance<IStore>();
-                if(store.SendContent(httpContextWrapper.Request.RawUrl, httpContextWrapper.Response))
+                if(store.SendContent(url, httpContextWrapper.Response))
                 {
                     httpContextWrapper.Response.Headers.Remove("ETag");
                     httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
@@ -32,6 +34,7 @@ namespace RequestReduce.Module
                     if (httpContextWrapper.ApplicationInstance != null) 
                         httpContextWrapper.ApplicationInstance.CompleteRequest();
                 }
+                RRTracer.Trace("Finished serving {0}", url);
             }
         }
 
@@ -54,7 +57,10 @@ namespace RequestReduce.Module
                     config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
                 var response = context.Response;
                 if (response.ContentType == "text/html" && context.Request.QueryString["RRFilter"] != "disabled")
+                {
                     response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
+                    RRTracer.Trace("Attaching Filter to {0}", context.Request.RawUrl);
+                }
 
                 context.Items.Add(CONTEXT_KEY, new object());
             }

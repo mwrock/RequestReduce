@@ -28,6 +28,7 @@ namespace RequestReduce.Module
             {
                 dictionary.Remove(key);
             }
+            RRTracer.Trace("Reduction {0} removed.", key);
         }
 
         private void LoadDictionaryWithExistingItems()
@@ -56,6 +57,7 @@ namespace RequestReduce.Module
                 lock(lockObject)
                 {
                     dictionary.Add(key, reducedUrl);
+                    RRTracer.Trace("Reduction {0} added.", key);
                 }
             }
             catch (ArgumentException)

@@ -36,9 +36,11 @@ namespace RequestReduce.Module
                         urls.Append("::");
                     }
                 }
+                RRTracer.Trace("Looking for reduction for {0}", urls);
                 var transform = reductionRepository.FindReduction(urls.ToString());
                 if(transform != null)
                 {
+                    RRTracer.Trace("Reduction found for {0}", urls);
                     var isTransformed = false;
                     foreach (var match in matches)
                     {
@@ -59,6 +61,7 @@ namespace RequestReduce.Module
                     return preTransform;
                 }
                 reducingQueue.Enqueue(urls.ToString());
+                RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
             }
             return preTransform;
         }

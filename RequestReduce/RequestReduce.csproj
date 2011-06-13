@@ -74,6 +74,7 @@
     <Compile Include="Reducer\BackgroundImageClass.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />
+    <Compile Include="RRTracer.cs" />
     <Compile Include="Store\DbDiskCache.cs" />
     <Compile Include="Store\FileRepository.cs" />
     <Compile Include="Store\Repository.cs" />
