@@ -18,10 +18,9 @@ namespace RequestReduce.Facts.Integration
             config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\FactContent";
             config.SpritePhysicalPath = rrFolder;
-            Directory.CreateDirectory(rrFolder);
         }
 
-        [Fact]
+        [OutputTraceOnFailFact]
         public void WillReturnSavedCSS()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
@@ -36,7 +35,7 @@ namespace RequestReduce.Facts.Integration
             reducer.Dispose();
         }
 
-        [Fact]
+        [OutputTraceOnFailFact]
         public void WillSaveSprite()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModuleFacts.cs" />
+    <Compile Include="OutputTraceOnFailFactAttribute.cs" />
     <Compile Include="ReducerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

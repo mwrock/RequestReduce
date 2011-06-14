@@ -1,21 +1,19 @@
 ﻿<%@ Application Language="C#" %>
 <%@ Import Namespace="RequestReduce" %>
 <%@ Import Namespace="RequestReduce.Module" %>
+<%@ Import Namespace="System.IO" %>
 
 <script runat="server">
 
     private static StringBuilder errorBuffer = new StringBuilder();
-    private static StringBuilder traceBuffer = new StringBuilder();
+    private static StringWriter traceBuffer = new StringWriter();
     
     void Application_Start(object sender, EventArgs e) 
     {
         RequestReduceModule.CaptureError(BuildErrorMessage);
-        RRTracer.TraceMessageFired += BuildTraceMessage;
-    }
-
-    private void BuildTraceMessage(string message)
-    {
-        traceBuffer.AppendLine(message);
+        //RRTracer.TraceMessageFired += BuildTraceMessage;
+        System.Diagnostics.Trace.AutoFlush = true;
+        System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(traceBuffer));
     }
 
     private void BuildErrorMessage(Exception ex)
@@ -63,8 +61,11 @@
         }
         if (Request.QueryString["OutputTrace"] != null)
         {
-            Response.Write(traceBuffer.ToString());
-            traceBuffer.Remove(0, traceBuffer.Length);
+            Response.Write(traceBuffer);
+            traceBuffer.Dispose();
+            traceBuffer = new StringWriter();
+            System.Diagnostics.Trace.Listeners.Clear();
+            System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(traceBuffer));
         }
 
         Context.ApplicationInstance.CompleteRequest();

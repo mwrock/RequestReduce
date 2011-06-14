@@ -11,7 +11,7 @@ using TimeoutException = Xunit.Sdk.TimeoutException;
 
 namespace RequestReduce.Facts.Integration
 {
-    public class ModuleFacts : IDisposable
+    public class ModuleFacts
     {
         private string rrFolder;
 
@@ -23,8 +23,16 @@ namespace RequestReduce.Facts.Integration
             {
                 RecyclePool();
                 poolRecycled = true;
-                if (Directory.Exists(rrFolder))
+                try
+                {
+                    RecyclePool();
                     Directory.Delete(rrFolder, true);
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(100);
+                    Directory.Delete(rrFolder, true);
+                }
                 while (Directory.Exists(rrFolder))
                     Thread.Sleep(0);
             }
@@ -46,7 +54,7 @@ namespace RequestReduce.Facts.Integration
             }
         }
 
-        [Fact]
+        [OutputTraceOnFailFact]
         public void WillReduceToOneCss()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
@@ -58,7 +66,7 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(1, cssPattern.Matches(response).Count);
         }
 
-        [Fact]
+        [OutputTraceOnFailFact]
         public void WillUseSameReductionAfterAppPoolRecycle()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
@@ -78,7 +86,7 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(createTime, new FileInfo(file).LastWriteTime);
         }
 
-        [Fact]
+        [OutputTraceOnFailFact]
         public void WillSetCacheHeadersOnContent()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
@@ -101,7 +109,7 @@ namespace RequestReduce.Facts.Integration
             response2.Close();
         }
 
-        [Fact]
+        [OutputTraceOnFailFact]
         public void WillReReduceCssAfterFileDeletion()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
@@ -143,26 +151,11 @@ namespace RequestReduce.Facts.Integration
 
         private void RecyclePool()
         {
-            var pool = new DirectoryEntry("IIS://localhost/W3SVC/AppPools/RequestReduce");
-            pool.Invoke("Recycle", null);
-            Thread.Sleep(2000);
-        }
-
-        public void Dispose()
-        {
-            if (Directory.Exists(rrFolder))
+            using(var pool = new DirectoryEntry("IIS://localhost/W3SVC/AppPools/RequestReduce"))
             {
-                try
-                {
-                    RecyclePool();
-                    Directory.Delete(rrFolder, true);
-                }
-                catch (IOException)
-                {
-                    Thread.Sleep(100);
-                    Directory.Delete(rrFolder, true);
-                }
+                pool.Invoke("Recycle", null);
             }
+            Thread.Sleep(2000);
         }
     }
 }
