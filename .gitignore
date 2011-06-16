@@ -19,3 +19,4 @@ RequestReduce/Nuget/Lib/*
 RequestReduce.SampleWeb/RRContent/*
 PrecompiledWeb/*
 TraceOutput.log
+*.sdf

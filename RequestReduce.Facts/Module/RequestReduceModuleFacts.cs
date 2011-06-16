@@ -43,6 +43,22 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillNotSetResponseFilterIfFaviconIco()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Response.ContentType).Returns("text/html");
+            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.Request.RawUrl).Returns("/favicon.ico");
+
+            module.InstallFilter(context.Object);
+
+            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+        }
+
+        [Fact]
         public void WillSetPhysicalPathToMappedVirtualPath()
         {
             var module = new RequestReduceModule();
@@ -89,6 +105,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Response.ContentType).Returns("type");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.Response.ContentType).Returns("text/html");
 
             module.InstallFilter(context.Object);
 

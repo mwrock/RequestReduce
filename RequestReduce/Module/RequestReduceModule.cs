@@ -50,20 +50,17 @@ namespace RequestReduce.Module
 
         public void InstallFilter(HttpContextBase context)
         {
-            if (!context.Items.Contains(CONTEXT_KEY))
-            {
-                var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-                if(string.IsNullOrEmpty(config.SpritePhysicalPath))
-                    config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
-                var response = context.Response;
-                if (response.ContentType == "text/html" && context.Request.QueryString["RRFilter"] != "disabled")
-                {
-                    response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
-                    RRTracer.Trace("Attaching Filter to {0}", context.Request.RawUrl);
-                }
+            var request = context.Request;
+            if (context.Items.Contains(CONTEXT_KEY) || context.Response.ContentType != "text/html" || request.QueryString["RRFilter"] == "disabled" || request.RawUrl == "/favicon.ico")
+                return;
 
-                context.Items.Add(CONTEXT_KEY, new object());
-            }
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            if(string.IsNullOrEmpty(config.SpritePhysicalPath))
+                config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
+            context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
+            RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
+
+            context.Items.Add(CONTEXT_KEY, new object());
         }
 
         public static int QueueCount
