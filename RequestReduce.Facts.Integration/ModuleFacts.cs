@@ -1,11 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.DirectoryServices;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Linq;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;
 
@@ -13,45 +10,11 @@ namespace RequestReduce.Facts.Integration
 {
     public class ModuleFacts
     {
-        private string rrFolder;
+        private readonly string rrFolder;
 
         public ModuleFacts()
         {
-            var poolRecycled = false;
-            rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\RRContent";
-            if (Directory.Exists(rrFolder))
-            {
-                RecyclePool();
-                poolRecycled = true;
-                try
-                {
-                    RecyclePool();
-                    Directory.Delete(rrFolder, true);
-                }
-                catch (IOException)
-                {
-                    Thread.Sleep(100);
-                    Directory.Delete(rrFolder, true);
-                }
-                while (Directory.Exists(rrFolder))
-                    Thread.Sleep(0);
-            }
-
-            XDocument doc = null;
-            using (var stream = File.OpenText(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
-                              "\\RequestReduce.SampleWeb\\web.config"))
-            {
-                doc = XDocument.Load(stream);
-            }
-            var cs = doc.Element("configuration").Element("RequestReduce").Attribute("contentStore");
-            if(cs != null)
-            {
-                cs.Remove();
-                if(!poolRecycled)
-                    RecyclePool();
-                doc.Save(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
-                                  "\\RequestReduce.SampleWeb\\web.config");
-            }
+            rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore);
         }
 
         [OutputTraceOnFailFact]
@@ -79,7 +42,7 @@ namespace RequestReduce.Facts.Integration
             var file = url.Replace("/RRContent", rrFolder).Replace("/", "\\");
             var createTime = new FileInfo(file).LastWriteTime;
 
-            RecyclePool();
+            IntegrationFactHelper.RecyclePool();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateCss();
 
@@ -147,15 +110,6 @@ namespace RequestReduce.Facts.Integration
             if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);
             Thread.Sleep(100);
-        }
-
-        private void RecyclePool()
-        {
-            using(var pool = new DirectoryEntry("IIS://localhost/W3SVC/AppPools/RequestReduce"))
-            {
-                pool.Invoke("Recycle", null);
-            }
-            Thread.Sleep(2000);
         }
     }
 }

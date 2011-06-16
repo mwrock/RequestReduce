@@ -57,7 +57,7 @@ namespace RequestReduce.Module
                 lock(lockObject)
                 {
                     dictionary.Add(key, reducedUrl);
-                    RRTracer.Trace("Reduction {0} added.", key);
+                    RRTracer.Trace("Reduction {0} added to ReductionRepository Dictionary.", key);
                 }
             }
             catch (ArgumentException)

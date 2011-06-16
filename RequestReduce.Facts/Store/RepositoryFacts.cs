@@ -17,6 +17,7 @@ namespace RequestReduce.Facts.Store
                 : base(config)
             {
                 Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseAlways<RequestReduceContext>());
+                Context.Database.Initialize(true);
             }
         }
 
@@ -60,7 +61,7 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillGracefullyHandleDuplicateSave()
+            public void WillUpdateContentAndLastUpdatedTime()
             {
                 var testable = new TestableRepository();
                 var id = Guid.NewGuid();
@@ -70,13 +71,27 @@ namespace RequestReduce.Facts.Store
                     FileName = "fileName",
                     Key = Guid.NewGuid(),
                     LastAccessed = DateTime.Now,
-                    LastUpdated = DateTime.Now,
+                    LastUpdated = new DateTime(2010, 1, 1),
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+                testable.ClassUnderTest.Save(file);
+                var file2 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 2 },
+                    FileName = "fileName",
+                    Key = Guid.NewGuid(),
+                    LastAccessed = DateTime.Now,
+                    LastUpdated = new DateTime(2011, 1, 1),
                     OriginalName = "originalName",
                     RequestReduceFileId = id
                 };
 
-                testable.ClassUnderTest.Save(file);
-                Assert.DoesNotThrow(() => testable.ClassUnderTest.Save(file));
+                testable.ClassUnderTest.Save(file2);
+
+                var savedFile = testable.ClassUnderTest[id];
+                Assert.Equal(2, savedFile.Content[0]);
+                Assert.Equal(new DateTime(2011, 1, 1), savedFile.LastUpdated);
             }
 
         }
@@ -90,7 +105,7 @@ namespace RequestReduce.Facts.Store
             var file = new RequestReduceFile()
             {
                 Content = new byte[] { 1 },
-                FileName = "fileName",
+                FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
                 Key = id,
                 LastAccessed = DateTime.Now,
                 LastUpdated = DateTime.Now,
@@ -100,7 +115,7 @@ namespace RequestReduce.Facts.Store
             var file2 = new RequestReduceFile()
             {
                 Content = new byte[] { 1 },
-                FileName = "fileName2",
+                FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
                 Key = id,
                 LastAccessed = DateTime.Now,
                 LastUpdated = DateTime.Now,
@@ -109,7 +124,7 @@ namespace RequestReduce.Facts.Store
             var file3 = new RequestReduceFile()
             {
                 Content = new byte[] { 1 },
-                FileName = "fileName3",
+                FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
                 Key = id2,
                 LastAccessed = DateTime.Now,
                 LastUpdated = DateTime.Now,

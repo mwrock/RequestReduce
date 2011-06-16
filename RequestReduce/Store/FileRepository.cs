@@ -16,11 +16,12 @@ namespace RequestReduce.Store
         public FileRepository(IRRConfiguration config) : base(config)
         {
             Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
+            Context.Database.Initialize(false);
         }
 
         public IEnumerable<Guid> GetKeys()
         {
-            return AsQueryable().Select(y => y.Key).Distinct().ToList();
+            return AsQueryable().Where(x => x.FileName == Utilities.UriBuilder.CssFileName).Select(y => y.Key).Distinct().ToList();
         }
 
         public override void Save(RequestReduceFile entity)
@@ -31,6 +32,11 @@ namespace RequestReduce.Store
             }
             catch (DbUpdateException)
             {
+                Context.Files.Remove(entity);
+                var existingFile = base[entity.RequestReduceFileId];
+                existingFile.Content = entity.Content;
+                existingFile.LastUpdated = entity.LastUpdated;
+                Context.SaveChanges();
             }
         }
     }

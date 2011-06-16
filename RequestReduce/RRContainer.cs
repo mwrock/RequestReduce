@@ -20,6 +20,7 @@ namespace RequestReduce
 
         private static IContainer InitContainer()
         {
+            RRTracer.Trace("Initializing container");
             var container = new Container();
             container.Configure(x =>
                                     {

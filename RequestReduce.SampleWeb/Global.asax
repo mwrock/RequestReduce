@@ -11,9 +11,9 @@
     void Application_Start(object sender, EventArgs e) 
     {
         RequestReduceModule.CaptureError(BuildErrorMessage);
-        //RRTracer.TraceMessageFired += BuildTraceMessage;
         System.Diagnostics.Trace.AutoFlush = true;
         System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(traceBuffer));
+        RRTracer.Trace("Application Starting.");
     }
 
     private void BuildErrorMessage(Exception ex)

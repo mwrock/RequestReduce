@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Utilities
 
                 var result = testable.ClassUnderTest.BuildCssUrl(guid);
 
-                Assert.Equal(result, string.Format("http://host/vpath/{0}/RequestReducedStyle.css", guid));
+                Assert.Equal(result, string.Format("http://host/vpath/{0}/{1}", guid, UriBuilder.CssFileName));
             }
         }
 

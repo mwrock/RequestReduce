@@ -14,6 +14,7 @@ namespace RequestReduce.Utilities
     public class UriBuilder : IUriBuilder
     {
         private readonly IRRConfiguration configuration;
+        public const string CssFileName = "RequestReducedStyle.css";
 
         public UriBuilder(IRRConfiguration configuration)
         {
@@ -22,7 +23,7 @@ namespace RequestReduce.Utilities
 
         public string BuildCssUrl(Guid key)
         {
-            return string.Format("{0}{1}/{2}/RequestReducedStyle.css", configuration.ContentHost, configuration.SpriteVirtualPath, key);
+            return string.Format("{0}{1}/{2}/{3}", configuration.ContentHost, configuration.SpriteVirtualPath, key, CssFileName);
         }
 
         public string BuildSpriteUrl(Guid key, int spriteIndex)

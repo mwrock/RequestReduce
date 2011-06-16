@@ -44,7 +44,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
 
-                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - "/RequestReducedStyle.css".Length)));
+                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - ("/" + UriBuilder.CssFileName).Length)));
             }
 
             [Fact]
@@ -67,7 +67,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - "/RequestReducedStyle.css".Length)));
+                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - ("/" + UriBuilder.CssFileName).Length)));
             }
 
             [Fact]
@@ -77,7 +77,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                Assert.True(result.EndsWith("/RequestReducedStyle.css"));
+                Assert.True(result.EndsWith("/" + UriBuilder.CssFileName));
             }
 
             [Fact]

@@ -15,6 +15,7 @@ namespace RequestReduce.Store
         public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder)
         {
             fileWrapper.DeleteDirectory(configuration.SpritePhysicalPath);
+            RRTracer.Trace("DbFileCache deleting physical directory");
             const int interval = 1000*60*5;
             timer = new Timer(PurgeOldFiles, null, interval, interval);
         }

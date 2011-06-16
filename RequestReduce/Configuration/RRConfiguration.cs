@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
-using System.Security.AccessControl;
 using System.Threading;
-using System.Web;
 
 namespace RequestReduce.Configuration
 {
@@ -72,7 +70,14 @@ namespace RequestReduce.Configuration
 
         public string ConnectionStringName
         {
-            get { return config != null ? config.ConnectionStringName : null; }
+            get
+            {
+                return config != null
+                           ? string.IsNullOrEmpty(config.ConnectionStringName)
+                                 ? "RRConnection"
+                                 : config.ConnectionStringName
+                           : "RRConnection";
+            }
         }
 
         public Store ContentStore

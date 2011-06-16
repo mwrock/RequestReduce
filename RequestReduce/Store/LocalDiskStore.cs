@@ -80,6 +80,7 @@ namespace RequestReduce.Store
 
         public IDictionary<Guid, string> GetSavedUrls()
         {
+            RRTracer.Trace("LocalDiskStore Looking for previously saved content.");
             var dic = new Dictionary<Guid, string>();
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;

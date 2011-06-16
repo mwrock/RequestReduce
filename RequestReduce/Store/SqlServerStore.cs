@@ -78,6 +78,7 @@ namespace RequestReduce.Store
 
         public IDictionary<Guid, string> GetSavedUrls()
         {
+            RRTracer.Trace("SqlServerStore Looking for previously saved content.");
             var keys = repository.GetKeys();
             return keys.ToDictionary(key => key, key => uriBuilder.BuildCssUrl(key));
         }

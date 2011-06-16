@@ -17,6 +17,7 @@ namespace RequestReduce.Module
 
         public ReducingQueue(IReducer reducer, IReductionRepository reductionRepository)
         {
+            RRTracer.Trace("Instantiating new Reducing queue.");
             this.reducer = reducer;
             this.reductionRepository = reductionRepository;
             backgroundThread = new Thread(new ThreadStart(ProcessQueue)) { IsBackground = true };
@@ -40,6 +41,7 @@ namespace RequestReduce.Module
 
         private void ProcessQueue()
         {
+            RRTracer.Trace("Process Queue Thread Started");
             while(isRunning)
             {
                 ProcessQueuedItem();
