@@ -68,6 +68,7 @@ namespace RequestReduce.Facts.Integration
             var response2 = req.GetResponse();
 
             Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
+            Assert.Equal("text/css", response2.ContentType);
             Assert.Null(response2.Headers["ETag"]);
             response2.Close();
         }

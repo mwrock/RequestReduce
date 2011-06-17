@@ -144,6 +144,37 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
+        [Theory]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/sprite1.png", "image/png", true)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", "text/css", true)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", null, false)]
+        public void WillCorrectlySetCiontentType(string path, string contentType, bool contentInStore)
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var response = new Mock<HttpResponseBase>();
+            response.SetupProperty(x => x.ContentType);
+            response.Setup(x => x.Headers).Returns(new NameValueCollection());
+            response.Setup(x => x.Cache).Returns(new Mock<HttpCachePolicyBase>().Object);
+            context.Setup(x => x.Response).Returns(response.Object);
+            context.Setup(x => x.Request.RawUrl).Returns(path);
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var store = new Mock<IStore>();
+            store.Setup(
+                x => x.SendContent(It.IsAny<string>(), response.Object)).
+                Returns(contentInStore);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+            });
+
+            module.HandleRRContent(context.Object);
+
+            Assert.Equal(contentType, response.Object.ContentType);
+            RRContainer.Current = null;
+        }
 
         [Theory]
         [InlineData("/Content", true)]

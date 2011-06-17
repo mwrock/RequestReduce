@@ -39,12 +39,14 @@ namespace RequestReduce.Store
             watcher.Filter = "*.css";
             watcher.Created += new FileSystemEventHandler(OnChange);
             watcher.Deleted += new FileSystemEventHandler(OnChange);
+            watcher.Changed += new FileSystemEventHandler(OnChange);
             watcher.EnableRaisingEvents = true;
         }
 
         private void OnChange(object sender, FileSystemEventArgs e)
         {
             var path = e.FullPath;
+            RRTracer.Trace("watcher watched {0}", path);
             var dir = path.Substring(0, path.LastIndexOf("\\"));
             var keyDir = dir.Substring(dir.LastIndexOf("\\") + 1);
             Guid guid;
@@ -53,7 +55,7 @@ namespace RequestReduce.Store
                 RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
                 if (e.ChangeType == WatcherChangeTypes.Deleted && CssDeleted != null)
                     CssDeleted(guid);
-                if (e.ChangeType == WatcherChangeTypes.Created && CssAded != null)
+                if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed) && CssAded != null)
                     CssAded(guid, uriBuilder.BuildCssUrl(guid));
             }
         }

@@ -31,6 +31,10 @@ namespace RequestReduce.Module
                     httpContextWrapper.Response.Headers.Remove("ETag");
                     httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
                     httpContextWrapper.Response.Expires = 44000;
+                    if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
+                        httpContextWrapper.Response.ContentType = "text/css";
+                    else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                        httpContextWrapper.Response.ContentType = "image/png";
                     if (httpContextWrapper.ApplicationInstance != null) 
                         httpContextWrapper.ApplicationInstance.CompleteRequest();
                 }
