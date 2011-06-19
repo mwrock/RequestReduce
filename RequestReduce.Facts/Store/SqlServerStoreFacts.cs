@@ -41,7 +41,6 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(content, file.Content);
                 Assert.Equal("file.css", file.FileName);
                 Assert.Equal(key, file.Key);
-                Assert.True(DateTime.Now.Subtract(file.LastAccessed).TotalMilliseconds < 1000);
                 Assert.True(DateTime.Now.Subtract(file.LastUpdated).TotalMilliseconds < 1000);
                 Assert.Equal(originalUrls, file.OriginalName);
                 Assert.Equal(id, file.RequestReduceFileId);
@@ -151,6 +150,27 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(key, triggeredKey);
             }
 
+            [Fact]
+            public void WillRemoveFromReductionDictionaryIfExpired()
+            {
+                var testable = new TestableSqlServerStore();
+                var response = new Mock<HttpResponseBase>();
+                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
+                var key = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
+                var id = Hasher.Hash(key + "file.css");
+                var bytes = new byte[] { 1 };
+                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { Content = bytes, IsExpired = true });
+                var triggeredKey = Guid.Empty;
+                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
+
+                var result = testable.ClassUnderTest.SendContent("url", response.Object);
+
+                Assert.True(result);
+                response.Verify(x => x.BinaryWrite(bytes), Times.Once());
+                Assert.Equal(triggeredKey, key);
+            }
         }
 
         public class GetSavedUrls
@@ -174,6 +194,43 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(2, result.Count);
                 Assert.True(result[guid1] == "url1");
                 Assert.True(result[guid2] == "url2");
+            }
+        }
+
+        public class Flush
+        {
+            [Fact]
+            public void WillExpireDbFileEntity()
+            {
+                var testable = new TestableSqlServerStore();
+                var key = Guid.NewGuid();
+                var file1 = new RequestReduceFile() {IsExpired = false, RequestReduceFileId = Guid.NewGuid()};
+                var file2 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = Guid.NewGuid() };
+                testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(key)).Returns(new RequestReduceFile[] {file1, file2});
+                bool expire1 = false;
+                bool expire2 = false;
+                testable.Mock<IFileRepository>().Setup(x => x.Save(file1)).Callback<RequestReduceFile>(
+                    y => expire1 = y.IsExpired);
+                testable.Mock<IFileRepository>().Setup(x => x.Save(file2)).Callback<RequestReduceFile>(
+                    y => expire2 = y.IsExpired);
+
+                testable.ClassUnderTest.Flush(key);
+
+                Assert.True(expire1);
+                Assert.True(expire2);
+            }
+
+            [Fact]
+            public void WillRemoveFromRepository()
+            {
+                var testable = new TestableSqlServerStore();
+                var key = Guid.NewGuid();
+                var triggeredKey = Guid.Empty;
+                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
+
+                testable.ClassUnderTest.Flush(key);
+
+                Assert.Equal(key, triggeredKey);
             }
         }
     }

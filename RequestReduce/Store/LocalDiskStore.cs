@@ -99,6 +99,10 @@ namespace RequestReduce.Store
 
         public virtual event DeleeCsAction CssDeleted;
         public virtual event AddCssAction CssAded;
+        public void Flush(Guid keyGuid)
+        {
+            throw new NotImplementedException();
+        }
 
         protected virtual string GetFileNameFromConfig(string url)
         {

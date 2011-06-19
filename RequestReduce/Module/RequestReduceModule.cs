@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
@@ -21,12 +23,20 @@ namespace RequestReduce.Module
 
         public void HandleRRContent(HttpContextBase httpContextWrapper)
         {
-            if (IsInRRContentDirectory(httpContextWrapper))
+            if (!IsInRRContentDirectory(httpContextWrapper)) return;
+
+            var url = httpContextWrapper.Request.RawUrl;
+            if(url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase))
             {
-                var url = httpContextWrapper.Request.RawUrl;
+                FlushReduction(url, httpContextWrapper.User.Identity.Name);
+                if (httpContextWrapper.ApplicationInstance != null)
+                    httpContextWrapper.ApplicationInstance.CompleteRequest();
+            }
+            else
+            {
                 RRTracer.Trace("Beginning to serve {0}", url);
                 var store = RRContainer.Current.GetInstance<IStore>();
-                if(store.SendContent(url, httpContextWrapper.Response))
+                if (store.SendContent(url, httpContextWrapper.Response))
                 {
                     httpContextWrapper.Response.Headers.Remove("ETag");
                     httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
@@ -35,10 +45,23 @@ namespace RequestReduce.Module
                         httpContextWrapper.Response.ContentType = "text/css";
                     else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                         httpContextWrapper.Response.ContentType = "image/png";
-                    if (httpContextWrapper.ApplicationInstance != null) 
+                    if (httpContextWrapper.ApplicationInstance != null)
                         httpContextWrapper.ApplicationInstance.CompleteRequest();
                 }
-                RRTracer.Trace("Finished serving {0}", url);
+            }
+            RRTracer.Trace("Finished serving {0}", url);
+        }
+
+        private void FlushReduction(string url, string user)
+        {
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            if(config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            {
+                var store = RRContainer.Current.GetInstance<IStore>();
+                var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
+                var key = uriBuilder.ParseKey(url);
+                store.Flush(key);
+                RRTracer.Trace("{0} Flushed {1}", user, key);
             }
         }
 

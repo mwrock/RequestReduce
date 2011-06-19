@@ -22,13 +22,12 @@ namespace RequestReduce.Store
                 .IsRequired()
                 .HasMaxLength(50);
 
+            modelBuilder.Entity<RequestReduceFile>()
+                .Property(s => s.IsExpired)
+                .IsRequired();
+
             if (!(base.Database.Connection is System.Data.SqlServerCe.SqlCeConnection))
             {
-                modelBuilder.Entity<RequestReduceFile>()
-                    .Property(s => s.LastAccessed)
-                    .IsRequired()
-                    .HasColumnType("datetime2");
-
                 modelBuilder.Entity<RequestReduceFile>()
                     .Property(s => s.LastUpdated)
                     .IsRequired()

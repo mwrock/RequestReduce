@@ -24,6 +24,18 @@ namespace RequestReduce.Store
             this.fileStore = fileStore;
         }
 
+        public void Flush(Guid keyGuid)
+        {
+            var files = repository.GetFilesFromKey(keyGuid);
+            foreach (var file in files)
+            {
+                file.IsExpired = true;
+                repository.Save(file);
+            }
+            if (CssDeleted != null)
+                CssDeleted(keyGuid);
+        }
+
         public void Dispose()
         {
             fileStore.Dispose();
@@ -31,14 +43,13 @@ namespace RequestReduce.Store
         }
 
         public void Save(byte[] content, string url, string originalUrls)
-        {
+        { 
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
             var id = Hasher.Hash(key + fileName);
             var file = new RequestReduceFile()
                            {
                                Content = content,
-                               LastAccessed = DateTime.Now,
                                LastUpdated = DateTime.Now,
                                FileName = fileName,
                                Key = key,
@@ -67,6 +78,8 @@ namespace RequestReduce.Store
                 response.BinaryWrite(file.Content);
                 fileStore.Save(file.Content, url, null);
                 RRTracer.Trace("{0} transmitted from db.", url);
+                if (file.IsExpired && CssDeleted != null)
+                    CssDeleted(key);
                 return true;
             }
 

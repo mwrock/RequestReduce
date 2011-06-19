@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace RequestReduce.Configuration
@@ -18,23 +20,25 @@ namespace RequestReduce.Configuration
         string ConnectionStringName { get; }
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
+        IEnumerable<string> AuthorizedUserList { get; set; }
         event Action PhysicalPathChange; 
     }
 
     public class RRConfiguration : IRRConfiguration
     {
         private readonly RequestReduceConfigSection config = ConfigurationManager.GetSection("RequestReduce") as RequestReduceConfigSection;
-        private string spriteVirtualPath;
         private string spritePhysicalPath;
-        private Store contentStore = Store.LocalDiskStore;
-        private int spriteSizeLimit;
+        private readonly Store contentStore = Store.LocalDiskStore;
+        public static readonly IEnumerable<string> Anonymous = new[]{"Anonymous"};
+
         public event Action PhysicalPathChange;  
 
         public RRConfiguration()
         {
+            AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
-            spriteSizeLimit =  val == 0 ? 50000 : val;
-            spriteVirtualPath = config == null ? "/RequestReduceContent" : config.SpriteVirtualPath;
+            SpriteSizeLimit =  val == 0 ? 50000 : val;
+            SpriteVirtualPath = config == null ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
@@ -45,11 +49,9 @@ namespace RequestReduce.Configuration
             CreatePhysicalPath();
         }
 
-        public string SpriteVirtualPath
-        {
-            get { return spriteVirtualPath; }
-            set { spriteVirtualPath = value;  }
-        }
+        public IEnumerable<string> AuthorizedUserList { get; set; }
+
+        public string SpriteVirtualPath { get; set; }
 
         public string SpritePhysicalPath
         {
@@ -85,11 +87,7 @@ namespace RequestReduce.Configuration
             get { return contentStore; }
         }
 
-        public int SpriteSizeLimit
-        {
-            get { return spriteSizeLimit; }
-            set { spriteSizeLimit = value; }
-        }
+        public int SpriteSizeLimit { get; set; }
 
         private void CreatePhysicalPath()
         {
@@ -99,6 +97,18 @@ namespace RequestReduce.Configuration
                 while (!Directory.Exists(spritePhysicalPath))
                     Thread.Sleep(0);
             }
+        }
+    }
+
+    public static class ConfigExtensions
+    {
+        public static bool AllowsAnonymous(this IEnumerable<string> list)
+        {
+            if(list.Count()==1 && list.Contains(RRConfiguration.Anonymous.First(), StringComparer.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -16,5 +16,6 @@ namespace RequestReduce.Store
         IDictionary<Guid, string> GetSavedUrls();
         event DeleeCsAction CssDeleted;
         event AddCssAction CssAded;
+        void Flush(Guid keyGuid);
     }
 }

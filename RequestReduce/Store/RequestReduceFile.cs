@@ -9,7 +9,7 @@ namespace RequestReduce.Store
         public string FileName { get; set; }
         public byte[] Content { get; set; }
         public string OriginalName { get; set; }
+        public bool IsExpired { get; set; }
         public DateTime LastUpdated { get; set; }
-        public DateTime LastAccessed { get; set; }
     }
 }

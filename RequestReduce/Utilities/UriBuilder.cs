@@ -40,7 +40,9 @@ namespace RequestReduce.Utilities
         {
             var dir = url.Substring(0, url.LastIndexOf('/'));
             var keyDir = dir.Substring(dir.LastIndexOf('/') + 1);
-            return Guid.Parse(keyDir);
+            Guid key = Guid.Empty;
+            Guid.TryParse(keyDir, out key);
+            return key;
         }
     }
 }

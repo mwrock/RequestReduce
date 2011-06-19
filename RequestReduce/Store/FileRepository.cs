@@ -10,6 +10,7 @@ namespace RequestReduce.Store
     public interface IFileRepository : IRepository<RequestReduceFile>
     {
         IEnumerable<Guid> GetKeys();
+        IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
     }
     public class FileRepository : Repository<RequestReduceFile>, IFileRepository
     {
@@ -21,7 +22,12 @@ namespace RequestReduce.Store
 
         public IEnumerable<Guid> GetKeys()
         {
-            return AsQueryable().Where(x => x.FileName == Utilities.UriBuilder.CssFileName).Select(y => y.Key).Distinct().ToList();
+            return AsQueryable().Where(x => x.FileName == Utilities.UriBuilder.CssFileName && !x.IsExpired).Select(y => y.Key).Distinct().ToList();
+        }
+
+        public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
+        {
+            return AsQueryable().Where(x => x.Key == key).ToArray();
         }
 
         public override void Save(RequestReduceFile entity)
@@ -36,6 +42,7 @@ namespace RequestReduce.Store
                 var existingFile = base[entity.RequestReduceFileId];
                 existingFile.Content = entity.Content;
                 existingFile.LastUpdated = entity.LastUpdated;
+                existingFile.IsExpired = entity.IsExpired;
                 Context.SaveChanges();
             }
         }

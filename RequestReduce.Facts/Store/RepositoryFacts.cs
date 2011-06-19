@@ -41,7 +41,6 @@ namespace RequestReduce.Facts.Store
                                    Content = new byte[] {1},
                                    FileName = "fileName",
                                    Key = Guid.NewGuid(),
-                                   LastAccessed = DateTime.Now,
                                    LastUpdated = DateTime.Now,
                                    OriginalName = "originalName",
                                    RequestReduceFileId = id
@@ -56,7 +55,6 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(file.Key, savedFile.Key);
                 Assert.Equal(file.OriginalName, savedFile.OriginalName);
                 Assert.Equal(file.RequestReduceFileId, savedFile.RequestReduceFileId);
-                Assert.Equal(file.LastAccessed, savedFile.LastAccessed);
                 Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
             }
 
@@ -70,7 +68,6 @@ namespace RequestReduce.Facts.Store
                     Content = new byte[] { 1 },
                     FileName = "fileName",
                     Key = Guid.NewGuid(),
-                    LastAccessed = DateTime.Now,
                     LastUpdated = new DateTime(2010, 1, 1),
                     OriginalName = "originalName",
                     RequestReduceFileId = id
@@ -81,7 +78,6 @@ namespace RequestReduce.Facts.Store
                     Content = new byte[] { 2 },
                     FileName = "fileName",
                     Key = Guid.NewGuid(),
-                    LastAccessed = DateTime.Now,
                     LastUpdated = new DateTime(2011, 1, 1),
                     OriginalName = "originalName",
                     RequestReduceFileId = id
@@ -96,50 +92,132 @@ namespace RequestReduce.Facts.Store
 
         }
 
-        [Fact]
-        public void WillReturnDistinctListOfKeys()
+        public class GetKeys
         {
-            var testable = new TestableRepository();
-            var id = Guid.NewGuid();
-            var id2 = Guid.NewGuid();
-            var file = new RequestReduceFile()
+            [Fact]
+            public void WillReturnDistinctListOfKeys()
             {
-                Content = new byte[] { 1 },
-                FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
-                Key = id,
-                LastAccessed = DateTime.Now,
-                LastUpdated = DateTime.Now,
-                OriginalName = "originalName",
-                RequestReduceFileId = Guid.NewGuid()
-            };
-            var file2 = new RequestReduceFile()
-            {
-                Content = new byte[] { 1 },
-                FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
-                Key = id,
-                LastAccessed = DateTime.Now,
-                LastUpdated = DateTime.Now,
-                RequestReduceFileId = Guid.NewGuid()
-            };
-            var file3 = new RequestReduceFile()
-            {
-                Content = new byte[] { 1 },
-                FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
-                Key = id2,
-                LastAccessed = DateTime.Now,
-                LastUpdated = DateTime.Now,
-                OriginalName = "originalName2",
-                RequestReduceFileId = Guid.NewGuid()
-            };
-            testable.ClassUnderTest.Save(file);
-            testable.ClassUnderTest.Save(file2);
-            testable.ClassUnderTest.Save(file3);
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var id2 = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                var file2 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id,
+                    LastUpdated = DateTime.Now,
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                var file3 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id2,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+                testable.ClassUnderTest.Save(file3);
 
-            var result = testable.ClassUnderTest.GetKeys();
+                var result = testable.ClassUnderTest.GetKeys();
 
-            Assert.Equal(2, result.Count());
-            Assert.True(result.Contains(id));
-            Assert.True(result.Contains(id2));
+                Assert.Equal(2, result.Count());
+                Assert.True(result.Contains(id));
+                Assert.True(result.Contains(id2));
+            }
+
+            [Fact]
+            public void WillNotReturnExpiredKeys()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var id2 = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = Guid.NewGuid(),
+                    IsExpired = true
+                };
+                var file2 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id2,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+
+                var result = testable.ClassUnderTest.GetKeys();
+
+                Assert.Equal(1, result.Count());
+                Assert.True(result.Contains(id2));
+            }
+
+        }
+
+        public class GetFilesFromKey
+        {
+            [Fact]
+            public void WillPullTheFilesWithTheSpecifiedKey()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var id2 = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                var file2 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id,
+                    LastUpdated = DateTime.Now,
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                var file3 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    Key = id2,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+                testable.ClassUnderTest.Save(file3);
+
+                var result = testable.ClassUnderTest.GetFilesFromKey(id);
+
+                Assert.Equal(2, result.Count());
+                Assert.True(result.All(x => x.Key == id));
+                Assert.True(result.Contains(file));
+                Assert.True(result.Contains(file2));
+            }
         }
     }
 }

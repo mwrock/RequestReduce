@@ -60,5 +60,11 @@ namespace RequestReduce.Configuration
                 return limit;
             }
         }
+
+        [ConfigurationProperty("authorizedUserList")]
+        public string AuthorizedUserList
+        {
+            get { return base["authorizedUserList"].ToString(); }
+        }
     }
 }

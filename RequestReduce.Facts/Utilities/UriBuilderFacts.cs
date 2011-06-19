@@ -72,6 +72,17 @@ namespace RequestReduce.Facts.Utilities
 
                 Assert.Equal(key, result);
             }
+
+            [Fact]
+            public void WillReturnEmptyGuidIfKeyIsNotGuid()
+            {
+                var testable = new TestableUriBuilder();
+                var key = "not a guid";
+
+                var result = testable.ClassUnderTest.ParseKey("http://host/path/" + key + "/file.css");
+
+                Assert.Equal(Guid.Empty, result);
+            }
         }
     }
 
