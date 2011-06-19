@@ -27,9 +27,13 @@ namespace RequestReduce.Facts.Integration
 
         public SqlServerStoreFacts()
         {
+            var dataDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                          "\\RequestReduce.SampleWeb\\App_Data";
+            if (!Directory.Exists(dataDir))
+                Directory.CreateDirectory(dataDir);
             Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
             var mockConfig = new Mock<IRRConfiguration>();
-            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\App_Data\\RequestReduce.sdf");
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
             config = mockConfig.Object;
             repo = new FileRepository(config);
             repo.Context.Database.Delete();
