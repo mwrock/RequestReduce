@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Web;
@@ -37,6 +36,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -73,6 +73,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Server.MapPath("/Virtual")).Returns("physical");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
             RRContainer.Current = new Container(x =>
                                                     {
                                                         x.For<IRRConfiguration>().Use(config.Object);
@@ -110,6 +111,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
+            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
 
             module.InstallFilter(context.Object);
 
@@ -220,6 +222,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpritePhysicalPath).Returns("physicalPath");
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
@@ -228,6 +231,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Response.ContentType).Returns("text/html");
+            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
 
             module.InstallFilter(context.Object);
 
@@ -258,7 +262,7 @@ namespace RequestReduce.Facts.Module
             });
             var keyGuid = Guid.Parse(key);
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRFlush(context.Object);
 
             store.Verify(x => x.Flush(keyGuid), Times.Once());
             RRContainer.Current = null;
@@ -284,7 +288,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRFlush(context.Object);
 
             store.Verify(x => x.Flush(It.IsAny<Guid>()), Times.Never());
             RRContainer.Current = null;
@@ -311,7 +315,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRFlush(context.Object);
 
             store.Verify(x => x.Flush(Guid.Empty), Times.Once());
             RRContainer.Current = null;
@@ -338,7 +342,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRFlush(context.Object);
 
             store.Verify(x => x.Flush(It.IsAny<Guid>()), Times.Never());
             RRContainer.Current = null;

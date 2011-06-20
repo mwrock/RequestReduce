@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
@@ -128,6 +127,7 @@ namespace RequestReduce.Facts.Integration
             response2.Close();
         }
 
+        [OutputTraceOnFailFact]
         public void WillRecreateFileIfFileIsDeleted()
         {
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
@@ -150,11 +150,37 @@ namespace RequestReduce.Facts.Integration
             Assert.True(File.Exists(file));
         }
 
+        [OutputTraceOnFailFact]
+        public void WillFlushSingleReduction()
+        {
+            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
+            var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateCss();
+            var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            var css = cssPattern.Match(response).ToString();
+            var url = urlPattern.Match(css).Groups["url"].Value;
+            var oldKey = uriBuilder.ParseKey(url);
+            var fileName = uriBuilder.ParseFileName(url);
+            var firstCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "\\" + UriBuilder.CssFileName);
+
+            new WebClient().DownloadData("http://localhost:8877" + url.Replace(fileName, "flush"));
+            response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            css = cssPattern.Match(response).ToString();
+            url = urlPattern.Match(css).Groups["url"].Value;
+            var newKey = uriBuilder.ParseKey(url);
+            WaitToCreateCss();
+            var secondCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "\\" + UriBuilder.CssFileName);
+
+            Assert.Equal(Guid.Empty, newKey);
+            Assert.True(secondCreated > firstCreated);
+        }
+
         private void WaitToCreateCss()
         {
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName == UriBuilder.CssFileName) == null && watch.ElapsedMilliseconds < 10000)
+            while (repo.AsQueryable().FirstOrDefault(x => x.FileName == UriBuilder.CssFileName && !x.IsExpired) == null && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);
