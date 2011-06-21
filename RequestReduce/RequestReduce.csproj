@@ -32,7 +32,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AjaxMin, Version=4.19.4141.18463, Culture=neutral, PublicKeyToken=24297a69a7eae424, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AjaxMin.4.19.4141.18463\lib\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
