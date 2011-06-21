@@ -19,43 +19,18 @@ namespace RequestReduce.Module
             context.ReleaseRequestState += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.PreSendRequestHeaders += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.BeginRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
+            context.PostAuthenticateRequest += (sender, e) => HandleRRFlush(new HttpContextWrapper(((HttpApplication)sender).Context));
         }
 
-        public void HandleRRContent(HttpContextBase httpContextWrapper)
+        public void HandleRRFlush(HttpContextBase httpContextWrapper)
         {
-            if (!IsInRRContentDirectory(httpContextWrapper)) return;
-
             var url = httpContextWrapper.Request.RawUrl;
-            if(url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase))
-            {
-                FlushReduction(url, httpContextWrapper.User.Identity.Name);
-                if (httpContextWrapper.ApplicationInstance != null)
-                    httpContextWrapper.ApplicationInstance.CompleteRequest();
-            }
-            else
-            {
-                RRTracer.Trace("Beginning to serve {0}", url);
-                var store = RRContainer.Current.GetInstance<IStore>();
-                if (store.SendContent(url, httpContextWrapper.Response))
-                {
-                    httpContextWrapper.Response.Headers.Remove("ETag");
-                    httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
-                    httpContextWrapper.Response.Expires = 44000;
-                    if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
-                        httpContextWrapper.Response.ContentType = "text/css";
-                    else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                        httpContextWrapper.Response.ContentType = "image/png";
-                    if (httpContextWrapper.ApplicationInstance != null)
-                        httpContextWrapper.ApplicationInstance.CompleteRequest();
-                }
-            }
-            RRTracer.Trace("Finished serving {0}", url);
-        }
+            if (!IsInRRContentDirectory(httpContextWrapper) ||
+                !url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)) return;
 
-        private void FlushReduction(string url, string user)
-        {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            if(config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            var user = httpContextWrapper.User.Identity.Name;
+            if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
                 var store = RRContainer.Current.GetInstance<IStore>();
                 var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
@@ -63,22 +38,50 @@ namespace RequestReduce.Module
                 store.Flush(key);
                 RRTracer.Trace("{0} Flushed {1}", user, key);
             }
+            if (httpContextWrapper.ApplicationInstance != null)
+                httpContextWrapper.ApplicationInstance.CompleteRequest();
         }
 
-        private bool IsInRRContentDirectory(HttpContextBase httpContextWrapper)
+        public void HandleRRContent(HttpContextBase httpContextWrapper)
+        {
+            var url = httpContextWrapper.Request.RawUrl;
+            if (!IsInRRContentDirectory(httpContextWrapper) || url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)) return;
+
+            RRTracer.Trace("Beginning to serve {0}", url);
+            var store = RRContainer.Current.GetInstance<IStore>();
+            if (store.SendContent(url, httpContextWrapper.Response))
+            {
+                httpContextWrapper.Response.Headers.Remove("ETag");
+                httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
+                httpContextWrapper.Response.Expires = 44000;
+                if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
+                    httpContextWrapper.Response.ContentType = "text/css";
+                else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    httpContextWrapper.Response.ContentType = "image/png";
+                if (httpContextWrapper.ApplicationInstance != null)
+                    httpContextWrapper.ApplicationInstance.CompleteRequest();
+            }
+            RRTracer.Trace("Finished serving {0}", url);
+        }
+
+        private static bool IsInRRContentDirectory(HttpContextBase httpContextWrapper)
         {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            var rrPath = config.SpriteVirtualPath.ToLower();
-            var url = httpContextWrapper.Request.RawUrl.ToLower();
-            if(rrPath.StartsWith("http"))
-                url = httpContextWrapper.Request.Url.AbsoluteUri.ToLower();
-            return url.StartsWith(rrPath);
+            var rrPath = config.SpriteVirtualPath;
+            var url = httpContextWrapper.Request.RawUrl;
+            if(rrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                url = httpContextWrapper.Request.Url.AbsoluteUri;
+            return url.StartsWith(rrPath, StringComparison.OrdinalIgnoreCase);
         }
 
         public void InstallFilter(HttpContextBase context)
         {
             var request = context.Request;
-            if (context.Items.Contains(CONTEXT_KEY) || context.Response.ContentType != "text/html" || request.QueryString["RRFilter"] == "disabled" || request.RawUrl == "/favicon.ico")
+            if (context.Items.Contains(CONTEXT_KEY) || 
+                context.Response.ContentType != "text/html" || 
+                request.QueryString["RRFilter"] == "disabled" || 
+                request.RawUrl == "/favicon.ico" || 
+                IsInRRContentDirectory(context))
                 return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();

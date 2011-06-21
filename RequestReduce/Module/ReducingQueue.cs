@@ -64,6 +64,7 @@ namespace RequestReduce.Module
             }
             catch(Exception e)
             {
+                RRTracer.Trace(e.ToString());
                 if (CaptureErrorAction != null)
                     CaptureErrorAction(e);
             }

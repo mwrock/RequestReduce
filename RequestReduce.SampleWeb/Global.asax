@@ -7,12 +7,16 @@
 
     private static StringBuilder errorBuffer = new StringBuilder();
     private static StringWriter traceBuffer = new StringWriter();
+
+    private static System.Diagnostics.TextWriterTraceListener listener =
+                                                                  new System.Diagnostics.TextWriterTraceListener(
+                                                                      traceBuffer);
     
     void Application_Start(object sender, EventArgs e) 
     {
         RequestReduceModule.CaptureError(BuildErrorMessage);
         System.Diagnostics.Trace.AutoFlush = true;
-        System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(traceBuffer));
+        System.Diagnostics.Trace.Listeners.Add(listener);
         RRTracer.Trace("Application Starting.");
     }
 
@@ -64,8 +68,9 @@
             Response.Write(traceBuffer);
             traceBuffer.Dispose();
             traceBuffer = new StringWriter();
-            System.Diagnostics.Trace.Listeners.Clear();
-            System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(traceBuffer));
+            System.Diagnostics.Trace.Listeners.Remove(listener);
+            listener = new System.Diagnostics.TextWriterTraceListener(traceBuffer);
+            System.Diagnostics.Trace.Listeners.Add(listener);
         }
 
         Context.ApplicationInstance.CompleteRequest();
