@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Utilities
 
                 var result = testable.ClassUnderTest.BuildCssUrl(guid);
 
-                Assert.Equal(result, string.Format("http://host/vpath/{0}/{1}", guid, UriBuilder.CssFileName));
+                Assert.Equal(result, string.Format("http://host/vpath/{0}-{1}", guid, UriBuilder.CssFileName));
             }
         }
 
@@ -43,7 +43,7 @@ namespace RequestReduce.Facts.Utilities
 
                 var result = testable.ClassUnderTest.BuildSpriteUrl(guid, 5);
 
-                Assert.Equal(result, string.Format("http://host/vpath/{0}/sprite5.png", guid));
+                Assert.Equal(result, string.Format("http://host/vpath/{0}-sprite5.png", guid));
             }
         }
 
@@ -54,7 +54,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
 
-                var result = testable.ClassUnderTest.ParseFileName("http://host/path/key/file.css");
+                var result = testable.ClassUnderTest.ParseFileName("http://host/path/key-file.css");
 
                 Assert.Equal("file.css", result);
             }
@@ -68,7 +68,7 @@ namespace RequestReduce.Facts.Utilities
                 var testable = new TestableUriBuilder();
                 var key = Guid.NewGuid();
 
-                var result = testable.ClassUnderTest.ParseKey("http://host/path/" + key + "/file.css");
+                var result = testable.ClassUnderTest.ParseKey("http://host/path/" + key + "-file.css");
 
                 Assert.Equal(key, result);
             }
@@ -79,7 +79,7 @@ namespace RequestReduce.Facts.Utilities
                 var testable = new TestableUriBuilder();
                 var key = "not a guid";
 
-                var result = testable.ClassUnderTest.ParseKey("http://host/path/" + key + "/file.css");
+                var result = testable.ClassUnderTest.ParseKey("http://host/path/" + key + "-file.css");
 
                 Assert.Equal(Guid.Empty, result);
             }

@@ -34,7 +34,7 @@ namespace RequestReduce.Module
             {
                 var store = RRContainer.Current.GetInstance<IStore>();
                 var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
-                var key = uriBuilder.ParseKey(url);
+                var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush", "-flush"));
                 store.Flush(key);
                 RRTracer.Trace("{0} Flushed {1}", user, key);
             }

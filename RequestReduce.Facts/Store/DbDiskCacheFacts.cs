@@ -39,20 +39,6 @@ namespace RequestReduce.Facts.Store
             }
         }
 
-        public class Ctor
-        {
-             [Fact]
-             public void WillPurgePhysicalDirectory()
-             {
-                 var testable = new TestableDbDiskCache();
-                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("path");
-
-                 var result = testable.ClassUnderTest;
-
-                 testable.Mock<IFileWrapper>().Verify(x => x.DeleteDirectory("path"), Times.Once());
-             }
-        }
-
         public class PurgeOldFiles
         {
             [Fact]

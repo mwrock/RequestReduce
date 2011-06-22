@@ -103,10 +103,7 @@ namespace RequestReduce.Facts.Integration
             watch.Start();
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
-            while (Directory.GetDirectories(rrFolder).Length == 0 && watch.ElapsedMilliseconds < 10000)
-                Thread.Sleep(0);
-            var newDir = Directory.GetDirectories(rrFolder)[0];
-            while (Directory.GetFiles(newDir, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
+            while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);

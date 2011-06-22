@@ -70,20 +70,6 @@ namespace RequestReduce.Facts.Store
 
                 testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid\\style.cc"));
             }
-
-            [Fact]
-            public void WillCreateKeyDirectoryIfMissing()
-            {
-                var testable = new TestableLocalDiskStore();
-                var content = new byte[] { 1 };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
-                testable.Mock<IFileWrapper>().Setup(x => x.DirectoryExists("c:\\web\\url\\myid")).Returns(false);
-
-                testable.ClassUnderTest.Save(content, "/url/myid/style.cc", null);
-
-                testable.Mock<IFileWrapper>().Verify(x => x.CreateDirectory("c:\\web\\url\\myid"));
-            }
         }
 
         public class SendContent
@@ -131,11 +117,14 @@ namespace RequestReduce.Facts.Store
                 var guid2 = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1)).Returns("url1");
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2)).Returns("url2");
-                testable.Mock<IFileWrapper>().Setup(x => x.GetDirectories("dir")).Returns(new string[]
-                                                                                              {
-                                                                                                  "dir\\" + guid1.ToString(),
-                                                                                                  "dir\\" + guid2.ToString()
-                                                                                              });
+                var files = new string[]
+                                {
+                                    "dir\\" + guid1 + "-file.css",
+                                    "dir\\" + guid2 + "-file.css"
+                                };
+                testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("dir")).Returns(files);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0])).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1])).Returns(guid2);
 
                 var result = testable.ClassUnderTest.GetSavedUrls();
 

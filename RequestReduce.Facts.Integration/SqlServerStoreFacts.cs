@@ -162,15 +162,15 @@ namespace RequestReduce.Facts.Integration
             var url = urlPattern.Match(css).Groups["url"].Value;
             var oldKey = uriBuilder.ParseKey(url);
             var fileName = uriBuilder.ParseFileName(url);
-            var firstCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "\\" + UriBuilder.CssFileName);
+            var firstCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "-" + UriBuilder.CssFileName);
 
-            new WebClient().DownloadData("http://localhost:8877" + url.Replace(fileName, "flush"));
+            new WebClient().DownloadData("http://localhost:8877" + url.Replace("-" + fileName, "/flush"));
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             css = cssPattern.Match(response).ToString();
             url = urlPattern.Match(css).Groups["url"].Value;
             var newKey = uriBuilder.ParseKey(url);
             WaitToCreateCss();
-            var secondCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "\\" + UriBuilder.CssFileName);
+            var secondCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "-" + UriBuilder.CssFileName);
 
             Assert.Equal(Guid.Empty, newKey);
             Assert.True(secondCreated > firstCreated);
@@ -181,6 +181,10 @@ namespace RequestReduce.Facts.Integration
             var watch = new Stopwatch();
             watch.Start();
             while (repo.AsQueryable().FirstOrDefault(x => x.FileName == UriBuilder.CssFileName && !x.IsExpired) == null && watch.ElapsedMilliseconds < 10000)
+                Thread.Sleep(0);
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
+                Thread.Sleep(0);
+            while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);

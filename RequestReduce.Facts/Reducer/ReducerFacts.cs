@@ -77,7 +77,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                Assert.True(result.EndsWith("/" + UriBuilder.CssFileName));
+                Assert.True(result.EndsWith("-" + UriBuilder.CssFileName));
             }
 
             [Fact]

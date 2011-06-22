@@ -43,7 +43,8 @@ namespace RequestReduce.Store
         }
 
         public void Save(byte[] content, string url, string originalUrls)
-        { 
+        {
+            RRTracer.Trace("Saving {0} to db.", url);
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
             var id = Hasher.Hash(key + fileName);
@@ -56,10 +57,10 @@ namespace RequestReduce.Store
                                RequestReduceFileId = id,
                                OriginalName = originalUrls
                            };
-            repository.Save(file);
             fileStore.Save(content, url, originalUrls);
             if(CssAded != null && !url.ToLower().EndsWith(".png"))
                 CssAded(key, url);
+            repository.Save(file);
             RRTracer.Trace("{0} saved to db.", url);
         }
 

@@ -143,7 +143,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Add(image);
 
-                Assert.True(result.Url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "/"));
+                Assert.True(result.Url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "-"));
             }
 
             [Fact]
@@ -181,7 +181,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Add(image);
 
-                Assert.True(result.Url.EndsWith("/sprite2.png"));
+                Assert.True(result.Url.EndsWith("-sprite2.png"));
             }
         }
 
@@ -289,7 +289,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Flush();
 
-                Assert.True(url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "/"));
+                Assert.True(url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "-"));
             }
 
             [Fact]
@@ -333,7 +333,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Flush();
 
-                Assert.True(url.EndsWith("/sprite2.png"));
+                Assert.True(url.EndsWith("-sprite2.png"));
             }
         }
 

@@ -14,10 +14,8 @@ namespace RequestReduce.Store
 
         public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder)
         {
-            fileWrapper.DeleteDirectory(configuration.SpritePhysicalPath);
-            RRTracer.Trace("DbFileCache deleting physical directory");
             const int interval = 1000*60*5;
-            timer = new Timer(PurgeOldFiles, null, interval, interval);
+            timer = new Timer(PurgeOldFiles, null, 0, interval);
         }
 
         protected virtual void PurgeOldFiles(object state)
@@ -26,7 +24,9 @@ namespace RequestReduce.Store
             var oldEntries = fileList.Where(x => DateTime.Now.Subtract(x.Value).TotalMinutes > 5);
             foreach (var entry in oldEntries)
             {
-                fileWrapper.DeleteFile(GetFileNameFromConfig(entry.Key));
+                var file = GetFileNameFromConfig(entry.Key);
+                RRTracer.Trace("purging old file: {0}", file);
+                fileWrapper.DeleteFile(file);
                 fileList.TryRemove(entry.Key, out date);
             }
         }

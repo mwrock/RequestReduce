@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
@@ -47,10 +48,8 @@ namespace RequestReduce.Store
         {
             var path = e.FullPath;
             RRTracer.Trace("watcher watched {0}", path);
-            var dir = path.Substring(0, path.LastIndexOf("\\"));
-            var keyDir = dir.Substring(dir.LastIndexOf("\\") + 1);
-            Guid guid;
-            if(Guid.TryParse(keyDir, out guid))
+            var guid = uriBuilder.ParseKey(path.Replace('\\', '/'));
+            if(guid != Guid.Empty)
             {
                 RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
                 if (e.ChangeType == WatcherChangeTypes.Deleted && CssDeleted != null)
@@ -86,13 +85,11 @@ namespace RequestReduce.Store
             var dic = new Dictionary<Guid, string>();
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
-            var keys = fileWrapper.GetDirectories(configuration.SpritePhysicalPath);
+            var keys = fileWrapper.GetFiles(configuration.SpritePhysicalPath).Select(x => uriBuilder.ParseKey(x)).Distinct();
             foreach (var key in keys)
             {
-                Guid guid;
-                var success = Guid.TryParse(key.Substring(key.LastIndexOf('\\') + 1), out guid);
-                if(success)
-                    dic.Add(guid, uriBuilder.BuildCssUrl(guid));
+                if(key != Guid.Empty)
+                    dic.Add(key, uriBuilder.BuildCssUrl(key));
             }
             return dic;
         }
@@ -109,11 +106,7 @@ namespace RequestReduce.Store
             var fileName = url;
             if (!string.IsNullOrEmpty(configuration.ContentHost))
                 fileName = url.Replace(configuration.ContentHost, "");
-            fileName = fileName.Replace(configuration.SpriteVirtualPath, configuration.SpritePhysicalPath).Replace('/', '\\');
-            var dir = fileName.Substring(0, fileName.LastIndexOf('\\'));
-            if(!fileWrapper.DirectoryExists(dir))
-                fileWrapper.CreateDirectory(dir);
-            return fileName;
+            return fileName.Replace(configuration.SpriteVirtualPath, configuration.SpritePhysicalPath).Replace('/', '\\');
         }
 
         public virtual void Dispose()
