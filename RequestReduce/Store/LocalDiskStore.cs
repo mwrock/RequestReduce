@@ -98,7 +98,12 @@ namespace RequestReduce.Store
         public virtual event AddCssAction CssAded;
         public void Flush(Guid keyGuid)
         {
-            throw new NotImplementedException();
+            if(CssDeleted != null) CssDeleted(keyGuid);
+            var files =
+                fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(
+                    x => x.Contains(keyGuid.ToString()) && !x.Contains("Expired"));
+            foreach (var file in files)
+                fileWrapper.RenameFile(file, file.Replace(keyGuid.ToString(), keyGuid + "-Expired"));
         }
 
         protected virtual string GetFileNameFromConfig(string url)

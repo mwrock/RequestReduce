@@ -6,6 +6,7 @@ using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Facts.Store
 {
@@ -39,6 +40,14 @@ namespace RequestReduce.Facts.Store
             public TestableLocalDiskStore()
             {
                 
+            }
+        }
+
+        class RealTestableLocalDiskStore : Testable<LocalDiskStore>
+        {
+            public RealTestableLocalDiskStore()
+            {
+
             }
         }
 
@@ -163,6 +172,42 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.TriggerChange("add", expectedGuid);
 
                 Assert.Equal(expectedGuid, key);
+            }
+        }
+
+        public class Flush
+        {
+            [Fact]
+            public void WillExpireFile()
+            {
+                var testable = new TestableLocalDiskStore();
+                var key = Guid.NewGuid();
+                var urlBuilder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\RRContent");
+                testable.Inject<IUriBuilder>(urlBuilder);
+                var file1 = urlBuilder.BuildCssUrl(key).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
+                var file2 = urlBuilder.BuildSpriteUrl(key, 1).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
+                testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\RRContent")).Returns(new string[]
+                                                                                                  {file1, file2});
+
+                testable.ClassUnderTest.Flush(key);
+
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(key.ToString(), key + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(key.ToString(), key + "-Expired")));
+            }
+
+            [Fact]
+            public void WillRemoveFromRepository()
+            {
+                var testable = new RealTestableLocalDiskStore();
+                var key = Guid.NewGuid();
+                var triggeredKey = Guid.Empty;
+                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
+
+                testable.ClassUnderTest.Flush(key);
+
+                Assert.Equal(key, triggeredKey);
             }
         }
     }

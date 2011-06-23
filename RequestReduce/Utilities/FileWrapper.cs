@@ -50,5 +50,10 @@ namespace RequestReduce.Utilities
         {
             File.Delete(path);
         }
+
+        public void RenameFile(string originalName, string newName)
+        {
+            File.Move(originalName, newName);
+        }
     }
 }
