@@ -232,6 +232,36 @@ namespace RequestReduce.Facts.Store
 
                 Assert.Equal(key, triggeredKey);
             }
+
+            [Fact]
+            public void WillFlushAllKeysWhenPassedGuidIsEmpty()
+            {
+                var testable = new TestableSqlServerStore();
+                var guid1 = Guid.NewGuid();
+                var guid2 = Guid.NewGuid();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2)).Returns("url2");
+                testable.Mock<IFileRepository>().Setup(x => x.GetKeys()).Returns(new List<Guid>()
+                                                        {
+                                                            guid1,
+                                                            guid2
+                                                        });
+                var file1 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = guid1 };
+                var file2 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = guid2 };
+                testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(guid1)).Returns(new RequestReduceFile[] { file1 });
+                testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(guid2)).Returns(new RequestReduceFile[] { file2 });
+                bool expire1 = false;
+                bool expire2 = false;
+                testable.Mock<IFileRepository>().Setup(x => x.Save(file1)).Callback<RequestReduceFile>(
+                    y => expire1 = y.IsExpired);
+                testable.Mock<IFileRepository>().Setup(x => x.Save(file2)).Callback<RequestReduceFile>(
+                    y => expire2 = y.IsExpired);
+
+                testable.ClassUnderTest.Flush(Guid.Empty);
+
+                Assert.True(expire1);
+                Assert.True(expire2);
+            }
         }
     }
 }

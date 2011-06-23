@@ -26,6 +26,13 @@ namespace RequestReduce.Store
 
         public void Flush(Guid keyGuid)
         {
+            if(keyGuid == Guid.Empty)
+            {
+                var urls = GetSavedUrls();
+                foreach (var key in urls.Keys)
+                    Flush(key);
+            }
+
             var files = repository.GetFilesFromKey(keyGuid);
             foreach (var file in files)
             {
