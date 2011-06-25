@@ -61,21 +61,35 @@ namespace RequestReduce.Store
 
         public virtual void Save(byte[] content, string url, string originalUrls)
         {
-            fileWrapper.Save(content, GetFileNameFromConfig(url));
+            var file = GetFileNameFromConfig(url);
+            fileWrapper.Save(content, file);
             RRTracer.Trace("{0} saved to disk.", url);
+            var expiredFile = file.Insert(file.LastIndexOf('-'), "-Expired");
+            if (fileWrapper.FileExists(expiredFile))
+                fileWrapper.DeleteFile(expiredFile);
         }
 
         public virtual bool SendContent(string url, HttpResponseBase response)
         {
+            var file = GetFileNameFromConfig(url);
             try
             {
-                response.TransmitFile(GetFileNameFromConfig(url));
+                response.TransmitFile(file);
                 RRTracer.Trace("{0} transmitted from disk.", url);
                 return true;
             }
             catch (FileNotFoundException)
             {
-                return false;
+                try
+                {
+                    response.TransmitFile(file.Insert(file.LastIndexOf('-'), "-Expired"));
+                    RRTracer.Trace("{0} was expired and transmitted from disk.", url);
+                    return true;
+                }
+                catch (FileNotFoundException)
+                {
+                    return false;
+                }
             }
         }
 
@@ -85,7 +99,9 @@ namespace RequestReduce.Store
             var dic = new Dictionary<Guid, string>();
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
-            var keys = fileWrapper.GetFiles(configuration.SpritePhysicalPath).Select(x => uriBuilder.ParseKey(x)).Distinct();
+            var keys =
+                fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(y => !y.Contains("-Expired-")).Select(
+                    x => uriBuilder.ParseKey(x)).Distinct();
             foreach (var key in keys)
             {
                 if(key != Guid.Empty)
@@ -98,6 +114,13 @@ namespace RequestReduce.Store
         public virtual event AddCssAction CssAded;
         public void Flush(Guid keyGuid)
         {
+            if (keyGuid == Guid.Empty)
+            {
+                var urls = GetSavedUrls();
+                foreach (var key in urls.Keys)
+                    Flush(key);
+            }
+
             if(CssDeleted != null) CssDeleted(keyGuid);
             var files =
                 fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(

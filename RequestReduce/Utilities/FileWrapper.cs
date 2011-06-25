@@ -55,5 +55,10 @@ namespace RequestReduce.Utilities
         {
             File.Move(originalName, newName);
         }
+
+        public bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
     }
 }

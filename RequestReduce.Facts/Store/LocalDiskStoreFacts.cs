@@ -61,9 +61,9 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
 
-                testable.ClassUnderTest.Save(content, "/url/myid/style.cc", null);
+                testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
 
-                testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid\\style.cc"));
+                testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid-style.cc"));
             }
 
             [Fact]
@@ -75,9 +75,24 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
 
-                testable.ClassUnderTest.Save(content, "http://host/url/myid/style.cc", null);
+                testable.ClassUnderTest.Save(content, "http://host/url/myid-style.cc", null);
 
-                testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid\\style.cc"));
+                testable.Mock<IFileWrapper>().Verify(x => x.Save(content, "c:\\web\\url\\myid-style.cc"));
+            }
+
+            [Fact]
+            public void WillRemoveExpiredFileIfExists()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IFileWrapper>().Setup(x => x.FileExists("c:\\web\\url\\myid-Expired-style.cc")).Returns(
+                    true);
+
+                testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
+
+                testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("c:\\web\\url\\myid-Expired-style.cc"));
             }
         }
 
@@ -92,27 +107,42 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
                 var response = new Mock<HttpResponseBase>();
 
-                var result = testable.ClassUnderTest.SendContent("/url/myid/style.cc", response.Object);
+                var result = testable.ClassUnderTest.SendContent("/url/myid-style.cc", response.Object);
 
                 Assert.True(result);
-                response.Verify(x => x.TransmitFile("c:\\web\\url\\myid\\style.cc"), Times.Once());
+                response.Verify(x => x.TransmitFile("c:\\web\\url\\myid-style.cc"), Times.Once());
             }
 
             [Fact]
             public void WillReturnFalseIfFileotFound()
             {
                 var testable = new TestableLocalDiskStore();
-                var content = new byte[] { 1 };
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
                 var response = new Mock<HttpResponseBase>();
-                response.Setup(x => x.TransmitFile("c:\\web\\url\\myid\\style.cc")).Throws(new FileNotFoundException());
+                response.Setup(x => x.TransmitFile("c:\\web\\url\\myid-style.cc")).Throws(new FileNotFoundException());
+                response.Setup(x => x.TransmitFile("c:\\web\\url\\myid-Expired-style.cc")).Throws(new FileNotFoundException());
 
-                var result = testable.ClassUnderTest.SendContent("/url/myid/style.cc", response.Object);
+                var result = testable.ClassUnderTest.SendContent("/url/myid-style.cc", response.Object);
 
                 Assert.False(result);
             }
 
+            [Fact]
+            public void WillTransmitExpiredFileIfFileotFoundandExpired()
+            {
+                var testable = new TestableLocalDiskStore();
+                var content = new byte[] { 1 };
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                var response = new Mock<HttpResponseBase>();
+                response.Setup(x => x.TransmitFile("c:\\web\\url\\myid-style.cc")).Throws(new FileNotFoundException());
+
+                var result = testable.ClassUnderTest.SendContent("/url/myid-style.cc", response.Object);
+
+                Assert.True(result);
+                response.Verify(x => x.TransmitFile("c:\\web\\url\\myid-Expired-style.cc"), Times.Once());
+            }
         }
 
         public class GetExistingUrls
@@ -128,7 +158,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2)).Returns("url2");
                 var files = new string[]
                                 {
-                                    "dir\\" + guid1 + "-file.css",
+                                    "dir\\" + guid1 + "-Expired-file.css",
                                     "dir\\" + guid2 + "-file.css"
                                 };
                 testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("dir")).Returns(files);
@@ -137,8 +167,7 @@ namespace RequestReduce.Facts.Store
 
                 var result = testable.ClassUnderTest.GetSavedUrls();
 
-                Assert.Equal(2, result.Count);
-                Assert.True(result[guid1] == "url1");
+                Assert.Equal(1, result.Count);
                 Assert.True(result[guid2] == "url2");
             }
         }
@@ -208,6 +237,26 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Flush(key);
 
                 Assert.Equal(key, triggeredKey);
+            }
+
+            [Fact]
+            public void WillFlushAllKeysWhenPassedGuidIsEmpty()
+            {
+                var testable = new TestableLocalDiskStore();
+                var guid1 = Guid.NewGuid();
+                var guid2 = Guid.NewGuid();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\dir");
+                var file1 = "dir\\" + guid1 + "-file.css";
+                var file2 = "dir\\" + guid2 + "-file.css";
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(file1)).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(file2)).Returns(guid2);
+                testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\web\\dir")).Returns(new string[] { file1, file2 });
+
+                testable.ClassUnderTest.Flush(Guid.Empty);
+
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(guid1.ToString(), guid1 + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(guid2.ToString(), guid2 + "-Expired")));
             }
         }
     }

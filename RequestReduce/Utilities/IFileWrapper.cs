@@ -15,5 +15,6 @@ namespace RequestReduce.Utilities
         void DeleteDirectory(string path);
         void DeleteFile(string path);
         void RenameFile(string originalName, string newName);
+        bool FileExists(string path);
     }
 }
