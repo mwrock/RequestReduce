@@ -42,7 +42,7 @@ namespace RequestReduce.Facts.Store
         public class PurgeOldFiles
         {
             [Fact]
-            public void WillDeeteFilesOlderThanFiveMinutes()
+            public void WillDeleteFilesOlderThanFiveMinutes()
             {
                 var testable = new TestableDbDiskCache();
                 testable.ClassUnderTest.FileList["url1"] = DateTime.Now.Subtract(new TimeSpan(0, 5, 1));
@@ -67,9 +67,9 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableDbDiskCache();
 
-                testable.ClassUnderTest.Save(new byte[]{1}, "url", null);
+                testable.ClassUnderTest.Save(new byte[]{1}, "key-name.css", null);
 
-                Assert.True(DateTime.Now.Subtract(testable.ClassUnderTest.FileList["url"]).TotalSeconds < 1);
+                Assert.True(DateTime.Now.Subtract(testable.ClassUnderTest.FileList["key-name.css"]).TotalSeconds < 1);
             }
         }
 

@@ -1,20 +1,27 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Moq;
+using RequestReduce.Configuration;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Facts.Integration
 {
     public class ModuleFacts
     {
         private readonly string rrFolder;
+        private readonly UriBuilder uriBuilder;
 
         public ModuleFacts()
         {
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore);
+            uriBuilder = new UriBuilder(new Mock<IRRConfiguration>().Object);
         }
 
         [OutputTraceOnFailFact]
@@ -97,13 +104,41 @@ namespace RequestReduce.Facts.Integration
             Assert.True(createTime < new FileInfo(file).LastWriteTime);
         }
 
+        [OutputTraceOnFailFact]
+        public void WillFlushSingleReduction()
+        {
+            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
+            var urlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateCss();
+            var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            var css = cssPattern.Match(response).ToString();
+            var url = urlPattern.Match(css).Groups["url"].Value;
+            var fileName = uriBuilder.ParseFileName(url);
+
+            new WebClient().DownloadData("http://localhost:8877" + url.Replace("-" + fileName, "/flush"));
+            var cssFilesAfterFlush = Directory.GetFiles(rrFolder, "*.css");
+            response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            css = cssPattern.Match(response).ToString();
+            url = urlPattern.Match(css).Groups["url"].Value;
+            var newKey = uriBuilder.ParseKey(url);
+            WaitToCreateCss();
+            var cssFilesAfterRefresh = Directory.GetFiles(rrFolder, "*.css");
+
+            Assert.Equal(Guid.Empty, newKey);
+            Assert.Equal(1, cssFilesAfterFlush.Length);
+            Assert.True(cssFilesAfterFlush[0].Contains("-Expired-"));
+            Assert.Equal(1, cssFilesAfterRefresh.Length);
+            Assert.False(cssFilesAfterRefresh[0].Contains("-Expired-"));
+        }
+
         private void WaitToCreateCss()
         {
             var watch = new Stopwatch();
             watch.Start();
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
+            while (Directory.GetFiles(rrFolder, "*.css").Where(x => !x.Contains("-Expired")).Count() == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);
