@@ -3,12 +3,6 @@
 @using RequestReduce.Reducer;
 @{  
     var resourcePath = Server.MapPath("/") + "\\RRContent";
-    if(Directory.Exists(resourcePath))
-    {
-        Directory.Delete(resourcePath, true);
-    }
-    System.Threading.Thread.Sleep(100);
-    Directory.CreateDirectory(resourcePath);
     var config = RRContainer.Current.GetInstance<IRRConfiguration>();
     config.SpritePhysicalPath = resourcePath;
     var reducedCss = RRContainer.Current.GetInstance<IReducer>().Process("http://i4.social.s-msft.com/contentservice/274f1460-cf18-4ed7-b1df-9ee1013a9f9d/Msdn.css::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=masterstylessa");

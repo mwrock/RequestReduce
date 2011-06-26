@@ -94,17 +94,18 @@ namespace RequestReduce.Module
             for (var idx = offset; idx < (count+offset); idx++)
                 matchPosition = HandleMatch(idx, buffer[idx], ref startTransformPosition, ref endTransformPosition);
 
+            RRTracer.Trace("Response filter state is {0}", state);
             switch (state)
             {
                 case SearchState.LookForStart:
                 case SearchState.MatchingStart:
                 case SearchState.MatchingStartClose:
                     BaseStream.Write(buffer, offset, count);
-                    return;
+                    break;
                 case SearchState.LookForStop:
                 case SearchState.MatchingStop:
                     BaseStream.Write(buffer, offset, startTransformPosition);
-                    return;
+                    break;
                 case SearchState.MatchingFinished:
                     if ((startTransformPosition - offset) >= 0)
                     BaseStream.Write(buffer, offset, startTransformPosition-offset);
@@ -112,8 +113,9 @@ namespace RequestReduce.Module
                     BaseStream.Write(encoding.GetBytes(transformed), 0, transformed.Length);
                     if ((offset + count) - endTransformPosition > 0)
                         BaseStream.Write(buffer, endTransformPosition, (offset + count) - endTransformPosition);
-                    return;
+                    break;
             }
+            RRTracer.Trace("Ending Filter Write");
         }
 
         private int HandleMatch(int i, byte b, ref int startTransformPosition, ref int endTransformPosition)

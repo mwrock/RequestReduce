@@ -14,10 +14,6 @@ namespace RequestReduce.Store
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RequestReduceFile>()
-                .Property(s => s.Content)
-                .IsRequired();
-
-            modelBuilder.Entity<RequestReduceFile>()
                 .Property(s => s.FileName)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -32,6 +28,20 @@ namespace RequestReduce.Store
                     .Property(s => s.LastUpdated)
                     .IsRequired()
                     .HasColumnType("datetime2");
+                
+                modelBuilder.Entity<RequestReduceFile>()
+                    .Property(s => s.Content)
+                    .IsRequired();
+
+            }
+            else
+            {
+                modelBuilder.Entity<RequestReduceFile>()
+                    .Property(s => s.Content)
+                    .IsRequired()
+                    .HasColumnType("image")
+                    .HasMaxLength(null);
+                base.Configuration.ValidateOnSaveEnabled = false;
             }
         }
     }

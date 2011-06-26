@@ -34,6 +34,7 @@ namespace RequestReduce.Reducer
 
         public virtual string Process(Guid key, string urls)
         {
+            RRTracer.Trace("beginning reducing process for {0}", urls);
             spriteManager.SpritedCssKey = key;
             var urlList = SplitUrls(urls);
             var virtualfileName = uriBuilder.BuildCssUrl(key);
@@ -42,6 +43,7 @@ namespace RequestReduce.Reducer
                 mergedCss.Append(ProcessCss(url));
             spriteManager.Flush();
             store.Save(Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString())), virtualfileName, urls);
+            RRTracer.Trace("finishing reducing process for {0}", urls);
             return virtualfileName;
         }
 

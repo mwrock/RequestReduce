@@ -76,6 +76,7 @@ namespace RequestReduce.Module
 
         public void InstallFilter(HttpContextBase context)
         {
+            RRTracer.Trace("Entering Module");
             var request = context.Request;
             if (context.Items.Contains(CONTEXT_KEY) || 
                 context.Response.ContentType != "text/html" || 
@@ -88,9 +89,8 @@ namespace RequestReduce.Module
             if(string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
-            RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
-
             context.Items.Add(CONTEXT_KEY, new object());
+            RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
         }
 
         public static int QueueCount
