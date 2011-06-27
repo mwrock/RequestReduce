@@ -30,6 +30,7 @@ namespace RequestReduce
                                         x.For<DbDiskCache>().Singleton();
                                         x.For<SqlServerStore>().HybridHttpOrThreadLocalScoped().Use<SqlServerStore>().Ctor<IStore>().Is<DbDiskCache>();
                                         x.For<IFileRepository>().Use<FileRepository>();
+                                        x.For<IReducer>().Use<Reducer.Reducer>();
                                         x.For<IStore>().Singleton().Use((y) =>
                                                                             {
                                                                                 switch (
@@ -55,18 +56,19 @@ namespace RequestReduce
                                     });
             container.Configure(x => x.Scan(y =>
             {
-                y.TheCallingAssembly();
+                y.Assembly("RequestReduce");
                 y.ExcludeNamespace("RequestReduce.Utilities");
                 y.ExcludeNamespace("RequestReduce.Configuration");
                 y.ExcludeNamespace("RequestReduce.Store");
                 y.ExcludeType<IReductionRepository>();
                 y.ExcludeType<IReducingQueue>();
+                y.ExcludeType<Reducer.Reducer>();
                 y.WithDefaultConventions();
             }
             ));
             container.Configure(x => x.Scan(y =>
             {
-                y.TheCallingAssembly();
+                y.Assembly("RequestReduce");
                 y.IncludeNamespace("RequestReduce.Utilities");
                 y.IncludeNamespace("RequestReduce.Configuration");
                 y.With(new SingletonConvention());

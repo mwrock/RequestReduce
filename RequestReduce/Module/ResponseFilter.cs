@@ -125,11 +125,11 @@ namespace RequestReduce.Module
                 case SearchState.LookForStart:
                     return HandleLookForStartMatch(i, b);
                 case SearchState.MatchingStart:
-                    return HandleMatchingStartMatch(i, b);
+                    return HandleMatchingStartMatch(b);
                 case SearchState.MatchingStartClose:
                     return HandleMatchingStartCloseMatch(i, b, ref startTransformPosition);
                 case SearchState.LookForStop:
-                    return HandleLookForStopMatch(i, b);
+                    return HandleLookForStopMatch(b);
                 case SearchState.MatchingStop:
                     return HandleMatchingStopMatch(i, b, ref endTransformPosition);
             }
@@ -170,7 +170,7 @@ namespace RequestReduce.Module
             return matchPosition;
         }
 
-        private int HandleLookForStopMatch(int i, byte b)
+        private int HandleLookForStopMatch(byte b)
         {
             transformBuffer.Add(b);
             if(IsMatch(MatchingEnd.End, b))
@@ -181,7 +181,7 @@ namespace RequestReduce.Module
             return matchPosition;
         }
 
-        private int HandleMatchingStartMatch(int i, byte b)
+        private int HandleMatchingStartMatch(byte b)
         {
             if(IsMatch(MatchingEnd.Start, b))
             {
@@ -203,7 +203,7 @@ namespace RequestReduce.Module
             {
                 state = SearchState.MatchingStart;
                 transformBuffer.Clear();
-                return HandleMatchingStartMatch(i, b);
+                return HandleMatchingStartMatch(b);
             }
             return matchPosition;
         }

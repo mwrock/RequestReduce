@@ -20,7 +20,7 @@ namespace RequestReduce.Module
             RRTracer.Trace("Instantiating new Reducing queue.");
             this.reducer = reducer;
             this.reductionRepository = reductionRepository;
-            backgroundThread = new Thread(new ThreadStart(ProcessQueue)) { IsBackground = true };
+            backgroundThread = new Thread(ProcessQueue) { IsBackground = true };
             backgroundThread.Start();
         }
 
@@ -53,7 +53,7 @@ namespace RequestReduce.Module
         {
             try
             {
-                string urlsToReduce = null;
+                string urlsToReduce;
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
                     var key = Hasher.Hash(urlsToReduce);

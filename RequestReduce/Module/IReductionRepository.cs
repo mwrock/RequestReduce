@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RequestReduce.Module
+﻿namespace RequestReduce.Module
 {
     public interface IReductionRepository
     {
