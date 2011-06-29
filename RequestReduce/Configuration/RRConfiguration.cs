@@ -38,7 +38,7 @@ namespace RequestReduce.Configuration
             AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
-            SpriteVirtualPath = config == null ? "/RequestReduceContent" : config.SpriteVirtualPath;
+            SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath) ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))
             {

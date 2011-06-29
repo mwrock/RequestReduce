@@ -16,8 +16,13 @@ namespace RequestReduce.Store
     {
         public FileRepository(IRRConfiguration config) : base(config)
         {
-            Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
-            Context.Database.Initialize(false);
+            if (!(Context.Database.Connection is System.Data.SqlServerCe.SqlCeConnection))
+                Database.SetInitializer<RequestReduceContext>(null);
+            else
+            {
+                Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
+                Context.Database.Initialize(false);
+            }
         }
 
         public IEnumerable<Guid> GetKeys()
