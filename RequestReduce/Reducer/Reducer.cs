@@ -50,7 +50,7 @@ namespace RequestReduce.Reducer
         protected virtual string ProcessCss(string url)
         {
             var cssContent = webClientWrapper.DownloadString(url);
-            var imageUrls = cssImageTransformer.ExtractImageUrls(cssContent, url);
+            var imageUrls = cssImageTransformer.ExtractImageUrls(ref cssContent, url);
             foreach (var imageUrl in imageUrls)
             {
                 var sprite = spriteManager.Add(imageUrl);

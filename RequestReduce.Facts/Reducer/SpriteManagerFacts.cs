@@ -170,7 +170,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillSaveSpriteWithAFileNameWithTheSpriteIndex()
+            public void WillSaveSpriteWithAFileNameWithTheSpriteIndexWhichIsIncrementedAfterFlush()
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
@@ -183,6 +183,22 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.True(result.Url.EndsWith("-sprite2.png"));
             }
+
+            [Fact]
+            public void WillNotIncrementIndexofFileInvokingFlush()
+            {
+                var testable = new TestableSpriteManager();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
+
+                var result = testable.ClassUnderTest.Add(image);
+
+                Assert.True(result.Url.EndsWith("-sprite1.png"));
+            }
+
         }
 
         public class Flush

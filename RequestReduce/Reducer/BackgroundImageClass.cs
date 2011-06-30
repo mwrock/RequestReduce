@@ -45,6 +45,7 @@ namespace RequestReduce.Reducer
             {
                 OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
                 ImageUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, OriginalImageUrl);
+                OriginalClassString = OriginalClassString.Replace(OriginalImageUrl, ImageUrl);
             }
             var repeatMatch = repeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
@@ -137,7 +138,7 @@ namespace RequestReduce.Reducer
 
         public string Render(Sprite sprite)
         {
-            var newClass = OriginalClassString.ToLower().Replace(OriginalImageUrl.ToLower(), sprite.Url);
+            var newClass = OriginalClassString.ToLower().Replace(ImageUrl.ToLower(), sprite.Url);
             var yOffset = YOffset.Direction.ToString();
             if (YOffset.PositionMode != PositionMode.Direction)
                 yOffset = "0";

@@ -33,7 +33,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
                 Assert.True(result.Any(x => x.ImageUrl == "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png"));
@@ -52,8 +52,9 @@ namespace RequestReduce.Facts.Reducer
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") {0};
     width: 20px;
 }}";
+                var formatedCss = string.Format(css, repeat);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(string.Format(css, repeat), "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref formatedCss, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -69,7 +70,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
             }
@@ -88,7 +89,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }}", y);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
             }
@@ -107,7 +108,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }}", y);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -123,7 +124,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
             }
@@ -141,7 +142,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: no-repeat;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -156,9 +157,49 @@ namespace RequestReduce.Facts.Reducer
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
+            }
+
+            [Fact]
+            public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImages()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""subnav_on_technet.png"") no-repeat;
+}";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_on_technet.png"") no-repeat;
+}";
+
+                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(expectedcss, css);
+            }
+
+            [Fact]
+            public void WillNotTryToConvertUrlsOfClassesWithNoImages()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    style: val;
+}";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    style: val;
+}";
+
+                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(expectedcss, css);
             }
 
             [Fact]
@@ -179,7 +220,7 @@ namespace RequestReduce.Facts.Reducer
     width: 50;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }

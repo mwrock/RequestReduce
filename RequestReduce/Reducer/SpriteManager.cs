@@ -42,9 +42,9 @@ namespace RequestReduce.Reducer
                 return spriteList[imageKey];
             var currentPositionToReturn = SpriteContainer.Width;
             SpriteContainer.AddImage(image);
+            var sprite = new Sprite(currentPositionToReturn, GetSpriteUrl());
             if (SpriteContainer.Size >= config.SpriteSizeLimit)
                 Flush();
-            var sprite = new Sprite(currentPositionToReturn, GetSpriteUrl());
             spriteList.Add(imageKey, sprite);
             return sprite;
         }
