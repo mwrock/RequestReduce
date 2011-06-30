@@ -6,7 +6,7 @@
 }
 .Search
 {
-    background: url('http://localhost:8877/images/search.png') no-repeat;
+    background: url('../images/search.png') no-repeat;
     width: 22px;
     height: 22px;
 }

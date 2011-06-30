@@ -55,8 +55,8 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(2, testable.ClassUnderTest.FileList.Count);
                 Assert.True(testable.ClassUnderTest.FileList.ContainsKey("url2"));
                 Assert.True(testable.ClassUnderTest.FileList.ContainsKey("url4"));
-                testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("url1"), Times.Once());
-                testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("url3"), Times.Once());
+                testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("url1"), Times.AtLeastOnce());
+                testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("url3"), Times.AtLeastOnce());
             }
         }
 

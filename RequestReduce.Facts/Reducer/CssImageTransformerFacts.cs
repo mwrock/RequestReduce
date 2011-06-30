@@ -33,7 +33,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
                 Assert.True(result.Any(x => x.ImageUrl == "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png"));
@@ -53,7 +53,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20px;
 }}";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(string.Format(css, repeat));
+                var result = testable.ClassUnderTest.ExtractImageUrls(string.Format(css, repeat), "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -69,7 +69,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
             }
@@ -88,7 +88,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }}", y);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
             }
@@ -107,7 +107,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }}", y);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -123,7 +123,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
             }
@@ -141,7 +141,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: no-repeat;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -156,7 +156,7 @@ namespace RequestReduce.Facts.Reducer
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -179,7 +179,7 @@ namespace RequestReduce.Facts.Reducer
     width: 50;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+                var result = testable.ClassUnderTest.ExtractImageUrls(css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(0, result.Count());
             }
@@ -206,7 +206,7 @@ namespace RequestReduce.Facts.Reducer
                 var sprite = new Sprite(120, "spriteUrl");
 
 
-                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css), sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css, "http://server/content/style.css"), sprite);
 
                 Assert.Equal(expected, result);
             }
@@ -230,7 +230,7 @@ namespace RequestReduce.Facts.Reducer
                 var sprite = new Sprite(120, "spriteUrl");
 
 
-                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css), sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css, "http://server/content/style.css"), sprite);
 
                 Assert.Equal(expected, result);
             }

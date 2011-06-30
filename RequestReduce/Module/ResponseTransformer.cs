@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
@@ -14,11 +16,13 @@ namespace RequestReduce.Module
         private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex UrlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private readonly IReducingQueue reducingQueue;
+        private readonly HttpContextBase context;
 
-        public ResponseTransformer(IReductionRepository reductionRepository, IReducingQueue reducingQueue)
+        public ResponseTransformer(IReductionRepository reductionRepository, IReducingQueue reducingQueue, HttpContextBase context)
         {
             this.reductionRepository = reductionRepository;
             this.reducingQueue = reducingQueue;
+            this.context = context;
         }
 
         public string Transform(string preTransform)
@@ -32,7 +36,7 @@ namespace RequestReduce.Module
                     var urlMatch = UrlPattern.Match(match.ToString());
                     if(urlMatch.Success)
                     {
-                        urls.Append(urlMatch.Groups["url"].Value);
+                        urls.Append(RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value));
                         urls.Append("::");
                     }
                 }

@@ -55,7 +55,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillAddImageToSpriteContainer()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass(""){ImageUrl = ""};
+                var image = new BackgroundImageClass("", "http://server/content/style.css"){ImageUrl = ""};
 
                 testable.ClassUnderTest.Add(image);
 
@@ -68,7 +68,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(20);
 
-                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl2" });
+                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl2" });
 
                 Assert.Equal(20, result.Position);
             }
@@ -80,7 +80,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
 
                 Assert.Equal(2, testable.ClassUnderTest.SpriteIndex);
             }
@@ -89,9 +89,9 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnPreviousSpriteIfUrlWasSprited()
             {
                 var testable = new TestableSpriteManager();
-                var sprite = testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1" });
+                var sprite = testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1" });
 
-                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1" });
+                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1" });
 
                 Assert.Equal(sprite, result);
             }
@@ -103,9 +103,9 @@ namespace RequestReduce.Facts.Reducer
             public void WillTreatSameUrlwithDifferentWidthHeightOrXOffsetAsDifferentImagesAndReturnDistinctSprite(int image1Width, int image1Height, int image1XOffset, int image2Width, int image2Height, int image2XOffset)
             {
                 var testable = new TestableSpriteManager();
-                var sprite = testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", Width = image1Width, Height = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
+                var sprite = testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1", Width = image1Width, Height = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
 
-                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", Width = image2Width, Height = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
+                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1", Width = image2Width, Height = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
 
                 Assert.NotEqual(sprite, result);
             }
@@ -114,7 +114,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillNotAddImageToSpriteContainerIfImageAlreadySprited()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
                 testable.ClassUnderTest.Add(image);
 
                 testable.ClassUnderTest.Add(image);
@@ -126,7 +126,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveSpriteUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Add(image);
@@ -138,7 +138,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveSpriteUrlWithKeyInPath()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Add(image);
@@ -150,7 +150,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveSpriteUrlWithApngExtension()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
 
                 var result = testable.ClassUnderTest.Add(image);
 
@@ -161,7 +161,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillThrowInvalidOperationExceptionIfCssKeyIsEmpty()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
                 testable.ClassUnderTest.SpritedCssKey = Guid.Empty;
 
                 var ex = Assert.Throws<InvalidOperationException>(() => testable.ClassUnderTest.Add(image));
@@ -175,7 +175,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 testable.ClassUnderTest.Flush();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
                 testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
 
@@ -343,7 +343,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillRetrieveSpriteByOriginalUrl()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "" };
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
                 var sprite = testable.ClassUnderTest.Add(image);
 
                 var result = testable.ClassUnderTest[image];

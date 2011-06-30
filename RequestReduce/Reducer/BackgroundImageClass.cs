@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
@@ -36,12 +37,15 @@ namespace RequestReduce.Reducer
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public BackgroundImageClass(string originalClassString)
+        public BackgroundImageClass(string originalClassString, string parentCssUrl)
         {
             OriginalClassString = originalClassString;
             var match = imageUrlPattern.Match(originalClassString);
             if (match.Success)
-                ImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
+            {
+                OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
+                ImageUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, OriginalImageUrl);
+            }
             var repeatMatch = repeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
             {
@@ -123,6 +127,7 @@ namespace RequestReduce.Reducer
         }
 
         public string OriginalClassString { get; set; }
+        public string OriginalImageUrl { get; set; }
         public string ImageUrl { get; set; }
         public RepeatStyle Repeat { get; set; }
         public Position XOffset { get; set; }
@@ -132,7 +137,7 @@ namespace RequestReduce.Reducer
 
         public string Render(Sprite sprite)
         {
-            var newClass = OriginalClassString.ToLower().Replace(ImageUrl.ToLower(), sprite.Url);
+            var newClass = OriginalClassString.ToLower().Replace(OriginalImageUrl.ToLower(), sprite.Url);
             var yOffset = YOffset.Direction.ToString();
             if (YOffset.PositionMode != PositionMode.Direction)
                 yOffset = "0";

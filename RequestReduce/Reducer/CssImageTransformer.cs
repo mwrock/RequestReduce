@@ -8,12 +8,12 @@ namespace RequestReduce.Reducer
     {
         private static readonly Regex classPattern = new Regex("\\{[^\\}]+\\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-        public IEnumerable<BackgroundImageClass> ExtractImageUrls(string cssContent)
+        public IEnumerable<BackgroundImageClass> ExtractImageUrls(string cssContent, string cssUrl)
         {
             var urls = new List<BackgroundImageClass>();
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
-                var imageClass = new BackgroundImageClass(classMatch.ToString());
+                var imageClass = new BackgroundImageClass(classMatch.ToString(), cssUrl);
                 if (imageClass.ImageUrl != null)
                 {
                     if (imageClass.Width > 0 && imageClass.Repeat == RepeatStyle.NoRepeat 
