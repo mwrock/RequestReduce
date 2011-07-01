@@ -55,7 +55,7 @@ namespace RequestReduce.Configuration
         {
             get
             {
-                var limit = 500*1024;
+                int limit;
                 Int32.TryParse(base["spriteSizeLimit"].ToString(), out limit);
                 return limit;
             }
