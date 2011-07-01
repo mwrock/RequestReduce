@@ -5,15 +5,16 @@ using Moq;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
+using StructureMap;
 using Xunit;
 
 namespace RequestReduce.Facts.Module
 {
-    public class ReducingQueueFacts
+    public class ReducingQueueFacts : IDisposable
     {
         class FakeReducingQueue : ReducingQueue, IDisposable
         {
-            public FakeReducingQueue(IReducer reducer, IReductionRepository reductionRepository) : base(reducer, reductionRepository)
+            public FakeReducingQueue(IReductionRepository reductionRepository) : base(reductionRepository)
             {
                 isRunning = false;
             }
@@ -57,8 +58,12 @@ namespace RequestReduce.Facts.Module
             public TestableReducingQueue()
             {
                 Inject<IReductionRepository>(new FakeReductionRepository());
-                Mock<IReducer>().Setup(x => x.Process(Hasher.Hash("url"), "url")).Returns("reducedUrl");
+                MockedReducer = new Mock<IReducer>();
+                RRContainer.Current = new Container(x => x.For<IReducer>().Use(MockedReducer.Object));
+                MockedReducer.Setup(x => x.Process(Hasher.Hash("url"), "url")).Returns("reducedUrl");
             }
+
+            public Mock<IReducer> MockedReducer { get; set; }
 
             public void Dispose()
             {
@@ -91,7 +96,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
-                testable.Mock<IReducer>().Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Once());
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Once());
             }
 
             [Fact]
@@ -103,7 +108,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
-                testable.Mock<IReducer>().Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
             }
         }
 
@@ -130,13 +135,18 @@ namespace RequestReduce.Facts.Module
                 var testable = new TestableReducingQueue();
                 Exception error = null;
                 testable.ClassUnderTest.CaptureError(x => error= x);
-                testable.Mock<IReducer>().Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(new ApplicationException());
+                testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(new ApplicationException());
                 testable.ClassUnderTest.Enqueue("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
                 Assert.True(error is ApplicationException);
             }
+        }
+
+        public void Dispose()
+        {
+            RRContainer.Current = null;
         }
     }
 }

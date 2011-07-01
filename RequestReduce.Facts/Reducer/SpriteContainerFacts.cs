@@ -1,8 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using System.Linq;
-using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;

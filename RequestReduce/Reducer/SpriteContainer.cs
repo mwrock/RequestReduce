@@ -38,10 +38,13 @@ namespace RequestReduce.Reducer
 
                     writer.WriteImage(originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat));
                     bitmap = writer.SpriteImage;
+                    if ((originalBitmap.Width * originalBitmap.Height) > (bitmap.Width * bitmap.Height))
+                        Size += writer.GetBytes("image/png").Length;
+                    else
+                        Size += imageBytes.Length;
                 }
             }
             images.Add(bitmap);
-            Size += imageBytes.Length;
             Width += bitmap.Width;
             if (Height < bitmap.Height) Height = bitmap.Height;
         }
