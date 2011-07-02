@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
@@ -13,6 +14,8 @@ namespace RequestReduce.Module
         protected Thread backgroundThread;
         protected bool isRunning = true;
         protected Action<Exception> CaptureErrorAction;
+        protected Dictionary<Guid,int> dictionaryOfFailure = new Dictionary<Guid, int>();
+        public const int FailureThreshold = 5;
 
         public ReducingQueue(IReductionRepository reductionRepository)
         {
@@ -25,6 +28,11 @@ namespace RequestReduce.Module
         public void Enqueue(string urls)
         {
             queue.Enqueue(urls);
+        }
+
+        public void ClearFailures()
+        {
+            dictionaryOfFailure.Clear();
         }
 
         public int Count
@@ -49,13 +57,19 @@ namespace RequestReduce.Module
 
         protected void ProcessQueuedItem()
         {
+            var key = Guid.Empty;
             try
             {
                 string urlsToReduce;
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
-                    var key = Hasher.Hash(urlsToReduce);
+                    key = Hasher.Hash(urlsToReduce);
                     RRTracer.Trace("dequeued and processing {0}.", urlsToReduce);
+                    if(dictionaryOfFailure.ContainsKey(key) && dictionaryOfFailure[key] >= FailureThreshold)
+                    {
+                        RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", urlsToReduce);
+                        return;
+                    }
                     var reducer = RRContainer.Current.GetInstance<IReducer>();
                     reducer.Process(key, urlsToReduce);
                     RRTracer.Trace("dequeued and processed {0}.", urlsToReduce);
@@ -64,6 +78,10 @@ namespace RequestReduce.Module
             catch(Exception e)
             {
                 RRTracer.Trace(e.ToString());
+                if(dictionaryOfFailure.ContainsKey(key))
+                    dictionaryOfFailure[key] += 1;
+                else
+                    dictionaryOfFailure.Add(key, 1);
                 if (CaptureErrorAction != null)
                     CaptureErrorAction(e);
             }

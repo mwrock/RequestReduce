@@ -25,18 +25,28 @@ namespace RequestReduce.Module
         public void HandleRRFlush(HttpContextBase httpContextWrapper)
         {
             var url = httpContextWrapper.Request.RawUrl;
-            if (!IsInRRContentDirectory(httpContextWrapper) ||
-                !url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)) return;
+            if (!IsInRRContentDirectory(httpContextWrapper) 
+                || (!url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
+                && !url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase))) return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var user = httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
-                var store = RRContainer.Current.GetInstance<IStore>();
-                var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
-                var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush", "-flush"));
-                store.Flush(key);
-                RRTracer.Trace("{0} Flushed {1}", user, key);
+                if(url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase))
+                {
+                    var queue = RRContainer.Current.GetInstance<IReducingQueue>();
+                    queue.ClearFailures();
+                    RRTracer.Trace("Failures Cleared");
+                }
+                else
+                {
+                    var store = RRContainer.Current.GetInstance<IStore>();
+                    var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
+                    var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush", "-flush"));
+                    store.Flush(key);
+                    RRTracer.Trace("{0} Flushed {1}", user, key);
+                }
             }
             if (httpContextWrapper.ApplicationInstance != null)
                 httpContextWrapper.ApplicationInstance.CompleteRequest();
@@ -45,7 +55,9 @@ namespace RequestReduce.Module
         public void HandleRRContent(HttpContextBase httpContextWrapper)
         {
             var url = httpContextWrapper.Request.RawUrl;
-            if (!IsInRRContentDirectory(httpContextWrapper) || url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)) return;
+            if (!IsInRRContentDirectory(httpContextWrapper) 
+                || url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
+                || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)) return;
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();

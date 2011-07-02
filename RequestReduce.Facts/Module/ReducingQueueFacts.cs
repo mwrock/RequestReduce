@@ -110,6 +110,23 @@ namespace RequestReduce.Facts.Module
 
                 testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
             }
+
+            [Fact]
+            public void WillStopProcessingAfterExceedingFailureThreshold()
+            {
+                var testable = new TestableReducingQueue();
+                var badUrl = "badUrl";
+                var badKey = Hasher.Hash(badUrl);
+                testable.MockedReducer.Setup(x => x.Process(badKey, badUrl)).Throws(new Exception());
+
+                for (int i = 0; i < ReducingQueue.FailureThreshold + 1; i++)
+                {
+                    testable.ClassUnderTest.Enqueue(badUrl);
+                    testable.ClassUnderTest.ProcessQueuedItem();
+                }
+
+                testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold));
+            }
         }
 
         public class Count
@@ -124,6 +141,29 @@ namespace RequestReduce.Facts.Module
                 var result = testable.ClassUnderTest.Count;
 
                 Assert.Equal(2, result);
+            }
+        }
+
+        public class ClearFailures
+        {
+            [Fact]
+            public void WillProcessFailedUrlAfterFailuresAreCleared()
+            {
+                var testable = new TestableReducingQueue();
+                var badUrl = "badUrl";
+                var badKey = Hasher.Hash(badUrl);
+                testable.MockedReducer.Setup(x => x.Process(badKey, badUrl)).Throws(new Exception());
+                for (int i = 0; i < ReducingQueue.FailureThreshold; i++)
+                {
+                    testable.ClassUnderTest.Enqueue(badUrl);
+                    testable.ClassUnderTest.ProcessQueuedItem();
+                }
+
+                testable.ClassUnderTest.ClearFailures();
+                testable.ClassUnderTest.Enqueue(badUrl);
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold + 1));
             }
         }
 

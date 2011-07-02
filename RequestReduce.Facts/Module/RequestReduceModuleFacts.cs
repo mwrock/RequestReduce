@@ -239,6 +239,32 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
+        [Fact]
+        public void WillFlushFailuresOnFlushFailureUrlWhenAndAuthorizedUsersIsAnonymous()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(false);
+            context.Setup(x => x.User.Identity).Returns(identity.Object);
+            var queue = new Mock<IReducingQueue>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IReducingQueue>().Use(queue.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            queue.Verify(x => x.ClearFailures(), Times.Once());
+            RRContainer.Current = null;
+        }
+
         [Theory]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
         [InlineData("/RRContent/flush", "00000000-0000-0000-0000-000000000000")]

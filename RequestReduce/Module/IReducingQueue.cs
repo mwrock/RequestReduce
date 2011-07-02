@@ -6,6 +6,7 @@ namespace RequestReduce.Module
     {
         void Enqueue(string urls);
         int Count { get; }
+        void ClearFailures();
         void CaptureError(Action<Exception> captureAction);
     }
 }
