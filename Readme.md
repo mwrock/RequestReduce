@@ -1,5 +1,5 @@
 #RequestReduce
-RequestReduce allows any IIS based webste to automatically sprite background images into a sinle PNG as well as combine and minify all CSS in the page's <code><head/></code> tag with absolutely no coding beyond a few config tweaks. RequestReduce registers itself as a response filter that will fiter any responce of content type text/html. The filter looks for all css links in the <code><head/></code> tag and replacesthem with a single generated url that contains the combined and minified cs using sprites where it can.
+RequestReduce allows any IIS based webste to automatically sprite background images into a sinle PNG as well as combine and minify all CSS in the page's &lt;head/&gt; tag with absolutely no coding beyond a few config tweaks. RequestReduce registers itself as a response filter that will fiter any responce of content type text/html. The filter looks for all css links in the &lt;head/&gt; tag and replacesthem with a single generated url that contains the combined and minified cs using sprites where it can.
 
 RequestReduce provides several configuration options to support CDN hosting, multiple server environments and more.
 
