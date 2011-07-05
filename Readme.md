@@ -6,7 +6,9 @@ RequestReduce provides several configuration options to support CDN hosting, mul
 ##Getting started
 1. Download the latest RequestReduce version [here] (https://github.com/mwrock/RequestReduce/downloads)
 2. Extract the contacts ofthe download zip and copy RequestReduce.dll to your bin directory
-3. Add the RequestReduceModule to your web.config. Assuming you are using IIS 7, you would add it using this config:
+3. Add the RequestReduceModule to your web.config. 
+
+Assuming you are using IIS 7, you would add it by ensuring that your web.config's system.webServer/modules element contains an add element as follows:
 
     <system.webServer>
         <modules runAllManagedModulesForAllRequests="true">
