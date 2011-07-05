@@ -5,15 +5,11 @@ properties {
     $configuration = "debug"
 	# Package Directories
 	$filesDir = "$baseDir\BuildFiles"
-	if ( -not ( Test-Path ENV:\NugetOutput )) {
-		$nugetDir = "$baseDir\NugetPkg"
-	}
-	else {
-		$nugetDir = $env:NugetOutput
-	}
+	$version = "0.9." + (git log --pretty=oneline | measure-object).Count
 }
 
-task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution, Build-Nuget
+task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
+task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Build-Output
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
@@ -21,6 +17,10 @@ task Setup-IIS {
 
 task Clean-Solution -depends Clean-BuildFiles {
     exec { msbuild RequestReduce.sln /t:Clean /v:quiet }
+}
+
+task Update-AssemblyInfoFiles {
+	Update-AssemblyInfoFiles $version
 }
 
 task Build-Solution {
@@ -31,13 +31,20 @@ task Clean-BuildFiles {
     clean $filesDir
 }
 
-task Build-Nuget {
+task Build-Output {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
 	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
     exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\AjaxMin.dll $baseDir\RequestReduce\bin\$configuration\EntityFramework.dll $baseDir\RequestReduce\bin\$configuration\StructureMap.dll }
-	create $nugetDir
-    exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $nugetDir }
+	clean $filesDir
+	create $filesDir
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
+
+    $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
+    $Spec.package.metadata.version = $version
+    $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
+
+    exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
 }
 
 
@@ -105,4 +112,27 @@ function Setup-IIS([string] $siteName, [string] $solutionDir, [string] $port )
  catch {
    "Error in Setup-IIS: " + $_.Exception
  }
+}
+
+# Borrowed from Luis Rocha's Blog (http://www.luisrocha.net/2009/11/setting-assembly-version-with-windows.html)
+function Update-AssemblyInfoFiles ([string] $version) {
+    $assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+    $fileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+    $assemblyVersion = 'AssemblyVersion("' + $version + '")';
+    $fileVersion = 'AssemblyFileVersion("' + $version + '")';
+    
+    Get-ChildItem -r -filter AssemblyInfo.cs | ForEach-Object {
+        $filename = $_.Directory.ToString() + '\' + $_.Name
+        $filename + ' -> ' + $version
+        
+        # If you are using a source control that requires to check-out files before 
+        # modifying them, make sure to check-out the file here.
+        # For example, TFS will require the following command:
+        # tf checkout $filename
+    
+        (Get-Content $filename) | ForEach-Object {
+            % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
+            % {$_ -replace $fileVersionPattern, $fileVersion }
+        } | Set-Content $filename
+    }
 }
