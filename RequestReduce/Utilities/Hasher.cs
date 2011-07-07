@@ -14,5 +14,10 @@ namespace RequestReduce.Utilities
         {
             return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(input)));
         }
+
+        public static Guid Hash(byte[] bytes)
+        {
+            return new Guid(md5.ComputeHash(bytes));
+        }
     }
 }

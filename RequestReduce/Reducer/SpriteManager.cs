@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
@@ -14,7 +15,7 @@ namespace RequestReduce.Reducer
         private IRRConfiguration config = null;
         private readonly IUriBuilder uriBuilder;
         private readonly IStore store;
-        private IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
+        protected IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
         protected int spriteIndex = 1;
 
         public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store)
@@ -42,7 +43,7 @@ namespace RequestReduce.Reducer
                 return spriteList[imageKey];
             var currentPositionToReturn = SpriteContainer.Width;
             SpriteContainer.AddImage(image);
-            var sprite = new Sprite(currentPositionToReturn, GetSpriteUrl());
+            var sprite = new Sprite(currentPositionToReturn, spriteIndex);
             if (SpriteContainer.Size >= config.SpriteSizeLimit)
                 Flush();
             spriteList.Add(imageKey, sprite);
@@ -59,7 +60,10 @@ namespace RequestReduce.Reducer
                         spriteWriter.WriteImage(image);
 
                     var bytes = spriteWriter.GetBytes("image/png");
-                    store.Save(bytes, GetSpriteUrl(), null);
+                    var url = GetSpriteUrl(bytes);
+                    store.Save(bytes, url, null);
+                    foreach (var sprite in spriteList.Values.Where(x => x.SpriteIndex == spriteIndex))
+                        sprite.Url = url;
                 }
                 ++spriteIndex;
             }
@@ -70,14 +74,14 @@ namespace RequestReduce.Reducer
 
         public Guid SpritedCssKey { get; set; }
 
-        private string GetSpriteUrl()
+        private string GetSpriteUrl(byte[] bytes)
         {
             if (SpritedCssKey == Guid.Empty)
                 throw new InvalidOperationException("The SpritedCssKey must be set before using the SprieManager.");
-            return uriBuilder.BuildSpriteUrl(SpritedCssKey, spriteIndex);
+            return uriBuilder.BuildSpriteUrl(SpritedCssKey, bytes);
         }
 
-        private struct ImageMetadata
+        protected struct ImageMetadata
         {
             public ImageMetadata(BackgroundImageClass image) : this()
             {
@@ -87,10 +91,10 @@ namespace RequestReduce.Reducer
                 XOffset = image.XOffset.Offset;
             }
 
-            public int Width { get; private set; }
-            public int Height { get; private set; }
-            public int XOffset { get; private set; }
-            public string Url { get; private set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public int XOffset { get; set; }
+            public string Url { get; set; }
         }
     }
 }

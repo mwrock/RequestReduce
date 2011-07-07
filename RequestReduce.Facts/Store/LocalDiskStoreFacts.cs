@@ -216,14 +216,14 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\RRContent");
                 testable.Inject<IUriBuilder>(urlBuilder);
                 var file1 = urlBuilder.BuildCssUrl(key).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
-                var file2 = urlBuilder.BuildSpriteUrl(key, 1).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
+                var file2 = urlBuilder.BuildSpriteUrl(key, new byte[]{1}).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
                 testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\RRContent")).Returns(new string[]
                                                                                                   {file1, file2});
 
                 testable.ClassUnderTest.Flush(key);
 
                 testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(key.ToString(), key + "-Expired")));
-                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(key.ToString(), key + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(key.RemoveDashes(), key.RemoveDashes() + "-Expired")));
             }
 
             [Fact]

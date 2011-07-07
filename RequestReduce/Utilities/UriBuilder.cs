@@ -6,7 +6,7 @@ namespace RequestReduce.Utilities
     public interface IUriBuilder
     {
         string BuildCssUrl(Guid key);
-        string BuildSpriteUrl(Guid key, int spriteIndex);
+        string BuildSpriteUrl(Guid key, byte[] bytes);
         string ParseFileName(string url);
         Guid ParseKey(string url);
     }
@@ -26,9 +26,9 @@ namespace RequestReduce.Utilities
             return string.Format("{0}{1}/{2}-{3}", configuration.ContentHost, configuration.SpriteVirtualPath, key, CssFileName);
         }
 
-        public string BuildSpriteUrl(Guid key, int spriteIndex)
+        public string BuildSpriteUrl(Guid key, byte[] bytes)
         {
-            return string.Format("{0}{1}/{2}-sprite{3}.png", configuration.ContentHost, configuration.SpriteVirtualPath, key, spriteIndex);
+            return string.Format("{0}{1}/{2}-{3}.png", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), Hasher.Hash(bytes).RemoveDashes());
         }
 
         public string ParseFileName(string url)

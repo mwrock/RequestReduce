@@ -85,6 +85,7 @@
     <Compile Include="Store\RequestReduceContext.cs" />
     <Compile Include="Store\RequestReduceFile.cs" />
     <Compile Include="Store\SqlServerStore.cs" />
+    <Compile Include="Utilities\GuidExtensions.cs" />
     <Compile Include="Utilities\IMinifier.cs" />
     <Compile Include="Reducer\IReducer.cs" />
     <Compile Include="Reducer\ISpriteContainer.cs" />

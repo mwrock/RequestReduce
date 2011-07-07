@@ -141,8 +141,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>())).Returns("css");
                 var css = "css";
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new BackgroundImageClass[] { image1, image2 });
-                var sprite1 = new Sprite(-100, "sprite1");
-                var sprite2 = new Sprite(-100, "sprite2");
+                var sprite1 = new Sprite(-100, 1);
+                var sprite2 = new Sprite(-100, 2);
                 testable.Mock<ISpriteManager>().Setup(x => x.Add(image1)).Returns(sprite1);
                 testable.Mock<ISpriteManager>().Setup(x => x.Add(image2)).Returns(sprite2);
 

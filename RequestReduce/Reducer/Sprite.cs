@@ -2,13 +2,14 @@
 {
     public class Sprite
     {
-        public Sprite(int position, string url)
+        public Sprite(int position, int spriteIndex)
         {
             Position = position;
-            Url = url;
+            SpriteIndex = spriteIndex;
         }
 
         public virtual int Position { get; private set; }
-        public virtual string Url { get; private set; }
+        public virtual string Url { get; set; }
+        public virtual int SpriteIndex { get; private set; }
     }
 }

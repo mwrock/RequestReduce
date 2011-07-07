@@ -1,5 +1,6 @@
 ﻿using System;
 using RequestReduce.Configuration;
+using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
@@ -40,10 +41,11 @@ namespace RequestReduce.Facts.Utilities
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
+                var content = new byte[] {1};
 
-                var result = testable.ClassUnderTest.BuildSpriteUrl(guid, 5);
+                var result = testable.ClassUnderTest.BuildSpriteUrl(guid, content);
 
-                Assert.Equal(result, string.Format("http://host/vpath/{0}-sprite5.png", guid));
+                Assert.Equal(result, string.Format("http://host/vpath/{0}-{1}.png", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes()));
             }
         }
 

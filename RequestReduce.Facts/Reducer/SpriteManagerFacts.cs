@@ -31,6 +31,10 @@ namespace RequestReduce.Facts.Reducer
             public Mock<ISpriteContainer> MockSpriteContainer { get; set; }
             public new ISpriteContainer SpriteContainer { get { return base.SpriteContainer; } set { base.SpriteContainer = value; } }
             public int SpriteIndex { get { return spriteIndex; } }
+            public void AddSpriteToList(Sprite sprite)
+            {
+                spriteList.Add(new ImageMetadata(){Url = Guid.NewGuid().ToString()}, sprite);
+            }
         }
         class TestableSpriteManager : Testable<SpriteManagerToTest>
         {
@@ -123,54 +127,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillSaveSpriteUrlInCorrectConfigDirectory()
-            {
-                var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
-
-                var result = testable.ClassUnderTest.Add(image);
-
-                Assert.True(result.Url.StartsWith("spritedir/"));
-            }
-
-            [Fact]
-            public void WillSaveSpriteUrlWithKeyInPath()
-            {
-                var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
-
-                var result = testable.ClassUnderTest.Add(image);
-
-                Assert.True(result.Url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "-"));
-            }
-
-            [Fact]
-            public void WillSaveSpriteUrlWithApngExtension()
-            {
-                var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
-
-                var result = testable.ClassUnderTest.Add(image);
-
-                Assert.True(result.Url.EndsWith(".png"));
-            }
-
-            [Fact]
-            public void WillThrowInvalidOperationExceptionIfCssKeyIsEmpty()
-            {
-                var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
-                testable.ClassUnderTest.SpritedCssKey = Guid.Empty;
-
-                var ex = Assert.Throws<InvalidOperationException>(() => testable.ClassUnderTest.Add(image));
-
-                Assert.NotNull(ex);
-            }
-
-            [Fact]
-            public void WillSaveSpriteWithAFileNameWithTheSpriteIndexWhichIsIncrementedAfterFlush()
+            public void WillIncrementedSpriteIndexAfterFlush()
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
@@ -181,7 +138,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Add(image);
 
-                Assert.True(result.Url.EndsWith("-sprite2.png"));
+                Assert.Equal(2, result.SpriteIndex);
             }
 
             [Fact]
@@ -196,7 +153,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Add(image);
 
-                Assert.True(result.Url.EndsWith("-sprite1.png"));
+                Assert.Equal(1, result.SpriteIndex);
             }
 
         }
@@ -305,7 +262,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Flush();
 
-                Assert.True(url.Contains("/" + testable.ClassUnderTest.SpritedCssKey + "-"));
+                Assert.True(url.Contains("/" + testable.ClassUnderTest.SpritedCssKey.RemoveDashes() + "-"));
             }
 
             [Fact]
@@ -335,7 +292,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillSaveSpriteWithAFileNameWithTheSpriteIndex()
+            public void WillSaveSpriteWithAFileNameWithThebyteHashInTheFileName()
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
@@ -344,12 +301,36 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var url = string.Empty;
+                byte[] bytes = null;
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) =>
+                                                 {
+                                                     url = b;
+                                                     bytes = a;
+                                                 });
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.True(url.EndsWith(string.Format("{0}.png", Hasher.Hash(bytes).RemoveDashes())));
+            }
+
+            [Fact]
+            public void WillAddUrlsToSpritesUponFlush()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var sprite1 = new Sprite(1, 1);
+                var sprite2 = new Sprite(2, 1);
+                testable.ClassUnderTest.AddSpriteToList(sprite1);
+                testable.ClassUnderTest.AddSpriteToList(sprite2);
+                var url = string.Empty;
                 testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
                     <byte[], string, string>((a, b, c) => url = b);
 
                 testable.ClassUnderTest.Flush();
 
-                Assert.True(url.EndsWith("-sprite2.png"));
+                Assert.Equal(url, sprite1.Url);
+                Assert.Equal(url, sprite2.Url);
             }
         }
 
