@@ -127,7 +127,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
-            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection(){{"ETag", "tag"}});
+            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -136,16 +136,19 @@ namespace RequestReduce.Facts.Module
             store.Setup(
                 x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
                 Returns(true);
+            var builder = new Mock<IUriBuilder>();
+            builder.Setup(x => x.ParseSignature("/RRContent/css.css")).Returns("sig");
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use(builder.Object);
             });
 
             module.HandleRRContent(context.Object);
 
             Assert.Equal(44000, context.Object.Response.Expires);
-            Assert.Null(context.Object.Response.Headers["ETag"]);
+            cache.Verify(x => x.SetETag("sig"), Times.Once());
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
             RRContainer.Current = null;
         }
@@ -154,7 +157,7 @@ namespace RequestReduce.Facts.Module
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/sprite1.png", "image/png", true)]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", "text/css", true)]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", null, false)]
-        public void WillCorrectlySetCiontentType(string path, string contentType, bool contentInStore)
+        public void WillCorrectlySetContentType(string path, string contentType, bool contentInStore)
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
@@ -174,6 +177,7 @@ namespace RequestReduce.Facts.Module
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use(new UriBuilder(config.Object));
             });
 
             module.HandleRRContent(context.Object);
@@ -193,7 +197,6 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
-            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection() { { "ETag", "tag" } });
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -210,7 +213,6 @@ namespace RequestReduce.Facts.Module
 
             module.HandleRRContent(context.Object);
 
-            Assert.NotNull(context.Object.Response.Headers["ETag"]);
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());
             RRContainer.Current = null;
         }
@@ -266,7 +268,7 @@ namespace RequestReduce.Facts.Module
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
+        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
         [InlineData("/RRContent/flush", "00000000-0000-0000-0000-000000000000")]
         public void WillFlushReductionsOnFlushUrlWhenAndAuthorizedUsersIsAnonymous(string url, string key)
         {

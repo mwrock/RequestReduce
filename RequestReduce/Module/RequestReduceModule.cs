@@ -63,7 +63,7 @@ namespace RequestReduce.Module
             var store = RRContainer.Current.GetInstance<IStore>();
             if (store.SendContent(url, httpContextWrapper.Response))
             {
-                httpContextWrapper.Response.Headers.Remove("ETag");
+                httpContextWrapper.Response.Cache.SetETag(RRContainer.Current.GetInstance<IUriBuilder>().ParseSignature(url));
                 httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
                 httpContextWrapper.Response.Expires = 44000;
                 if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))

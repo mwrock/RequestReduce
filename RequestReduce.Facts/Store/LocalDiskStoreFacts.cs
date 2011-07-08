@@ -60,6 +60,7 @@ namespace RequestReduce.Facts.Store
                 var content = new byte[] {1};
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
 
                 testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
 
@@ -74,6 +75,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("http://host/url/myid-style.cc")).Returns("style");
 
                 testable.ClassUnderTest.Save(content, "http://host/url/myid-style.cc", null);
 
@@ -89,6 +91,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IFileWrapper>().Setup(x => x.FileExists("c:\\web\\url\\myid-Expired-style.cc")).Returns(
                     true);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
 
                 testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
 
@@ -145,7 +148,7 @@ namespace RequestReduce.Facts.Store
             }
         }
 
-        public class GetExistingUrls
+        public class GetSavedUrls
         {
             [Fact]
             public void WillCreateUrlsFromAllKeysInDirectory()
@@ -154,16 +157,20 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
                 var guid1 = Guid.NewGuid();
                 var guid2 = Guid.NewGuid();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2)).Returns("url2");
+                var sig1 = Guid.NewGuid().RemoveDashes();
+                var sig2 = Guid.NewGuid().RemoveDashes();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1, sig1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2, sig2)).Returns("url2");
                 var files = new string[]
                                 {
-                                    "dir\\" + guid1 + "-Expired-file.css",
-                                    "dir\\" + guid2 + "-file.css"
+                                    string.Format("dir\\{0}-Expired-{1}-{2}", guid1.RemoveDashes(), sig1, UriBuilder.CssFileName),
+                                    string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, UriBuilder.CssFileName)
                                 };
                 testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("dir")).Returns(files);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0])).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1])).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].Replace("\\","/"))).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].Replace("\\", "/"))).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].Replace("\\", "/"))).Returns(sig1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[1].Replace("\\", "/"))).Returns(sig2);
 
                 var result = testable.ClassUnderTest.GetSavedUrls();
 
@@ -215,14 +222,14 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\RRContent");
                 testable.Inject<IUriBuilder>(urlBuilder);
-                var file1 = urlBuilder.BuildCssUrl(key).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
+                var file1 = urlBuilder.BuildCssUrl(key, new byte[] { 1 }).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
                 var file2 = urlBuilder.BuildSpriteUrl(key, new byte[]{1}).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
                 testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\RRContent")).Returns(new string[]
                                                                                                   {file1, file2});
 
                 testable.ClassUnderTest.Flush(key);
 
-                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(key.ToString(), key + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(key.RemoveDashes(), key.RemoveDashes() + "-Expired")));
                 testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(key.RemoveDashes(), key.RemoveDashes() + "-Expired")));
             }
 
@@ -243,20 +250,21 @@ namespace RequestReduce.Facts.Store
             public void WillFlushAllKeysWhenPassedGuidIsEmpty()
             {
                 var testable = new TestableLocalDiskStore();
+                var urlBuilder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
+                testable.Inject(urlBuilder);
                 var guid1 = Guid.NewGuid();
                 var guid2 = Guid.NewGuid();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/dir");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\dir");
-                var file1 = "dir\\" + guid1 + "-file.css";
-                var file2 = "dir\\" + guid2 + "-file.css";
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(file1)).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(file2)).Returns(guid2);
+                testable.Inject<IUriBuilder>(urlBuilder);
+                var file1 = urlBuilder.BuildCssUrl(guid1, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\');
+                var file2 = urlBuilder.BuildCssUrl(guid2, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\');
                 testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\web\\dir")).Returns(new string[] { file1, file2 });
 
                 testable.ClassUnderTest.Flush(Guid.Empty);
 
-                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(guid1.ToString(), guid1 + "-Expired")));
-                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(guid2.ToString(), guid2 + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(guid1.RemoveDashes(), guid1.RemoveDashes() + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(guid2.RemoveDashes(), guid2.RemoveDashes() + "-Expired")));
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
+using RequestReduce.Utilities;
 using Xunit;
 
 namespace RequestReduce.Facts.Store
@@ -92,83 +93,85 @@ namespace RequestReduce.Facts.Store
 
         }
 
-        public class GetKeys
+        public class GetActiveCssFiles
         {
             [Fact]
-            public void WillReturnDistinctListOfKeys()
+            public void WillReturnListOfCssFiles()
             {
                 var testable = new TestableRepository();
+                var builder = new RequestReduce.Utilities.UriBuilder(testable.Mock<IRRConfiguration>().Object);
                 var id = Guid.NewGuid();
                 var id2 = Guid.NewGuid();
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = builder.BuildCssUrl(id, new byte[] { 1 }),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
-                    RequestReduceFileId = Guid.NewGuid()
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 1 })
                 };
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = builder.BuildSpriteUrl(id, new byte[] { 2 }),
                     Key = id,
                     LastUpdated = DateTime.Now,
-                    RequestReduceFileId = Guid.NewGuid()
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 2 })
                 };
                 var file3 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = builder.BuildCssUrl(id2, new byte[] { 3 }),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
-                    RequestReduceFileId = Guid.NewGuid()
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 3 })
                 };
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
 
-                var result = testable.ClassUnderTest.GetKeys();
+                var result = testable.ClassUnderTest.GetActiveCssFiles();
 
                 Assert.Equal(2, result.Count());
-                Assert.True(result.Contains(id));
-                Assert.True(result.Contains(id2));
+                Assert.True(result.Contains(file.FileName));
+                Assert.True(result.Contains(file3.FileName));
             }
 
             [Fact]
             public void WillNotReturnExpiredKeys()
             {
                 var testable = new TestableRepository();
+                var builder = new RequestReduce.Utilities.UriBuilder(testable.Mock<IRRConfiguration>().Object);
                 var id = Guid.NewGuid();
                 var id2 = Guid.NewGuid();
                 var file = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = builder.BuildCssUrl(id, new byte[] { 1 }),
                     Key = id,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName",
-                    RequestReduceFileId = Guid.NewGuid(),
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 1 }),
                     IsExpired = true
                 };
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = RequestReduce.Utilities.UriBuilder.CssFileName,
+                    FileName = builder.BuildCssUrl(id2, new byte[] { 2 }),
                     Key = id2,
                     LastUpdated = DateTime.Now,
                     OriginalName = "originalName2",
-                    RequestReduceFileId = Guid.NewGuid()
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 2 })
                 };
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
 
-                var result = testable.ClassUnderTest.GetKeys();
+                var result = testable.ClassUnderTest.GetActiveCssFiles();
 
                 Assert.Equal(1, result.Count());
-                Assert.True(result.Contains(id2));
+                Assert.True(result.Contains(file2.FileName));
             }
 
         }

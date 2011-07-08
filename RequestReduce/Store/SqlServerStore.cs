@@ -54,7 +54,7 @@ namespace RequestReduce.Store
             RRTracer.Trace("Saving {0} to db.", url);
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
-            var id = Hasher.Hash(key + fileName);
+            var id = Guid.Parse(uriBuilder.ParseSignature(url));
             var file = new RequestReduceFile()
                            {
                                Content = content,
@@ -76,9 +76,8 @@ namespace RequestReduce.Store
             if (fileStore.SendContent(url, response))
                 return true;
 
-            var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
-            var id = Hasher.Hash(key + fileName);
+            var id = Guid.Parse(uriBuilder.ParseSignature(url));
             var file = repository[id];
 
             if(file != null)
@@ -100,8 +99,8 @@ namespace RequestReduce.Store
         public IDictionary<Guid, string> GetSavedUrls()
         {
             RRTracer.Trace("SqlServerStore Looking for previously saved content.");
-            var keys = repository.GetKeys();
-            return keys.ToDictionary(key => key, key => uriBuilder.BuildCssUrl(key));
+            var files = repository.GetActiveCssFiles();
+            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file)));
         }
     }
 }

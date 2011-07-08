@@ -20,3 +20,4 @@ RequestReduce.SampleWeb/RRContent/*
 PrecompiledWeb/*
 TraceOutput.log
 *.sdf
+*.zip

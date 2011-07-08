@@ -25,7 +25,7 @@ namespace RequestReduce.Facts.Integration
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
             var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
-            var key = Hasher.Hash(urls);
+            var key = Hasher.Hash(urls).RemoveDashes();
 
             var result = reducer.Process(urls);
 
@@ -40,7 +40,7 @@ namespace RequestReduce.Facts.Integration
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
             var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
-            var key = Hasher.Hash(urls);
+            var key = Hasher.Hash(urls).RemoveDashes();
 
             var result = reducer.Process(urls);
 

@@ -41,10 +41,11 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableReducer();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 var guid = Guid.NewGuid();
+                var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 
                 var result = testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
 
-                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - ("/" + UriBuilder.CssFileName).Length)));
+                Assert.Equal(guid, builder.ParseKey(result));
             }
 
             [Fact]
@@ -64,10 +65,11 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableReducer();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 var guid = Hasher.Hash("http://host/css1.css::http://host/css2.css");
+                var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                Assert.Equal(guid, Guid.Parse(result.Substring("spritedir/".Length, result.Length - "spritedir/".Length - ("/" + UriBuilder.CssFileName).Length)));
+                Assert.Equal(guid, builder.ParseKey(result));
             }
 
             [Fact]

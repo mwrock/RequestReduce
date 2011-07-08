@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.Utilities;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
@@ -76,7 +77,7 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
             Assert.Equal("text/css", response2.ContentType);
-            Assert.Null(response2.Headers["ETag"]);
+            Assert.Equal(uriBuilder.ParseSignature(url), response2.Headers["ETag"]);
             response2.Close();
         }
 
@@ -114,9 +115,9 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
-            var fileName = uriBuilder.ParseFileName(url);
+            var key = uriBuilder.ParseKey(url).RemoveDashes();
 
-            new WebClient().DownloadData("http://localhost:8877" + url.Replace("-" + fileName, "/flush"));
+            new WebClient().DownloadData("http://localhost:8877/RRContent/" + key + "/flush");
             var cssFilesAfterFlush = Directory.GetFiles(rrFolder, "*.css");
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             css = cssPattern.Match(response).ToString();

@@ -37,12 +37,13 @@ namespace RequestReduce.Reducer
             RRTracer.Trace("beginning reducing process for {0}", urls);
             spriteManager.SpritedCssKey = key;
             var urlList = SplitUrls(urls);
-            var virtualfileName = uriBuilder.BuildCssUrl(key);
             var mergedCss = new StringBuilder();
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));
             spriteManager.Flush();
-            store.Save(Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString())), virtualfileName, urls);
+            var bytes = Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString()));
+            var virtualfileName = uriBuilder.BuildCssUrl(key, bytes);
+            store.Save(bytes, virtualfileName, urls);
             RRTracer.Trace("finishing reducing process for {0}", urls);
             return virtualfileName;
         }

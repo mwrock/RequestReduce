@@ -16,7 +16,7 @@ namespace RequestReduce.Store
             modelBuilder.Entity<RequestReduceFile>()
                 .Property(s => s.FileName)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(150);
 
             modelBuilder.Entity<RequestReduceFile>()
                 .Property(s => s.IsExpired)

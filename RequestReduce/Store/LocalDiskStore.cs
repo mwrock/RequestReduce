@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Store
 {
@@ -49,22 +50,24 @@ namespace RequestReduce.Store
             var path = e.FullPath;
             RRTracer.Trace("watcher watched {0}", path);
             var guid = uriBuilder.ParseKey(path.Replace('\\', '/'));
+            var contentSignature = uriBuilder.ParseSignature(path.Replace('\\', '/'));
             if(guid != Guid.Empty)
             {
                 RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
                 if (e.ChangeType == WatcherChangeTypes.Deleted && CssDeleted != null)
                     CssDeleted(guid);
                 if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed) && CssAded != null)
-                    CssAded(guid, uriBuilder.BuildCssUrl(guid));
+                    CssAded(guid, uriBuilder.BuildCssUrl(guid, contentSignature));
             }
         }
 
         public virtual void Save(byte[] content, string url, string originalUrls)
         {
             var file = GetFileNameFromConfig(url);
+            var sig = uriBuilder.ParseSignature(url);
             fileWrapper.Save(content, file);
             RRTracer.Trace("{0} saved to disk.", url);
-            var expiredFile = file.Insert(file.LastIndexOf('-'), "-Expired");
+            var expiredFile = file.Insert(file.IndexOf(sig), "Expired-");
             if (fileWrapper.FileExists(expiredFile))
                 fileWrapper.DeleteFile(expiredFile);
         }
@@ -99,13 +102,12 @@ namespace RequestReduce.Store
             var dic = new Dictionary<Guid, string>();
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
-            var keys =
-                fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(y => !y.Contains("-Expired-")).Select(
-                    x => uriBuilder.ParseKey(x)).Distinct();
-            foreach (var key in keys)
+            var files =
+                fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(y => !y.Contains("-Expired-") && y.EndsWith(UriBuilder.CssFileName));
+            foreach (var file in files)
             {
-                if(key != Guid.Empty)
-                    dic.Add(key, uriBuilder.BuildCssUrl(key));
+                var urlFile = file.Replace("\\", "/");
+                dic.Add(uriBuilder.ParseKey(urlFile), uriBuilder.BuildCssUrl(uriBuilder.ParseKey(urlFile), uriBuilder.ParseSignature(urlFile)));
             }
             return dic;
         }
@@ -124,9 +126,9 @@ namespace RequestReduce.Store
             if(CssDeleted != null) CssDeleted(keyGuid);
             var files =
                 fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(
-                    x => x.Contains(keyGuid.ToString()) && !x.Contains("Expired"));
+                    x => x.Contains(keyGuid.RemoveDashes()) && !x.Contains("Expired"));
             foreach (var file in files)
-                fileWrapper.RenameFile(file, file.Replace(keyGuid.ToString(), keyGuid + "-Expired"));
+                fileWrapper.RenameFile(file, file.Replace(keyGuid.RemoveDashes(), keyGuid.RemoveDashes() + "-Expired"));
         }
 
         protected virtual string GetFileNameFromConfig(string url)

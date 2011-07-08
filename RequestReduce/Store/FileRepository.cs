@@ -9,7 +9,7 @@ namespace RequestReduce.Store
 {
     public interface IFileRepository : IRepository<RequestReduceFile>
     {
-        IEnumerable<Guid> GetKeys();
+        IEnumerable<string> GetActiveCssFiles();
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
     }
     public class FileRepository : Repository<RequestReduceFile>, IFileRepository
@@ -28,9 +28,9 @@ namespace RequestReduce.Store
             }
         }
 
-        public IEnumerable<Guid> GetKeys()
+        public IEnumerable<string> GetActiveCssFiles()
         {
-            return AsQueryable().Where(x => x.FileName == Utilities.UriBuilder.CssFileName && !x.IsExpired).Select(y => y.Key).Distinct().ToList();
+            return AsQueryable().Where(x => x.FileName.Contains(Utilities.UriBuilder.CssFileName) && !x.IsExpired).Select(y => y.FileName).ToList();
         }
 
         public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)

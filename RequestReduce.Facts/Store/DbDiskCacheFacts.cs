@@ -66,10 +66,11 @@ namespace RequestReduce.Facts.Store
             public void WillAddUrlToList()
             {
                 var testable = new TestableDbDiskCache();
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("key-sig-name.css")).Returns("sig");
 
-                testable.ClassUnderTest.Save(new byte[]{1}, "key-name.css", null);
+                testable.ClassUnderTest.Save(new byte[] { 1 }, "key-sig-name.css", null);
 
-                Assert.True(DateTime.Now.Subtract(testable.ClassUnderTest.FileList["key-name.css"]).TotalSeconds < 1);
+                Assert.True(DateTime.Now.Subtract(testable.ClassUnderTest.FileList["key-sig-name.css"]).TotalSeconds < 1);
             }
         }
 

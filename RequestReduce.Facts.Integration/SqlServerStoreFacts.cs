@@ -62,9 +62,7 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
-            var fileName = uriBuilder.ParseFileName(url);
-            var key = uriBuilder.ParseKey(url);
-            var id = Hasher.Hash(key + fileName);
+            var id = Guid.Parse(uriBuilder.ParseSignature(url));
             var createTime = repo[id].LastUpdated;
 
             IntegrationFactHelper.RecyclePool();
@@ -84,9 +82,7 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
-            var fileName = uriBuilder.ParseFileName(url);
-            var key = uriBuilder.ParseKey(url);
-            var id = Hasher.Hash(key + fileName);
+            var id = Guid.Parse(uriBuilder.ParseSignature(url));
             var createTime = repo[id].LastUpdated;
 
             repo.Context.Files.Remove(repo[id]);
@@ -113,9 +109,7 @@ namespace RequestReduce.Facts.Integration
                 var response = client.DownloadString("http://localhost:8877/Local.html");
                 var css = cssPattern.Match(response).ToString();
                 url = urlPattern.Match(css).Groups["url"].Value;
-                var fileName = uriBuilder.ParseFileName(url);
-                var key = uriBuilder.ParseKey(url);
-                id = Hasher.Hash(key + fileName);
+                id = Guid.Parse(uriBuilder.ParseSignature(url));
             }
             repo.Context.Files.Remove(repo[id]);
             repo.Context.SaveChanges();
@@ -160,17 +154,17 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
-            var oldKey = uriBuilder.ParseKey(url);
+            var oldKey = uriBuilder.ParseKey(url).RemoveDashes();
             var fileName = uriBuilder.ParseFileName(url);
-            var firstCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "-" + UriBuilder.CssFileName);
+            var firstCreated = File.GetLastWriteTime(rrFolder + "\\" + fileName);
 
-            new WebClient().DownloadData("http://localhost:8877" + url.Replace("-" + fileName, "/flush"));
+            new WebClient().DownloadData("http://localhost:8877/RRContent/" + oldKey + "/flush");
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             css = cssPattern.Match(response).ToString();
             url = urlPattern.Match(css).Groups["url"].Value;
             var newKey = uriBuilder.ParseKey(url);
             WaitToCreateCss();
-            var secondCreated = File.GetLastWriteTime(rrFolder + "\\" + oldKey + "-" + UriBuilder.CssFileName);
+            var secondCreated = File.GetLastWriteTime(rrFolder + "\\" + fileName);
 
             Assert.Equal(Guid.Empty, newKey);
             Assert.True(secondCreated > firstCreated);
@@ -180,7 +174,7 @@ namespace RequestReduce.Facts.Integration
         {
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName == UriBuilder.CssFileName && !x.IsExpired) == null && watch.ElapsedMilliseconds < 10000)
+            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(UriBuilder.CssFileName) && !x.IsExpired) == null && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
