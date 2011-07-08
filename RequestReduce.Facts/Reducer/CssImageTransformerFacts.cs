@@ -84,9 +84,9 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableCssImageTransformer();
                 var css =
                     string.Format(@"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
-    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat -150px {0}px;
-    width: 20;
+.DropDownArrow {{
+    background: transparent url('http://i1.social.s-msft.com/contentservice/dcbd1ced-14f2-4c11-9ece-9d6e00f78d1c/arrow_dn_white.gif') no-repeat scroll 0 {0}px;
+    width: 5px;
 }}", y);
 
                 var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");

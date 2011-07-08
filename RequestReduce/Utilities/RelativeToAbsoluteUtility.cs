@@ -6,15 +6,15 @@ namespace RequestReduce.Utilities
     {
         public static string ToAbsolute(Uri baseUrl, string relativeUrl)
         {
-            return IsRelative(relativeUrl) ? relativeUrl : new Uri(baseUrl, relativeUrl).AbsoluteUri;
+            return IsAbsolute(relativeUrl) ? relativeUrl : new Uri(baseUrl, relativeUrl).AbsoluteUri;
         }
 
         public static string ToAbsolute(string baseUrl, string relativeUrl)
         {
-            return IsRelative(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri;
+            return IsAbsolute(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri;
         }
 
-        private static bool IsRelative(string url)
+        private static bool IsAbsolute(string url)
         {
             return url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                    url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);

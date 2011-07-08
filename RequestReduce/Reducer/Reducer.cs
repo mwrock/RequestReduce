@@ -41,7 +41,8 @@ namespace RequestReduce.Reducer
             foreach (var url in urlList)
                 mergedCss.Append(ProcessCss(url));
             spriteManager.Flush();
-            var bytes = Encoding.UTF8.GetBytes(minifier.Minify(mergedCss.ToString()));
+            var spritedCss = SpriteCss(mergedCss.ToString());
+            var bytes = Encoding.UTF8.GetBytes(minifier.Minify(spritedCss));
             var virtualfileName = uriBuilder.BuildCssUrl(key, bytes);
             store.Save(bytes, virtualfileName, urls);
             RRTracer.Trace("finishing reducing process for {0}", urls);
@@ -53,11 +54,19 @@ namespace RequestReduce.Reducer
             var cssContent = webClientWrapper.DownloadString(url);
             var imageUrls = cssImageTransformer.ExtractImageUrls(ref cssContent, url);
             foreach (var imageUrl in imageUrls)
-            {
-                var sprite = spriteManager.Add(imageUrl);
-                cssContent = cssImageTransformer.InjectSprite(cssContent, imageUrl, sprite);
-            }
+                spriteManager.Add(imageUrl);
             return cssContent;
+        }
+
+        protected virtual string SpriteCss(string css)
+        {
+            var imageUrls = cssImageTransformer.ExtractImageUrls(ref css, null);
+            foreach (var imageUrl in imageUrls)
+            {
+                var sprite = spriteManager[imageUrl];
+                css = cssImageTransformer.InjectSprite(css, imageUrl, sprite);
+            }
+            return css;
         }
 
         protected static IEnumerable<string> SplitUrls(string urls)
