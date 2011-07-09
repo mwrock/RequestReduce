@@ -147,7 +147,7 @@ namespace RequestReduce.Facts.Module
 
             module.HandleRRContent(context.Object);
 
-            Assert.Equal(44000, context.Object.Response.Expires);
+            Assert.Equal(60*24*370, context.Object.Response.Expires);
             cache.Verify(x => x.SetETag("sig"), Times.Once());
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
             RRContainer.Current = null;
