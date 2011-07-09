@@ -38,10 +38,13 @@ namespace RequestReduce.Reducer
             spriteManager.SpritedCssKey = key;
             var urlList = SplitUrls(urls);
             var mergedCss = new StringBuilder();
+            var imageUrls = new List<BackgroundImageClass>();
             foreach (var url in urlList)
-                mergedCss.Append(ProcessCss(url));
+                mergedCss.Append(ProcessCss(url, imageUrls));
+            foreach (var imageUrl in imageUrls)
+                spriteManager.Add(imageUrl);
             spriteManager.Flush();
-            var spritedCss = SpriteCss(mergedCss.ToString());
+            var spritedCss = SpriteCss(mergedCss.ToString(), imageUrls);
             var bytes = Encoding.UTF8.GetBytes(minifier.Minify(spritedCss));
             var virtualfileName = uriBuilder.BuildCssUrl(key, bytes);
             store.Save(bytes, virtualfileName, urls);
@@ -49,23 +52,17 @@ namespace RequestReduce.Reducer
             return virtualfileName;
         }
 
-        protected virtual string ProcessCss(string url)
+        protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
             var cssContent = webClientWrapper.DownloadString(url);
-            var imageUrls = cssImageTransformer.ExtractImageUrls(ref cssContent, url);
-            foreach (var imageUrl in imageUrls)
-                spriteManager.Add(imageUrl);
+            imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }
 
-        protected virtual string SpriteCss(string css)
+        protected virtual string SpriteCss(string css, List<BackgroundImageClass> imageUrls)
         {
-            var imageUrls = cssImageTransformer.ExtractImageUrls(ref css, null);
             foreach (var imageUrl in imageUrls)
-            {
-                var sprite = spriteManager[imageUrl];
-                css = cssImageTransformer.InjectSprite(css, imageUrl, sprite);
-            }
+                css = cssImageTransformer.InjectSprite(css, imageUrl, spriteManager[imageUrl]);
             return css;
         }
 
