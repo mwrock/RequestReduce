@@ -40,7 +40,10 @@ namespace RequestReduce.Store
         public override bool SendContent(string url, System.Web.HttpResponseBase response)
         {
             if(fileList.ContainsKey(url))
+            {
+                fileList[url] = DateTime.Now;
                 return base.SendContent(url, response);
+            }
 
             return false;
         }

@@ -99,6 +99,17 @@ namespace RequestReduce.Facts.Store
                  response.Verify(x => x.TransmitFile("url"), Times.Once());
              }
 
+             [Fact]
+             public void WillUpdateTimestampWhenTransmittingFile()
+             {
+                 var testable = new TestableDbDiskCache();
+                 testable.ClassUnderTest.FileList["url"] = DateTime.Now.Subtract(new TimeSpan(0,3,0));
+                 var response = new Mock<HttpResponseBase>();
+
+                 testable.ClassUnderTest.SendContent("url", response.Object);
+
+                 Assert.True(testable.ClassUnderTest.FileList["url"] > DateTime.Now.Subtract(new TimeSpan(0, 1, 0)));
+             }
         }
     }
 }
