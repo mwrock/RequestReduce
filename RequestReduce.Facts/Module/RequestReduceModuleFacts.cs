@@ -15,7 +15,7 @@ using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Facts.Module
 {
-    public class RequestReduceModuleFacts
+    public class RequestReduceModuleFacts : IDisposable
     {
 
         [Fact]
@@ -104,6 +104,7 @@ namespace RequestReduce.Facts.Module
         [Fact]
         public void WillSetContextKeyIfNotSetBefore()
         {
+            RRContainer.Current = null;
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
@@ -444,6 +445,11 @@ namespace RequestReduce.Facts.Module
             module.HandleRRFlush(context.Object);
 
             store.Verify(x => x.Flush(It.IsAny<Guid>()), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        public void Dispose()
+        {
             RRContainer.Current = null;
         }
     }

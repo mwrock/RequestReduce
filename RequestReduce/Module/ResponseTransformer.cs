@@ -15,6 +15,7 @@ namespace RequestReduce.Module
         private readonly IReductionRepository reductionRepository;
         private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex UrlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly string cssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
         private readonly IReducingQueue reducingQueue;
         private readonly HttpContextBase context;
 
@@ -45,23 +46,9 @@ namespace RequestReduce.Module
                 if(transform != null)
                 {
                     RRTracer.Trace("Reduction found for {0}", urls);
-                    var isTransformed = false;
+                    preTransform = preTransform.Insert(0, string.Format(cssFormat, transform));
                     foreach (var match in matches)
-                    {
-                        if(!isTransformed)
-                        {
-                            var urlMatch = UrlPattern.Match(match.ToString());
-                            if (urlMatch.Success)
-                            {
-                                preTransform = preTransform.Replace(urlMatch.Groups["url"].Value, transform);
-                                isTransformed = true;
-                            }
-                            else
-                                preTransform = preTransform.Replace(match.ToString(), "");
-                        }
-                        else
-                            preTransform = preTransform.Replace(match.ToString(), "");
-                    }
+                        preTransform = preTransform.Replace(match.ToString(), "");
                     return preTransform;
                 }
                 reducingQueue.Enqueue(urls.ToString());

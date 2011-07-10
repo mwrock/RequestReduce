@@ -18,7 +18,7 @@ namespace RequestReduce.Facts.Module
         public class Transform
         {
             [Fact]
-            public void WillTransformToSingleCssOnMatch()
+            public void WillTransformToSingleCssAtBeginningOfHeadOnMatch()
             {
                 var testable = new TestableResponseTransformer();
                 var transform = @"
@@ -27,9 +27,9 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"
+                var transformed = @"<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+
 
 <title>site</title></head>
                 ";
@@ -51,9 +51,9 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"
+                var transformed = @"<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+
 
 <title>site</title></head>
                 ";
