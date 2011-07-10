@@ -48,6 +48,8 @@ namespace RequestReduce.Module
                     RRTracer.Trace("{0} Flushed {1}", user, key);
                 }
             }
+            else
+                httpContextWrapper.Response.StatusCode = 401;
             if (httpContextWrapper.ApplicationInstance != null)
                 httpContextWrapper.ApplicationInstance.CompleteRequest();
         }

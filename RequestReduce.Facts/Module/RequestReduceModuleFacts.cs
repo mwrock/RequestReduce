@@ -422,18 +422,21 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
-        public void WillNotFlushReductionsOnFlushUrlWhenCurrentUserIsNotAuthorizedUser()
+        public void WillNotFlushReductionsOnFlushUrlWhenCurrentUserIsNotAuthorizedUserAndReturn401()
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
+            var response = new Mock<HttpResponseBase>();
+            response.SetupProperty(x => x.StatusCode);
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user3");
             context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Response).Returns(response.Object);
             var store = new Mock<IStore>();
             RRContainer.Current = new Container(x =>
             {
@@ -445,6 +448,7 @@ namespace RequestReduce.Facts.Module
             module.HandleRRFlush(context.Object);
 
             store.Verify(x => x.Flush(It.IsAny<Guid>()), Times.Never());
+            Assert.Equal(401, response.Object.StatusCode);
             RRContainer.Current = null;
         }
 
