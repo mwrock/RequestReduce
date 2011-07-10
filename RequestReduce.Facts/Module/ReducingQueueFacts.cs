@@ -68,6 +68,7 @@ namespace RequestReduce.Facts.Module
             public void Dispose()
             {
                 ClassUnderTest.Dispose();
+                RRContainer.Current = null;
             }
         }
 

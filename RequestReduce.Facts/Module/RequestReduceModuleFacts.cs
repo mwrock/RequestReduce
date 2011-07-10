@@ -128,6 +128,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -232,6 +233,7 @@ namespace RequestReduce.Facts.Module
             response.SetupProperty(x => x.ContentType);
             response.Setup(x => x.Headers).Returns(new NameValueCollection());
             response.Setup(x => x.Cache).Returns(new Mock<HttpCachePolicyBase>().Object);
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Response).Returns(response.Object);
             context.Setup(x => x.Request.RawUrl).Returns(path);
             var config = new Mock<IRRConfiguration>();
@@ -264,6 +266,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -276,6 +279,7 @@ namespace RequestReduce.Facts.Module
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use(new UriBuilder(config.Object));
             });
 
             module.HandleRRContent(context.Object);
