@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>RequestReduce</id>
-    <version>0.9.128</version>
+    <version>0.9.135</version>
     <authors>Matt Wrock</authors>
     <description>RequestReduce sprites all background images in css and combines and minifies the css.</description>
     <summary>RequestReduce sprites all background images in css and combines and minifies the css.</summary>

@@ -65,7 +65,7 @@ namespace RequestReduce.Module
             {
                 httpContextWrapper.Response.Cache.SetETag(RRContainer.Current.GetInstance<IUriBuilder>().ParseSignature(url));
                 httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
-                httpContextWrapper.Response.Expires = 60*24*370; //LITTLE OVER A YEAR
+                httpContextWrapper.Response.Expires = 60*24*360; //LITTLE under A YEAR
                 if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
                     httpContextWrapper.Response.ContentType = "text/css";
                 else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
