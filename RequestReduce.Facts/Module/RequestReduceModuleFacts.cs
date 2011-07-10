@@ -153,6 +153,73 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
+        [Fact]
+        public void WillHonorEtagsandReturn304WhenTheyMatchIfNoneMatch()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", "match" } });
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
+            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            var cache = new Mock<HttpCachePolicyBase>();
+            context.Setup(x => x.Response.Cache).Returns(cache.Object);
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var store = new Mock<IStore>();
+            var builder = new Mock<IUriBuilder>();
+            builder.Setup(x => x.ParseSignature("/RRContent/key-match-css.css")).Returns("match");
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use(builder.Object);
+            });
+
+            module.HandleRRContent(context.Object);
+
+            Assert.Equal(60 * 24 * 360, context.Object.Response.Expires);
+            cache.Verify(x => x.SetETag("match"), Times.Once());
+            cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
+            Assert.Equal(304, context.Object.Response.StatusCode);
+            store.Verify(x => x.SendContent(It.IsAny<string>(), context.Object.Response), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillNotReturn304WhenSigDoesNotMatchIfNoneMatch()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", "notmatch" } });
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
+            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            var cache = new Mock<HttpCachePolicyBase>();
+            context.Setup(x => x.Response.Cache).Returns(cache.Object);
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var store = new Mock<IStore>();
+            store.Setup(
+                x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
+                Returns(true);
+            var builder = new Mock<IUriBuilder>();
+            builder.Setup(x => x.ParseSignature("/RRContent/key-match-css.css")).Returns("match");
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use(builder.Object);
+            });
+
+            module.HandleRRContent(context.Object);
+
+            Assert.Equal(60 * 24 * 360, context.Object.Response.Expires);
+            cache.Verify(x => x.SetETag("match"), Times.Once());
+            cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
+            RRContainer.Current = null;
+        }
+
         [Theory]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/sprite1.png", "image/png", true)]
         [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", "text/css", true)]

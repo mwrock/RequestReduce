@@ -61,12 +61,15 @@ namespace RequestReduce.Module
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();
-            if (store.SendContent(url, httpContextWrapper.Response))
+            var sig = RRContainer.Current.GetInstance<IUriBuilder>().ParseSignature(url);
+            if (sig == httpContextWrapper.Request.Headers["If-None-Match"] || store.SendContent(url, httpContextWrapper.Response))
             {
-                httpContextWrapper.Response.Cache.SetETag(RRContainer.Current.GetInstance<IUriBuilder>().ParseSignature(url));
+                httpContextWrapper.Response.Cache.SetETag(sig);
                 httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
                 httpContextWrapper.Response.Expires = 60*24*360; //LITTLE under A YEAR
-                if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
+                if (sig == httpContextWrapper.Request.Headers["If-None-Match"])
+                    httpContextWrapper.Response.StatusCode = 304;
+                else if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
                     httpContextWrapper.Response.ContentType = "text/css";
                 else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                     httpContextWrapper.Response.ContentType = "image/png";
