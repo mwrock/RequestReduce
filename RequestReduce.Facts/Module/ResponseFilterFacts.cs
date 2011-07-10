@@ -31,7 +31,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
@@ -44,7 +44,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
@@ -57,7 +57,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>head</head>";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
@@ -70,7 +70,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "<head>head</head>";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
@@ -83,7 +83,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 9);
@@ -97,7 +97,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 3);
@@ -111,7 +111,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 15);
@@ -125,7 +125,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 26);
@@ -139,7 +139,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "be<h1>fo</h1>re<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
@@ -152,7 +152,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "before<head>h<h1>ea</h1>d</head>after";
-                var testTransform = "h<h1>ea</h1>d</head>";
+                var testTransform = "<head>h<h1>ea</h1>d</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
@@ -164,7 +164,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = "be<h1>fo</h1>re<head>head</head>after";
-                var testTransform = "head</head>";
+                var testTransform = "<head>head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 4);
@@ -179,7 +179,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableResponseFilter();
                 var testBuffer = @"before<head id=""id"">head</head>after";
-                var testTransform = @"id=""id"">head</head>";
+                var testTransform = @"<head id=""id"">head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns(@"id=""id"">thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);

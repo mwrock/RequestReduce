@@ -21,13 +21,13 @@ namespace RequestReduce.Facts.Module
             public void WillTransformToSingleCssAtBeginningOfHeadOnMatch()
             {
                 var testable = new TestableResponseTransformer();
-                var transform = @"
+                var transform = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 <meta name=""description"" content="""" />
 
 
@@ -45,13 +45,13 @@ namespace RequestReduce.Facts.Module
             public void WillTransformRelativeUrlToAbsolute()
             {
                 var testable = new TestableResponseTransformer();
-                var transform = @"
+                var transform = @"<head>
 <meta name=""description"" content="""" />
 <link href=""/content/Me.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 <meta name=""description"" content="""" />
 
 
@@ -69,7 +69,7 @@ namespace RequestReduce.Facts.Module
             public void WillNotTransformIfRepoReturnsNull()
             {
                 var testable = new TestableResponseTransformer();
-                var transform = @"
+                var transform = @"<head>
 <meta name=""description"" content="""" />
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
@@ -88,7 +88,7 @@ namespace RequestReduce.Facts.Module
             public void WillQueueUrlsIfRepoReturnsNull()
             {
                 var testable = new TestableResponseTransformer();
-                var transform = @"
+                var transform = @"<head>
 <meta name=""description"" content="""" />
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />

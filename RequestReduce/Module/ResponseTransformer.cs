@@ -46,7 +46,8 @@ namespace RequestReduce.Module
                 if(transform != null)
                 {
                     RRTracer.Trace("Reduction found for {0}", urls);
-                    preTransform = preTransform.Insert(0, string.Format(cssFormat, transform));
+                    var closeHeadIdx = preTransform.IndexOf('>');
+                    preTransform = preTransform.Insert(closeHeadIdx+1, string.Format(cssFormat, transform));
                     foreach (var match in matches)
                         preTransform = preTransform.Replace(match.ToString(), "");
                     return preTransform;

@@ -141,6 +141,7 @@ namespace RequestReduce.Module
         {
             if (StartCloseChar.Contains(b))
             {
+                transformBuffer.Add(b);
                 state = SearchState.LookForStop;
                 startTransformPosition = ++i;
                 return 0;
@@ -185,6 +186,7 @@ namespace RequestReduce.Module
         {
             if(IsMatch(MatchingEnd.Start, b))
             {
+                transformBuffer.Add(b);
                 matchPosition++;
                 if (matchPosition == StartStringUpper.Length)
                 {
