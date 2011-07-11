@@ -20,7 +20,7 @@ Assuming you are using IIS 7, you would add it by ensuring that your web.config'
         </modules>
     </system.webServer>
 
-**All background images you want to sprite [must have an explicit width in their css class] (http://github.com/mwrock/RequestReduce/wiki/Can-I-make-changes-to-my-CSS-classes-to-optimize-RequestReduce-spriting%3F).** Otherwise Request reduce cannot guarantee that the background positions it injects will not cause adjacent sprites to bleed into a background image's view port.
+**All background images you want to sprite [must have an explicit width in their css class] (http://github.com/mwrock/RequestReduce/wiki/Can-I-make-changes-to-my-CSS-classes-to-optimize-RequestReduce-spriting%3F).** Otherwise RequestReduce cannot guarantee that the background positions it injects will not cause adjacent sprites to bleed into a background image's view port.
 
 ##Requirements
 * Thus far, RequestReduce has only been tested using the .Net framework version 4 on IIS 7
@@ -39,4 +39,3 @@ There are a ton of features I intend to add in order to make web performance opt
 * Read more about what is available in Request Reduce on the [wiki] (http://github.com/mwrock/RequestReduce/wiki).
 * Follow [@mwrockx] (http://twitter.com/mwrockx) for updates on twitter
 * Report a bug or suggest a feature [here] (http://github.com/mwrock/RequestReduce/issues)
-* Contact 
