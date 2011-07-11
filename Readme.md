@@ -39,3 +39,6 @@ There are a ton of features I intend to add in order to make web performance opt
 * Read more about what is available in Request Reduce on the [wiki] (http://github.com/mwrock/RequestReduce/wiki).
 * Follow [@mwrockx] (http://twitter.com/mwrockx) for updates on twitter
 * Report a bug or suggest a feature [here] (http://github.com/mwrock/RequestReduce/issues)
+
+##License
+Licenced under [Apache 2.0] (http://www.apache.org/licenses/LICENSE-2.0)
