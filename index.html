@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>RequestReduce</title>
+
+  <style type="text/css">
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      color: #404040;
+    }
+    #container {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      margin: 0 auto;
+      width: 960px;
+    }
+    h1 { font-family: "Arial black",Verdana,sans-serif; font-size: 18pt; color: #606060; line-height: 1.1em; font-weight: bold;}
+    h2 { font-size: 14pt; color: #6D9BC7; font-family: Arial,Verdana,sans-serif;}
+    p {line-height: 1.4em;}
+a {
+color: #2572BC;
+text-decoration: none;
+outline: 0;
+}
+a:hover {
+text-decoration: underline;
+}
+    pre { background: #F8F8F8; color: #404040; padding: 5px; border: 1px solid #DDD;}
+.submenu {
+float: right;
+width: 200px;
+font-size: 11pt;
+border: solid 1px silver;
+margin: 0px;
+background-color: #F8F8F8;
+padding-top: 5px;
+margin-top: 40px;
+margin-left: 40px;
+margin-bottom: 40px;
+font-family: Arial,Verdana,sans-serif;
+}
+.submenu ul {
+padding: 0px;
+list-style: none;
+margin-left: 15px;
+}
+#footer {
+text-align: center;
+padding: 10px;
+}
+  </style>
+</head>
+
+<body>
+<a href="http://github.com/mwrock/RequestReduce"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+  <div id="container">
+<div class="submenu">
+<ul>
+	<li><a href="http://github.com/downloads/mwrock/RequestReduce/RequestReduce0.9.141.zip">Download</a></li> 
+	<li><a href="http://github.com/mwrock/wiki">Wiki</a></li>
+	<li><a href="http://github.com/mwrock/issues">Bugs and Requests</a></li>
+ 
+	<li><a href="http://www.apache.org/licenses/LICENSE-2.0">License</a></li> 
+</ul>
+</div>
+    <h1>RequestReduce</h1>
+
+    <div class="description">
+      RequestReduce is a .Net Library and HttpModule providing automatic CSS background image spriting, merging and minification.
+    </div>
+
+    <p>RequestReduce allows any IIS based website to automaticaly sprite background images into a single PNG as well as combine and minify all CSS in the page's <head/> tag with absolutely no coding beyond a few config tweaks. RequestReduce registers itself as a response filter that will fiter any response of content type text/html. The filter looks for all css links in the &lthead/&gt; tag and replaces them with a single generated url that contains the combined and minified CSS using sprites where it can.</p>
+
+<p>RequestReduce performs these optimizations without sacrificing the performance of your web site. While the process of finding and generating the sprite image and minifying the CSS is naturally an expensive operation, requests will not block on this operation since RequestReduce performs these operations in a background thread and only once until the CSS changes or it is explicitly asked to flush its reductions.</p>
+
+<p>RequestReduce excercises common best practices when serving its css and sprited images ensuring that the appropriate caching headers are sent to the browser ensuring that browsers will not need to pull down a new http response until absolutely necessary. Chances are you will see an immediate rise in your yslow and google page speed tests.</p>
+
+<p>RequestReduce provides several configuration options to support CDN hosting, multiple server environments and more.</p>
+
+<h2>Getting Started</h2>
+<ol>
+<li>Download the <a href="http://github.com/downloads/mwrock/RequestReduce/RequestReduce0.9.141.zip">latest RequestReduce version</a></li>
+<li>Extract the contents of the downloaded zip and copy RequestReduce.dll to your website's bin directory</li>
+<li>Add the RequestReduceModule to your web.config or using the IIS GUI</li>
+</ol>
+<p>Assuming you are using IIS 7, you would add it by ensuring that your web.config's system.webServer/modules element contains an add element as follows:</p>
+
+<pre>
+<code>&lt;system.webServer&gt;
+ &lt;modules runAllManagedModulesForAllRequests="true"&gt;
+  &lt;add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce, Version=1.0.0.0, Culture=neutral" /&gt;
+ &lt;/modules&gt;
+&lt;/system.webServer&gt;
+</code>
+</pre>
+
+<p><b>All background images you want to sprite must have an explicit width in their css class</b>. Otherwise RequestReduce cannot guarantee that the background positions it injects will not cause adjacent sprites to bleed into a background image's view port.</p>
+<h2>Dependencies</h2>
+<ul>
+  <li>Thus far, RequestReduce has only been tested using the .Net framework version 4 on IIS 7</li>
+  <li>The identity that your asp.net worker process runs under must have write access to your web root directory for creating sprite and css files</li>
+</ul>
+<div id="footer">Copyright © 2011 by <a href="http://www.mattwrock.com">Matt Wrock</a></div>
+</body>
+ </div>
+</html>
