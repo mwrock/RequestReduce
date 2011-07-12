@@ -102,6 +102,25 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillNotSetResponseFilterIfRRFilterIsDisabledFromConfig()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.CssProcesingDisabled).Returns(true);
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Response.ContentType).Returns("text/html");
+            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+
+            module.InstallFilter(context.Object);
+
+            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillSetContextKeyIfNotSetBefore()
         {
             RRContainer.Current = null;

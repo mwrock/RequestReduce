@@ -95,14 +95,15 @@ namespace RequestReduce.Module
         {
             RRTracer.Trace("Entering Module");
             var request = context.Request;
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (context.Items.Contains(CONTEXT_KEY) || 
                 context.Response.ContentType != "text/html" || 
                 (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
+                config.CssProcesingDisabled ||
                 request.RawUrl == "/favicon.ico" || 
                 IsInRRContentDirectory(context))
                 return;
 
-            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if(string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();

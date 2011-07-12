@@ -21,6 +21,7 @@ namespace RequestReduce.Configuration
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
+        bool CssProcesingDisabled { get; set; }
         event Action PhysicalPathChange; 
     }
 
@@ -31,12 +32,15 @@ namespace RequestReduce.Configuration
         private readonly Store contentStore = Store.LocalDiskStore;
         public static readonly IEnumerable<string> Anonymous = new[]{"Anonymous"};
 
+        public bool CssProcesingDisabled { get; set; }
+
         public event Action PhysicalPathChange;  
 
         public RRConfiguration()
         {
             AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
+            CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
             SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath) ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;

@@ -66,5 +66,16 @@ namespace RequestReduce.Configuration
         {
             get { return base["authorizedUserList"].ToString(); }
         }
+
+        [ConfigurationProperty("cssProcesingDisabled")]
+        public bool CssProcesingDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["cssProcesingDisabled"].ToString(), out result);
+                return result;
+            }
+        }
     }
 }
