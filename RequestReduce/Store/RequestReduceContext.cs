@@ -1,10 +1,14 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 
 namespace RequestReduce.Store
 {
     public class RequestReduceContext : DbContext
     {
-        public RequestReduceContext(string connectionString) : base(connectionString)
+        public static Type SqlCeType = Type.GetType("System.Data.SqlServerCe.SqlCeConnection, System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91", false);
+
+        public RequestReduceContext(string connectionString)
+            : base(connectionString)
         {
             
         }
@@ -22,17 +26,16 @@ namespace RequestReduce.Store
                 .Property(s => s.IsExpired)
                 .IsRequired();
 
-            if (!(base.Database.Connection is System.Data.SqlServerCe.SqlCeConnection))
+            if (SqlCeType == null || SqlCeType != base.Database.Connection.GetType())
             {
                 modelBuilder.Entity<RequestReduceFile>()
                     .Property(s => s.LastUpdated)
                     .IsRequired()
                     .HasColumnType("datetime2");
-                
+
                 modelBuilder.Entity<RequestReduceFile>()
                     .Property(s => s.Content)
                     .IsRequired();
-
             }
             else
             {

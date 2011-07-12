@@ -16,7 +16,8 @@ namespace RequestReduce.Store
     {
         public FileRepository(IRRConfiguration config) : base(config)
         {
-            if (!(Context.Database.Connection is System.Data.SqlServerCe.SqlCeConnection))
+
+            if (RequestReduceContext.SqlCeType == null || RequestReduceContext.SqlCeType != Context.Database.Connection.GetType())
             {
                 Database.SetInitializer<RequestReduceContext>(null);
                 Context.Database.Initialize(false);
