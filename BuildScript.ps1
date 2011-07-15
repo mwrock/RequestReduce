@@ -1,16 +1,18 @@
 $psake.use_exit_on_error = $true
 properties {
-    $baseDir = resolve-path .
+    $currentDir = resolve-path .
+    $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+    $baseDir = Split-Path -parent $Invocation.MyCommand.Definition | split-path -parent | split-path -parent | split-path -parent
 	$port = "8877"
     $configuration = "debug"
 	# Package Directories
-	$filesDir = "$baseDir..\mwrock.github.com\BuildFiles"
-	$webDir = "$baseDir..\mwrock.github.com"
+	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
+	$filesDir = "$webDir\BuildFiles"
 	$version = "0.9." + (git log --pretty=oneline | measure-object).Count
 }
 
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Puh-Web
+task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
@@ -20,6 +22,9 @@ task Clean-Solution -depends Clean-BuildFiles {
     exec { msbuild RequestReduce.sln /t:Clean /v:quiet }
 }
 
+task echo-path {
+	write-host "dir:" $webDir
+}
 task Update-AssemblyInfoFiles {
 	$commit = git log -1 --pretty=format:%H
 	Update-AssemblyInfoFiles $version $commit
@@ -35,16 +40,17 @@ task Clean-BuildFiles {
 
 task Pull-Web {
 	cd $webDir
-	git pull 
-	cd $baseDir
+	exec {git pull }
+	cd $currentDir
 }
 
 task Push-Web {
+    $message="deploying $version"
 	cd $webDir
-	git add .
-	git commit -a -m 'deployin $version'
-	git push 
-	cd $baseDir
+	exec { git add . }
+	exec { git commit -a -m $message }
+	exec { git push }
+	cd $currentDir
 }
 task Build-Output {
 	clean $baseDir\RequestReduce\Nuget\Lib
@@ -63,8 +69,8 @@ task Build-Output {
 }
 
 task Update-Website-Download-Links {
-	 $downloadUrl="buildFiles/RequestReduce" + $version + ".zip"
-	 $downloadButtonUrlPatern="buildFiles/RequestReduce[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
+	 $downloadUrl="BuildFiles/RequestReduce" + $version + ".zip"
+	 $downloadButtonUrlPatern="BuildFiles/RequestReduce[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
 	 $downloadLinkTextPattern="V[0-9]+(\.([0-9]+|\*)){1,3}"
 	 $filename = "$webDir\index.html"
      (Get-Content $filename) | % {$_ -replace $downloadButtonUrlPatern, $downloadUrl } | % {$_ -replace $downloadLinkTextPattern, ("v"+$version) } | Set-Content $filename
