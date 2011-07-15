@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="RequestReduce.Facts.Integration" Label="RequestReduce.Facts.Integration" Category="Project" />
+    <Node Id="xunit 1.8.0.1545" Label="xunit 1.8.0.1545" Category="Package" />
+    <Node Id="structuremap 2.6.2" Label="structuremap 2.6.2" Category="Package" />
+    <Node Id="SqlServerCompact 4.0.8482.1" Label="SqlServerCompact 4.0.8482.1" Category="Package" />
+    <Node Id="EntityFramework 4.1.10331.0" Label="EntityFramework 4.1.10331.0" Category="Package" />
+    <Node Id="EntityFramework.SqlServerCompact 4.1.8482.2" Label="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Package" />
+    <Node Id="WebActivator 1.4.1" Label="WebActivator 1.4.1" Category="Package" />
+    <Node Id="C:\RequestReduce\RequestReduce.SampleWeb\" Label="C:\RequestReduce\RequestReduce.SampleWeb\" Category="Project" />
+    <Node Id="SqlServerCompact 4.0.8482.1" Label="SqlServerCompact 4.0.8482.1" Category="Package" />
+    <Node Id="EntityFramework 4.1.10331.0" Label="EntityFramework 4.1.10331.0" Category="Package" />
+    <Node Id="EntityFramework.SqlServerCompact 4.1.8482.2" Label="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Package" />
+    <Node Id="WebActivator 1.4.1" Label="WebActivator 1.4.1" Category="Package" />
+    <Node Id="RequestReduce.Facts" Label="RequestReduce.Facts" Category="Project" />
+    <Node Id="structuremap 2.6.2" Label="structuremap 2.6.2" Category="Package" />
+    <Node Id="xunit 1.8.0.1545" Label="xunit 1.8.0.1545" Category="Package" />
+    <Node Id="xunit.extensions 1.8.0.1545" Label="xunit.extensions 1.8.0.1545" Category="Package" />
+    <Node Id="structuremap.automocking 2.6.2.1" Label="structuremap.automocking 2.6.2.1" Category="Package" />
+    <Node Id="Moq 4.0.10827" Label="Moq 4.0.10827" Category="Package" />
+    <Node Id="SqlServerCompact 4.0.8482.1" Label="SqlServerCompact 4.0.8482.1" Category="Package" />
+    <Node Id="EntityFramework 4.1.10331.0" Label="EntityFramework 4.1.10331.0" Category="Package" />
+    <Node Id="EntityFramework.SqlServerCompact 4.1.8482.2" Label="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Package" />
+    <Node Id="WebActivator 1.4.1" Label="WebActivator 1.4.1" Category="Package" />
+    <Node Id="RequestReduce" Label="RequestReduce" Category="Project" />
+    <Node Id="structuremap 2.6.2" Label="structuremap 2.6.2" Category="Package" />
+    <Node Id="SqlServerCompact 4.0.8482.1" Label="SqlServerCompact 4.0.8482.1" Category="Package" />
+    <Node Id="EntityFramework 4.1.10331.0" Label="EntityFramework 4.1.10331.0" Category="Package" />
+    <Node Id="EntityFramework.SqlServerCompact 4.1.8482.2" Label="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Package" />
+    <Node Id="WebActivator 1.4.1" Label="WebActivator 1.4.1" Category="Package" />
+    <Node Id="AjaxMin 4.19.4141.18463" Label="AjaxMin 4.19.4141.18463" Category="Package" />
+  </Nodes>
+  <Links>
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="SqlServerCompact 4.0.8482.1" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="EntityFramework 4.1.10331.0" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="WebActivator 1.4.1" Category="Package Dependency" />
+    <Link Source="RequestReduce.Facts.Integration" Target="xunit 1.8.0.1545" Category="Installed Package" />
+    <Link Source="RequestReduce.Facts.Integration" Target="structuremap 2.6.2" Category="Installed Package" />
+    <Link Source="RequestReduce.Facts.Integration" Target="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Installed Package" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="SqlServerCompact 4.0.8482.1" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="EntityFramework 4.1.10331.0" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="WebActivator 1.4.1" Category="Package Dependency" />
+    <Link Source="C:\RequestReduce\RequestReduce.SampleWeb\" Target="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Installed Package" />
+    <Link Source="xunit.extensions 1.8.0.1545" Target="xunit 1.8.0.1545" Category="Package Dependency" />
+    <Link Source="structuremap.automocking 2.6.2.1" Target="structuremap 2.6.2" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="SqlServerCompact 4.0.8482.1" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="EntityFramework 4.1.10331.0" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="WebActivator 1.4.1" Category="Package Dependency" />
+    <Link Source="RequestReduce.Facts" Target="xunit.extensions 1.8.0.1545" Category="Installed Package" />
+    <Link Source="RequestReduce.Facts" Target="structuremap.automocking 2.6.2.1" Category="Installed Package" />
+    <Link Source="RequestReduce.Facts" Target="Moq 4.0.10827" Category="Installed Package" />
+    <Link Source="RequestReduce.Facts" Target="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Installed Package" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="SqlServerCompact 4.0.8482.1" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="EntityFramework 4.1.10331.0" Category="Package Dependency" />
+    <Link Source="EntityFramework.SqlServerCompact 4.1.8482.2" Target="WebActivator 1.4.1" Category="Package Dependency" />
+    <Link Source="RequestReduce" Target="structuremap 2.6.2" Category="Installed Package" />
+    <Link Source="RequestReduce" Target="EntityFramework.SqlServerCompact 4.1.8482.2" Category="Installed Package" />
+    <Link Source="RequestReduce" Target="AjaxMin 4.19.4141.18463" Category="Installed Package" />
+  </Links>
+  <Categories>
+    <Category Id="Project" />
+    <Category Id="Package" />
+  </Categories>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Project" ValueLabel="True">
+      <Condition Expression="HasCategory('Project')" />
+      <Setter Property="Background" Value="Blue" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Package Dependency" ValueLabel="True">
+      <Condition Expression="HasCategory('Package Dependency')" />
+      <Setter Property="Background" Value="Yellow" />
+    </Style>
+  </Styles>
+</DirectedGraph>

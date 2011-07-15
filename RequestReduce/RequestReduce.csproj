@@ -110,6 +110,9 @@
   <ItemGroup>
     <Content Include="Nuget\Tools\RequestReduceFiles.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Nuget\Content\App_Readme\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

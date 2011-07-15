@@ -52,6 +52,11 @@ task Push-Web {
 	exec { git push }
 	cd $currentDir
 }
+
+task Push-Nuget {
+	exec { .\Tools\nuget.exe push $filesDir\RequestReduce.$version.nupkg }
+}
+
 task Build-Output {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
@@ -59,12 +64,11 @@ task Build-Output {
     exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\AjaxMin.dll $baseDir\RequestReduce\bin\$configuration\EntityFramework.dll $baseDir\RequestReduce\bin\$configuration\StructureMap.dll }
 	clean $filesDir
 	create $filesDir
-	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
-
     $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
     $Spec.package.metadata.version = $version
     $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
-
+	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
     exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
 }
 

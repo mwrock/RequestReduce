@@ -21,3 +21,5 @@ PrecompiledWeb/*
 TraceOutput.log
 *.sdf
 *.zip
+*.dgml
+RequestReduce.readme.txt
