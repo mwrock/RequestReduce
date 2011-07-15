@@ -13,6 +13,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-
-[assembly: AssemblyVersion("0.9.141")]
-[assembly: AssemblyFileVersion("0.9.141")]
+[assembly: AssemblyTrademarkAttribute("aa75020d7eba829001c0fe4819d1bc3fe04bee71")]
+[assembly: AssemblyVersion("0.9.149")]
+[assembly: AssemblyFileVersion("0.9.149")]

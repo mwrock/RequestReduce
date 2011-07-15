@@ -4,12 +4,13 @@ properties {
 	$port = "8877"
     $configuration = "debug"
 	# Package Directories
-	$filesDir = "$baseDir\BuildFiles"
+	$filesDir = "$baseDir..\mwrock.github.com\BuildFiles"
+	$webDir = "$baseDir..\mwrock.github.com"
 	$version = "0.9." + (git log --pretty=oneline | measure-object).Count
 }
 
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Build-Output
+task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Puh-Web
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
@@ -20,7 +21,8 @@ task Clean-Solution -depends Clean-BuildFiles {
 }
 
 task Update-AssemblyInfoFiles {
-	Update-AssemblyInfoFiles $version
+	$commit = git log -1 --pretty=format:%H
+	Update-AssemblyInfoFiles $version $commit
 }
 
 task Build-Solution {
@@ -31,6 +33,19 @@ task Clean-BuildFiles {
     clean $filesDir
 }
 
+task Pull-Web {
+	cd $webDir
+	git pull 
+	cd $baseDir
+}
+
+task Push-Web {
+	cd $webDir
+	git add .
+	git commit -a -m 'deployin $version'
+	git push 
+	cd $baseDir
+}
 task Build-Output {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
@@ -47,6 +62,13 @@ task Build-Output {
     exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
 }
 
+task Update-Website-Download-Links {
+	 $downloadUrl="buildFiles/RequestReduce" + $version + ".zip"
+	 $downloadButtonUrlPatern="buildFiles/RequestReduce[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
+	 $downloadLinkTextPattern="V[0-9]+(\.([0-9]+|\*)){1,3}"
+	 $filename = "$webDir\index.html"
+     (Get-Content $filename) | % {$_ -replace $downloadButtonUrlPatern, $downloadUrl } | % {$_ -replace $downloadLinkTextPattern, ("v"+$version) } | Set-Content $filename
+}
 
 task Test-Solution {
     exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
@@ -115,13 +137,15 @@ function Setup-IIS([string] $siteName, [string] $solutionDir, [string] $port )
 }
 
 # Borrowed from Luis Rocha's Blog (http://www.luisrocha.net/2009/11/setting-assembly-version-with-windows.html)
-function Update-AssemblyInfoFiles ([string] $version) {
+function Update-AssemblyInfoFiles ([string] $version, [string] $commit) {
     $assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
     $fileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+    $fileCommitPattern = 'AssemblyTrademarkAttribute\("[a-f0-9]{40}"\)'
     $assemblyVersion = 'AssemblyVersion("' + $version + '")';
     $fileVersion = 'AssemblyFileVersion("' + $version + '")';
-    
-    Get-ChildItem -r -filter AssemblyInfo.cs | ForEach-Object {
+    $commitVersion = 'AssemblyTrademarkAttribute("' + $commit + '")';
+
+    Get-ChildItem -path $baseDir -r -filter AssemblyInfo.cs | ForEach-Object {
         $filename = $_.Directory.ToString() + '\' + $_.Name
         $filename + ' -> ' + $version
         
@@ -132,7 +156,8 @@ function Update-AssemblyInfoFiles ([string] $version) {
     
         (Get-Content $filename) | ForEach-Object {
             % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
-            % {$_ -replace $fileVersionPattern, $fileVersion }
+            % {$_ -replace $fileVersionPattern, $fileVersion } |
+			% {$_ -replace $fileCommitPattern, $commitVersion }
         } | Set-Content $filename
     }
 }
