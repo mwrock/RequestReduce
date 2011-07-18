@@ -71,7 +71,7 @@ namespace RequestReduce.Configuration
 
         public string ContentHost
         {
-            get { return config.ContentHost; }
+            get { return config ==null ? null : config.ContentHost; }
         }
 
         public string ConnectionStringName
