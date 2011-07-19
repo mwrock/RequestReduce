@@ -150,6 +150,7 @@ namespace RequestReduce.Facts.Module
             [Fact]
             public void WillProcessFailedUrlAfterFailuresAreCleared()
             {
+                RRContainer.Current = null;
                 var testable = new TestableReducingQueue();
                 var badUrl = "badUrl";
                 var badKey = Hasher.Hash(badUrl);

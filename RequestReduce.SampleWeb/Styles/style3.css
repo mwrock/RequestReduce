@@ -1,0 +1,77 @@
+ .internav a {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ margin-right: 2px;
+ color: #fff !important;
+ padding: 8px 0px 4px 0px;
+ height: 21px;
+ width: 129px;
+ text-align: center;
+ text-transform:uppercase;
+ }
+ .internav a:link {
+ color: #fff !important;
+ height: 21px;
+ }
+ .internav a:hover {
+ margin: 0 2px 0 0;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ text-align: center;
+ }
+ .internav a:hover, .internav a:active {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -33px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }
+ 
+ .internav a:first-child {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -66px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }
+ .internav a:first-child:hover {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -98px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ } 
+ .internav a:nth-child(4) {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -33px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }
+ .internav a:last-child {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -132px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }
+ .internav a:last-child:hover {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -165px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }
+ .internav a:nth-last-child(2) {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -198px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }
+ .internav a:nth-last-child(2):hover {
+ background:url('/images/menu-sprite.png') no-repeat 0px 0px;
+ background-position: 0px -230px;
+ width: 129px;
+ height: 21px;
+ padding: 8px 0px 4px 0px;
+ }

@@ -12,7 +12,7 @@ properties {
 }
 
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
+task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Merge-Assembly, Build-Output, Update-Website-Download-Links, Push-Web
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
@@ -57,11 +57,14 @@ task Push-Nuget {
 	exec { .\Tools\nuget.exe push $filesDir\RequestReduce.$version.nupkg }
 }
 
-task Build-Output {
+task Merge-Assembly {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
 	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
     exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\AjaxMin.dll $baseDir\RequestReduce\bin\$configuration\EntityFramework.dll $baseDir\RequestReduce\bin\$configuration\StructureMap.dll }
+}
+
+task Build-Output {
 	clean $filesDir
 	create $filesDir
     $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")

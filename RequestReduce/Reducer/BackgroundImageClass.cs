@@ -36,6 +36,7 @@ namespace RequestReduce.Reducer
         private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*;", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex paddingPattern = new Regex(@"padding(?<side>-(left|top|right|bottom))?:[\s]*(?<pad1>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)))[\s;]((?<pad2>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)))[\s;])?((?<pad3>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)))[\s;])?((?<pad4>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)))[\s;])?", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.ExplicitCapture);
 
         public BackgroundImageClass(string originalClassString, string parentCssUrl)
         {
@@ -61,12 +62,116 @@ namespace RequestReduce.Reducer
             var heightMatch = heightPattern.Matches(originalClassString);
             if (heightMatch.Count > 0)
                 Height = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
+
+            if(Width != null || Height != null)
+            {
+                var paddingMatches = paddingPattern.Matches(originalClassString);
+                if (paddingMatches.Count > 0)
+                {
+                    var padVals = new int[4];
+                    foreach (var pads in from Match paddingMatch in paddingMatches select GetPadding(paddingMatch))
+                    {
+                        if (pads[0] != null)
+                            padVals[0] = (int)pads[0];
+                        if (pads[1] != null)
+                            padVals[1] = (int)pads[1];
+                        if (pads[2] != null)
+                            padVals[2] = (int)pads[2];
+                        if (pads[3] != null)
+                            padVals[3] = (int)pads[3];
+                    }
+                    if(Width != null)
+                    {
+                        if (padVals[1] < 0 || padVals[3] < 0)
+                            Width = null;
+                        else
+                            Width += (padVals[1] + padVals[3]);
+                    }
+                    if (Height != null)
+                    {
+                        if (padVals[0] < 0 || padVals[2] < 0)
+                            Height = null;
+                        else
+                            Height += (padVals[0] + padVals[2]);
+                    }
+                }
+            }
+
             var offsetMatches = offsetPattern.Matches(originalClassString);
             if (offsetMatches.Count > 0)
             {
                 foreach (Match offsetMatch in offsetMatches)
                     SetOffsets(offsetMatch);
             }
+        }
+
+        private int?[] GetPadding(Match paddingMatch)
+        {
+            var padVals = new int?[4];
+            var side = paddingMatch.Groups["side"].Value.ToLower();
+            var pad1 = paddingMatch.Groups["pad1"].Value;
+            var pad2 = paddingMatch.Groups["pad2"].Value;
+            var pad3 = paddingMatch.Groups["pad3"].Value;
+            var pad4 = paddingMatch.Groups["pad4"].Value;
+
+            if (side == "-left")
+                padVals[3] = calcPadPixels(pad1, Width);
+            else if (side == "-right")
+                padVals[1] = calcPadPixels(pad1, Width);
+            else if (side == "-top")
+                padVals[0] = calcPadPixels(pad1, Height);
+            else if (side == "-bottom")
+                padVals[2] = calcPadPixels(pad1, Height);
+            else
+            {
+                var groupCount = paddingMatch.Groups.Cast<Group>().Where(x => x.Length > 0).Count();
+                switch (groupCount-1)
+                {
+                    case 1:
+                        padVals[0] = calcPadPixels(pad1, Height);
+                        padVals[1] = calcPadPixels(pad1, Width);
+                        padVals[2] = calcPadPixels(pad1, Height);
+                        padVals[3] = calcPadPixels(pad1, Width);
+                        break;
+                    case 2:
+                        padVals[0] = calcPadPixels(pad1, Height);
+                        padVals[1] = calcPadPixels(pad2, Width);
+                        padVals[2] = calcPadPixels(pad1, Height);
+                        padVals[3] = calcPadPixels(pad2, Width);
+                        break;
+                    case 3:
+                        padVals[0] = calcPadPixels(pad1, Height);
+                        padVals[1] = calcPadPixels(pad2, Width);
+                        padVals[2] = calcPadPixels(pad3, Height);
+                        padVals[3] = calcPadPixels(pad2, Width);
+                        break;
+                    case 4:
+                        padVals[0] = calcPadPixels(pad1, Height);
+                        padVals[1] = calcPadPixels(pad2, Width);
+                        padVals[2] = calcPadPixels(pad3, Height);
+                        padVals[3] = calcPadPixels(pad4, Width);
+                        break;
+                }
+            }
+            return padVals;
+        }
+
+        private int calcPadPixels(string pad, int? pixels)
+        {
+            var result = 0;
+            if (pixels == null) return result;
+
+            pad = pad.ToLower();
+            if (pad.EndsWith("px"))
+                int.TryParse(pad.Replace("px", ""), out result);
+            else if (pad.EndsWith("%"))
+            {
+                int.TryParse(pad.Replace("%", ""), out result);
+                result = (int)((result/100f)*(int)pixels);
+            }
+            else
+                result = -1;
+            return result;
         }
 
         private void SetOffsets(Match offsetMatch)
@@ -96,8 +201,7 @@ namespace RequestReduce.Reducer
 
         private Position ParseStringOffset(string offsetString)
         {
-            var offset = new Position();
-            offset.PositionMode = PositionMode.Direction;
+            var offset = new Position {PositionMode = PositionMode.Direction};
             Direction direction;
             Enum.TryParse(offsetString, true, out direction);
             offset.Direction = direction;

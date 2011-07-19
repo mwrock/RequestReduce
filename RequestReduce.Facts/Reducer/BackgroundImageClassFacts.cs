@@ -153,7 +153,6 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
-            InlineData("50", 50),
             InlineData("50px", 50),
             InlineData("50%", null),
             InlineData("50em", null)]
@@ -169,6 +168,186 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
 
                 Assert.Equal(expectedWidth, testable.Width);
+            }
+
+            [Theory,
+            InlineData("50px", 70),
+            InlineData("50%", 30),
+            InlineData("50em", null)]
+            public void WillAddLeftPaddingToWidth(string statedWidth, int? expectedWidth)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    width: 20px;
+    padding-left: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
+
+                Assert.Equal(expectedWidth, testable.Width);
+            }
+
+            [Theory,
+            InlineData("50px", 70),
+            InlineData("50%", 30),
+            InlineData("50em", null)]
+            public void WillAddRightPaddingToWidth(string statedWidth, int? expectedWidth)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    width: 20px;
+    padding-right: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
+
+                Assert.Equal(expectedWidth, testable.Width);
+            }
+
+            [Theory,
+            InlineData("50px", 70),
+            InlineData("50%", 30),
+            InlineData("50em", null)]
+            public void WillAddTopPaddingToHeight(string statedHeight, int? expectedHeight)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 20px;
+    padding-top: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
+
+                Assert.Equal(expectedHeight, testable.Height);
+            }
+
+            [Theory,
+            InlineData("50px", 70),
+            InlineData("50%", 30),
+            InlineData("50em", null)]
+            public void WillAddBottomPaddingToHeight(string statedHeight, int? expectedHeight)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 20px;
+    padding-bottom: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
+
+                Assert.Equal(expectedHeight, testable.Height);
+            }
+
+            [Theory,
+            InlineData("10px 20px 30px 40px", 80, 60),
+            InlineData("10px 20px 30px", 60, 60),
+            InlineData("10px 20px", 60, 40),
+            InlineData("10px", 40, 40)]
+            public void WillAddShortcutPaddingToWidthAndHeight(string statedPadding, int? expectedWidth, int? expectedHeight)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 20px;
+    width: 20px;
+    padding: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, statedPadding), "http://server/content/style.css");
+
+                Assert.Equal(expectedWidth, testable.Width);
+                Assert.Equal(expectedHeight, testable.Height);
+            }
+
+            [Fact]
+            public void WillNotAddShortcutPaddingToWidthIfNoWidthSpecified()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 20px;
+    padding-left: 10px;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Null(testable.Width);
+            }
+
+            [Fact]
+            public void WillNotAddShortcutPaddingToHeightIfNoHeightSpecified()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    padding-top: 10px;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Null(testable.Height);
+            }
+
+            [Fact]
+            public void WillAddLastLeftPaddingToWidth()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    width: 20px;
+    padding-left: 10px;
+    padding: 40px;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(100, testable.Width);
+            }
+
+            [Fact]
+            public void WillAddLastRightPaddingToWidth()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    width: 20px;
+    padding: 40px;
+    padding-right: 10px;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(70, testable.Width);
+            }
+
+            [Fact]
+            public void WillAddLastTopPaddingToHeight()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 20px;
+    padding: 40px;
+    padding-top: 10px;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(70, testable.Height);
             }
 
             [Theory,
@@ -248,16 +427,16 @@ namespace RequestReduce.Facts.Reducer
                 var css =
     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
-    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 50 60;
-    background-position: 75 100;
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0px 0px;
+    background-position: 10px -33px;
 }}";
 
                 var testable = new BackgroundImageClass(css, "http://server/content/style.css");
 
                 Assert.Equal(PositionMode.Unit, testable.XOffset.PositionMode);
-                Assert.Equal(75, testable.XOffset.Offset);
+                Assert.Equal(10, testable.XOffset.Offset);
                 Assert.Equal(PositionMode.Unit, testable.YOffset.PositionMode);
-                Assert.Equal(100, testable.YOffset.Offset);
+                Assert.Equal(-33, testable.YOffset.Offset);
             }
 
             [Fact]
