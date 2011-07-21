@@ -171,6 +171,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
+            InlineData("50", 70),
             InlineData("50px", 70),
             InlineData("50%", 30),
             InlineData("50em", null)]
@@ -190,6 +191,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
+            InlineData("50", 70),
             InlineData("50px", 70),
             InlineData("50%", 30),
             InlineData("50em", null)]
@@ -209,6 +211,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
+            InlineData("50", 70),
             InlineData("50px", 70),
             InlineData("50%", 30),
             InlineData("50em", null)]
@@ -228,6 +231,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
+            InlineData("50", 70),
             InlineData("50px", 70),
             InlineData("50%", 30),
             InlineData("50em", null)]
@@ -247,6 +251,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
+            InlineData("10 20 30 40", 80, 60),
             InlineData("10px 20px 30px 40px", 80, 60),
             InlineData("10px 20px 30px", 60, 60),
             InlineData("10px 20px", 60, 40),
@@ -418,7 +423,38 @@ namespace RequestReduce.Facts.Reducer
 
                 var testable = new BackgroundImageClass(css, "http://server/content/style.css");
 
-                Assert.Equal(new Position(){PositionMode = PositionMode.Percent, Offset = 0}, testable.XOffset);
+                Assert.Equal(new Position {PositionMode = PositionMode.Percent, Offset = 0}, testable.XOffset);
+            }
+
+            [Fact]
+            public void ShortcutOffsetsWillBePxIfNotTrailingWithValidUnitOrPercent()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0 0;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.XOffset);
+                Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.YOffset);
+            }
+
+            [Fact]
+            public void OffsetsWillBePxIfNotTrailingWithValidUnitOrPercent()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    background-position: 0 0;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.XOffset);
+                Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.YOffset);
             }
 
             [Fact]
