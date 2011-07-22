@@ -39,12 +39,12 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillWriteImageToSurfaceAtTheCorrectOffset()
             {
-                var testable = new SpriteWriter(33, 18);
+                var testable = new SpriteWriter(35, 18);
                 testable.WriteImage(TestableSpriteWriter.Image15X17);
 
                 testable.WriteImage(TestableSpriteWriter.Image18X18);
 
-                Assert.Equal(TestableSpriteWriter.Image18X18.GraphicsImage(), testable.SpriteImage.Clone(new Rectangle(15, 0, 18, 18), TestableSpriteWriter.Image18X18.PixelFormat), new BitmapPixelComparer(true));
+                Assert.Equal(TestableSpriteWriter.Image18X18.GraphicsImage(), testable.SpriteImage.Clone(new Rectangle(16, 0, 18, 18), TestableSpriteWriter.Image18X18.PixelFormat), new BitmapPixelComparer(true));
             }
         }
     }

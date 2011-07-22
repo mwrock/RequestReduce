@@ -61,7 +61,7 @@ namespace RequestReduce.Facts.Integration
             reducer.Dispose();
             using(var image = new Bitmap(Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".png"))))
             {
-                Assert.Equal(1032, image.Width);
+                Assert.Equal(1040, image.Width);
                 Assert.Equal(33, image.Height);
                 image.Dispose();
             }

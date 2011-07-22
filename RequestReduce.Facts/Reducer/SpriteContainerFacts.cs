@@ -41,7 +41,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WidthWillBeAggregateOfAddedImageWidths()
+            public void WidthWillBeAggregateOfAddedImageWidthsPlusOnePixelEach()
             {
                 var testable = new TestableSpriteContainer();
                 var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "url1" };
@@ -54,13 +54,13 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.AddImage(image1);
                 testable.ClassUnderTest.AddImage(image2);
 
-                Assert.Equal(33, testable.ClassUnderTest.Width);
+                Assert.Equal(35, testable.ClassUnderTest.Width);
             }
 
             [Theory,
             InlineData(10),
             InlineData(20)]
-            public void WidthWillBeSizeOfBackgroundClassIfDifferentThanImageWidth(int width)
+            public void WidthWillBeSizeOfBackgroundClassPluOneIfDifferentThanImageWidth(int width)
             {
                 var testable = new TestableSpriteContainer();
                 var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "url1", Width = width};
@@ -69,7 +69,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.AddImage(image1);
 
-                Assert.Equal(width, testable.ClassUnderTest.Width);
+                Assert.Equal(width+1, testable.ClassUnderTest.Width);
             }
 
             [Fact]

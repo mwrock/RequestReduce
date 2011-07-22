@@ -21,7 +21,7 @@ namespace RequestReduce.Reducer
         public void WriteImage(Bitmap image)
         {
             drawingSurface.DrawImage(image, new Rectangle(OffsetWidth, 0, image.Width, image.Height));
-            OffsetWidth += image.Width;
+            OffsetWidth += image.Width + 1;
         }
 
         public byte[] GetBytes(string mimeType)

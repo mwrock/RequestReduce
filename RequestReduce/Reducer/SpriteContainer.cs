@@ -45,7 +45,7 @@ namespace RequestReduce.Reducer
                 }
             }
             images.Add(bitmap);
-            Width += bitmap.Width;
+            Width += bitmap.Width + 1;
             if (Height < bitmap.Height) Height = bitmap.Height;
         }
 

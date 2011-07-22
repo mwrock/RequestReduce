@@ -193,7 +193,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillWriteEachImage()
             {
                 var testable = new TestableSpriteManager();
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(33);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(35);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(18);
                 var images = new List<Bitmap>() { TestableSpriteManager.Image15X17, TestableSpriteManager.Image18X18 };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
@@ -206,7 +206,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var bitMap = new Bitmap(new MemoryStream(bytes));
                 Assert.Equal(TestableSpriteManager.Image15X17.GraphicsImage(), bitMap.Clone(new Rectangle(0, 0, 15, 17), TestableSpriteManager.Image15X17.PixelFormat), new BitmapPixelComparer(true));
-                Assert.Equal(TestableSpriteManager.Image18X18.GraphicsImage(), bitMap.Clone(new Rectangle(15, 0, 18, 18), TestableSpriteManager.Image18X18.PixelFormat), new BitmapPixelComparer(true));
+                Assert.Equal(TestableSpriteManager.Image18X18.GraphicsImage(), bitMap.Clone(new Rectangle(16, 0, 18, 18), TestableSpriteManager.Image18X18.PixelFormat), new BitmapPixelComparer(true));
             }
 
             [Fact]
