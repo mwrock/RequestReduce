@@ -196,7 +196,6 @@ namespace RequestReduce.Module
                 return matchPosition;
             }
             state = SearchState.LookForStart;
-            //BaseStream.Write(transformBuffer.ToArray(), 0, transformBuffer.Count);
             return 0;
         }
 

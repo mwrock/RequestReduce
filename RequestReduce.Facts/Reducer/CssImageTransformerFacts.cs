@@ -76,10 +76,9 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory,
-            InlineDataAttribute(-20),
             InlineDataAttribute(0),
             InlineDataAttribute(20)]
-            public void WillReturnUnitYPositionedBackgroundImages(int y)
+            public void WillReturnPositivelyUnitYPositionedBackgroundImages(int y)
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
@@ -88,6 +87,23 @@ namespace RequestReduce.Facts.Reducer
     background: transparent url('http://i1.social.s-msft.com/contentservice/dcbd1ced-14f2-4c11-9ece-9d6e00f78d1c/arrow_dn_white.gif') no-repeat scroll 0 {0}px;
     width: 5px;
 }}", y);
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(1, result.Count());
+            }
+
+            [Fact]
+            public void WillReturnNegativelyUnitYPositionedBackgroundImagesWithHeight()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                   @"
+.DropDownArrow {{
+    background: transparent url('http://i1.social.s-msft.com/contentservice/dcbd1ced-14f2-4c11-9ece-9d6e00f78d1c/arrow_dn_white.gif') no-repeat scroll 0 -20px;
+    width: 5px;
+    height:24px;
+}}";
 
                 var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
@@ -224,6 +240,24 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.Equal(0, result.Count());
             }
+
+            [Fact]
+            public void WillNotReturnPreviouslyVerticallySpritedImagesWithoutHeight()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") 0 -30px;
+    background-repeat: no-repeat;
+    width: 50px;
+}}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(0, result.Count());
+            }
+
         }
 
         public class InjectSprite

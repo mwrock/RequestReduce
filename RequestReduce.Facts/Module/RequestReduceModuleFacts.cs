@@ -49,6 +49,7 @@ namespace RequestReduce.Facts.Module
         [Fact]
         public void WillNotSetResponseFilterIfFaviconIco()
         {
+            RRContainer.Current = null;
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
