@@ -108,9 +108,10 @@ namespace RequestReduce.Module
                     break;
                 case SearchState.MatchingFinished:
                     if ((startTransformPosition - offset) >= 0)
-                    BaseStream.Write(buffer, offset, startTransformPosition-offset);
-                    var transformed = responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray()));
-                    BaseStream.Write(encoding.GetBytes(transformed), 0, transformed.Length);
+                        BaseStream.Write(buffer, offset, startTransformPosition-offset);
+                    var transformed =
+                        encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
+                    BaseStream.Write(transformed, 0, transformed.Length);
                     if ((offset + count) - endTransformPosition > 0)
                         BaseStream.Write(buffer, endTransformPosition, (offset + count) - endTransformPosition);
                     break;
