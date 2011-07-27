@@ -67,8 +67,8 @@ namespace RequestReduce.Facts.Module
 
             public void Dispose()
             {
-                ClassUnderTest.Dispose();
                 RRContainer.Current = null;
+                ClassUnderTest.Dispose();
             }
         }
 
@@ -84,6 +84,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.BaseQueue.TryDequeue(out result);
                 Assert.Equal("urls", result);
+                testable.Dispose();
             }
         }
 
@@ -98,6 +99,7 @@ namespace RequestReduce.Facts.Module
                 testable.ClassUnderTest.ProcessQueuedItem();
 
                 testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Once());
+                testable.Dispose();
             }
 
             [Fact]
@@ -110,6 +112,7 @@ namespace RequestReduce.Facts.Module
                 testable.ClassUnderTest.ProcessQueuedItem();
 
                 testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
+                testable.Dispose();
             }
 
             [Fact]
@@ -127,6 +130,7 @@ namespace RequestReduce.Facts.Module
                 }
 
                 testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold));
+                testable.Dispose();
             }
         }
 
@@ -142,6 +146,7 @@ namespace RequestReduce.Facts.Module
                 var result = testable.ClassUnderTest.Count;
 
                 Assert.Equal(2, result);
+                testable.Dispose();
             }
         }
 
@@ -166,6 +171,7 @@ namespace RequestReduce.Facts.Module
                 testable.ClassUnderTest.ProcessQueuedItem();
 
                 testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold + 1));
+                testable.Dispose();
             }
         }
 
@@ -183,6 +189,7 @@ namespace RequestReduce.Facts.Module
                 testable.ClassUnderTest.ProcessQueuedItem();
 
                 Assert.True(error is ApplicationException);
+                testable.Dispose();
             }
         }
 

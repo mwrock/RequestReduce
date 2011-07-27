@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Text;
 
 namespace RequestReduce.Utilities
 {
@@ -19,7 +20,7 @@ namespace RequestReduce.Utilities
             {
                 using (var client = new WebClient())
                 {
-                    return client.DownloadString(url);
+                    return Encoding.UTF8.GetString(client.DownloadData(url));
                 }
             }
             catch (Exception ex)
