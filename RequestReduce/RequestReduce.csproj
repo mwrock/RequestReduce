@@ -115,7 +115,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\mvc3\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
 if not exist "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86" md "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86"
 xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\x86\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86"
 if not exist "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64" md "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64"
