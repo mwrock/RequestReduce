@@ -1,7 +1,8 @@
-﻿using System.DirectoryServices;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Xml.Linq;
+using Microsoft.Web.Administration;
 
 namespace RequestReduce.Facts.Integration
 {
@@ -49,11 +50,20 @@ namespace RequestReduce.Facts.Integration
 
         public static void RecyclePool()
         {
-            using (var pool = new DirectoryEntry("IIS://localhost/W3SVC/AppPools/RequestReduce"))
+            using (var manager = new ServerManager())
             {
-                pool.Invoke("Recycle", null);
+                var pool = manager.ApplicationPools["RequestReduce"];
+                Process process = null;
+                if(pool.WorkerProcesses.Count > 0)
+                    process = Process.GetProcessById(pool.WorkerProcesses[0].ProcessId);
+                pool.Recycle();
+                if(process != null)
+                {
+                    while (!process.HasExited)
+                        Thread.Sleep(0);
+                    process.Dispose();
+                }
             }
-            Thread.Sleep(2000);
         }
 
     }
