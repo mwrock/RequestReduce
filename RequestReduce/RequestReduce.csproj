@@ -117,6 +117,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\razor\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
 xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\lib\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
+xcopy /s /y "$(SolutionDir)packages\EntityFramework.SqlServerCompact.4.1.8482.2\lib\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
 if not exist "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86" md "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86"
 xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\x86\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86"
 if not exist "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64" md "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64"
