@@ -98,9 +98,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\EntityFramework.SqlServerCompact.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Default.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +108,9 @@
       <Project>{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}</Project>
       <Name>RequestReduce</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo1.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

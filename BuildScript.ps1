@@ -30,7 +30,11 @@ task Update-AssemblyInfoFiles {
 	Update-AssemblyInfoFiles $version $commit
 }
 
-task Build-Solution {
+task create-WebProject-build-target {
+    create $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0
+	Copy-Item $baseDir\Microsoft.WebApplication.targets $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0\Microsoft.WebApplication.targets
+}
+task Build-Solution -depends create-WebProject-build-target {
     exec { msbuild RequestReduce.sln /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
