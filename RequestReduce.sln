@@ -15,28 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "RequestReduce.SampleWeb", "RequestReduce.SampleWeb\", "{7232660D-66C1-45AA-B1E6-6D01A0150810}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		ProjectReferences = "{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}|RequestReduce.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/RequestReduce.SampleWeb"
-		Debug.AspNetCompiler.PhysicalPath = "RequestReduce.SampleWeb\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\RequestReduce.SampleWeb\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/RequestReduce.SampleWeb"
-		Release.AspNetCompiler.PhysicalPath = "RequestReduce.SampleWeb\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\RequestReduce.SampleWeb\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		DefaultWebSiteLanguage = "Visual C#"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.Facts.Integration", "RequestReduce.Facts.Integration\RequestReduce.Facts.Integration.csproj", "{2F96EAC5-528F-4BEB-80D6-B6353FFAB8E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.SampleWeb", "RequestReduce.SampleWeb\RequestReduce.SampleWeb.csproj", "{CC37498E-5083-472B-B057-A5C4187E113D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,14 +33,14 @@ Global
 		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{7232660D-66C1-45AA-B1E6-6D01A0150810}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{2F96EAC5-528F-4BEB-80D6-B6353FFAB8E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F96EAC5-528F-4BEB-80D6-B6353FFAB8E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F96EAC5-528F-4BEB-80D6-B6353FFAB8E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F96EAC5-528F-4BEB-80D6-B6353FFAB8E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

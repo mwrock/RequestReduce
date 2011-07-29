@@ -35,11 +35,8 @@
       <HintPath>..\packages\AjaxMin.4.19.4141.18463\lib\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.4.1.10331.0\lib\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.Schema, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.Data.Schema.UnitTesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="StructureMap, Version=2.6.2.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.2.6.2\lib\StructureMap.dll</HintPath>
@@ -115,13 +112,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\razor\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
-xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\lib\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
-xcopy /s /y "$(SolutionDir)packages\EntityFramework.SqlServerCompact.4.1.8482.2\lib\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\"
-if not exist "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86" md "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86"
-xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\x86\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\x86"
-if not exist "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64" md "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64"
-xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\amd64\*.*" "$(TargetDir)..\..\..\RequestReduce.SampleWeb\bin\amd64"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
