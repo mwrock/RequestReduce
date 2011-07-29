@@ -34,11 +34,11 @@ task create-WebProject-build-target {
     create $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0
 	Copy-Item $baseDir\Microsoft.WebApplication.targets $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0\Microsoft.WebApplication.targets
 }
-task Build-Solution -depends create-WebProject-build-target {
+task Build-Solution {
     exec { msbuild RequestReduce.sln /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
-task Clean-BuildFiles {
+task Clean-BuildFiles -depends create-WebProject-build-target {
     clean $filesDir
 }
 
