@@ -15,14 +15,16 @@ namespace RequestReduce.Reducer
         private IRRConfiguration config = null;
         private readonly IUriBuilder uriBuilder;
         private readonly IStore store;
+        private readonly IPngOptimizer pngOptimizer;
         protected IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
         protected int spriteIndex = 1;
 
-        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store)
+        public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store, IPngOptimizer pngOptimizer)
         {
             this.webClientWrapper = webClientWrapper;
             this.uriBuilder = uriBuilder;
             this.store = store;
+            this.pngOptimizer = pngOptimizer;
             this.config = config;
             SpriteContainer = new SpriteContainer(webClientWrapper);
         }
@@ -61,7 +63,8 @@ namespace RequestReduce.Reducer
 
                     var bytes = spriteWriter.GetBytes("image/png");
                     var url = GetSpriteUrl(bytes);
-                    store.Save(bytes, url, null);
+                    var optBytes = pngOptimizer.OptimizePng(bytes);
+                    store.Save(optBytes, url, null);
                     foreach (var sprite in spriteList.Values.Where(x => x.SpriteIndex == spriteIndex))
                         sprite.Url = url;
                 }

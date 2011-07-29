@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace RequestReduce.Utilities
 {
@@ -59,6 +58,11 @@ namespace RequestReduce.Utilities
         public bool FileExists(string path)
         {
             return File.Exists(path);
+        }
+
+        public byte[] GetFileBytes(string path)
+        {
+            return File.ReadAllBytes(path);
         }
     }
 }

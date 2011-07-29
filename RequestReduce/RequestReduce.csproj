@@ -95,6 +95,7 @@
     <Compile Include="Module\ResponseFilter.cs" />
     <Compile Include="RRContainer.cs" />
     <Compile Include="Utilities\Hasher.cs" />
+    <Compile Include="Utilities\PngOptimizer.cs" />
     <Compile Include="Utilities\RelativeToAbsoluteUtility.cs" />
     <Compile Include="Utilities\UriBuilder.cs" />
     <Compile Include="Utilities\WebClientWrapper.cs" />
@@ -112,8 +113,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\optipng\optipng.exe" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
