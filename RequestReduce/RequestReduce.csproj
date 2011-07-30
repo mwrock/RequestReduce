@@ -103,6 +103,9 @@
   <ItemGroup>
     <None Include="Nuget\Content\web.config.transform" />
     <None Include="Nuget\RequestReduce.nuspec" />
+    <None Include="Nuget\Tools\AddPostBuildScript.ps1" />
+    <None Include="Nuget\Tools\install.ps1" />
+    <None Include="Nuget\Tools\uninstall.ps1" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
