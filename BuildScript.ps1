@@ -12,7 +12,7 @@ properties {
 }
 
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Merge-Assembly, Build-Output, Update-Website-Download-Links, Push-Web
+task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
@@ -68,14 +68,17 @@ task Merge-Assembly {
     exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\AjaxMin.dll $baseDir\RequestReduce\bin\$configuration\EntityFramework.dll $baseDir\RequestReduce\bin\$configuration\StructureMap.dll }
 }
 
-task Build-Output {
+task Build-Output -depends Merge-Assembly {
 	clean $filesDir
 	create $filesDir
+	clean $baseDir\RequestReduce\Nuget\OptiPng
+	create $baseDir\RequestReduce\Nuget\OptiPng
     $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
     $Spec.package.metadata.version = $version
     $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
 	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
-	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
+	Copy-Item $baseDir\RequestReduce\bin\$configuration\optipng.exe $baseDir\RequestReduce\Nuget\OptiPng\
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\RequestReduce\Nuget\OptiPng\optipng.exe $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
     exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
 }
 
