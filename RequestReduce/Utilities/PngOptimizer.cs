@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using RequestReduce.Configuration;
 
 namespace RequestReduce.Utilities
@@ -14,19 +15,20 @@ namespace RequestReduce.Utilities
     {
         private readonly IFileWrapper fileWrapper;
         private readonly IRRConfiguration configuration;
-        private readonly string scratchFile;
+        private readonly string optiPngLocation;
 
         public PngOptimizer(IFileWrapper fileWrapper, IRRConfiguration configuration)
         {
             this.fileWrapper = fileWrapper;
             this.configuration = configuration;
-            scratchFile = string.Format(configuration.SpritePhysicalPath + "{0}", "\\scratch.png");
+            optiPngLocation = string.Format("{0}\\OptiPng.exe", AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory);
         }
 
         public byte[] OptimizePng(byte[] bytes)
         {
-            if (!fileWrapper.FileExists("OptiPng.exe"))
+            if (!fileWrapper.FileExists(optiPngLocation))
                 return bytes;
+            var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
             fileWrapper.Save(bytes, scratchFile);
             Optimize(bytes, scratchFile);
             var optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
@@ -40,7 +42,7 @@ namespace RequestReduce.Utilities
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.FileName = "optipng.exe";
+            process.StartInfo.FileName = optiPngLocation;
             process.StartInfo.Arguments = String.Format(
                 @"-o5 ""{0}""",
                 filePath

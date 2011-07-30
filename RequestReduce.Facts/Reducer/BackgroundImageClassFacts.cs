@@ -31,6 +31,20 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillSetImageUrlFromShortcutStyleWhwenLastPropertyWithNoSemicolon()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: #fff url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") repeat
+}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal("http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png", testable.ImageUrl);
+            }
+
+            [Fact]
             public void WillSetImageUrlFromBackgroundImageStyle()
             {
                 var css =
@@ -168,6 +182,20 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
 
                 Assert.Equal(expectedWidth, testable.Width);
+            }
+
+            [Fact]
+            public void WillSetWidthFromWidthWhenLastPropertyWithNoSemicolon()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    width: 50px}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(50, testable.Width);
             }
 
             [Theory,
@@ -391,6 +419,20 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
 
                 Assert.Equal(expectedHeight, testable.Height);
+            }
+
+            [Fact]
+            public void WillSetHeightFromHeightWhenLastPropertyNotEndingWithSemicolon()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 50}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(50, testable.Height);
             }
 
             [Theory,

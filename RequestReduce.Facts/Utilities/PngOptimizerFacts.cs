@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
