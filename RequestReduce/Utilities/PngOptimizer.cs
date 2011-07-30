@@ -7,7 +7,7 @@ namespace RequestReduce.Utilities
 {
     public interface IPngOptimizer
     {
-        byte[] OptimizePng(byte[] bytes);
+        byte[] OptimizePng(byte[] bytes, int compressionLevel);
     }
 
     public class PngOptimizer : IPngOptimizer
@@ -23,18 +23,18 @@ namespace RequestReduce.Utilities
             scratchFile = string.Format(configuration.SpritePhysicalPath + "{0}", "\\scratch.png");
         }
 
-        public byte[] OptimizePng(byte[] bytes)
+        public byte[] OptimizePng(byte[] bytes, int compressionLevel)
         {
             if (!fileWrapper.FileExists("OptiPng.exe"))
                 return bytes;
             fileWrapper.Save(bytes, scratchFile);
-            Optimize(bytes, scratchFile);
+            Optimize(compressionLevel, scratchFile);
             var optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
             fileWrapper.DeleteFile(scratchFile);
             return optimizedBytes;
         }
 
-        private void Optimize(byte[] bytes, string filePath)
+        private void Optimize(int compressionLevel, string filePath)
         {
             var process = new Process();
             process.StartInfo.UseShellExecute = false;
@@ -42,8 +42,8 @@ namespace RequestReduce.Utilities
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.FileName = "optipng.exe";
             process.StartInfo.Arguments = String.Format(
-                @"-o5 ""{0}""",
-                filePath
+                @"-o{1} ""{0}""",
+                filePath, compressionLevel
             );
             process.Start();
             process.StandardOutput.ReadToEnd();

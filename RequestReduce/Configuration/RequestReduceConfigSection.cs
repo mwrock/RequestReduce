@@ -61,6 +61,17 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("imageOptimizationCompressionLevel")]
+        public int ImageOptimizationCompressionLevel
+        {
+            get
+            {
+                int limit;
+                Int32.TryParse(base["imageOptimizationCompressionLevel"].ToString(), out limit);
+                return limit;
+            }
+        }
+
         [ConfigurationProperty("authorizedUserList")]
         public string AuthorizedUserList
         {
@@ -77,5 +88,17 @@ namespace RequestReduce.Configuration
                 return result;
             }
         }
+
+        [ConfigurationProperty("imageOptimizationDisabled")]
+        public bool ImageOptimizationDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["imageOptimizationDisabled"].ToString(), out result);
+                return result;
+            }
+        }
+
     }
 }

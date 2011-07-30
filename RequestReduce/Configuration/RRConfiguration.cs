@@ -22,6 +22,8 @@ namespace RequestReduce.Configuration
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
         bool CssProcesingDisabled { get; set; }
+        bool ImageOptimizationDisabled { get; set; }
+        int ImageOptimizationCompressionLevel { get; set; }
         event Action PhysicalPathChange; 
     }
 
@@ -33,6 +35,7 @@ namespace RequestReduce.Configuration
         public static readonly IEnumerable<string> Anonymous = new[]{"Anonymous"};
 
         public bool CssProcesingDisabled { get; set; }
+        public bool ImageOptimizationDisabled { get; set; }
 
         public event Action PhysicalPathChange;  
 
@@ -40,8 +43,11 @@ namespace RequestReduce.Configuration
         {
             AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
-            CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
+            val = config == null ? 0 : config.ImageOptimizationCompressionLevel;
+            ImageOptimizationCompressionLevel = val == 0 ? 5 : val;
+            CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
+            ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
             SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath) ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))
@@ -92,6 +98,7 @@ namespace RequestReduce.Configuration
         }
 
         public int SpriteSizeLimit { get; set; }
+        public int ImageOptimizationCompressionLevel { get; set; }
 
         private void CreatePhysicalPath()
         {
