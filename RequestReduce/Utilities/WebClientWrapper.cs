@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Drawing;
-using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -20,7 +19,12 @@ namespace RequestReduce.Utilities
             {
                 using (var client = new WebClient())
                 {
-                    return Encoding.UTF8.GetString(client.DownloadData(url));
+                    var remove = 0;
+                    var bytes = client.DownloadData(url);
+                    if (bytes.Length >= 3 && bytes.Take(3).SequenceEqual(Encoding.UTF8.GetPreamble()))
+                        remove = 3;
+                    var str = Encoding.UTF8.GetString(bytes, remove, bytes.Length-remove);
+                    return str;
                 }
             }
             catch (Exception ex)

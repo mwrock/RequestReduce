@@ -9,7 +9,7 @@ RequestReduce provides several [configuration options] (http://github.com/mwrock
 
 ##Getting started
 1. Download the latest RequestReduce version [here] (http://www.requestreduce.com/)
-2. Extract the contents of the downloaded zip and copy RequestReduce.dll and optipng.exe to your website's bin directory
+2. Extract the contents of the downloaded zip and copy RequestReduce.dll as well as optipng.exe and pngquant.exe to your website's bin directory
 3. Add the RequestReduceModule to your web.config or using the IIS GUI. 
 
 Assuming you are using IIS 7, you would add it by ensuring that your web.config's system.webServer/modules element contains an add element as follows:
