@@ -102,7 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Nuget\Content\web.config.transform" />
-    <None Include="Nuget\RequestReduce.nuspec" />
+    <None Include="Nuget\RequestReduce.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Nuget\Tools\AddPostBuildScript.ps1" />
     <None Include="Nuget\Tools\install.ps1" />
     <None Include="Nuget\Tools\uninstall.ps1" />
@@ -116,7 +118,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\optipng\optipng.exe" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\pngoptimization\*.exe" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
