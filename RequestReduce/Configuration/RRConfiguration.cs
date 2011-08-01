@@ -24,6 +24,7 @@ namespace RequestReduce.Configuration
         bool CssProcesingDisabled { get; set; }
         bool ImageOptimizationDisabled { get; set; }
         int ImageOptimizationCompressionLevel { get; set; }
+        bool ImageQuantizationDisabled { get; set; }
         event Action PhysicalPathChange; 
     }
 
@@ -36,6 +37,7 @@ namespace RequestReduce.Configuration
 
         public bool CssProcesingDisabled { get; set; }
         public bool ImageOptimizationDisabled { get; set; }
+        public bool ImageQuantizationDisabled { get; set; }
 
         public event Action PhysicalPathChange;  
 
@@ -48,6 +50,7 @@ namespace RequestReduce.Configuration
             ImageOptimizationCompressionLevel = val == 0 ? 5 : val;
             CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
             ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
+            ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
             SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath) ? "/RequestReduceContent" : config.SpriteVirtualPath;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))

@@ -8,7 +8,7 @@ namespace RequestReduce.Utilities
 {
     public interface IPngOptimizer
     {
-        byte[] OptimizePng(byte[] bytes, int compressionLevel);
+        byte[] OptimizePng(byte[] bytes, int compressionLevel, bool imageQuantizationDisabled);
     }
 
     public class PngOptimizer : IPngOptimizer
@@ -27,7 +27,7 @@ namespace RequestReduce.Utilities
             pngQuantLocation = string.Format("{0}\\pngQuant.exe", dllDir);
         }
 
-        public byte[] OptimizePng(byte[] bytes, int compressionLevel)
+        public byte[] OptimizePng(byte[] bytes, int compressionLevel, bool imageQuantizationDisabled)
         {
             var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
             if (fileWrapper.FileExists(pngQuantLocation) || fileWrapper.FileExists(optiPngLocation))
@@ -35,7 +35,7 @@ namespace RequestReduce.Utilities
             else 
                 return bytes;
 
-            if (fileWrapper.FileExists(pngQuantLocation))
+            if (fileWrapper.FileExists(pngQuantLocation) && !imageQuantizationDisabled)
             {
                 var arg = String.Format(@"256 ""{0}""", scratchFile);
                 InvokeExecutable(arg, pngQuantLocation);

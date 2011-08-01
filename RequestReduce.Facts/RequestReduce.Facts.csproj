@@ -93,6 +93,7 @@
     <Compile Include="Store\RepositoryFacts.cs" />
     <Compile Include="Store\SqlServerStoreFacts.cs" />
     <Compile Include="Testable.cs" />
+    <Compile Include="Utilities\WebClientWrapperFacts.cs" />
     <Compile Include="Utilities\PngOptimizerFacts.cs" />
     <Compile Include="Utilities\UriBuilderFacts.cs" />
   </ItemGroup>

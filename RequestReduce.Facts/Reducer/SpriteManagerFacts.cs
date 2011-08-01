@@ -179,8 +179,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 byte[] bytes = null;
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>())).Callback
-                    <byte[], int>((a, b) => bytes = a);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
+                    <byte[], int, bool>((a, b, c) => bytes = a);
 
                 testable.ClassUnderTest.Flush();
 
@@ -199,8 +199,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 byte[] bytes = null;
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>())).Callback
-                    <byte[], int>((a, b) => bytes = a);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
+                    <byte[], int, bool>((a, b, c) => bytes = a);
 
                 testable.ClassUnderTest.Flush();
 
@@ -214,8 +214,8 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 byte[] bytes = null;
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>())).Callback
-                    <byte[], int>((a, b) => bytes = a);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
+                    <byte[], int, bool>((a, b, c) => bytes = a);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
@@ -302,8 +302,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var url = string.Empty;
                 byte[] bytes = null;
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>())).Callback
-                    <byte[], int>((a, b) => bytes = a);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
+                    <byte[], int, bool>((a, b, c) => bytes = a);
                 testable.Mock<IStore>().Setup(x => x.Save(bytes, It.IsAny<string>(), null)).Callback
                     <byte[], string, string>((a, b, c) =>
                     {
@@ -345,7 +345,7 @@ namespace RequestReduce.Facts.Reducer
                     <byte[], string, string>((a, b, c) => bytes = a);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var optimizedBytes = new byte[] {5, 5, 5, 5, 5};
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), 2)).Returns(optimizedBytes);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), 2, false)).Returns(optimizedBytes);
 
                 testable.ClassUnderTest.Flush();
 
@@ -359,11 +359,45 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(true);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var optimizedBytes = new byte[0];
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>())).Callback<byte[], int>((x, b) => optimizedBytes = x);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback<byte[], int, bool>((a, b, c) => optimizedBytes = a);
 
                 testable.ClassUnderTest.Flush();
 
                 Assert.Empty(optimizedBytes);
+            }
+
+            [Theory,
+            InlineData(2),
+            InlineData(3)]
+            public void WillPassConfiguredCompressionLevelToOptimizer(int expectedCompression)
+            {
+                var testable = new TestableSpriteManager();
+                int compression = 0;
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationCompressionLevel).Returns(expectedCompression);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback<byte[], int, bool>((a, b, c) => compression = b);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(expectedCompression, compression);
+            }
+
+            [Theory,
+            InlineData(true),
+            InlineData(false)]
+            public void WillPassConfiguredQuantiaztionEnablementToOptimizer(bool expectedToBeDisabled)
+            {
+                var testable = new TestableSpriteManager();
+                bool isQuantizationDisabled = false;
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageQuantizationDisabled).Returns(expectedToBeDisabled);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<bool>())).Callback<byte[], int, bool>((a, b, c) => isQuantizationDisabled = c);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(expectedToBeDisabled, isQuantizationDisabled);
             }
 
         }

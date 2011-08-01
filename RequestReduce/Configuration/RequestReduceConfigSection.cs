@@ -100,5 +100,16 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("imageQuantizationDisabled")]
+        public bool ImageQuantizationDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["imageQuantizationDisabled"].ToString(), out result);
+                return result;
+            }
+        }
+
     }
 }
