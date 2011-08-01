@@ -22,4 +22,5 @@ TraceOutput.log
 *.sdf
 *.zip
 *.dgml
-RequestReduce.readme.txt
+RequestReduce/Nuget/Content/App_Readme/RequestReduce.readme.txt
+RequestReduce/Nuget/pngoptimization
