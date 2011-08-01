@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>RequestReduce</id>
-    <version>0.9.175</version>
+    <version>0.9.178</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -12,7 +12,7 @@
     <description>
       RequestReduce allows any IIS based website to automaticaly sprite background images into a single optimized PNG as well as combine and minify all CSS in the page's head tag with absolutely no coding beyond a few config tweaks. RequestReduce excercises common best practices when serving its css and sprited images ensuring that the appropriate caching headers are sent to the browser so that browsers will not need to pull down a new http response until absolutely necessary. Chances are you will see an immediate rise in your yslow and google page speed tests.
     </description>
-    <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image spriting and optimization as well as CSS merging and minification.</summary>
+    <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization</tags>
   </metadata>
 </package>
