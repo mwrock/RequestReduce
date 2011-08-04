@@ -116,9 +116,7 @@ namespace RequestReduce.Module
             get { return RRContainer.Current.GetInstance<IReducingQueue>().Count; }
         }
 
-        public static void CaptureError(Action<Exception> captureAction)
-        {
-            RRContainer.Current.GetInstance<IReducingQueue>().CaptureError(captureAction);
-        }
+        public static Action<Exception> CaptureErrorAction { get; set; }
+
     }
 }

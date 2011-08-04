@@ -174,6 +174,62 @@ namespace RequestReduce.Facts.Store
                 Assert.True(result.Contains(file2.FileName));
             }
 
+            [Fact]
+            public void WillReturnMostRecentActiveEntryPerKeyKey()
+            {
+                var testable = new TestableRepository();
+                var builder = new RequestReduce.Utilities.UriBuilder(testable.Mock<IRRConfiguration>().Object);
+                var id = Guid.NewGuid();
+                var id2 = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = builder.BuildCssUrl(id, new byte[] { 1 }),
+                    Key = id,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 1 }),
+                    IsExpired = true
+                };
+                var file2 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = builder.BuildCssUrl(id, new byte[] { 2 }),
+                    Key = id,
+                    LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 2)),
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 2 })
+                };
+                var file3 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = builder.BuildCssUrl(id, new byte[] { 3 }),
+                    Key = id,
+                    LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 3)),
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 3 })
+                };
+                var file4 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = builder.BuildCssUrl(id, new byte[] { 4 }),
+                    Key = id2,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 4 })
+                };
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+                testable.ClassUnderTest.Save(file3);
+                testable.ClassUnderTest.Save(file4);
+
+                var result = testable.ClassUnderTest.GetActiveCssFiles();
+
+                Assert.Equal(2, result.Count());
+                Assert.True(result.Contains(file2.FileName));
+                Assert.True(result.Contains(file4.FileName));
+            }
+
         }
 
         public class GetFilesFromKey
