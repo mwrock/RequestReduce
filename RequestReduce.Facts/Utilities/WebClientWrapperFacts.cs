@@ -14,12 +14,22 @@ namespace RequestReduce.Facts.Utilities
             public void WillNotIncludeUtf8PreambleInstring()
             {
                 var wrapper = new WebClientWrapper();
-                var dir = string.Format("file://{0}/app.config", Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName);
 
-                var result = wrapper.DownloadString(dir);
+                var result = wrapper.DownloadString("http://localhost:8877/styles/style1.css");
 
                 Assert.False(result.StartsWith(Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble())));
             }
+
+            [Fact]
+            public void WillThrowErrorIfNotCss()
+            {
+                var wrapper = new WebClientWrapper();
+
+                var ex = Assert.Throws<InvalidOperationException>(() => wrapper.DownloadString("http://localhost:8877/local.html"));
+
+                Assert.NotNull(ex);
+            }
+
         }
     }
 }
