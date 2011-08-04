@@ -67,6 +67,21 @@ namespace RequestReduce.Facts.Integration
             }
         }
 
+        [OutputTraceOnFailFact]
+        public void VsTest()
+        {
+            var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var urls = "http://i1.qa.social.s-msft.com/contentservice/5c9312af-010f-4ea8-9114-9f3300f2c557/Msdn.css::http://i1.qa.social.s-msft.com/contentservice/271b0fc8-5324-44e5-b638-9dad00d725c4/Site.css::http://i1.qa.social.s-msft.com/contentservice/5eefc914-a55f-4d62-aabc-9f330122bf50/vstudio.css::http://i1.ppe.visualstudiogallery.msdn.s-msft.com/pageresource.css?groupname=visualstudiostyles&amp;v=2011.8.1.3571";
+            var key = Hasher.Hash(urls).RemoveDashes();
+
+            var result = reducer.Process(urls);
+
+            var css = Directory.GetFiles(config.SpritePhysicalPath, "*.png");
+            var newFile = "c:\\requestreduce\\requestreduce.sampleweb\\vstest\\vstest.png";
+            File.Copy(css[0], newFile, true);
+            reducer.Dispose();
+        }
+
         public void Dispose()
         {
             try

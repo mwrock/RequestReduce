@@ -1,0 +1,10 @@
+html, body{
+background: white url('http://i1.social.s-msft.com/contentservice/59ee44bb-d26a-4fe9-b333-9d91010339b7/bg_body_msdn.png') repeat-x top;
+}
+
+.logo
+{
+    background: url('http://localhost:8877/images/logo_vstudio.png') no-repeat;
+    width: 155px;
+    height: 23px;
+}

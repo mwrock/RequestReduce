@@ -24,7 +24,7 @@ namespace RequestReduce.Utilities
             this.configuration = configuration;
             var dllDir = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             optiPngLocation = string.Format("{0}\\OptiPng.exe", dllDir);
-            pngQuantLocation = string.Format("{0}\\pngQuant.exe", dllDir);
+            pngQuantLocation = string.Format("{0}\\pngnqi.exe", dllDir);
         }
 
         public byte[] OptimizePng(byte[] bytes, int compressionLevel, bool imageQuantizationDisabled)
@@ -37,10 +37,10 @@ namespace RequestReduce.Utilities
 
             if (fileWrapper.FileExists(pngQuantLocation) && !imageQuantizationDisabled)
             {
-                var arg = String.Format(@"256 ""{0}""", scratchFile);
+                var arg = String.Format(@"-Q f -s 1 -g 2.2 -n 256 ""{0}""", scratchFile);
                 InvokeExecutable(arg, pngQuantLocation);
                 fileWrapper.DeleteFile(scratchFile);
-                scratchFile = scratchFile.Replace(".png", "-fs8.png");
+                scratchFile = scratchFile.Replace(".png", "-nq8.png");
             }
 
             if (fileWrapper.FileExists(optiPngLocation))

@@ -77,8 +77,8 @@ task Build-Output -depends Merge-Assembly {
     $Spec.package.metadata.version = $version
     $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
 	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
-	Copy-Item $baseDir\RequestReduce\bin\$configuration\*.exe $baseDir\RequestReduce\Nuget\pngoptimization\
-	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\RequestReduce\Nuget\pngoptimization\optipng.exe $baseDir\RequestReduce\Nuget\pngoptimization\pngquant.exe $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
+	Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
     exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
 }
 
