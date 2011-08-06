@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using Moq;
@@ -161,22 +162,56 @@ namespace RequestReduce.Facts.Store
                 var sig2 = Guid.NewGuid().RemoveDashes();
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1, sig1)).Returns("url1");
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2, sig2)).Returns("url2");
-                var files = new string[]
+                var files = new List<DatedFileEntry>
                                 {
-                                    string.Format("dir\\{0}-Expired-{1}-{2}", guid1.RemoveDashes(), sig1, UriBuilder.CssFileName),
-                                    string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, UriBuilder.CssFileName)
+                                    new DatedFileEntry(string.Format("dir\\{0}-Expired-{1}-{2}", guid1.RemoveDashes(), sig1, UriBuilder.CssFileName), DateTime.Now),
+                                    new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, UriBuilder.CssFileName), DateTime.Now),
                                 };
-                testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("dir")).Returns(files);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].Replace("\\","/"))).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].Replace("\\", "/"))).Returns(guid2);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].Replace("\\", "/"))).Returns(sig1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[1].Replace("\\", "/"))).Returns(sig2);
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", string.Format("*{0}", UriBuilder.CssFileName))).Returns(files);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].FileName.Replace("\\","/"))).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].FileName.Replace("\\", "/"))).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].FileName.Replace("\\", "/"))).Returns(sig1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[1].FileName.Replace("\\", "/"))).Returns(sig2);
 
                 var result = testable.ClassUnderTest.GetSavedUrls();
 
                 Assert.Equal(1, result.Count);
                 Assert.True(result[guid2] == "url2");
             }
+			
+			[Fact]
+            public void WillPullMostRecentActiveUrlPerKey()
+            {
+                var testable = new TestableLocalDiskStore();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                var guid1 = Guid.NewGuid();
+                var guid2 = Guid.NewGuid();
+                var sig1 = Guid.NewGuid().RemoveDashes();
+                var sig2 = Guid.NewGuid().RemoveDashes();
+                var sig3 = Guid.NewGuid().RemoveDashes();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1, sig1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2, sig2)).Returns("url2");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid2, sig3)).Returns("url3");
+                var files = new List<DatedFileEntry>
+                                {
+                                    new DatedFileEntry(string.Format("dir\\{0}-Expired-{1}-{2}", guid1.RemoveDashes(), sig1, UriBuilder.CssFileName), DateTime.Now),
+                                    new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, UriBuilder.CssFileName), DateTime.Now),
+					                new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig3, UriBuilder.CssFileName), DateTime.Now.Subtract(new TimeSpan(0,1,1)))
+                                };
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", string.Format("*{0}", UriBuilder.CssFileName))).Returns(files);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].FileName.Replace("\\","/"))).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].FileName.Replace("\\", "/"))).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[2].FileName.Replace("\\", "/"))).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].FileName.Replace("\\", "/"))).Returns(sig1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[1].FileName.Replace("\\", "/"))).Returns(sig2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[2].FileName.Replace("\\", "/"))).Returns(sig3);
+				
+                var result = testable.ClassUnderTest.GetSavedUrls();
+
+                Assert.Equal(1, result.Count);
+                Assert.True(result[guid2] == "url2");
+            }
+
         }
 
         public class RegisterDeleteCsAction
@@ -257,14 +292,15 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/dir");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\dir");
                 testable.Inject<IUriBuilder>(urlBuilder);
-                var file1 = urlBuilder.BuildCssUrl(guid1, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\');
-                var file2 = urlBuilder.BuildCssUrl(guid2, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\');
-                testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\web\\dir")).Returns(new string[] { file1, file2 });
-
+                var file1 = new DatedFileEntry(urlBuilder.BuildCssUrl(guid1, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\'), DateTime.Now);
+                var file2 = new DatedFileEntry(urlBuilder.BuildCssUrl(guid2, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\'), DateTime.Now);
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("c:\\web\\dir", string.Format("*{0}", UriBuilder.CssFileName))).Returns(new List<DatedFileEntry> { file1, file2 });
+                testable.Mock<IFileWrapper>().Setup(x => x.GetFiles("c:\\web\\dir")).Returns(new string[] { file1.FileName, file2.FileName });
+				
                 testable.ClassUnderTest.Flush(Guid.Empty);
 
-                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1, file1.Replace(guid1.RemoveDashes(), guid1.RemoveDashes() + "-Expired")));
-                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2, file2.Replace(guid2.RemoveDashes(), guid2.RemoveDashes() + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file1.FileName, file1.FileName.Replace(guid1.RemoveDashes(), guid1.RemoveDashes() + "-Expired")));
+                testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2.FileName, file2.FileName.Replace(guid2.RemoveDashes(), guid2.RemoveDashes() + "-Expired")));
             }
         }
     }
