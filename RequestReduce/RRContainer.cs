@@ -8,9 +8,11 @@ using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
+using RequestReduce.Utilities.Quantizer;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using StructureMap.Graph;
+using StructureMap.Pipeline;
 
 namespace RequestReduce
 {
@@ -29,6 +31,7 @@ namespace RequestReduce
                                         x.For<LocalDiskStore>().Singleton();
                                         x.For<DbDiskCache>().Singleton();
                                         x.For<SqlServerStore>().HybridHttpOrThreadLocalScoped().Use<SqlServerStore>().Ctor<IStore>().Is<DbDiskCache>();
+                                        x.For<IWuQuantizer>().LifecycleIs(new UniquePerRequestLifecycle()).Use<WuQuantizer>();
                                         x.For<IFileRepository>().Use<FileRepository>();
                                         x.For<IReducer>().Use<Reducer.Reducer>();
                                         x.For<IStore>().Singleton().Use((y) =>

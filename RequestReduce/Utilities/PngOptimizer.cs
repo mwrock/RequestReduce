@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using RequestReduce.Configuration;
+using RequestReduce.Utilities.Quantizer;
 
 namespace RequestReduce.Utilities
 {
@@ -15,42 +18,44 @@ namespace RequestReduce.Utilities
     {
         private readonly IFileWrapper fileWrapper;
         private readonly IRRConfiguration configuration;
+        private readonly IWuQuantizer wuQuantizer;
         private readonly string optiPngLocation;
-        private readonly string pngQuantLocation;
 
-        public PngOptimizer(IFileWrapper fileWrapper, IRRConfiguration configuration)
+        public PngOptimizer(IFileWrapper fileWrapper, IRRConfiguration configuration, IWuQuantizer wuQuantizer)
         {
             this.fileWrapper = fileWrapper;
             this.configuration = configuration;
+            this.wuQuantizer = wuQuantizer;
             var dllDir = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             optiPngLocation = string.Format("{0}\\OptiPng.exe", dllDir);
-            pngQuantLocation = string.Format("{0}\\pngnqi.exe", dllDir);
         }
 
         public byte[] OptimizePng(byte[] bytes, int compressionLevel, bool imageQuantizationDisabled)
         {
-            var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
-            if (fileWrapper.FileExists(pngQuantLocation) || fileWrapper.FileExists(optiPngLocation))
-                fileWrapper.Save(bytes, scratchFile);
-            else 
-                return bytes;
-
-            if (fileWrapper.FileExists(pngQuantLocation) && !imageQuantizationDisabled)
+            var optimizedBytes = bytes;
+            if (!imageQuantizationDisabled)
             {
-                var arg = String.Format(@"-Q f -s 1 -g 2.2 -n 256 ""{0}""", scratchFile);
-                InvokeExecutable(arg, pngQuantLocation);
-                fileWrapper.DeleteFile(scratchFile);
-                scratchFile = scratchFile.Replace(".png", "-nq8.png");
+                using(var unQuantized = new Bitmap(new MemoryStream(bytes)))
+                {
+                    using(var quantized = wuQuantizer.QuantizeImage(unQuantized))
+                    {
+                        var memStream = new MemoryStream(); 
+                        quantized.Save(memStream, ImageFormat.Png);
+                        optimizedBytes = memStream.GetBuffer();
+                    }
+                }
             }
 
             if (fileWrapper.FileExists(optiPngLocation))
             {
+                var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
+                fileWrapper.Save(optimizedBytes, scratchFile);
                 var arg = String.Format(@"-o{1} ""{0}""", scratchFile, compressionLevel);
                 InvokeExecutable(arg, optiPngLocation);
+                optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
+                fileWrapper.DeleteFile(scratchFile);
             }
 
-            var optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
-            fileWrapper.DeleteFile(scratchFile);
             return optimizedBytes;
         }
 

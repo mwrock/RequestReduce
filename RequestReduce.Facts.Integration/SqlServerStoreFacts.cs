@@ -35,6 +35,7 @@ namespace RequestReduce.Facts.Integration
             mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
             config = mockConfig.Object;
             repo = new FileRepository(config);
+            IntegrationFactHelper.RecyclePool();
             repo.Context.Database.Delete();
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore);
             uriBuilder = new UriBuilder(config);
