@@ -31,7 +31,13 @@ namespace RequestReduce.Store
 
         public IEnumerable<string> GetActiveCssFiles()
         {
-            return (from files in AsQueryable() where !files.IsExpired group files by files.Key into filegroup join files2 in AsQueryable() on new { k = filegroup.Key, u = filegroup.Max(m => m.LastUpdated) } equals new { k = files2.Key, u = files2.LastUpdated } where files2.FileName.Contains(Utilities.UriBuilder.CssFileName) select files2.FileName).ToList();
+            return (from files in AsQueryable()
+                    where !files.IsExpired
+                    group files by files.Key
+                    into filegroup
+                    join files2 in AsQueryable() on new {k = filegroup.Key, u = filegroup.Max(m => m.LastUpdated)}
+                        equals new {k = files2.Key, u = files2.LastUpdated}
+                    where files2.FileName.Contains(Utilities.UriBuilder.CssFileName) select files2.FileName).ToList();
         }
 
         public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
