@@ -26,3 +26,6 @@ RequestReduce/Nuget/Content/App_Readme/RequestReduce.readme.txt
 RequestReduce/Nuget/pngoptimization
 *.userprefs
 *.pidb
+*.vsp
+*.psess
+vstest

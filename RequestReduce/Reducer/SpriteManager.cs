@@ -62,8 +62,8 @@ namespace RequestReduce.Reducer
                         spriteWriter.WriteImage(image);
 
                     var bytes = spriteWriter.GetBytes("image/png");
-                    var url = GetSpriteUrl(bytes);
                     var optBytes = config.ImageOptimizationDisabled ? bytes : pngOptimizer.OptimizePng(bytes, config.ImageOptimizationCompressionLevel, config.ImageQuantizationDisabled);
+                    var url = GetSpriteUrl(optBytes);
                     store.Save(optBytes, url, null);
                     foreach (var sprite in spriteList.Values.Where(x => x.SpriteIndex == spriteIndex))
                         sprite.Url = url;

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
+using RequestReduce.Utilities.Quantizer;
 using Xunit;
 
 namespace RequestReduce.Facts.Integration
@@ -67,7 +70,8 @@ namespace RequestReduce.Facts.Integration
             }
         }
 
-        [Fact(Skip = "This is run manually to judge image quality by eye")]
+        [Fact]
+        [Trait("type", "manual_adhoc")]
         public void VsTest()
         {
             var reducer = RRContainer.Current.GetInstance<IReducer>();
