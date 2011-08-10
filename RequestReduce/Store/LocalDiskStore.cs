@@ -102,14 +102,12 @@ namespace RequestReduce.Store
             var dic = new Dictionary<Guid, string>();
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
-            var files =
-                fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(y => !y.Contains("-Expired-") && y.EndsWith(UriBuilder.CssFileName));
-            foreach (var file in files)
-            {
-                var urlFile = file.Replace("\\", "/");
-                dic.Add(uriBuilder.ParseKey(urlFile), uriBuilder.BuildCssUrl(uriBuilder.ParseKey(urlFile), uriBuilder.ParseSignature(urlFile)));
-            }
-            return dic;
+			var activeFiles = fileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, string.Format("*{0}", UriBuilder.CssFileName));
+			return (from files in activeFiles 
+				where !files.FileName.Contains("-Expired-") 
+				group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) into filegroup 
+				join files2 in activeFiles on new { k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate) } equals new { k = uriBuilder.ParseKey(files2.FileName.Replace("\\", "/")), u = files2.CreatedDate } select files2.FileName)
+				.ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/"))));
         }
 
         public virtual event DeleeCsAction CssDeleted;

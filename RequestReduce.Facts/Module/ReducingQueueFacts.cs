@@ -182,7 +182,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 Exception error = null;
-                testable.ClassUnderTest.CaptureError(x => error= x);
+                RequestReduceModule.CaptureErrorAction = (x => error= x);
                 testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(new ApplicationException());
                 testable.ClassUnderTest.Enqueue("url");
 

@@ -40,11 +40,6 @@ namespace RequestReduce.Module
             get { return queue.Count; }
         }
 
-        public void CaptureError(Action<Exception> captureAction)
-        {
-            CaptureErrorAction = captureAction;
-        }
-
         private void ProcessQueue()
         {
             RRTracer.Trace("Process Queue Thread Started");
@@ -82,8 +77,8 @@ namespace RequestReduce.Module
                     dictionaryOfFailure[key] += 1;
                 else
                     dictionaryOfFailure.Add(key, 1);
-                if (CaptureErrorAction != null)
-                    CaptureErrorAction(e);
+                if (RequestReduceModule.CaptureErrorAction != null)
+                    RequestReduceModule.CaptureErrorAction(e);
             }
         }
     }

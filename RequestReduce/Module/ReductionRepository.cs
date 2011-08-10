@@ -33,11 +33,19 @@ namespace RequestReduce.Module
 
         private void LoadDictionaryWithExistingItems()
         {
-            var content = store.GetSavedUrls();
-            if(content != null)
+            try
             {
-                foreach (var pair in content)
-                    AddReduction(pair.Key, pair.Value);
+                var content = store.GetSavedUrls();
+                if (content != null)
+                {
+                    foreach (var pair in content)
+                        AddReduction(pair.Key, pair.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (RequestReduceModule.CaptureErrorAction != null)
+                    RequestReduceModule.CaptureErrorAction(ex);
             }
         }
 

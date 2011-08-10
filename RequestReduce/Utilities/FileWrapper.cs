@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace RequestReduce.Utilities
 {
@@ -64,5 +67,22 @@ namespace RequestReduce.Utilities
         {
             return File.ReadAllBytes(path);
         }
+		
+		public IList<DatedFileEntry> GetDatedFiles(string directoryPath, string search)
+		{
+			return new DirectoryInfo(directoryPath).GetFiles(search).Select(x => new DatedFileEntry(x.FullName, x.CreationTime)).ToList();	
+		}
     }
+	
+	public struct DatedFileEntry
+	{
+		public DatedFileEntry(string fileName, DateTime createdDate): this()
+		{
+			FileName = fileName;
+			CreatedDate = createdDate;
+		}
+		
+		public string FileName { get; set; }
+		public DateTime CreatedDate { get; set; }
+	}
 }

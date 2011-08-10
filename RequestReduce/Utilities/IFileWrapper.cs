@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using StructureMap;
 
 namespace RequestReduce.Utilities
@@ -17,6 +18,6 @@ namespace RequestReduce.Utilities
         void RenameFile(string originalName, string newName);
         bool FileExists(string path);
         byte[] GetFileBytes(string path);
-
+		IList<DatedFileEntry> GetDatedFiles(string directoryPath, string search);
     }
 }
