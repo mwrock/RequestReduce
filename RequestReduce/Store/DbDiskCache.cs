@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Collections.Concurrent;
 using RequestReduce.Configuration;
+using RequestReduce.Module;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Store
@@ -26,8 +27,16 @@ namespace RequestReduce.Store
             {
                 var file = GetFileNameFromConfig(entry.Key);
                 RRTracer.Trace("purging old file: {0}", file);
-                fileWrapper.DeleteFile(file);
-                fileList.TryRemove(entry.Key, out date);
+                try
+                {
+                    fileWrapper.DeleteFile(file);
+                    fileList.TryRemove(entry.Key, out date);
+                }
+                catch (Exception ex)
+                {
+                    if (RequestReduceModule.CaptureErrorAction != null)
+                       RequestReduceModule.CaptureErrorAction(ex);
+                }
             }
         }
 
