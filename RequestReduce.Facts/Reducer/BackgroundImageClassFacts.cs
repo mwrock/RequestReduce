@@ -87,7 +87,7 @@ namespace RequestReduce.Facts.Reducer
 ;background-position: -0px 0;}";
                 var testable = new BackgroundImageClass(css, "http://server/content/style.css");
 
-                var result = testable.Render(new Sprite(0, 1) { Url = "newUrl" });
+                var result = testable.Render(new Sprite(1) { Url = "newUrl" });
 
                 Assert.Equal(expectedCss, result);
             }

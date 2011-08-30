@@ -43,12 +43,11 @@ namespace RequestReduce.Reducer
             var imageKey = new ImageMetadata(image);
             if (spriteList.ContainsKey(imageKey))
                 return spriteList[imageKey];
-            var currentPositionToReturn = SpriteContainer.Width;
-            SpriteContainer.AddImage(image);
-            var sprite = new Sprite(currentPositionToReturn, spriteIndex);
-            if (SpriteContainer.Size >= config.SpriteSizeLimit)
-                Flush();
+            var sprite = new Sprite(spriteIndex);
+            SpriteContainer.AddImage(image, sprite);
             spriteList.Add(imageKey, sprite);
+            if (SpriteContainer.Size >= config.SpriteSizeLimit || SpriteContainer.Colors >= 1100)
+                Flush();
             return sprite;
         }
 
@@ -58,8 +57,13 @@ namespace RequestReduce.Reducer
             {
                 using (var spriteWriter = new SpriteWriter(SpriteContainer.Width, SpriteContainer.Height))
                 {
+                    var offset = 0;
                     foreach (var image in SpriteContainer)
-                        spriteWriter.WriteImage(image);
+                    {
+                        spriteWriter.WriteImage(image.Image);
+                        image.Sprite.Position = offset;
+                        offset += image.Image.Width + 1;
+                    }
 
                     var bytes = spriteWriter.GetBytes("image/png");
                     var optBytes = config.ImageOptimizationDisabled ? bytes : pngOptimizer.OptimizePng(bytes, config.ImageOptimizationCompressionLevel, config.ImageQuantizationDisabled);

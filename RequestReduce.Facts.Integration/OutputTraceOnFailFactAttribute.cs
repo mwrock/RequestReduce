@@ -37,7 +37,7 @@ namespace RequestReduce.Facts.Integration
                 {
                     var trace =
                         new WebClientWrapper().DownloadString(
-                            "http://localhost:8877/local.html?OutputError=1&OutputTrace=1");
+                            "http://localhost:8877/local.html?OutputError=1&OutputTrace=1", false);
                     output.WriteLine(trace);
                     if(output != Console.Out)
                         Console.Out.WriteLine(trace);

@@ -34,8 +34,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
                     testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(image1);
-                testable.ClassUnderTest.AddImage(image2);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
+                testable.ClassUnderTest.AddImage(image2, new Sprite(1));
 
                 Assert.Equal(testable.Image15X17.Length + testable.Image18X18.Length, testable.ClassUnderTest.Size);
             }
@@ -51,8 +51,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
                     testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(image1);
-                testable.ClassUnderTest.AddImage(image2);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
+                testable.ClassUnderTest.AddImage(image2, new Sprite(1));
 
                 Assert.Equal(35, testable.ClassUnderTest.Width);
             }
@@ -67,7 +67,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 
-                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
 
                 Assert.Equal(width+1, testable.ClassUnderTest.Width);
             }
@@ -81,9 +81,9 @@ namespace RequestReduce.Facts.Reducer
                     testable.Image15X17);
                 var bitMap = new Bitmap(new MemoryStream(testable.Image15X17));
 
-                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
 
-                Assert.Equal(bitMap.Clone(new Rectangle(5, 0, 5, 17), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new  BitmapPixelComparer(true));
+                Assert.Equal(bitMap.Clone(new Rectangle(5, 0, 5, 17), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First().Image, new  BitmapPixelComparer(true));
             }
 
             [Fact]
@@ -95,9 +95,9 @@ namespace RequestReduce.Facts.Reducer
                     testable.Image15X17);
                 var bitMap = new Bitmap(new MemoryStream(testable.Image15X17));
 
-                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
 
-                Assert.Equal(bitMap.Clone(new Rectangle(0, 0, 5, 17), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new BitmapPixelComparer(true));
+                Assert.Equal(bitMap.Clone(new Rectangle(0, 0, 5, 17), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First().Image, new BitmapPixelComparer(true));
             }
 
             [Fact]
@@ -109,9 +109,9 @@ namespace RequestReduce.Facts.Reducer
                     testable.Image15X17);
                 var bitMap = new Bitmap(new MemoryStream(testable.Image15X17));
 
-                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
 
-                Assert.Equal(bitMap.Clone(new Rectangle(0, 5, 15, 5), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new BitmapPixelComparer(true));
+                Assert.Equal(bitMap.Clone(new Rectangle(0, 5, 15, 5), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First().Image, new BitmapPixelComparer(true));
             }
 
             [Fact]
@@ -123,9 +123,9 @@ namespace RequestReduce.Facts.Reducer
                     testable.Image15X17);
                 var bitMap = new Bitmap(new MemoryStream(testable.Image15X17));
 
-                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
 
-                Assert.Equal(bitMap.Clone(new Rectangle(0, 0, 15, 5), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First(), new BitmapPixelComparer(true));
+                Assert.Equal(bitMap.Clone(new Rectangle(0, 0, 15, 5), bitMap.PixelFormat).GraphicsImage(), testable.ClassUnderTest.First().Image, new BitmapPixelComparer(true));
             }
 
             [Theory,
@@ -138,7 +138,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 
-                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
 
                 Assert.Equal(height, testable.ClassUnderTest.Height);
             }
@@ -154,8 +154,8 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url2")).Returns(
                     testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(image1);
-                testable.ClassUnderTest.AddImage(image2);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
+                testable.ClassUnderTest.AddImage(image2, new Sprite(1));
 
                 Assert.Equal(18, testable.ClassUnderTest.Height);
             }
@@ -176,11 +176,11 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url2")).Returns(
                     testable.Image18X18);
 
-                testable.ClassUnderTest.AddImage(image1);
-                testable.ClassUnderTest.AddImage(image2);
+                testable.ClassUnderTest.AddImage(image1, new Sprite(1));
+                testable.ClassUnderTest.AddImage(image2, new Sprite(1));
 
-                Assert.Contains(bitmap1.GraphicsImage(), testable.ClassUnderTest, new BitmapPixelComparer(true));
-                Assert.Contains(bitmap2.GraphicsImage(), testable.ClassUnderTest, new BitmapPixelComparer());
+                Assert.Contains(bitmap1.GraphicsImage(), testable.ClassUnderTest.Select(x => x.Image), new BitmapPixelComparer(true));
+                Assert.Contains(bitmap2.GraphicsImage(), testable.ClassUnderTest.Select(x => x.Image), new BitmapPixelComparer());
             }
         }
     }

@@ -21,7 +21,7 @@ namespace RequestReduce.Facts.Reducer
             public SpriteManagerToTest(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store, IPngOptimizer pngOptimizer) : base(webClientWrapper, config, uriBuilder, store, pngOptimizer)
             {
                 MockSpriteContainer = new Mock<ISpriteContainer>();
-                MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<OrderedImage>().GetEnumerator());
                 MockSpriteContainer.Setup(x => x.Width).Returns(1);
                 MockSpriteContainer.Setup(x => x.Height).Returns(1);
                 base.SpriteContainer = MockSpriteContainer.Object;
@@ -63,18 +63,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Add(image);
 
-                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Exactly(1));
-            }
-
-            [Fact]
-            public void WillIncrementPositionByWidthOfPreviousImage()
-            {
-                var testable = new TestableSpriteManager();
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(20);
-
-                var result = testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl2" });
-
-                Assert.Equal(20, result.Position);
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image, It.Is<Sprite>(s => s.SpriteIndex == 1)), Times.Exactly(1));
             }
 
             [Fact]
@@ -123,7 +112,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.ClassUnderTest.Add(image);
 
-                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Exactly(1));
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image, It.IsAny<Sprite>()), Times.Exactly(1));
             }
 
             [Fact]
@@ -133,7 +122,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 testable.ClassUnderTest.Flush();
                 var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<OrderedImage>().GetEnumerator());
                 testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
 
                 var result = testable.ClassUnderTest.Add(image);
@@ -148,7 +137,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<OrderedImage>().GetEnumerator());
                 testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
 
                 var result = testable.ClassUnderTest.Add(image);
@@ -195,7 +184,11 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(35);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(18);
-                var images = new List<Bitmap>() { TestableSpriteManager.Image15X17, TestableSpriteManager.Image18X18 };
+                var images = new List<OrderedImage>()
+                                 {
+                                     new OrderedImage() {Image = TestableSpriteManager.Image15X17, Sprite = new Sprite(1)},
+                                     new OrderedImage() {Image = TestableSpriteManager.Image18X18, Sprite = new Sprite(1)}
+                                 };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 byte[] bytes = null;
@@ -207,6 +200,29 @@ namespace RequestReduce.Facts.Reducer
                 var bitMap = new Bitmap(new MemoryStream(bytes));
                 Assert.Equal(TestableSpriteManager.Image15X17.GraphicsImage(), bitMap.Clone(new Rectangle(0, 0, 15, 17), TestableSpriteManager.Image15X17.PixelFormat), new BitmapPixelComparer(true));
                 Assert.Equal(TestableSpriteManager.Image18X18.GraphicsImage(), bitMap.Clone(new Rectangle(16, 0, 18, 18), TestableSpriteManager.Image18X18.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
+            public void WillIncrementPositionByWidthOfPreviousImage()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(35);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(18);
+                var testableSprite = new Sprite(1);
+                var images = new List<OrderedImage>()
+                                 {
+                                     new OrderedImage() {Image = TestableSpriteManager.Image15X17, Sprite = new Sprite(1)},
+                                     new OrderedImage() {Image = TestableSpriteManager.Image18X18, Sprite = testableSprite}
+                                 };
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                byte[] bytes = null;
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
+                    <byte[], int, bool>((a, b, c) => bytes = a).Returns(() => bytes);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(16, testableSprite.Position);
             }
 
             [Fact]
@@ -297,7 +313,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 testable.ClassUnderTest.Flush();
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<Bitmap>().GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(new List<OrderedImage>().GetEnumerator());
                 testable.ClassUnderTest.SpriteContainer = testable.ClassUnderTest.MockSpriteContainer.Object;
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var url = string.Empty;
@@ -319,8 +335,8 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                var sprite1 = new Sprite(1, 1);
-                var sprite2 = new Sprite(2, 1);
+                var sprite1 = new Sprite(1);
+                var sprite2 = new Sprite(1);
                 testable.ClassUnderTest.AddSpriteToList(sprite1);
                 testable.ClassUnderTest.AddSpriteToList(sprite2);
                 var url = string.Empty;

@@ -53,7 +53,7 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
-            var cssContent = webClientWrapper.DownloadString(url);
+            var cssContent = webClientWrapper.DownloadString(url, true);
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }

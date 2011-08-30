@@ -11,15 +11,17 @@ namespace RequestReduce.Reducer
 {
     public class SpriteContainer : ISpriteContainer
     {
-        private readonly IList<Bitmap> images = new List<Bitmap>();
+        private readonly IList<OrderedImage> images = new List<OrderedImage>();
         private readonly IWebClientWrapper webClientWrapper;
+        private HashSet<Color> uniqueColors = new HashSet<Color>();
+
 
         public SpriteContainer(IWebClientWrapper webClientWrapper)
         {
             this.webClientWrapper = webClientWrapper;
         }
 
-        public void AddImage (BackgroundImageClass image)
+        public void AddImage (BackgroundImageClass image, Sprite sprite)
         {
             var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
             Bitmap bitmap = null;
@@ -44,17 +46,48 @@ namespace RequestReduce.Reducer
                         Size += imageBytes.Length;
                 }
             }
-            images.Add(bitmap);
+            var avgColor = GetColors(bitmap);
+            images.Add(new OrderedImage(){AverageColor = avgColor, Image = bitmap, Sprite = sprite});
             Width += bitmap.Width + 1;
             if (Height < bitmap.Height) Height = bitmap.Height;
         }
 
+        private int GetColors(Bitmap bitmap)
+        {
+            long r = 0, g = 0, b = 0, total = 0;
+            Color color = new Color();
+            for(var x = 0; x < bitmap.Width;x++)
+            {
+                for(var y=0; y < bitmap.Height; y++)
+                {
+                    color = bitmap.GetPixel(x, y);
+                    uniqueColors.Add(bitmap.GetPixel(x, y));
+                    r += color.R;
+                    g += color.G;
+                    b += color.B;
+
+                    ++total;
+                }
+            }
+
+            r /= total;
+            g /= total;
+            b /= total;
+
+            return Color.FromArgb((int) r, (int) g, (int) b).ToArgb();
+        }
+
         public int Size { get; private set; }
+        public int Colors
+        {
+            get { return uniqueColors.Count; }
+        }
+
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public IEnumerator<Bitmap> GetEnumerator()
+        public IEnumerator<OrderedImage> GetEnumerator()
         {
-            return images.GetEnumerator();
+            return images.OrderBy(x => x.AverageColor).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -64,7 +97,15 @@ namespace RequestReduce.Reducer
 
         public void Dispose()
         {
-            images.ToList().ForEach(x => x.Dispose());
+            images.ToList().ForEach(x => x.Image.Dispose());
         }
     }
+
+    public class OrderedImage
+    {
+        public Bitmap Image { get; set; }
+        public int AverageColor { get; set; }
+        public Sprite Sprite { get; set; }
+    }
+
 }

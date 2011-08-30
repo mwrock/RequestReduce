@@ -96,7 +96,12 @@
     <Compile Include="RRContainer.cs" />
     <Compile Include="Utilities\Hasher.cs" />
     <Compile Include="Utilities\PngOptimizer.cs" />
-    <Compile Include="Utilities\Quantizer\WuColorCube.cs" />
+    <Compile Include="Utilities\Quantizer\Box.cs" />
+    <Compile Include="Utilities\Quantizer\ColorData.cs" />
+    <Compile Include="Utilities\Quantizer\CubeCut.cs" />
+    <Compile Include="Utilities\Quantizer\LookupData.cs" />
+    <Compile Include="Utilities\Quantizer\Pixel.cs" />
+    <Compile Include="Utilities\Quantizer\QuantizedPalette.cs" />
     <Compile Include="Utilities\Quantizer\WuQuantizer.cs" />
     <Compile Include="Utilities\RelativeToAbsoluteUtility.cs" />
     <Compile Include="Utilities\UriBuilder.cs" />

@@ -278,7 +278,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new Sprite(120, 1) { Url = "spriteUrl" };
+                var sprite = new Sprite(1) { Url = "spriteUrl", Position = 120};
 
 
                 var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css, "http://server/content/style.css"), sprite);
@@ -302,7 +302,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new Sprite(120, 1) { Url = "spriteUrl" };
+                var sprite = new Sprite(1) { Url = "spriteUrl", Position = 120};
 
 
                 var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css, "http://server/content/style.css"), sprite);
