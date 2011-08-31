@@ -60,8 +60,8 @@ namespace RequestReduce.Reducer
 
         protected virtual string SpriteCss(string css, List<BackgroundImageClass> imageUrls)
         {
-            foreach (var imageUrl in imageUrls)
-                css = cssImageTransformer.InjectSprite(css, imageUrl, spriteManager[imageUrl]);
+            foreach (var spritedImage in spriteManager)
+                css = cssImageTransformer.InjectSprite(css, spritedImage);
             return css;
         }
 

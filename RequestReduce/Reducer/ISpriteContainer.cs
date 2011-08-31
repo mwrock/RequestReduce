@@ -4,9 +4,9 @@ using System.Drawing;
 
 namespace RequestReduce.Reducer
 {
-    public interface ISpriteContainer : IEnumerable<OrderedImage>, IDisposable
+    public interface ISpriteContainer : IEnumerable<SpritedImage>, IDisposable
     {
-        void AddImage (BackgroundImageClass image, Sprite sprite);
+        SpritedImage AddImage (BackgroundImageClass image);
         int Size { get; }
         int Colors { get; }
         int Width { get; }

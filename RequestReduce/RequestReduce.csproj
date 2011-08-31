@@ -65,6 +65,7 @@
     <Compile Include="Reducer\BackgroundImageClass.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />
+    <Compile Include="Reducer\SpritedImage.cs" />
     <Compile Include="RRTracer.cs" />
     <Compile Include="Store\DbDiskCache.cs" />
     <Compile Include="Store\FileRepository.cs" />
@@ -80,7 +81,6 @@
     <Compile Include="Reducer\ISpriteContainer.cs" />
     <Compile Include="Reducer\ISpriteManager.cs" />
     <Compile Include="Utilities\Minifier.cs" />
-    <Compile Include="Reducer\Sprite.cs" />
     <Compile Include="Reducer\SpriteContainer.cs" />
     <Compile Include="Reducer\SpriteWriter.cs" />
     <Compile Include="Reducer\Position.cs" />

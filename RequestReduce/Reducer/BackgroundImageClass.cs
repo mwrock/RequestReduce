@@ -241,20 +241,5 @@ namespace RequestReduce.Reducer
         public Position YOffset { get; set; }
         public int? Width { get; set; }
         public int? Height { get; set; }
-
-        public string Render(Sprite sprite)
-        {
-            var newClass = OriginalClassString.ToLower().Replace(ImageUrl.ToLower(), sprite.Url);
-            var yOffset = YOffset.Direction.ToString();
-            if (YOffset.PositionMode != PositionMode.Direction)
-                yOffset = "0";
-            if (YOffset.PositionMode == PositionMode.Unit && YOffset.Offset > 0)
-                yOffset = string.Format("{0}px", YOffset.Offset);
-
-            newClass = newClass.Replace("}",
-                                        string.Format(";background-position: -{0}px {1};}}",
-                                                      sprite.Position, yOffset));
-            return newClass;
-        }
     }
 }

@@ -1,11 +1,11 @@
 using System;
+using System.Collections.Generic;
 
 namespace RequestReduce.Reducer
 {
-    public interface ISpriteManager
+    public interface ISpriteManager : IEnumerable<SpritedImage>
     {
-        Sprite this[BackgroundImageClass image] { get; }
-        Sprite Add(BackgroundImageClass imageUrl);
+        void Add(BackgroundImageClass imageUrl);
         void Flush();
         Guid SpritedCssKey { get; set; }
     }

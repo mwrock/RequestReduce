@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Moq;
 using RequestReduce.Configuration;
@@ -17,6 +18,7 @@ namespace RequestReduce.Facts.Reducer
             public TestableReducer()
             {
                 Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>())).Returns("minified");
+                Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
@@ -133,19 +135,19 @@ namespace RequestReduce.Facts.Reducer
                 var css = "css";
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>(), true)).Returns(css);
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new[] { image1, image2 });
-                var sprite1 = new Sprite(1){Position = -100};
-                var sprite2 = new Sprite(2) { Position = -100 };
-                testable.Mock<ISpriteManager>().Setup(x => x[image1]).Returns(sprite1); 
-                testable.Mock<ISpriteManager>().Setup(x => x[image2]).Returns(sprite2);
+                var sprite1 = new SpritedImage(1, null, null){Position = -100};
+                var sprite2 = new SpritedImage(2, null, null) { Position = -100 };
+                var sprites = new List<SpritedImage> { sprite1, sprite2 };
+                testable.Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(sprites.GetEnumerator());
                 bool flushIsCalled = false;
                 bool flushCalled = false;
                 testable.Mock<ISpriteManager>().Setup(x => x.Flush()).Callback(() => flushIsCalled = true);
-                testable.Mock<ICssImageTransformer>().Setup(x => x.InjectSprite(It.IsAny<string>(), It.IsAny<BackgroundImageClass>(), It.IsAny<Sprite>())).Callback(() => flushCalled = flushIsCalled);
+                testable.Mock<ICssImageTransformer>().Setup(x => x.InjectSprite(It.IsAny<string>(), It.IsAny<SpritedImage>())).Callback(() => flushCalled = flushIsCalled);
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
-                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), image1, sprite1), Times.Once());
-                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), image2, sprite2), Times.Once());
+                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), sprite1), Times.Once());
+                testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), sprite2), Times.Once());
                 Assert.True(flushCalled);
             }
 

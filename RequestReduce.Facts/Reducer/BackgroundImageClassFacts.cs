@@ -73,26 +73,6 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillSetImageAbsoluteUrlFromBackgroundImageStyleAndReplaceRelativeUrl()
-            {
-                var css =
-    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background-image: url(""subnav_on_technet.png"");
-}";
-                var expectedCss =
-    @"
-.localnavigation .tabon,.localnavigation .tabon:hover {
-    background-image: url(""newUrl"");
-;background-position: -0px 0;}";
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
-
-                var result = testable.Render(new Sprite(1) { Url = "newUrl" });
-
-                Assert.Equal(expectedCss, result);
-            }
-
-            [Fact]
             public void WillSetRepeatIfARepeatDoesNotExist()
             {
                 var css =

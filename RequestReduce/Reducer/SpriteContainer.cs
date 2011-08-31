@@ -4,27 +4,25 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
     public class SpriteContainer : ISpriteContainer
     {
-        private readonly IList<OrderedImage> images = new List<OrderedImage>();
+        protected readonly IList<SpritedImage> images = new List<SpritedImage>();
         private readonly IWebClientWrapper webClientWrapper;
-        private HashSet<Color> uniqueColors = new HashSet<Color>();
-
+        private readonly HashSet<Color> uniqueColors = new HashSet<Color>();
 
         public SpriteContainer(IWebClientWrapper webClientWrapper)
         {
             this.webClientWrapper = webClientWrapper;
         }
 
-        public void AddImage (BackgroundImageClass image, Sprite sprite)
+        public SpritedImage AddImage (BackgroundImageClass image)
         {
             var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
-            Bitmap bitmap = null;
+            Bitmap bitmap;
             using (var originalBitmap = new Bitmap(new MemoryStream(imageBytes)))
             {
                 using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height))
@@ -47,20 +45,21 @@ namespace RequestReduce.Reducer
                 }
             }
             var avgColor = GetColors(bitmap);
-            images.Add(new OrderedImage(){AverageColor = avgColor, Image = bitmap, Sprite = sprite});
+            var spritedImage = new SpritedImage(avgColor, image, bitmap);
+            images.Add(spritedImage);
             Width += bitmap.Width + 1;
             if (Height < bitmap.Height) Height = bitmap.Height;
+            return spritedImage;
         }
 
         private int GetColors(Bitmap bitmap)
         {
             long r = 0, g = 0, b = 0, total = 0;
-            Color color = new Color();
             for(var x = 0; x < bitmap.Width;x++)
             {
                 for(var y=0; y < bitmap.Height; y++)
                 {
-                    color = bitmap.GetPixel(x, y);
+                    Color color = bitmap.GetPixel(x, y);
                     uniqueColors.Add(bitmap.GetPixel(x, y));
                     r += color.R;
                     g += color.G;
@@ -85,7 +84,7 @@ namespace RequestReduce.Reducer
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public IEnumerator<OrderedImage> GetEnumerator()
+        public IEnumerator<SpritedImage> GetEnumerator()
         {
             return images.OrderBy(x => x.AverageColor).GetEnumerator();
         }
@@ -100,12 +99,4 @@ namespace RequestReduce.Reducer
             images.ToList().ForEach(x => x.Image.Dispose());
         }
     }
-
-    public class OrderedImage
-    {
-        public Bitmap Image { get; set; }
-        public int AverageColor { get; set; }
-        public Sprite Sprite { get; set; }
-    }
-
 }
