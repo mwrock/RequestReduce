@@ -30,9 +30,9 @@ namespace RequestReduce.Reducer
             return urls;
         }
 
-        public string InjectSprite(string originalCss, BackgroundImageClass image, Sprite sprite)
+        public string InjectSprite(string originalCss, SpritedImage image)
         {
-            return originalCss.Replace(image.OriginalClassString, image.Render(sprite));
+            return originalCss.Replace(image.CssClass.OriginalClassString, image.Render());
         }
     }
 }

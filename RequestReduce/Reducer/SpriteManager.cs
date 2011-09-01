@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,8 +18,7 @@ namespace RequestReduce.Reducer
         private readonly IUriBuilder uriBuilder;
         private readonly IStore store;
         private readonly IPngOptimizer pngOptimizer;
-        protected IDictionary<ImageMetadata, Sprite> spriteList = new Dictionary<ImageMetadata, Sprite>();
-        protected int spriteIndex = 1;
+        protected IDictionary<ImageMetadata, SpritedImage> spriteList = new Dictionary<ImageMetadata, SpritedImage>();
 
         public SpriteManager(IWebClientWrapper webClientWrapper, IRRConfiguration config, IUriBuilder uriBuilder, IStore store, IPngOptimizer pngOptimizer)
         {
@@ -30,27 +30,15 @@ namespace RequestReduce.Reducer
             SpriteContainer = new SpriteContainer(webClientWrapper);
         }
 
-        public virtual Sprite this[BackgroundImageClass image]
-        {
-            get
-            {
-                var imageKey = new ImageMetadata(image);
-                return spriteList.ContainsKey(imageKey) ? spriteList[imageKey] : null;
-            }
-        }
-
-        public virtual Sprite Add(BackgroundImageClass image)
+        public virtual void Add(BackgroundImageClass image)
         {
             var imageKey = new ImageMetadata(image);
             if (spriteList.ContainsKey(imageKey))
-                return spriteList[imageKey];
-            var currentPositionToReturn = SpriteContainer.Width;
-            SpriteContainer.AddImage(image);
-            var sprite = new Sprite(currentPositionToReturn, spriteIndex);
-            if (SpriteContainer.Size >= config.SpriteSizeLimit)
+                return;
+            var spritedImage = SpriteContainer.AddImage(image);
+            spriteList.Add(imageKey, spritedImage);
+            if (SpriteContainer.Size >= config.SpriteSizeLimit || SpriteContainer.Colors >= config.SpriteColorLimit)
                 Flush();
-            spriteList.Add(imageKey, sprite);
-            return sprite;
         }
 
         public virtual void Flush()
@@ -59,9 +47,13 @@ namespace RequestReduce.Reducer
             {
                 using (var spriteWriter = new SpriteWriter(SpriteContainer.Width, SpriteContainer.Height))
                 {
+                    var offset = 0;
                     foreach (var image in SpriteContainer)
-                        spriteWriter.WriteImage(image);
-
+                    {
+                        spriteWriter.WriteImage(image.Image);
+                        image.Position = offset;
+                        offset += image.Image.Width + 1;
+                    }
                     var bytes = spriteWriter.GetBytes("image/png");
                     byte[] optBytes = null;
                     try
@@ -77,10 +69,9 @@ namespace RequestReduce.Reducer
                     }
                     var url = GetSpriteUrl(optBytes);
                     store.Save(optBytes, url, null);
-                    foreach (var sprite in spriteList.Values.Where(x => x.SpriteIndex == spriteIndex))
-                        sprite.Url = url;
+                    foreach (var image in SpriteContainer)
+                        image.Url = url;
                 }
-                ++spriteIndex;
             }
             SpriteContainer.Dispose();
             SpriteContainer = new SpriteContainer(webClientWrapper);
@@ -94,6 +85,16 @@ namespace RequestReduce.Reducer
             if (SpritedCssKey == Guid.Empty)
                 throw new InvalidOperationException("The SpritedCssKey must be set before using the SprieManager.");
             return uriBuilder.BuildSpriteUrl(SpritedCssKey, bytes);
+        }
+
+        public IEnumerator<SpritedImage> GetEnumerator()
+        {
+            return spriteList.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         protected struct ImageMetadata

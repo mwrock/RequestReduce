@@ -58,6 +58,18 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("url1"), Times.AtLeastOnce());
                 testable.Mock<IFileWrapper>().Verify(x => x.DeleteFile("url3"), Times.AtLeastOnce());
             }
+
+            [Fact]
+            public void WillSwallowError()
+            {
+                var testable = new TestableDbDiskCache();
+                testable.ClassUnderTest.FileList["url1"] = DateTime.Now.Subtract(new TimeSpan(0, 5, 1));
+                testable.Mock<IFileWrapper>().Setup(x => x.DeleteFile(It.IsAny<string>())).Throws(new Exception());
+
+                var ex = Record.Exception(() => testable.ClassUnderTest.PurgeOldFiles());
+
+                Assert.Null(ex);
+            }
         }
 
         public class Save
