@@ -182,13 +182,15 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 Exception error = null;
+                var innerError = new ApplicationException();
                 RequestReduceModule.CaptureErrorAction = (x => error= x);
-                testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(new ApplicationException());
+                testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(innerError);
                 testable.ClassUnderTest.Enqueue("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
-                Assert.True(error is ApplicationException);
+                Assert.Equal(innerError, error.InnerException);
+                Assert.Contains("url", error.Message);
                 testable.Dispose();
             }
         }

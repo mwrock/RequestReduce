@@ -5,6 +5,7 @@ using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using RequestReduce.Module;
 
 namespace RequestReduce.Reducer
 {
@@ -62,7 +63,18 @@ namespace RequestReduce.Reducer
                         spriteWriter.WriteImage(image);
 
                     var bytes = spriteWriter.GetBytes("image/png");
-                    var optBytes = config.ImageOptimizationDisabled ? bytes : pngOptimizer.OptimizePng(bytes, config.ImageOptimizationCompressionLevel, config.ImageQuantizationDisabled);
+                    byte[] optBytes = null;
+                    try
+                    {
+                        optBytes = config.ImageOptimizationDisabled ? bytes : pngOptimizer.OptimizePng(bytes, config.ImageOptimizationCompressionLevel, config.ImageQuantizationDisabled);
+                    }
+                    catch (OptimizationException optEx)
+                    {
+                        optBytes = bytes;
+                        RRTracer.Trace(string.Format("Errors optimizing {0}. Received Error: {1}", SpritedCssKey, optEx.Message));
+                        if (RequestReduceModule.CaptureErrorAction != null)
+                            RequestReduceModule.CaptureErrorAction(optEx);
+                    }
                     var url = GetSpriteUrl(optBytes);
                     store.Save(optBytes, url, null);
                     foreach (var sprite in spriteList.Values.Where(x => x.SpriteIndex == spriteIndex))

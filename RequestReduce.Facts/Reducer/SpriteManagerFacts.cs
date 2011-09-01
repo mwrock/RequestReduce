@@ -11,6 +11,7 @@ using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Module;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -409,6 +410,45 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.Flush();
 
                 Assert.Equal(expectedToBeDisabled, isQuantizationDisabled);
+            }
+
+            [Fact]
+            public void WillUseUnoptimizedBytesIfOptimizationFails()
+            {
+                var testable = new TestableSpriteManager();
+                byte[] originalBytes = null;
+                byte[] optimizedBytes = null;
+                var images = new List<Bitmap>() { TestableSpriteManager.Image15X17, TestableSpriteManager.Image18X18 };
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationCompressionLevel).Returns(2);
+                testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
+                    <byte[], string, string>((a, b, c) => optimizedBytes = a);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), 2, false)).Callback
+                    <byte[], int, bool>((a, b, c) => originalBytes = a).Throws(new OptimizationException(""));
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(optimizedBytes, originalBytes);
+            }
+
+            [Fact]
+            public void WillPassOptimizationErrorToErrorHandler()
+            {
+                var testable = new TestableSpriteManager();
+                var exception = new OptimizationException("Appropriately friendly error message");
+                Exception error = null;
+                RequestReduceModule.CaptureErrorAction = (x => error = x);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationCompressionLevel).Returns(2);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), 2, false)).Throws(exception);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(error, exception);
+                Assert.Equal(error.Message, "Appropriately friendly error message");
             }
 
         }
