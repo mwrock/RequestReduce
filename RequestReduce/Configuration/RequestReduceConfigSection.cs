@@ -111,5 +111,14 @@ namespace RequestReduce.Configuration
             }
         }
 
+        public int SpriteColorLimit
+        {
+            get
+            {
+                int limit;
+                Int32.TryParse(base["spriteColorLimit"].ToString(), out limit);
+                return limit;
+            }
+        }
     }
 }

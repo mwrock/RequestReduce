@@ -54,26 +54,20 @@ namespace RequestReduce.Reducer
 
         private int GetColors(Bitmap bitmap)
         {
-            long r = 0, g = 0, b = 0, total = 0;
+            long argb = 0;
+            var total = 0;
             for(var x = 0; x < bitmap.Width;x++)
             {
                 for(var y=0; y < bitmap.Height; y++)
                 {
                     Color color = bitmap.GetPixel(x, y);
                     uniqueColors.Add(bitmap.GetPixel(x, y));
-                    r += color.R;
-                    g += color.G;
-                    b += color.B;
-
+                    argb += color.ToArgb();
                     ++total;
                 }
             }
 
-            r /= total;
-            g /= total;
-            b /= total;
-
-            return Color.FromArgb((int) r, (int) g, (int) b).ToArgb();
+            return (int)(argb / total);
         }
 
         public int Size { get; private set; }
