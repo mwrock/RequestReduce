@@ -140,7 +140,6 @@ namespace RequestReduce.Utilities.Quantizer
                     }
                     offset += byteLength;
                 }
-                Marshal.Copy(buffer, 0, data.Scan0, buffer.Length);
             }
             finally
             {

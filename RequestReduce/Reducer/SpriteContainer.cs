@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
@@ -12,7 +14,7 @@ namespace RequestReduce.Reducer
     {
         protected readonly IList<SpritedImage> images = new List<SpritedImage>();
         private readonly IWebClientWrapper webClientWrapper;
-        private readonly HashSet<Color> uniqueColors = new HashSet<Color>();
+        private readonly HashSet<int> uniqueColors = new HashSet<int>();
 
         public SpriteContainer(IWebClientWrapper webClientWrapper)
         {
@@ -54,20 +56,34 @@ namespace RequestReduce.Reducer
 
         private int GetColors(Bitmap bitmap)
         {
-            long argb = 0;
+            long totalArgb = 0;
             var total = 0;
-            for(var x = 0; x < bitmap.Width;x++)
+            var data = bitmap.LockBits(Rectangle.FromLTRB(0, 0, bitmap.Width, bitmap.Height),
+                                            ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            try
             {
-                for(var y=0; y < bitmap.Height; y++)
+                var byteLength = data.Stride < 0 ? -data.Stride : data.Stride;
+                var buffer = new Byte[byteLength * bitmap.Height];
+                var offset = 0;
+                Marshal.Copy(data.Scan0, buffer, 0, buffer.Length);
+                for (var y = 0; y < bitmap.Height; y++)
                 {
-                    Color color = bitmap.GetPixel(x, y);
-                    uniqueColors.Add(bitmap.GetPixel(x, y));
-                    argb += color.ToArgb();
-                    ++total;
+                    for (var x = 0; x < bitmap.Width; x++)
+                    {
+                        var argb = BitConverter.ToInt32(buffer, offset);
+                        uniqueColors.Add(argb);
+                        totalArgb += argb;
+                        ++total;
+                        offset += 4;
+                    }
                 }
-            }
 
-            return (int)(argb / total);
+                return (int)(totalArgb / total);
+            }
+            finally
+            {
+                bitmap.UnlockBits(data);
+            }
         }
 
         public int Size { get; private set; }
