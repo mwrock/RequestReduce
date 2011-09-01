@@ -40,6 +40,7 @@ namespace RequestReduce.Facts.Reducer
             public TestableSpriteManager()
             {
                 Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1000);
+                Mock<IRRConfiguration>().Setup(x => x.SpriteColorLimit).Returns(1000);
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
@@ -401,7 +402,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 byte[] originalBytes = null;
                 byte[] optimizedBytes = null;
-                var images = new List<Bitmap>() { TestableSpriteManager.Image15X17, TestableSpriteManager.Image18X18 };
+                var images = new List<SpritedImage>() { new SpritedImage(1, null, TestableSpriteManager.Image15X17), new SpritedImage(1, null, TestableSpriteManager.Image18X18) };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationCompressionLevel).Returns(2);

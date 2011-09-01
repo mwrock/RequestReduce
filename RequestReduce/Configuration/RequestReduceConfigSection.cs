@@ -111,6 +111,7 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("spriteColorLimit")]
         public int SpriteColorLimit
         {
             get
