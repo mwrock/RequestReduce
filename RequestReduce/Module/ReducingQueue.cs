@@ -53,9 +53,9 @@ namespace RequestReduce.Module
         protected void ProcessQueuedItem()
         {
             var key = Guid.Empty;
+            string urlsToReduce = null;
             try
             {
-                string urlsToReduce;
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
                     key = Hasher.Hash(urlsToReduce);
@@ -72,13 +72,17 @@ namespace RequestReduce.Module
             }
             catch(Exception e)
             {
+                var message = string.Format("There were errors reducing {0}", urlsToReduce);
+                var wrappedException =
+                    new ApplicationException(message, e);
+                RRTracer.Trace(message);
                 RRTracer.Trace(e.ToString());
                 if(dictionaryOfFailure.ContainsKey(key))
                     dictionaryOfFailure[key] += 1;
                 else
                     dictionaryOfFailure.Add(key, 1);
                 if (RequestReduceModule.CaptureErrorAction != null)
-                    RequestReduceModule.CaptureErrorAction(e);
+                    RequestReduceModule.CaptureErrorAction(wrappedException);
             }
         }
     }
