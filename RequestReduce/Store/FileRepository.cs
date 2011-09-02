@@ -55,6 +55,8 @@ namespace RequestReduce.Store
             {
                 Context.Files.Remove(entity);
                 var existingFile = base[entity.RequestReduceFileId];
+                if (existingFile == null)
+                    throw;
                 existingFile.Content = entity.Content;
                 existingFile.LastUpdated = entity.LastUpdated;
                 existingFile.IsExpired = entity.IsExpired;
