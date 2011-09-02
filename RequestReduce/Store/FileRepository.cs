@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Text;
 using RequestReduce.Configuration;
+using RequestReduce.Module;
 
 namespace RequestReduce.Store
 {
@@ -24,7 +26,7 @@ namespace RequestReduce.Store
             }
             else
             {
-                Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
+                Database.SetInitializer(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
                 Context.Database.Initialize(false);
             }
         }
@@ -51,17 +53,57 @@ namespace RequestReduce.Store
             {
                 base.Save(entity);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException dbe)
             {
-                Context.Files.Remove(entity);
-                var existingFile = base[entity.RequestReduceFileId];
-                if (existingFile == null)
-                    throw;
-                existingFile.Content = entity.Content;
-                existingFile.LastUpdated = entity.LastUpdated;
-                existingFile.IsExpired = entity.IsExpired;
-                Context.SaveChanges();
+                bool shouldUpdate;
+                var exception = BuildFailedUpdateException(dbe, entity, out shouldUpdate);
+                if(shouldUpdate)
+                {
+                    var existingFile = base[entity.RequestReduceFileId];
+                    if (existingFile == null)
+                        throw exception;
+                    exception = null;
+                    existingFile.Content = entity.Content;
+                    existingFile.LastUpdated = entity.LastUpdated;
+                    existingFile.IsExpired = entity.IsExpired;
+                    try
+                    {
+                        Context.SaveChanges();
+                    }
+                    catch (DbUpdateException dbe2)
+                    {
+                        bool shouldFail;
+                        exception = BuildFailedUpdateException(dbe2, existingFile, out shouldFail);
+                        if (shouldFail)
+                            throw exception;
+                    }
+                }
+                if (RequestReduceModule.CaptureErrorAction != null && exception != null)
+                    RequestReduceModule.CaptureErrorAction(exception);
             }
+            catch(Exception)
+            {
+                ((IObjectContextAdapter)Context).ObjectContext.Detach(entity);
+                throw;
+            }
+        }
+
+        private InvalidOperationException BuildFailedUpdateException(DbUpdateException dbe, RequestReduceFile attemptedEntity, out bool failedForThisEntity)
+        {
+            var failedUpdates = dbe.Entries;
+            failedForThisEntity = false;
+            var message = new StringBuilder(string.Format("You were saving {0}. Context failed to save : ", attemptedEntity.RequestReduceFileId));
+            foreach (var dbEntityEntry in failedUpdates)
+            {
+                var badFile = dbEntityEntry.Cast<RequestReduceFile>().Entity;
+                ((IObjectContextAdapter)Context).ObjectContext.Detach(badFile);
+                message.Append(badFile.RequestReduceFileId);
+                message.Append(",");
+                if (attemptedEntity.RequestReduceFileId == badFile.RequestReduceFileId)
+                    failedForThisEntity = true;
+            }
+
+            return new InvalidOperationException(message.ToString(), dbe);
         }
     }
 }
