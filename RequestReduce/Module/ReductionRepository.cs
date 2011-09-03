@@ -2,21 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
-    public class ReductionRepository : IReductionRepository
+    public class ReductionRepository : IReductionRepository, IDisposable
     {
+        private readonly IRRConfiguration configuration;
         protected readonly IDictionary dictionary = new Hashtable();
         private readonly object lockObject = new object();
+        protected Timer refresher;
 
-        public ReductionRepository()
+        public ReductionRepository(IRRConfiguration configuration)
         {
+            this.configuration = configuration;
             RRTracer.Trace("creating reduction repository");
-            var thread = new Thread(LoadDictionaryWithExistingItems) { IsBackground = true };
-            thread.Start();
+            refresher = new Timer(LoadDictionaryWithExistingItems, null, 100, configuration.StorePollInterval);
         }
 
         public void RemoveReduction(Guid key)
@@ -28,11 +31,15 @@ namespace RequestReduce.Module
             RRTracer.Trace("Reduction {0} removed.", key);
         }
 
-        private void LoadDictionaryWithExistingItems()
+        private void LoadDictionaryWithExistingItems(object state)
         {
             try
             {
-                var content = RRContainer.Current.GetInstance<IStore>().GetSavedUrls();
+                var store = RRContainer.Current.GetInstance<IStore>();
+                if (store == null)
+                    return;
+
+                var content = store.GetSavedUrls();
                 if (content != null)
                 {
                     foreach (var pair in content)
@@ -77,5 +84,9 @@ namespace RequestReduce.Module
 
         public bool HasLoadedSavedEntries { get; private set; }
 
+        public void Dispose()
+        {
+            refresher.Dispose();
+        }
     }
 }

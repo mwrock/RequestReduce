@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Moq;
+using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -16,6 +17,10 @@ namespace RequestReduce.Facts.Module
     {
         class FakeReductionRepository : ReductionRepository
         {
+            public FakeReductionRepository(IRRConfiguration configuration) : base(configuration)
+            {
+            }
+
             public IDictionary Dictionary { get { return dictionary; } }
 
         }

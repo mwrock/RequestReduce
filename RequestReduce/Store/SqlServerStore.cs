@@ -38,7 +38,7 @@ namespace RequestReduce.Store
                 file.IsExpired = true;
                 repository.Save(file);
             }
-                reductionRepository.RemoveReduction(keyGuid);
+            reductionRepository.RemoveReduction(keyGuid);
         }
 
         public void Dispose()
@@ -62,9 +62,9 @@ namespace RequestReduce.Store
             file.OriginalName = originalUrls;
             file.IsExpired = false;
             fileStore.Save(content, url, originalUrls);
-            if(!url.ToLower().EndsWith(".png"))
-                reductionRepository.AddReduction(key, url);
             repository.Save(file);
+            if (!url.ToLower().EndsWith(".png"))
+                reductionRepository.AddReduction(key, url);
             RRTracer.Trace("{0} saved to db.", url);
         }
 

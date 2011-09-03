@@ -121,5 +121,16 @@ namespace RequestReduce.Configuration
                 return limit;
             }
         }
+
+        [ConfigurationProperty("storePollInterval")]
+        public int StorePollInterval
+        {
+            get
+            {
+                int limit;
+                Int32.TryParse(base["storePollInterval"].ToString(), out limit);
+                return limit;
+            }
+        }
     }
 }

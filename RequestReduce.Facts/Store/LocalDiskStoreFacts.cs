@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
@@ -129,7 +130,6 @@ namespace RequestReduce.Facts.Store
             public void WillTransmitExpiredFileIfFileotFoundandExpired()
             {
                 var testable = new TestableLocalDiskStore();
-                var content = new byte[] { 1 };
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
                 var response = new Mock<HttpResponseBase>();
