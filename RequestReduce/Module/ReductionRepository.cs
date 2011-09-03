@@ -47,6 +47,10 @@ namespace RequestReduce.Module
                 if (RequestReduceModule.CaptureErrorAction != null)
                     RequestReduceModule.CaptureErrorAction(ex);
             }
+            finally
+            {
+                HasLoadedSavedEntries = true;
+            }
         }
 
         public string FindReduction(string urls)
@@ -73,5 +77,8 @@ namespace RequestReduce.Module
                 
             }
         }
+
+        public bool HasLoadedSavedEntries { get; private set; }
+
     }
 }

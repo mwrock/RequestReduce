@@ -17,6 +17,7 @@ namespace RequestReduce.Facts.Module
             public FakeReducingQueue(IReductionRepository reductionRepository) : base(reductionRepository)
             {
                 isRunning = false;
+                ((FakeReductionRepository) reductionRepository).HasLoadedSavedEntries = true;
             }
 
             public ConcurrentQueue<string> BaseQueue
@@ -46,6 +47,8 @@ namespace RequestReduce.Facts.Module
                 var key = Hasher.Hash(urls);
                 return dict[key] as string;
             }
+
+            public bool HasLoadedSavedEntries { get; set; }
 
             public void AddReduction(Guid key, string reducedUrl)
             {
@@ -130,6 +133,19 @@ namespace RequestReduce.Facts.Module
                 }
 
                 testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold));
+                testable.Dispose();
+            }
+
+            [Fact]
+            public void WillNotReduceQueuedCSSUntilRepositoryHasLoadedSavedItems()
+            {
+                var testable = new TestableReducingQueue();
+                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.ReductionRepository.HasLoadedSavedEntries = false;
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
                 testable.Dispose();
             }
         }

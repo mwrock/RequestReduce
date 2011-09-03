@@ -54,6 +54,8 @@ namespace RequestReduce.Module
         {
             var key = Guid.Empty;
             string urlsToReduce = null;
+            if (!reductionRepository.HasLoadedSavedEntries)
+                return;
             try
             {
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)

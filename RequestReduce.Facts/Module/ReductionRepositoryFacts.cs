@@ -69,6 +69,7 @@ namespace RequestReduce.Facts.Module
                 Thread.Sleep(200);
 
                 Assert.True(result.Dictionary[key] as string == "url1");
+                Assert.True(testable.ClassUnderTest.HasLoadedSavedEntries);
             }
 
             [Fact]
