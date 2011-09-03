@@ -37,6 +37,7 @@ namespace RequestReduce.Facts.Integration
             repo = new FileRepository(config);
             IntegrationFactHelper.RecyclePool();
             repo.Context.Database.Delete();
+            repo.Context.Database.Create();
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore);
             uriBuilder = new UriBuilder(config);
         }

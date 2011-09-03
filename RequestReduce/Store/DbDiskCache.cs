@@ -13,7 +13,7 @@ namespace RequestReduce.Store
         protected Timer timer = null;
         protected ConcurrentDictionary<string, DateTime> fileList = new ConcurrentDictionary<string, DateTime>();
 
-        public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder)
+        public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder, null)
         {
             RRTracer.Trace("Creating db disk cache");
             const int interval = 1000*60*5;

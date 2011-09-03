@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RequestReduce.Module;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Store
@@ -11,15 +12,15 @@ namespace RequestReduce.Store
         private readonly IUriBuilder uriBuilder;
         private readonly IFileRepository repository;
         private readonly IStore fileStore;
-        public event DeleeCsAction CssDeleted;
-        public event AddCssAction CssAded;
+        private readonly IReductionRepository reductionRepository;
 
-        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore)
+        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore, IReductionRepository reductionRepository)
         {
             RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;
             this.repository = repository;
             this.fileStore = fileStore;
+            this.reductionRepository = reductionRepository;
         }
 
         public void Flush(Guid keyGuid)
@@ -37,8 +38,7 @@ namespace RequestReduce.Store
                 file.IsExpired = true;
                 repository.Save(file);
             }
-            if (CssDeleted != null)
-                CssDeleted(keyGuid);
+                reductionRepository.RemoveReduction(keyGuid);
         }
 
         public void Dispose()
@@ -62,10 +62,8 @@ namespace RequestReduce.Store
             file.OriginalName = originalUrls;
             file.IsExpired = false;
             fileStore.Save(content, url, originalUrls);
-            if(CssAded != null && !url.ToLower().EndsWith(".png"))
-                CssAded(key, url);
-            else
-                RRTracer.Trace("Repository is not bound to store.");
+            if(!url.ToLower().EndsWith(".png"))
+                reductionRepository.AddReduction(key, url);
             repository.Save(file);
             RRTracer.Trace("{0} saved to db.", url);
         }
@@ -84,14 +82,13 @@ namespace RequestReduce.Store
                 response.BinaryWrite(file.Content);
                 fileStore.Save(file.Content, url, null);
                 RRTracer.Trace("{0} transmitted from db.", url);
-                if (file.IsExpired && CssDeleted != null)
-                    CssDeleted(key);
+                if (file.IsExpired)
+                    reductionRepository.RemoveReduction(key);
                 return true;
             }
 
             RRTracer.Trace("{0} not found on file or db.", url);
-            if (CssDeleted != null)
-                CssDeleted(key);
+            reductionRepository.RemoveReduction(key);
             return false;
         }
 

@@ -50,6 +50,11 @@ namespace RequestReduce.Facts.Module
 
             public bool HasLoadedSavedEntries { get; set; }
 
+            public void RemoveReduction(Guid key)
+            {
+                throw new NotImplementedException();
+            }
+
             public void AddReduction(Guid key, string reducedUrl)
             {
                 dict[key] = reducedUrl;

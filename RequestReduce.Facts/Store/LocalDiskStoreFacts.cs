@@ -4,6 +4,7 @@ using System.IO;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
@@ -15,25 +16,17 @@ namespace RequestReduce.Facts.Store
     {
         class FakeLocalDiskStore : LocalDiskStore
         {
-            public FakeLocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder)
-                : base(fileWrapper, configuration, uriBuilder)
+
+            public FakeLocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder, IReductionRepository reductionRepository)
+                : base(fileWrapper, configuration, uriBuilder, reductionRepository)
             {
             }
-            public override event DeleeCsAction CssDeleted;
-            public override event AddCssAction CssAded;
 
             protected override void SetupWatcher()
             {
                 return;
             }
 
-            public void TriggerChange(string change, Guid key)
-            {
-                if (change == "delete")
-                    CssDeleted(key);
-                if (change == "add")
-                    CssAded(key, "url");
-            }
         }
 
         class TestableLocalDiskStore : Testable<FakeLocalDiskStore>
@@ -214,38 +207,6 @@ namespace RequestReduce.Facts.Store
 
         }
 
-        public class RegisterDeleteCsAction
-        {
-            [Fact]
-            public void WillRegisterAction()
-            {
-                var testable = new TestableLocalDiskStore();
-                Guid key = new Guid();
-                var expectedGuid = Guid.NewGuid();
-                testable.ClassUnderTest.CssDeleted += (x => key = x);
-
-                testable.ClassUnderTest.TriggerChange("delete", expectedGuid);
-
-                Assert.Equal(expectedGuid, key);
-            }
-        }
-
-        public class RegisterAddCsAction
-        {
-            [Fact]
-            public void WillRegisterAction()
-            {
-                var testable = new TestableLocalDiskStore();
-                Guid key = new Guid();
-                var expectedGuid = Guid.NewGuid();
-                testable.ClassUnderTest.CssAded += ((x,y) => key = x);
-
-                testable.ClassUnderTest.TriggerChange("add", expectedGuid);
-
-                Assert.Equal(expectedGuid, key);
-            }
-        }
-
         public class Flush
         {
             [Fact]
@@ -273,12 +234,10 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new RealTestableLocalDiskStore();
                 var key = Guid.NewGuid();
-                var triggeredKey = Guid.Empty;
-                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
 
                 testable.ClassUnderTest.Flush(key);
 
-                Assert.Equal(key, triggeredKey);
+                testable.Mock<IReductionRepository>().Verify(x => x.RemoveReduction(key), Times.Once());
             }
 
             [Fact]

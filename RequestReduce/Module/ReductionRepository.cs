@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -8,22 +9,17 @@ namespace RequestReduce.Module
 {
     public class ReductionRepository : IReductionRepository
     {
-        protected readonly IStore store;
         protected readonly IDictionary dictionary = new Hashtable();
-        private object lockObject = new object();
+        private readonly object lockObject = new object();
 
-        public ReductionRepository(IStore store)
+        public ReductionRepository()
         {
             RRTracer.Trace("creating reduction repository");
-            this.store = store;
-            store.CssAded += AddReduction;
-            store.CssDeleted += RemoveReduction;
-            var thread = new Thread(LoadDictionaryWithExistingItems);
-            thread.IsBackground = true;
+            var thread = new Thread(LoadDictionaryWithExistingItems) { IsBackground = true };
             thread.Start();
         }
 
-        private void RemoveReduction(Guid key)
+        public void RemoveReduction(Guid key)
         {
             lock (lockObject)
             {
@@ -36,7 +32,7 @@ namespace RequestReduce.Module
         {
             try
             {
-                var content = store.GetSavedUrls();
+                var content = RRContainer.Current.GetInstance<IStore>().GetSavedUrls();
                 if (content != null)
                 {
                     foreach (var pair in content)

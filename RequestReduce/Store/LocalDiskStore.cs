@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
+using RequestReduce.Module;
 using RequestReduce.Utilities;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
@@ -14,14 +15,16 @@ namespace RequestReduce.Store
         protected readonly IFileWrapper fileWrapper;
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
-        private FileSystemWatcher watcher = new FileSystemWatcher();
+        private readonly IReductionRepository reductionRepository;
+        private readonly FileSystemWatcher watcher = new FileSystemWatcher();
 
-        public LocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder)
+        public LocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder, IReductionRepository reductionRepository)
         {
             this.fileWrapper = fileWrapper;
             this.configuration = configuration;
             configuration.PhysicalPathChange += SetupWatcher;
             this.uriBuilder = uriBuilder;
+            this.reductionRepository = reductionRepository;
             SetupWatcher();
         }
 
@@ -39,9 +42,9 @@ namespace RequestReduce.Store
             }
             watcher.IncludeSubdirectories = true;
             watcher.Filter = "*.css";
-            watcher.Created += new FileSystemEventHandler(OnChange);
-            watcher.Deleted += new FileSystemEventHandler(OnChange);
-            watcher.Changed += new FileSystemEventHandler(OnChange);
+            watcher.Created += OnChange;
+            watcher.Deleted += OnChange;
+            watcher.Changed += OnChange;
             watcher.EnableRaisingEvents = true;
         }
 
@@ -54,10 +57,10 @@ namespace RequestReduce.Store
             if(guid != Guid.Empty)
             {
                 RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
-                if (e.ChangeType == WatcherChangeTypes.Deleted && CssDeleted != null)
-                    CssDeleted(guid);
-                if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed) && CssAded != null)
-                    CssAded(guid, uriBuilder.BuildCssUrl(guid, contentSignature));
+                if (e.ChangeType == WatcherChangeTypes.Deleted)
+                    reductionRepository.RemoveReduction(guid);
+                if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed))
+                    reductionRepository.AddReduction(guid, uriBuilder.BuildCssUrl(guid, contentSignature));
             }
         }
 
@@ -110,8 +113,6 @@ namespace RequestReduce.Store
 				.ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/"))));
         }
 
-        public virtual event DeleeCsAction CssDeleted;
-        public virtual event AddCssAction CssAded;
         public void Flush(Guid keyGuid)
         {
             if (keyGuid == Guid.Empty)
@@ -121,7 +122,7 @@ namespace RequestReduce.Store
                     Flush(key);
             }
 
-            if(CssDeleted != null) CssDeleted(keyGuid);
+            reductionRepository.RemoveReduction(keyGuid); 
             var files =
                 fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(
                     x => x.Contains(keyGuid.RemoveDashes()) && !x.Contains("Expired"));
