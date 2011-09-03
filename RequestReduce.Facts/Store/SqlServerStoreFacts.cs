@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using Moq;
 using RequestReduce.Store;
@@ -97,6 +96,35 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Save(content, expectedUrl, originalUrls);
 
                 testable.Mock<IStore>().Verify(x => x.Save(content, expectedUrl, originalUrls), Times.Once());
+            }
+
+            [Fact]
+            public void WillUpdateExistingFileIfItExixtx()
+            {
+                var testable = new TestableSqlServerStore();
+                var content = new byte[] { 1 };
+                var url = "url";
+                var originalUrls = "originalUrls";
+                var key = Guid.NewGuid();
+                var id = Guid.NewGuid();
+                RequestReduceFile file = null;
+                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { IsExpired = true }).Verifiable();
+                testable.Mock<IFileRepository>().Setup(x => x.Save(It.IsAny<RequestReduceFile>())).Callback
+                    <RequestReduceFile>(x => file = x);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName(url)).Returns("file.css");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(url)).Returns(key);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(url)).Returns(() => id.RemoveDashes());
+
+                testable.ClassUnderTest.Save(content, url, originalUrls);
+
+                testable.Mock<IFileRepository>().VerifyAll();
+                Assert.Equal(content, file.Content);
+                Assert.Equal("file.css", file.FileName);
+                Assert.Equal(key, file.Key);
+                Assert.True(DateTime.Now.Subtract(file.LastUpdated).TotalMilliseconds < 1000);
+                Assert.Equal(originalUrls, file.OriginalName);
+                Assert.Equal(id, file.RequestReduceFileId);
+                Assert.False(file.IsExpired);
             }
         }
 

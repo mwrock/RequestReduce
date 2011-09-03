@@ -20,15 +20,10 @@ namespace RequestReduce.Store
         {
 
             if (RequestReduceContext.SqlCeType == null || RequestReduceContext.SqlCeType != Context.Database.Connection.GetType())
-            {
                 Database.SetInitializer<RequestReduceContext>(null);
-                Context.Database.Initialize(false);
-            }
             else
-            {
                 Database.SetInitializer(new DropCreateDatabaseIfModelChanges<RequestReduceContext>());
-                Context.Database.Initialize(false);
-            }
+            Context.Database.Initialize(false);
         }
 
         public IEnumerable<string> GetActiveCssFiles()
@@ -83,7 +78,7 @@ namespace RequestReduce.Store
             }
             catch(Exception)
             {
-                ((IObjectContextAdapter)Context).ObjectContext.Detach(entity);
+                Detach(entity);
                 throw;
             }
         }
@@ -96,7 +91,7 @@ namespace RequestReduce.Store
             foreach (var dbEntityEntry in failedUpdates)
             {
                 var badFile = dbEntityEntry.Cast<RequestReduceFile>().Entity;
-                ((IObjectContextAdapter)Context).ObjectContext.Detach(badFile);
+                Detach(badFile);
                 message.Append(badFile.RequestReduceFileId);
                 message.Append(",");
                 if (attemptedEntity.RequestReduceFileId == badFile.RequestReduceFileId)

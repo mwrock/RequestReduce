@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
 using System.Web;
 using RequestReduce.Utilities;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Store
 {
@@ -55,15 +53,14 @@ namespace RequestReduce.Store
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
             var id = Guid.Parse(uriBuilder.ParseSignature(url));
-            var file = new RequestReduceFile()
-                           {
-                               Content = content,
-                               LastUpdated = DateTime.Now,
-                               FileName = fileName,
-                               Key = key,
-                               RequestReduceFileId = id,
-                               OriginalName = originalUrls
-                           };
+            var file = repository[id] ?? new RequestReduceFile();
+            file.Content = content;
+            file.LastUpdated = DateTime.Now;
+            file.FileName = fileName;
+            file.Key = key;
+            file.RequestReduceFileId = id;
+            file.OriginalName = originalUrls;
+            file.IsExpired = false;
             fileStore.Save(content, url, originalUrls);
             if(CssAded != null && !url.ToLower().EndsWith(".png"))
                 CssAded(key, url);
