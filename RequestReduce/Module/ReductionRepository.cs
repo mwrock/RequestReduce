@@ -42,8 +42,11 @@ namespace RequestReduce.Module
                 var content = store.GetSavedUrls();
                 if (content != null)
                 {
-                    foreach (var pair in content)
-                        AddReduction(pair.Key, pair.Value);
+                    lock(lockObject)
+                    {
+                        foreach (var pair in content)
+                            AddReduction(pair.Key, pair.Value);
+                    }
                 }
             }
             catch (Exception ex)
