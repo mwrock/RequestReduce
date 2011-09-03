@@ -17,7 +17,7 @@ namespace RequestReduce.Store
     public class Repository<T> : IDisposable, IRepository<T> where T : class
     {
         private readonly IRRConfiguration config;
-        private RequestReduceContext context = null;
+        private RequestReduceContext context;
 
         public Repository(IRRConfiguration config)
         {

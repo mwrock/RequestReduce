@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web;
 using RequestReduce.Utilities;
@@ -17,6 +16,7 @@ namespace RequestReduce.Store
 
         public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore)
         {
+            RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;
             this.repository = repository;
             this.fileStore = fileStore;
@@ -64,6 +64,8 @@ namespace RequestReduce.Store
             fileStore.Save(content, url, originalUrls);
             if(CssAded != null && !url.ToLower().EndsWith(".png"))
                 CssAded(key, url);
+            else
+                RRTracer.Trace("Repository is not bound to store.");
             repository.Save(file);
             RRTracer.Trace("{0} saved to db.", url);
         }

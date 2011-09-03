@@ -15,13 +15,13 @@ namespace RequestReduce.Store
 
         public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder)
         {
+            RRTracer.Trace("Creating db disk cache");
             const int interval = 1000*60*5;
             timer = new Timer(PurgeOldFiles, null, 0, interval);
         }
 
         protected virtual void PurgeOldFiles(object state)
         {
-            var date = DateTime.MinValue;
             var oldEntries = fileList.Where(x => DateTime.Now.Subtract(x.Value).TotalMinutes > 5);
             foreach (var entry in oldEntries)
             {
@@ -30,6 +30,7 @@ namespace RequestReduce.Store
                 try
                 {
                     fileWrapper.DeleteFile(file);
+                    DateTime date;
                     fileList.TryRemove(entry.Key, out date);
                 }
                 catch (Exception ex)

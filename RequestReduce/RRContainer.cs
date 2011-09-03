@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
-using RequestReduce.Utilities.Quantizer;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using StructureMap.Graph;
-using StructureMap.Pipeline;
 
 namespace RequestReduce
 {
@@ -23,17 +18,18 @@ namespace RequestReduce
         private static IContainer InitContainer()
         {
             RRTracer.Trace("Initializing container");
-            var container = new Container();
-            container.Configure(x =>
+            var initContainer = new Container();
+            initContainer.Configure(x =>
                                     {
                                         x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                         x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                                         x.For<LocalDiskStore>().Singleton();
                                         x.For<DbDiskCache>().Singleton();
-                                        x.For<SqlServerStore>().HybridHttpOrThreadLocalScoped().Use<SqlServerStore>().Ctor<IStore>().Is<DbDiskCache>();
+                                        x.For<SqlServerStore>().HybridHttpOrThreadLocalScoped().Use<SqlServerStore>().
+                                            Ctor<IStore>().Is(y => y.GetInstance<DbDiskCache>());
                                         x.For<IFileRepository>().Use<FileRepository>();
                                         x.For<IReducer>().Use<Reducer.Reducer>();
-                                        x.For<IStore>().Singleton().Use((y) =>
+                                        x.For<IStore>().Use(y =>
                                                                             {
                                                                                 switch (
                                                                                     y.GetInstance<IRRConfiguration>().
@@ -56,7 +52,7 @@ namespace RequestReduce
                                                                             });
                                         x.For<HttpContextBase>().Use(() => HttpContext.Current == null ? null : new HttpContextWrapper(HttpContext.Current));
                                     });
-            container.Configure(x => x.Scan(y =>
+            initContainer.Configure(x => x.Scan(y =>
             {
                 y.Assembly("RequestReduce");
                 y.ExcludeNamespace("RequestReduce.Utilities");
@@ -68,7 +64,7 @@ namespace RequestReduce
                 y.WithDefaultConventions();
             }
             ));
-            container.Configure(x => x.Scan(y =>
+            initContainer.Configure(x => x.Scan(y =>
             {
                 y.Assembly("RequestReduce");
                 y.IncludeNamespace("RequestReduce.Utilities");
@@ -76,14 +72,14 @@ namespace RequestReduce
                 y.With(new SingletonConvention());
             }
             ));
-            container.Configure(
+            initContainer.Configure(
                 x =>
                 x.For<AbstractFilter>().Use(
                     y =>
                     HttpContext.Current == null
                         ? new ResponseFilter(null, Encoding.UTF8, y.GetInstance<IResponseTransformer>())
                         : new ResponseFilter(HttpContext.Current.Response.Filter, HttpContext.Current.Response.ContentEncoding, y.GetInstance<IResponseTransformer>())));
-           return container;
+           return initContainer;
         }
 
         public static IContainer Current

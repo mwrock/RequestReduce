@@ -11,6 +11,7 @@ properties {
 	$version = "0.9." + (git log --pretty=oneline | measure-object).Count
 }
 
+task Debug -depends Default
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
 task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
 
@@ -61,7 +62,7 @@ task Push-Nuget {
 	exec { .\Tools\nuget.exe push $filesDir\RequestReduce.$version.nupkg }
 }
 
-task Merge-Assembly {
+task Merge-Assembly -depends Build-Solution {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
 	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}

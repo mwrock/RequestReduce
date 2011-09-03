@@ -14,6 +14,7 @@ namespace RequestReduce.Module
 
         public ReductionRepository(IStore store)
         {
+            RRTracer.Trace("creating reduction repository");
             this.store = store;
             store.CssAded += AddReduction;
             store.CssDeleted += RemoveReduction;
