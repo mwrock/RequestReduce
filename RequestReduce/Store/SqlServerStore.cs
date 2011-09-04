@@ -98,5 +98,11 @@ namespace RequestReduce.Store
             var files = repository.GetActiveCssFiles();
             return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file)));
         }
+
+
+        public string GetUrlByKey(Guid keyGuid)
+        {
+            return repository.GetActiveUrlByKey(keyGuid);
+        }
     }
 }

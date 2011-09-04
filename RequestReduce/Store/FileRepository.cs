@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Store
 {
@@ -13,6 +14,7 @@ namespace RequestReduce.Store
     {
         IEnumerable<string> GetActiveCssFiles();
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
+        string GetActiveUrlByKey(Guid key);
     }
     public class FileRepository : Repository<RequestReduceFile>, IFileRepository
     {
@@ -99,6 +101,14 @@ namespace RequestReduce.Store
             }
 
             return new InvalidOperationException(message.ToString(), dbe);
+        }
+
+
+        public string GetActiveUrlByKey(Guid key)
+        {
+            return (from files in AsQueryable()
+                    where files.Key == key && !files.IsExpired && files.FileName.Contains(UriBuilder.CssFileName)
+                        select files.FileName).FirstOrDefault();
         }
     }
 }

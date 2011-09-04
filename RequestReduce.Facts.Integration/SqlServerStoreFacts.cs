@@ -113,7 +113,7 @@ namespace RequestReduce.Facts.Integration
                 url = urlPattern.Match(css).Groups["url"].Value;
                 id = Guid.Parse(uriBuilder.ParseSignature(url));
             }
-            repo.Context.Files.Remove(repo[id]);
+            repo.Detach(repo[id]);
             repo.Context.SaveChanges();
 
             var req = HttpWebRequest.Create("http://localhost:8877" + url);
@@ -170,6 +170,30 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal(Guid.Empty, newKey);
             Assert.True(secondCreated > firstCreated);
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillUseSameReductionFromStoreIfAvailable()
+        {
+            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateCss();
+            new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
+            var file = repo.AsQueryable().First(x => x.FileName.Contains(UriBuilder.CssFileName));
+            file.IsExpired = false;
+            var fileDate = file.LastUpdated;
+            repo.Save(file);
+            var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            var cssCount1 = cssPattern.Matches(response).Count;
+            Thread.Sleep(200);
+
+            response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+
+            var cssCount2 = cssPattern.Matches(response).Count;
+            file = repo.AsQueryable().First(x => x.FileName.Contains(UriBuilder.CssFileName));
+            Assert.Equal(2, cssCount1);
+            Assert.Equal(1, cssCount2);
+            Assert.Equal(fileDate, file.LastUpdated);
         }
 
         private void WaitToCreateCss()

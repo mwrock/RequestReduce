@@ -7,6 +7,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using StructureMap;
 using Xunit;
+using RequestReduce.Store;
 
 namespace RequestReduce.Facts.Module
 {
@@ -14,7 +15,7 @@ namespace RequestReduce.Facts.Module
     {
         class FakeReducingQueue : ReducingQueue, IDisposable
         {
-            public FakeReducingQueue(IReductionRepository reductionRepository) : base(reductionRepository)
+            public FakeReducingQueue(IReductionRepository reductionRepository, IStore store) : base(reductionRepository, store)
             {
                 isRunning = false;
                 ((FakeReductionRepository) reductionRepository).HasLoadedSavedEntries = true;
@@ -115,6 +116,19 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 testable.ClassUnderTest.ReductionRepository.AddReduction(Hasher.Hash("url"), "url");
+                testable.ClassUnderTest.Enqueue("url");
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
+                testable.Dispose();
+            }
+
+            [Fact]
+            public void WillNotReduceItemIfAlreadyReducedOnAntherServer()
+            {
+                var testable = new TestableReducingQueue();
+                testable.Mock<IStore>().Setup(x => x.GetUrlByKey(Hasher.Hash("url"))).Returns("newUrl");
                 testable.ClassUnderTest.Enqueue("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();

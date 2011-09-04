@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Threading;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
+using RequestReduce.Store;
 
 namespace RequestReduce.Module
 {
     public class ReducingQueue : IReducingQueue
     {
         protected readonly IReductionRepository reductionRepository;
+        protected readonly IStore store;
         protected ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
         protected Thread backgroundThread;
         protected bool isRunning = true;
@@ -17,10 +19,11 @@ namespace RequestReduce.Module
         protected Dictionary<Guid,int> dictionaryOfFailure = new Dictionary<Guid, int>();
         public const int FailureThreshold = 5;
 
-        public ReducingQueue(IReductionRepository reductionRepository)
+        public ReducingQueue(IReductionRepository reductionRepository, IStore store)
         {
             RRTracer.Trace("Instantiating new Reducing queue.");
             this.reductionRepository = reductionRepository;
+            this.store = store;
             backgroundThread = new Thread(ProcessQueue) { IsBackground = true };
             backgroundThread.Start();
         }
@@ -61,14 +64,23 @@ namespace RequestReduce.Module
                 if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
                 {
                     key = Hasher.Hash(urlsToReduce);
-                    RRTracer.Trace("dequeued and processing {0}.", urlsToReduce);
-                    if(dictionaryOfFailure.ContainsKey(key) && dictionaryOfFailure[key] >= FailureThreshold)
+                    RRTracer.Trace("dequeued and processing {0} with key {1}.", urlsToReduce, key);
+                    var url = store.GetUrlByKey(key);
+                    if (url != null)
                     {
-                        RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", urlsToReduce);
-                        return;
+                        RRTracer.Trace("found url {0} in store for key {1}", url, key);
+                        reductionRepository.AddReduction(key, url);
                     }
-                    var reducer = RRContainer.Current.GetInstance<IReducer>();
-                    reducer.Process(key, urlsToReduce);
+                    else
+                    {
+                        if (dictionaryOfFailure.ContainsKey(key) && dictionaryOfFailure[key] >= FailureThreshold)
+                        {
+                            RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", urlsToReduce);
+                            return;
+                        }
+                        var reducer = RRContainer.Current.GetInstance<IReducer>();
+                        reducer.Process(key, urlsToReduce);
+                    }
                     RRTracer.Trace("dequeued and processed {0}.", urlsToReduce);
                 }
             }

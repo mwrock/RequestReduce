@@ -262,5 +262,6 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IFileWrapper>().Verify(x => x.RenameFile(file2.FileName, file2.FileName.Replace(guid2.RemoveDashes(), guid2.RemoveDashes() + "-Expired")));
             }
         }
+
     }
 }

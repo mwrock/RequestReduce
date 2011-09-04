@@ -144,5 +144,11 @@ namespace RequestReduce.Store
             watcher.Dispose();
             RRTracer.Trace("Local Disk Store Disposed.");
         }
+
+
+        public string GetUrlByKey(Guid keyGuid)
+        {
+            return null;
+        }
     }
 }

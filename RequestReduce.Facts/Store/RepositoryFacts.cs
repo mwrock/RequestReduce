@@ -5,6 +5,7 @@ using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using Xunit;
 
 namespace RequestReduce.Facts.Store
@@ -278,5 +279,73 @@ namespace RequestReduce.Facts.Store
                 Assert.True(result.Contains(file2));
             }
         }
+
+        public class GetUrlByKey
+        {
+            [Fact]
+            public void WillGetCssUrlFromDb()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "fileName1" + UriBuilder.CssFileName,
+                    Key = id,
+                    LastUpdated = new DateTime(2010, 1, 1),
+                    OriginalName = "originalName",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                testable.ClassUnderTest.Save(file);
+                var file2 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 2 },
+                    FileName = "fileName2" + UriBuilder.CssFileName,
+                    Key = Guid.NewGuid(),
+                    LastUpdated = new DateTime(2011, 1, 1),
+                    OriginalName = "originalName",
+                    RequestReduceFileId = Guid.NewGuid()
+                };
+                testable.ClassUnderTest.Save(file2);
+
+                var result = testable.ClassUnderTest.GetActiveUrlByKey(id);
+
+                Assert.Equal(file.FileName, result);
+            }
+        }
+
+        [Fact]
+        public void WillGetNonExpiredCssUrlFromDb()
+        {
+            var testable = new TestableRepository();
+            var id = Guid.NewGuid();
+            var file = new RequestReduceFile()
+            {
+                Content = new byte[] { 1 },
+                FileName = "fileName1" + UriBuilder.CssFileName,
+                Key = id,
+                LastUpdated = new DateTime(2010, 1, 1),
+                OriginalName = "originalName",
+                RequestReduceFileId = id,
+                IsExpired = true
+            };
+            testable.ClassUnderTest.Save(file);
+            var file2 = new RequestReduceFile()
+            {
+                Content = new byte[] { 2 },
+                FileName = "fileName2" + UriBuilder.CssFileName,
+                Key = id,
+                LastUpdated = new DateTime(2011, 1, 1),
+                OriginalName = "originalName",
+                RequestReduceFileId = Guid.NewGuid()
+            };
+            testable.ClassUnderTest.Save(file2);
+
+            var result = testable.ClassUnderTest.GetActiveUrlByKey(id);
+
+            Assert.Equal(file2.FileName, result);
+        }
+
+
     }
 }

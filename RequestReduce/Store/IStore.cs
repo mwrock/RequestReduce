@@ -11,5 +11,6 @@ namespace RequestReduce.Store
         bool SendContent(string url, HttpResponseBase response);
         IDictionary<Guid, string> GetSavedUrls();
         void Flush(Guid keyGuid);
+        string GetUrlByKey(Guid keyGuid);
     }
 }
