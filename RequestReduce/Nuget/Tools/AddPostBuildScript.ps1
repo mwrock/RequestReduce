@@ -4,4 +4,4 @@ $path = $installPath.Replace($solutionDir, "`$(SolutionDir)")
 $OptiPngDir = Join-Path $path "pngoptimization"
 
 $PostBuildScript = "
-xcopy /s /y `"$OptiPngDir`" `"`$(TargetDir)`""
+xcopy /s /y `"$OptiPngDir`\*.exe" `"`$(TargetDir)`""

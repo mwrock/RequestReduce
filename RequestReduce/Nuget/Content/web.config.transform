@@ -2,6 +2,11 @@
   <configSections>
     <section name="RequestReduce" type="RequestReduce.Configuration.RequestReduceConfigSection, RequestReduce"/>
   </configSections>
+  <system.web>
+    <httpModules>
+      <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
+    </httpModules>
+  </system.web>
   <system.webServer>
 		<modules runAllManagedModulesForAllRequests="true">
       <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce"/>
