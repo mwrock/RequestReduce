@@ -84,7 +84,9 @@ namespace RequestReduce.Utilities
                 if(!process.HasExited)
                 {
                     process.Kill();
-                    throw new OptimizationException(string.Format("Unable to optimize image using executable {0} with arguments {1}", executable, arguments));
+                    throw new OptimizationException
+                        (string.Format("Unable to optimize image using executable {0} with arguments {1}", 
+                        executable, arguments));
                 }
             }
         }

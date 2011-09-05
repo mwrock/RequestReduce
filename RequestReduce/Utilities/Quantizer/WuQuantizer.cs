@@ -482,21 +482,6 @@ namespace RequestReduce.Utilities.Quantizer
                     moment[cube.AlphaMinimum, cube.RedMinimum, cube.GreenMinimum, cube.BlueMinimum]);
         }
 
-        private static void Mark(Box cube, int label, int[,,,] tagToMark)
-        {
-            for (var alphaIndex = (byte)(cube.AlphaMinimum + 1); alphaIndex <= cube.AlphaMaximum; ++alphaIndex)
-            {
-                for (var redIndex = (byte)(cube.RedMinimum + 1); redIndex <= cube.RedMaximum; ++redIndex)
-                {
-                    for (var greenIndex = (byte)(cube.GreenMinimum + 1); greenIndex <= cube.GreenMaximum; ++greenIndex)
-                    {
-                        for (var blueIndex = (byte)(cube.BlueMinimum + 1); blueIndex <= cube.BlueMaximum; ++blueIndex)
-                            tagToMark[alphaIndex, redIndex, greenIndex, blueIndex] = label;
-                    }
-                }
-            }
-        }
-
         private static IList<Box> SplitData(ref int colorCount, ColorData data)
         {
             --colorCount;
