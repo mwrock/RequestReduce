@@ -8,7 +8,7 @@ RequestReduce excercises common best practices when serving its css and sprited 
 RequestReduce provides several [configuration options] (http://github.com/mwrock/RequestReduce/wiki/RequestReduce-Configuration-options) to support [CDN hosting] (http://github.com/mwrock/RequestReduce/wiki/Can-I-have-all-RequestReduce-CSS-and-sprite-resources-pulled-from-a-CDN%3F), [multiple server environments] (http://github.com/mwrock/RequestReduce/wiki/Will-RequestReduce-sync-css-and-sprite-image-files-accross-all-of-the-web-servers-in-my-web-farm%3F) and more.
 
 ##Getting started
-1. Download the latest RequestReduce version [here] (http://www.requestreduce.com/)
+1. If you have [Nuget] (http://docs.nuget.org/docs/start-here/installing-nuget), simply enter `Install-Package RequestReduce` in the Package Manager Console and skip steps two and three, otherwise download the latest RequestReduce version [here] (http://www.requestreduce.com/)
 2. Extract the contents of the downloaded zip and copy RequestReduce.dll and optipng.exe to your website's bin directory
 3. Add the RequestReduceModule to your web.config or using the IIS GUI. 
 
