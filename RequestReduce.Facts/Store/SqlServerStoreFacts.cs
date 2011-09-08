@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using Moq;
+using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
@@ -49,7 +49,7 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillNotFireAddedEventIfFileIsPng()
+            public void WillNotAddReductionIfFileIsPng()
             {
                 var testable = new TestableSqlServerStore();
                 var content = new byte[] { 1 };
@@ -57,18 +57,14 @@ namespace RequestReduce.Facts.Store
                 var originalUrls = "originalUrls";
                 var expectedKey = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(expectedUrl)).Returns(expectedKey);
-                var key = new Guid();
-                var url = string.Empty;
-                testable.ClassUnderTest.CssAded += ((x, y) => { key = x; url = y; });
 
                 testable.ClassUnderTest.Save(content, expectedUrl, originalUrls);
 
-                Assert.Equal(string.Empty, url);
-                Assert.Equal(Guid.Empty, key);
+                testable.Mock<IReductionRepository>().Verify(x => x.AddReduction(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never());
             }
 
             [Fact]
-            public void WillFireAddedEventIfFileIsNotPng()
+            public void WillAddReductionIfFileIsNotPng()
             {
                 var testable = new TestableSqlServerStore();
                 var content = new byte[] { 1 };
@@ -76,14 +72,10 @@ namespace RequestReduce.Facts.Store
                 var originalUrls = "originalUrls";
                 var expectedKey = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(expectedUrl)).Returns(expectedKey);
-                var key = new Guid();
-                var url = string.Empty;
-                testable.ClassUnderTest.CssAded += ((x, y) => { key = x; url = y; });
 
                 testable.ClassUnderTest.Save(content, expectedUrl, originalUrls);
 
-                Assert.Equal(expectedUrl, url);
-                Assert.Equal(expectedKey, key);
+                testable.Mock<IReductionRepository>().Verify(x => x.AddReduction(expectedKey, expectedUrl), Times.Once());
             }
 
             [Fact]
@@ -97,6 +89,35 @@ namespace RequestReduce.Facts.Store
                 testable.ClassUnderTest.Save(content, expectedUrl, originalUrls);
 
                 testable.Mock<IStore>().Verify(x => x.Save(content, expectedUrl, originalUrls), Times.Once());
+            }
+
+            [Fact]
+            public void WillUpdateExistingFileIfItExixtx()
+            {
+                var testable = new TestableSqlServerStore();
+                var content = new byte[] { 1 };
+                var url = "url";
+                var originalUrls = "originalUrls";
+                var key = Guid.NewGuid();
+                var id = Guid.NewGuid();
+                RequestReduceFile file = null;
+                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { IsExpired = true }).Verifiable();
+                testable.Mock<IFileRepository>().Setup(x => x.Save(It.IsAny<RequestReduceFile>())).Callback
+                    <RequestReduceFile>(x => file = x);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName(url)).Returns("file.css");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(url)).Returns(key);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(url)).Returns(() => id.RemoveDashes());
+
+                testable.ClassUnderTest.Save(content, url, originalUrls);
+
+                testable.Mock<IFileRepository>().VerifyAll();
+                Assert.Equal(content, file.Content);
+                Assert.Equal("file.css", file.FileName);
+                Assert.Equal(key, file.Key);
+                Assert.True(DateTime.Now.Subtract(file.LastUpdated).TotalMilliseconds < 1000);
+                Assert.Equal(originalUrls, file.OriginalName);
+                Assert.Equal(id, file.RequestReduceFileId);
+                Assert.False(file.IsExpired);
             }
         }
 
@@ -136,20 +157,18 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillReturnFalseAndFireDeletedEventIfFileIsNotInDepo()
+            public void WillReturnFalseAndDeleteIfFileIsNotInRepo()
             {
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
                 testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
-                Guid triggeredKey = Guid.Empty;
-                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
 
                 var result = testable.ClassUnderTest.SendContent("url", response.Object);
 
                 Assert.False(result);
-                Assert.Equal(key, triggeredKey);
+                testable.Mock<IReductionRepository>().Verify(x => x.RemoveReduction(key), Times.Once());
             }
 
             [Fact]
@@ -164,14 +183,12 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
                 var bytes = new byte[] { 1 };
                 testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { Content = bytes, IsExpired = true });
-                var triggeredKey = Guid.Empty;
-                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
 
                 var result = testable.ClassUnderTest.SendContent("url", response.Object);
 
                 Assert.True(result);
                 response.Verify(x => x.BinaryWrite(bytes), Times.Once());
-                Assert.Equal(triggeredKey, key);
+                testable.Mock<IReductionRepository>().Verify(x => x.RemoveReduction(key), Times.Once());
             }
         }
 
@@ -233,12 +250,10 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableSqlServerStore();
                 var key = Guid.NewGuid();
-                var triggeredKey = Guid.Empty;
-                testable.ClassUnderTest.CssDeleted += (x => triggeredKey = x);
 
                 testable.ClassUnderTest.Flush(key);
 
-                Assert.Equal(key, triggeredKey);
+                testable.Mock<IReductionRepository>().Verify(x => x.RemoveReduction(key), Times.Once());
             }
 
             [Fact]
@@ -276,6 +291,43 @@ namespace RequestReduce.Facts.Store
                 Assert.True(expire1);
                 Assert.True(expire2);
             }
+        }
+
+        public class GetUrlByKey
+        {
+            [Fact]
+            public void WillGetUrlFromStoreIfItExists()
+            {
+                var testable = new TestableSqlServerStore();
+                var guid1 = Guid.NewGuid();
+                var sig1 = Guid.NewGuid().RemoveDashes();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1, sig1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
+                testable.Mock<IFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1)).Returns("file1");
+
+                var result = testable.ClassUnderTest.GetUrlByKey(guid1);
+
+                Assert.Equal("file1", result);
+            }
+
+            [Fact]
+            public void WillGetNullFromStoreIfItDoesNotExists()
+            {
+                var testable = new TestableSqlServerStore();
+                var guid1 = Guid.NewGuid();
+                var sig1 = Guid.NewGuid().RemoveDashes();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1, sig1)).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
+                testable.Mock<IFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1)).Returns("file1");
+
+                var result = testable.ClassUnderTest.GetUrlByKey(Guid.NewGuid());
+
+                Assert.Null(result);
+            }
+
+
         }
     }
 }

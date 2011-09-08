@@ -46,16 +46,12 @@ namespace RequestReduce.Utilities
         public Guid ParseKey(string url)
         {
             var idx = url.LastIndexOf('/');
-            string keyDir = string.Empty;
-            if (idx > -1)
-                keyDir = url.Substring(idx + 1);
-            else
-                keyDir = url;
+            string keyDir = idx > -1 ? url.Substring(idx + 1) : url;
             string strKey = string.Empty;
             idx = keyDir.IndexOf('-');
             if (idx > -1)
                 strKey = keyDir.Substring(0, idx);
-            Guid key = Guid.Empty;
+            Guid key;
             Guid.TryParse(strKey, out key);
             return key;
         }
@@ -63,12 +59,8 @@ namespace RequestReduce.Utilities
         public string ParseSignature(string url)
         {
             var idx = url.LastIndexOf('/');
-            string keyDir = string.Empty;
-            if (idx > -1)
-                keyDir = url.Substring(idx + 1);
-            else
-                keyDir = url;
-            string strKey = string.Empty;
+            var keyDir = idx > -1 ? url.Substring(idx + 1) : url;
+            var strKey = string.Empty;
             try
             {
                 strKey = keyDir.Substring(33, 32);
@@ -76,7 +68,7 @@ namespace RequestReduce.Utilities
             catch (ArgumentOutOfRangeException)
             {
             }
-            Guid key = Guid.Empty;
+            Guid key;
             Guid.TryParse(strKey, out key);
             return key.RemoveDashes();
         }

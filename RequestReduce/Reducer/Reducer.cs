@@ -53,15 +53,15 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
-            var cssContent = webClientWrapper.DownloadString(url);
+            var cssContent = webClientWrapper.DownloadString(url, true);
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }
 
         protected virtual string SpriteCss(string css, List<BackgroundImageClass> imageUrls)
         {
-            foreach (var imageUrl in imageUrls)
-                css = cssImageTransformer.InjectSprite(css, imageUrl, spriteManager[imageUrl]);
+            foreach (var spritedImage in spriteManager)
+                css = cssImageTransformer.InjectSprite(css, spritedImage);
             return css;
         }
 

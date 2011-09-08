@@ -278,10 +278,9 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new Sprite(120, 1) { Url = "spriteUrl" };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, "http://server/content/style.css"), null) { Url = "spriteUrl", Position = 120 };
 
-
-                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css, "http://server/content/style.css"), sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
                 Assert.Equal(expected, result);
             }
@@ -302,12 +301,34 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new Sprite(120, 1) { Url = "spriteUrl" };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, "http://server/content/style.css"), null) { Url = "spriteUrl", Position = 120 };
 
 
-                var result = testable.ClassUnderTest.InjectSprite(css, new BackgroundImageClass(css, "http://server/content/style.css"), sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
                 Assert.Equal(expected, result);
+            }
+
+            [Fact]
+            public void WillSetImageAbsoluteUrlFromBackgroundImageStyleAndReplaceRelativeUrl()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background-image: url(""subnav_on_technet.png"");
+}";
+                var expectedCss =
+    @"
+.localnavigation .tabon,.localnavigation .tabon:hover {
+    background-image: url(""newUrl"");
+;background-position: -0px 0;}";
+                var testable = new TestableCssImageTransformer();
+                var backgroundImage = new BackgroundImageClass(css, "http://server/content/style.css");
+                var sprite = new SpritedImage(1, backgroundImage, null) { Url = "newUrl" };
+
+                var result = testable.ClassUnderTest.InjectSprite(backgroundImage.OriginalClassString, sprite);
+
+                Assert.Equal(expectedCss, result);
             }
         }
     }

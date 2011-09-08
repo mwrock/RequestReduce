@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web;
+using RequestReduce.Module;
 using RequestReduce.Utilities;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Store
 {
@@ -14,14 +12,15 @@ namespace RequestReduce.Store
         private readonly IUriBuilder uriBuilder;
         private readonly IFileRepository repository;
         private readonly IStore fileStore;
-        public event DeleeCsAction CssDeleted;
-        public event AddCssAction CssAded;
+        private readonly IReductionRepository reductionRepository;
 
-        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore)
+        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore, IReductionRepository reductionRepository)
         {
+            RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;
             this.repository = repository;
             this.fileStore = fileStore;
+            this.reductionRepository = reductionRepository;
         }
 
         public void Flush(Guid keyGuid)
@@ -39,8 +38,7 @@ namespace RequestReduce.Store
                 file.IsExpired = true;
                 repository.Save(file);
             }
-            if (CssDeleted != null)
-                CssDeleted(keyGuid);
+            reductionRepository.RemoveReduction(keyGuid);
         }
 
         public void Dispose()
@@ -55,19 +53,18 @@ namespace RequestReduce.Store
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
             var id = Guid.Parse(uriBuilder.ParseSignature(url));
-            var file = new RequestReduceFile()
-                           {
-                               Content = content,
-                               LastUpdated = DateTime.Now,
-                               FileName = fileName,
-                               Key = key,
-                               RequestReduceFileId = id,
-                               OriginalName = originalUrls
-                           };
+            var file = repository[id] ?? new RequestReduceFile();
+            file.Content = content;
+            file.LastUpdated = DateTime.Now;
+            file.FileName = fileName;
+            file.Key = key;
+            file.RequestReduceFileId = id;
+            file.OriginalName = originalUrls;
+            file.IsExpired = false;
             fileStore.Save(content, url, originalUrls);
-            if(CssAded != null && !url.ToLower().EndsWith(".png"))
-                CssAded(key, url);
             repository.Save(file);
+            if (!url.ToLower().EndsWith(".png"))
+                reductionRepository.AddReduction(key, url);
             RRTracer.Trace("{0} saved to db.", url);
         }
 
@@ -85,14 +82,13 @@ namespace RequestReduce.Store
                 response.BinaryWrite(file.Content);
                 fileStore.Save(file.Content, url, null);
                 RRTracer.Trace("{0} transmitted from db.", url);
-                if (file.IsExpired && CssDeleted != null)
-                    CssDeleted(key);
+                if (file.IsExpired)
+                    reductionRepository.RemoveReduction(key);
                 return true;
             }
 
             RRTracer.Trace("{0} not found on file or db.", url);
-            if (CssDeleted != null)
-                CssDeleted(key);
+            reductionRepository.RemoveReduction(key);
             return false;
         }
 
@@ -101,6 +97,12 @@ namespace RequestReduce.Store
             RRTracer.Trace("SqlServerStore Looking for previously saved content.");
             var files = repository.GetActiveCssFiles();
             return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file)));
+        }
+
+
+        public string GetUrlByKey(Guid keyGuid)
+        {
+            return repository.GetActiveUrlByKey(keyGuid);
         }
     }
 }

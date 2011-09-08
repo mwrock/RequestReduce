@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Collections.Concurrent;
 using RequestReduce.Configuration;
+using RequestReduce.Module;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Store
@@ -12,22 +13,31 @@ namespace RequestReduce.Store
         protected Timer timer = null;
         protected ConcurrentDictionary<string, DateTime> fileList = new ConcurrentDictionary<string, DateTime>();
 
-        public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder)
+        public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder, null)
         {
+            RRTracer.Trace("Creating db disk cache");
             const int interval = 1000*60*5;
             timer = new Timer(PurgeOldFiles, null, 0, interval);
         }
 
         protected virtual void PurgeOldFiles(object state)
         {
-            var date = DateTime.MinValue;
             var oldEntries = fileList.Where(x => DateTime.Now.Subtract(x.Value).TotalMinutes > 5);
             foreach (var entry in oldEntries)
             {
                 var file = GetFileNameFromConfig(entry.Key);
                 RRTracer.Trace("purging old file: {0}", file);
-                fileWrapper.DeleteFile(file);
-                fileList.TryRemove(entry.Key, out date);
+                try
+                {
+                    fileWrapper.DeleteFile(file);
+                    DateTime date;
+                    fileList.TryRemove(entry.Key, out date);
+                }
+                catch (Exception ex)
+                {
+                    if (RequestReduceModule.CaptureErrorAction != null)
+                       RequestReduceModule.CaptureErrorAction(ex);
+                }
             }
         }
 

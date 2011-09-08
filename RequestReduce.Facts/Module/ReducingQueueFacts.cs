@@ -7,6 +7,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using StructureMap;
 using Xunit;
+using RequestReduce.Store;
 
 namespace RequestReduce.Facts.Module
 {
@@ -14,9 +15,10 @@ namespace RequestReduce.Facts.Module
     {
         class FakeReducingQueue : ReducingQueue, IDisposable
         {
-            public FakeReducingQueue(IReductionRepository reductionRepository) : base(reductionRepository)
+            public FakeReducingQueue(IReductionRepository reductionRepository, IStore store) : base(reductionRepository, store)
             {
                 isRunning = false;
+                ((FakeReductionRepository) reductionRepository).HasLoadedSavedEntries = true;
             }
 
             public ConcurrentQueue<string> BaseQueue
@@ -45,6 +47,13 @@ namespace RequestReduce.Facts.Module
             {
                 var key = Hasher.Hash(urls);
                 return dict[key] as string;
+            }
+
+            public bool HasLoadedSavedEntries { get; set; }
+
+            public void RemoveReduction(Guid key)
+            {
+                throw new NotImplementedException();
             }
 
             public void AddReduction(Guid key, string reducedUrl)
@@ -116,6 +125,19 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillNotReduceItemIfAlreadyReducedOnAntherServer()
+            {
+                var testable = new TestableReducingQueue();
+                testable.Mock<IStore>().Setup(x => x.GetUrlByKey(Hasher.Hash("url"))).Returns("newUrl");
+                testable.ClassUnderTest.Enqueue("url");
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
+                testable.Dispose();
+            }
+
+            [Fact]
             public void WillStopProcessingAfterExceedingFailureThreshold()
             {
                 var testable = new TestableReducingQueue();
@@ -130,6 +152,19 @@ namespace RequestReduce.Facts.Module
                 }
 
                 testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold));
+                testable.Dispose();
+            }
+
+            [Fact]
+            public void WillNotReduceQueuedCSSUntilRepositoryHasLoadedSavedItems()
+            {
+                var testable = new TestableReducingQueue();
+                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.ReductionRepository.HasLoadedSavedEntries = false;
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
                 testable.Dispose();
             }
         }
@@ -182,13 +217,15 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 Exception error = null;
+                var innerError = new ApplicationException();
                 RequestReduceModule.CaptureErrorAction = (x => error= x);
-                testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(new ApplicationException());
+                testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(innerError);
                 testable.ClassUnderTest.Enqueue("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
-                Assert.True(error is ApplicationException);
+                Assert.Equal(innerError, error.InnerException);
+                Assert.Contains("url", error.Message);
                 testable.Dispose();
             }
         }

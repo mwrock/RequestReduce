@@ -11,6 +11,7 @@ properties {
 	$version = "0.9." + (git log --pretty=oneline | measure-object).Count
 }
 
+task Debug -depends Default
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
 task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
 
@@ -61,7 +62,7 @@ task Push-Nuget {
 	exec { .\Tools\nuget.exe push $filesDir\RequestReduce.$version.nupkg }
 }
 
-task Merge-Assembly {
+task Merge-Assembly -depends Build-Solution {
 	clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
 	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
@@ -76,6 +77,8 @@ task Build-Output -depends Merge-Assembly {
     $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
     $Spec.package.metadata.version = $version
     $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
+	clean $baseDir\RequestReduce\Nuget\Content\App_Readme
+	create $baseDir\RequestReduce\Nuget\Content\App_Readme
 	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
 	Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
 	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }

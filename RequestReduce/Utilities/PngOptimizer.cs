@@ -32,49 +32,70 @@ namespace RequestReduce.Utilities
 
         public byte[] OptimizePng(byte[] bytes, int compressionLevel, bool imageQuantizationDisabled)
         {
-            var optimizedBytes = bytes;
-            if (!imageQuantizationDisabled)
-            {
-                using(var unQuantized = new Bitmap(new MemoryStream(bytes)))
+                var optimizedBytes = bytes;
+                if (!imageQuantizationDisabled)
                 {
-                    using(var quantized = wuQuantizer.QuantizeImage(unQuantized))
+                    using(var unQuantized = new Bitmap(new MemoryStream(bytes)))
                     {
-                        var memStream = new MemoryStream(); 
-                        quantized.Save(memStream, ImageFormat.Png);
-                        optimizedBytes = memStream.GetBuffer();
+                        using(var quantized = wuQuantizer.QuantizeImage(unQuantized))
+                        {
+                            var memStream = new MemoryStream(); 
+                            quantized.Save(memStream, ImageFormat.Png);
+                            optimizedBytes = memStream.GetBuffer();
+                        }
                     }
                 }
-            }
 
-            if (fileWrapper.FileExists(optiPngLocation))
-            {
-                var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
-                fileWrapper.Save(optimizedBytes, scratchFile);
-                var arg = String.Format(@"-o{1} ""{0}""", scratchFile, compressionLevel);
-                InvokeExecutable(arg, optiPngLocation);
-                optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
-                fileWrapper.DeleteFile(scratchFile);
-            }
+                 if (fileWrapper.FileExists(optiPngLocation))
+                 {
+                    var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
+                    try
+                    {
+                        fileWrapper.Save(optimizedBytes, scratchFile);
+                        var arg = String.Format(@"-o{1} ""{0}""", scratchFile, compressionLevel);
+                        InvokeExecutable(arg, optiPngLocation);
+                        optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
+                        fileWrapper.DeleteFile(scratchFile);
+                    }
+                    finally
+                    {
+                        fileWrapper.DeleteFile(scratchFile);
+                    }
+                 }
 
-            return optimizedBytes;
+                 return optimizedBytes;
         }
 
         private void InvokeExecutable(string arguments, string executable)
         {
-            var process = new Process
-                              {
-                                  StartInfo =
-                                      {
-                                          UseShellExecute = false,
-                                          RedirectStandardOutput = true,
-                                          CreateNoWindow = true,
-                                          FileName = executable,
-                                          Arguments = arguments
-                                      }
-                              };
-            process.Start();
-            process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
+            using(var process = new Process())
+            {
+                process.StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    FileName = executable,
+                    Arguments = arguments
+                };
+                process.Start();
+                process.StandardOutput.ReadToEnd();
+                process.WaitForExit(10000);
+                if(!process.HasExited)
+                {
+                    process.Kill();
+                    throw new OptimizationException
+                        (string.Format("Unable to optimize image using executable {0} with arguments {1}", 
+                        executable, arguments));
+                }
+            }
+        }
+    }
+
+    public class OptimizationException : Exception
+    {
+        public OptimizationException(string message) : base(message)
+        {
         }
     }
 }

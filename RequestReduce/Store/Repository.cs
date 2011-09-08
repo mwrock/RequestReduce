@@ -1,4 +1,5 @@
 using System;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
 
@@ -7,6 +8,7 @@ namespace RequestReduce.Store
     public interface IRepository<T> where T : class
     {
         void Save(T entity);
+        void Detach(T entity);
         T this[object id] { get; }
         RequestReduceContext Context { get; }
         IQueryable<T> AsQueryable();
@@ -15,7 +17,7 @@ namespace RequestReduce.Store
     public class Repository<T> : IDisposable, IRepository<T> where T : class
     {
         private readonly IRRConfiguration config;
-        private RequestReduceContext context = null;
+        private RequestReduceContext context;
 
         public Repository(IRRConfiguration config)
         {
@@ -31,6 +33,11 @@ namespace RequestReduce.Store
         {
             Context.Set<T>().Add(entity);
             Context.SaveChanges();
+        }
+
+        public void Detach(T entity)
+        {
+            ((IObjectContextAdapter)Context).ObjectContext.Detach(entity);
         }
 
         public T this[object id]

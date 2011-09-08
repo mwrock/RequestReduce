@@ -25,6 +25,8 @@ namespace RequestReduce.Configuration
         bool ImageOptimizationDisabled { get; set; }
         int ImageOptimizationCompressionLevel { get; set; }
         bool ImageQuantizationDisabled { get; set; }
+        int SpriteColorLimit { get; set; }
+        int StorePollInterval { get; set; }
         event Action PhysicalPathChange; 
     }
 
@@ -39,6 +41,8 @@ namespace RequestReduce.Configuration
         public bool ImageOptimizationDisabled { get; set; }
         public bool ImageQuantizationDisabled { get; set; }
 
+        public int StorePollInterval { get; set; }
+
         public event Action PhysicalPathChange;  
 
         public RRConfiguration()
@@ -46,6 +50,10 @@ namespace RequestReduce.Configuration
             AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
+            val = config == null ? 0 : config.SpriteColorLimit;
+            SpriteColorLimit = val == 0 ? 5000 : val;
+            val = config == null ? 0 : config.StorePollInterval;
+            StorePollInterval = val <= 0 ? Timeout.Infinite : val;
             val = config == null ? 0 : config.ImageOptimizationCompressionLevel;
             ImageOptimizationCompressionLevel = val == 0 ? 5 : val;
             CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
@@ -61,6 +69,8 @@ namespace RequestReduce.Configuration
             }
             CreatePhysicalPath();
         }
+
+        public int SpriteColorLimit { get; set; }
 
         public IEnumerable<string> AuthorizedUserList { get; set; }
 

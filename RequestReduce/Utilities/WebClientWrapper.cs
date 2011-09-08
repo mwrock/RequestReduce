@@ -8,20 +8,20 @@ namespace RequestReduce.Utilities
 {
     public interface IWebClientWrapper
     {
-        string DownloadString(string url);
+        string DownloadString(string url, bool requiresCssMimeType);
         byte[] DownloadBytes(string url);
     }
 
     public class WebClientWrapper : IWebClientWrapper
     {
-        public string DownloadString(string url)
+        public string DownloadString(string url, bool requiresCssMimeType)
         {
             try
             {
                 var client = WebRequest.Create(url);
                 using (var response = client.GetResponse())
                 {
-                    if(!response.ContentType.Equals("text/css", StringComparison.OrdinalIgnoreCase))
+                    if(!response.ContentType.Equals("text/css", StringComparison.OrdinalIgnoreCase) && requiresCssMimeType)
                         throw new InvalidOperationException(
                             "RequestReduce has landed on a css url that does not contain a css mime type.");
                     using(var responseStream = response.GetResponseStream())

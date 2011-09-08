@@ -3,48 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using StructureMap;
 using Xunit;
 
 namespace RequestReduce.Facts.Module
 {
     public class ReductionRepositoryFacts
     {
-        class FakeLocalDiskStore : LocalDiskStore
-        {
-            public FakeLocalDiskStore() : base()
-            {
-            }
-
-            public override event DeleeCsAction CssDeleted;
-            public override event AddCssAction CssAded;
-
-            protected override void SetupWatcher()
-            {
-                return;
-            }
-
-            public void TriggerChange(string change, Guid key)
-            {
-                if (change == "delete")
-                    CssDeleted(key);
-                if (change == "add")
-                    CssAded(key, "url");
-            }
-        }
-
         class FakeReductionRepository : ReductionRepository
         {
-            public FakeReductionRepository(IStore store) : base(store)
+            public FakeReductionRepository(IRRConfiguration configuration) : base(configuration)
             {
             }
 
             public IDictionary Dictionary { get { return dictionary; } }
 
-            public FakeLocalDiskStore LocalDiskStore { get { return store as FakeLocalDiskStore; } }
         }
 
         private class TestableReductionRepository : Testable<FakeReductionRepository>
@@ -62,39 +40,19 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReductionRepository();
                 var key = Hasher.Hash("url1");
-                testable.Mock<IStore>().Setup(x => x.GetSavedUrls()).Returns(new Dictionary<Guid, string>()
+                var mockStore = new Mock<IStore>();
+                mockStore.Setup(x => x.GetSavedUrls()).Returns(new Dictionary<Guid, string>()
                                                                                  {{key, "url1"}});
+                RRContainer.Current = new Container(x => { x.For<IStore>().Use(mockStore.Object);});
 
                 var result = testable.ClassUnderTest;
                 Thread.Sleep(200);
 
                 Assert.True(result.Dictionary[key] as string == "url1");
+                Assert.True(testable.ClassUnderTest.HasLoadedSavedEntries);
+                RRContainer.Current = null;
             }
 
-            [Fact]
-            public void WillRegisterDeleteCssAction()
-            {
-                var testable = new TestableReductionRepository();
-                testable.Inject<IStore>(new FakeLocalDiskStore());
-                var key = Hasher.Hash("url1");
-                testable.ClassUnderTest.Dictionary.Add(key, "val");
-
-                testable.ClassUnderTest.LocalDiskStore.TriggerChange("delete", key);
-
-                Assert.Null(testable.ClassUnderTest.Dictionary[key]);
-            }
-
-            [Fact]
-            public void WillRegisterAddCssAction()
-            {
-                var testable = new TestableReductionRepository();
-                testable.Inject<IStore>(new FakeLocalDiskStore());
-                var key = Hasher.Hash("url1");
-
-                testable.ClassUnderTest.LocalDiskStore.TriggerChange("add", key);
-
-                Assert.NotNull(testable.ClassUnderTest.Dictionary[key]);
-            }
         }
 
         public class FindReduction

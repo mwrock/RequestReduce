@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
+using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
-    public class ReductionRepository : IReductionRepository
+    public class ReductionRepository : IReductionRepository, IDisposable
     {
-        protected readonly IStore store;
+        private readonly IRRConfiguration configuration;
         protected readonly IDictionary dictionary = new Hashtable();
-        private object lockObject = new object();
+        private readonly object lockObject = new object();
+        protected Timer refresher;
 
-        public ReductionRepository(IStore store)
+        public ReductionRepository(IRRConfiguration configuration)
         {
-            this.store = store;
-            store.CssAded += AddReduction;
-            store.CssDeleted += RemoveReduction;
-            var thread = new Thread(LoadDictionaryWithExistingItems);
-            thread.IsBackground = true;
-            thread.Start();
+            this.configuration = configuration;
+            RRTracer.Trace("creating reduction repository");
+            refresher = new Timer(LoadDictionaryWithExistingItems, null, 100, configuration.StorePollInterval);
         }
 
-        private void RemoveReduction(Guid key)
+        public void RemoveReduction(Guid key)
         {
             lock (lockObject)
             {
@@ -31,21 +31,32 @@ namespace RequestReduce.Module
             RRTracer.Trace("Reduction {0} removed.", key);
         }
 
-        private void LoadDictionaryWithExistingItems()
+        private void LoadDictionaryWithExistingItems(object state)
         {
             try
             {
+                var store = RRContainer.Current.GetInstance<IStore>();
+                if (store == null)
+                    return;
+
                 var content = store.GetSavedUrls();
                 if (content != null)
                 {
-                    foreach (var pair in content)
-                        AddReduction(pair.Key, pair.Value);
+                    lock(lockObject)
+                    {
+                        foreach (var pair in content)
+                            AddReduction(pair.Key, pair.Value);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 if (RequestReduceModule.CaptureErrorAction != null)
                     RequestReduceModule.CaptureErrorAction(ex);
+            }
+            finally
+            {
+                HasLoadedSavedEntries = true;
             }
         }
 
@@ -72,6 +83,13 @@ namespace RequestReduce.Module
             {
                 
             }
+        }
+
+        public bool HasLoadedSavedEntries { get; private set; }
+
+        public void Dispose()
+        {
+            refresher.Dispose();
         }
     }
 }
