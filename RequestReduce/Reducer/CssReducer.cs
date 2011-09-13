@@ -6,7 +6,7 @@ using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
-    public class Reducer : IReducer
+    public class CssReducer : IReducer
     {
         private readonly IWebClientWrapper webClientWrapper;
         private readonly IStore store;
@@ -15,7 +15,7 @@ namespace RequestReduce.Reducer
         private ICssImageTransformer cssImageTransformer;
         private readonly IUriBuilder uriBuilder;
 
-        public Reducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder)
+        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder)
         {
             this.webClientWrapper = webClientWrapper;
             this.cssImageTransformer = cssImageTransformer;
@@ -44,7 +44,7 @@ namespace RequestReduce.Reducer
                 spriteManager.Add(imageUrl);
             spriteManager.Flush();
             var spritedCss = SpriteCss(mergedCss.ToString(), imageUrls);
-            var bytes = Encoding.UTF8.GetBytes(minifier.Minify(spritedCss));
+            var bytes = Encoding.UTF8.GetBytes(minifier.MinifyCss(spritedCss));
             var virtualfileName = uriBuilder.BuildCssUrl(key, bytes);
             store.Save(bytes, virtualfileName, urls);
             RRTracer.Trace("finishing reducing process for {0}", urls);
@@ -53,7 +53,7 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
-            var cssContent = webClientWrapper.DownloadString(url, true);
+            var cssContent = webClientWrapper.DownloadCssString(url);
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }
