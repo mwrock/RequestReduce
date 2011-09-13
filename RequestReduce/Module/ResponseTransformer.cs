@@ -52,7 +52,7 @@ namespace RequestReduce.Module
                         preTransform = preTransform.Replace(match.ToString(), "");
                     return preTransform;
                 }
-                reducingQueue.Enqueue(urls.ToString());
+                reducingQueue.EnqueueCss(urls.ToString());
                 RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
             }
             return preTransform;

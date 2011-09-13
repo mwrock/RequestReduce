@@ -59,7 +59,9 @@
     <Compile Include="Configuration\RequestReduceConfigSection.cs" />
     <Compile Include="Module\AbstractFilter.cs" />
     <Compile Include="Module\IReductionRepository.cs" />
+    <Compile Include="Module\QueueItem.cs" />
     <Compile Include="Module\ReductionRepository.cs" />
+    <Compile Include="Module\ResourceType.cs" />
     <Compile Include="Module\ResponseTransformer.cs" />
     <Compile Include="Configuration\RRConfiguration.cs" />
     <Compile Include="Reducer\BackgroundImageClass.cs" />

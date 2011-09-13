@@ -100,7 +100,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.Transform(transform);
 
-                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue("http://server/Me.css::http://server/Me2.css::"), Times.Once());
+                testable.Mock<IReducingQueue>().Verify(x => x.EnqueueCss("http://server/Me.css::http://server/Me2.css::"), Times.Once());
             }
 
         }

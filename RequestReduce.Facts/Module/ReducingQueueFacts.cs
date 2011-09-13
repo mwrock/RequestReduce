@@ -21,7 +21,7 @@ namespace RequestReduce.Facts.Module
                 ((FakeReductionRepository) reductionRepository).HasLoadedSavedEntries = true;
             }
 
-            public ConcurrentQueue<string> BaseQueue
+            public ConcurrentQueue<QueueItem> BaseQueue
             {
                 get { return queue; }
             }
@@ -87,12 +87,12 @@ namespace RequestReduce.Facts.Module
             public void WillPutUrlsInTheQueue()
             {
                 var testable = new TestableReducingQueue();
-                string result;
+                QueueItem result;
 
-                testable.ClassUnderTest.Enqueue("urls");
+                testable.ClassUnderTest.EnqueueCss("urls");
 
                 testable.ClassUnderTest.BaseQueue.TryDequeue(out result);
-                Assert.Equal("urls", result);
+                Assert.Equal("urls", result.Urls);
                 testable.Dispose();
             }
         }
@@ -103,7 +103,7 @@ namespace RequestReduce.Facts.Module
             public void WillReduceQueuedCSS()
             {
                 var testable = new TestableReducingQueue();
-                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.EnqueueCss("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
@@ -116,7 +116,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 testable.ClassUnderTest.ReductionRepository.AddReduction(Hasher.Hash("url"), "url");
-                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.EnqueueCss("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
@@ -129,7 +129,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 testable.Mock<IStore>().Setup(x => x.GetUrlByKey(Hasher.Hash("url"))).Returns("newUrl");
-                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.EnqueueCss("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
@@ -147,7 +147,7 @@ namespace RequestReduce.Facts.Module
 
                 for (int i = 0; i < ReducingQueue.FailureThreshold + 1; i++)
                 {
-                    testable.ClassUnderTest.Enqueue(badUrl);
+                    testable.ClassUnderTest.EnqueueCss(badUrl);
                     testable.ClassUnderTest.ProcessQueuedItem();
                 }
 
@@ -159,7 +159,7 @@ namespace RequestReduce.Facts.Module
             public void WillNotReduceQueuedCSSUntilRepositoryHasLoadedSavedItems()
             {
                 var testable = new TestableReducingQueue();
-                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.EnqueueCss("url");
                 testable.ClassUnderTest.ReductionRepository.HasLoadedSavedEntries = false;
 
                 testable.ClassUnderTest.ProcessQueuedItem();
@@ -175,8 +175,8 @@ namespace RequestReduce.Facts.Module
             public void WillReturnTheCountOfTheBaseQueue()
             {
                 var testable = new TestableReducingQueue();
-                testable.ClassUnderTest.Enqueue("url");
-                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.EnqueueCss("url");
+                testable.ClassUnderTest.EnqueueCss("url");
 
                 var result = testable.ClassUnderTest.Count;
 
@@ -197,12 +197,12 @@ namespace RequestReduce.Facts.Module
                 testable.MockedReducer.Setup(x => x.Process(badKey, badUrl)).Throws(new Exception());
                 for (int i = 0; i < ReducingQueue.FailureThreshold; i++)
                 {
-                    testable.ClassUnderTest.Enqueue(badUrl);
+                    testable.ClassUnderTest.EnqueueCss(badUrl);
                     testable.ClassUnderTest.ProcessQueuedItem();
                 }
 
                 testable.ClassUnderTest.ClearFailures();
-                testable.ClassUnderTest.Enqueue(badUrl);
+                testable.ClassUnderTest.EnqueueCss(badUrl);
                 testable.ClassUnderTest.ProcessQueuedItem();
 
                 testable.MockedReducer.Verify(x => x.Process(badKey, badUrl), Times.Exactly(ReducingQueue.FailureThreshold + 1));
@@ -220,7 +220,7 @@ namespace RequestReduce.Facts.Module
                 var innerError = new ApplicationException();
                 RequestReduceModule.CaptureErrorAction = (x => error= x);
                 testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(innerError);
-                testable.ClassUnderTest.Enqueue("url");
+                testable.ClassUnderTest.EnqueueCss("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
