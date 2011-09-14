@@ -11,6 +11,7 @@ namespace RequestReduce.Utilities
     {
         string DownloadCssString(string url);
         string DownloadJavaScriptString(string url);
+        string DownloadString(string url);
         byte[] DownloadBytes(string url);
     }
 
@@ -26,6 +27,11 @@ namespace RequestReduce.Utilities
             return DownloadString(url, new[]{"text/css"});
         }
 
+        public string DownloadString(string url)
+        {
+            return DownloadString(url, Enumerable.Empty<string>());
+        }
+
         private string DownloadString(string url, IEnumerable<string> requiredMimeTypes)
         {
             try
@@ -33,7 +39,7 @@ namespace RequestReduce.Utilities
                 var client = WebRequest.Create(url);
                 using (var response = client.GetResponse())
                 {
-                    if (!requiredMimeTypes.Any(x => x.Equals(response.ContentType, StringComparison.OrdinalIgnoreCase)))
+                    if (requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
                         throw new InvalidOperationException(string.Format(
                             "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes)));
                     using (var responseStream = response.GetResponseStream())

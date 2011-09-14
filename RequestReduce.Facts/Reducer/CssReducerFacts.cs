@@ -8,6 +8,7 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Module;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -22,6 +23,17 @@ namespace RequestReduce.Facts.Reducer
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
+        }
+
+        public class SupportedResourceType
+        {
+            [Fact]
+            public void WillSupportCss()
+            {
+                var testable = new TestableCssReducer();
+
+                Assert.Equal(ResourceType.Css, testable.ClassUnderTest.SupportedResourceType);
+            }
         }
 
         public class Process

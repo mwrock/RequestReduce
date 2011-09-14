@@ -8,6 +8,7 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Module;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -23,6 +24,18 @@ namespace RequestReduce.Facts.Reducer
             }
 
         }
+
+        public class SupportedResourceType
+        {
+            [Fact]
+            public void WillSupportJavaScript()
+            {
+                var testable = new TestableJavaScriptReducer();
+
+                Assert.Equal(ResourceType.JavaScript, testable.ClassUnderTest.SupportedResourceType);
+            }
+        }
+
 
         public class Process
         {

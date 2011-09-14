@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using RequestReduce.Module;
 
 namespace RequestReduce.Reducer
 {
@@ -14,6 +15,8 @@ namespace RequestReduce.Reducer
         private ISpriteManager spriteManager;
         private ICssImageTransformer cssImageTransformer;
         private readonly IUriBuilder uriBuilder;
+
+        public ResourceType SupportedResourceType { get { return ResourceType.Css; } }
 
         public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder)
         {
@@ -74,5 +77,6 @@ namespace RequestReduce.Reducer
         {
             store.Dispose();
         }
+
     }
 }

@@ -5,6 +5,7 @@ using System.Threading;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using RequestReduce.Store;
+using System.Linq;
 
 namespace RequestReduce.Module
 {
@@ -84,7 +85,8 @@ namespace RequestReduce.Module
                             RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", itemToReduce.Urls);
                             return;
                         }
-                        var reducer = RRContainer.Current.GetInstance<IReducer>();
+                        var reducer = RRContainer.Current.GetAllInstances<IReducer>()
+                                        .SingleOrDefault(x => x.SupportedResourceType == itemToReduce.Type);
                         reducer.Process(key, itemToReduce.Urls);
                     }
                     RRTracer.Trace("dequeued and processed {0}.", itemToReduce.Urls);

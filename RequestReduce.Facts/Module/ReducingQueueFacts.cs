@@ -81,7 +81,7 @@ namespace RequestReduce.Facts.Module
             }
         }
 
-        public class Enqueue
+        public class EnqueueCss
         {
             [Fact]
             public void WillPutUrlsInTheQueue()
@@ -97,13 +97,43 @@ namespace RequestReduce.Facts.Module
             }
         }
 
+        public class EnqueueJavaScript
+        {
+            [Fact]
+            public void WillPutUrlsInTheQueue()
+            {
+                var testable = new TestableReducingQueue();
+                QueueItem result;
+
+                testable.ClassUnderTest.EnqueueJavaScript("urls");
+
+                testable.ClassUnderTest.BaseQueue.TryDequeue(out result);
+                Assert.Equal("urls", result.Urls);
+                testable.Dispose();
+            }
+        }
+
         public class ProcessQueuedItem
         {
             [Fact]
             public void WillReduceQueuedCSS()
             {
                 var testable = new TestableReducingQueue();
+                testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(ResourceType.Css);
                 testable.ClassUnderTest.EnqueueCss("url");
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Once());
+                testable.Dispose();
+            }
+
+            [Fact]
+            public void WillReduceQueuedJavaScript()
+            {
+                var testable = new TestableReducingQueue();
+                testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(ResourceType.JavaScript);
+                testable.ClassUnderTest.EnqueueJavaScript("url");
 
                 testable.ClassUnderTest.ProcessQueuedItem();
 
@@ -143,6 +173,7 @@ namespace RequestReduce.Facts.Module
                 var testable = new TestableReducingQueue();
                 var badUrl = "badUrl";
                 var badKey = Hasher.Hash(badUrl);
+                testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(ResourceType.Css);
                 testable.MockedReducer.Setup(x => x.Process(badKey, badUrl)).Throws(new Exception());
 
                 for (int i = 0; i < ReducingQueue.FailureThreshold + 1; i++)
@@ -194,6 +225,7 @@ namespace RequestReduce.Facts.Module
                 var testable = new TestableReducingQueue();
                 var badUrl = "badUrl";
                 var badKey = Hasher.Hash(badUrl);
+                testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(ResourceType.Css);
                 testable.MockedReducer.Setup(x => x.Process(badKey, badUrl)).Throws(new Exception());
                 for (int i = 0; i < ReducingQueue.FailureThreshold; i++)
                 {
@@ -219,6 +251,7 @@ namespace RequestReduce.Facts.Module
                 Exception error = null;
                 var innerError = new ApplicationException();
                 RequestReduceModule.CaptureErrorAction = (x => error= x);
+                testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(ResourceType.Css);
                 testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(innerError);
                 testable.ClassUnderTest.EnqueueCss("url");
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using RequestReduce.Module;
 
 namespace RequestReduce.Reducer
 {
@@ -12,6 +13,8 @@ namespace RequestReduce.Reducer
         private readonly IStore store;
         private IMinifier minifier;
         private readonly IUriBuilder uriBuilder;
+
+        public ResourceType SupportedResourceType { get { return ResourceType.JavaScript; } }
 
         public JavaScriptReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder)
         {

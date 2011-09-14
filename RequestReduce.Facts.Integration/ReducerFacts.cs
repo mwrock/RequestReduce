@@ -24,10 +24,21 @@ namespace RequestReduce.Facts.Integration
             config.SpritePhysicalPath = rrFolder;
         }
 
+        private static IReducer GetCssReducer()
+        {
+            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == Module.ResourceType.Css);
+        }
+
+        private static IReducer GetJavaScriptReducer()
+        {
+            return RRContainer.Current.GetAllInstances<IReducer>().Single(x => x.SupportedResourceType == Module.ResourceType.JavaScript);
+        }
+
+
         [OutputTraceOnFailFact]
         public void WillReturnSavedCSS()
         {
-            var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var reducer = GetCssReducer();
             var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
             var key = Hasher.Hash(urls).RemoveDashes();
 
@@ -39,10 +50,26 @@ namespace RequestReduce.Facts.Integration
             reducer.Dispose();
         }
 
+
+        [OutputTraceOnFailFact]
+        public void WillReturnSavedJavaScript()
+        {
+            var reducer = GetJavaScriptReducer();
+            var urls = "http://localhost:8877/Scripts/script1.js::http://localhost:8877/Scripts/script2.js";
+            var key = Hasher.Hash(urls).RemoveDashes();
+
+            var result = reducer.Process(urls);
+
+            Assert.Equal(result,
+                         Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".js")).Replace(
+                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"));
+            reducer.Dispose();
+        }
+
         [OutputTraceOnFailFact]
         public void WillSaveSprite()
         {
-            var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var reducer = GetCssReducer();
             var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
             var key = Hasher.Hash(urls).RemoveDashes();
 
@@ -55,7 +82,7 @@ namespace RequestReduce.Facts.Integration
         [OutputTraceOnFailFact]
         public void WillContainImageWithPropperDimensions()
         {
-            var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var reducer = GetCssReducer();
             var urls = "http://localhost:8877/Styles/style3.css";
             var key = Hasher.Hash(urls).RemoveDashes();
 
@@ -74,7 +101,7 @@ namespace RequestReduce.Facts.Integration
         [Trait("type", "manual_adhoc")]
         public void VsTest()
         {
-            var reducer = RRContainer.Current.GetInstance<IReducer>();
+            var reducer = GetCssReducer();
             //var vsurls = "http://i1.qa.social.s-msft.com/contentservice/5c9312af-010f-4ea8-9114-9f3300f2c557/Msdn.css::http://i1.qa.social.s-msft.com/contentservice/271b0fc8-5324-44e5-b638-9dad00d725c4/Site.css::http://i1.qa.social.s-msft.com/contentservice/5eefc914-a55f-4d62-aabc-9f330122bf50/vstudio.css::http://i1.ppe.visualstudiogallery.msdn.s-msft.com/pageresource.css?groupname=visualstudiostyles&amp;v=2011.8.1.3571";
             var smpurls = "http://galchameleon.redmond.corp.microsoft.com/contentservice/ccf7d578-cc04-41ed-9b27-9f2f00cc751e/Msdn.css::http://mwrock1.redmond.corp.microsoft.com/samples/PageResource.css?GroupName=samplesstyles&amp;v=2011.3.26.0";
 

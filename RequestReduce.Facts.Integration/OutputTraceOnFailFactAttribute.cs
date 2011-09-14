@@ -36,7 +36,7 @@ namespace RequestReduce.Facts.Integration
                 if (!(result is PassedResult))
                 {
                     var trace =
-                        new WebClientWrapper().DownloadCssString("http://localhost:8877/local.html?OutputError=1&OutputTrace=1");
+                        new WebClientWrapper().DownloadString("http://localhost:8877/local.html?OutputError=1&OutputTrace=1");
                     output.WriteLine(trace);
                     if(output != Console.Out)
                         Console.Out.WriteLine(trace);
