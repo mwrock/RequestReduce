@@ -6,17 +6,20 @@ namespace RequestReduce.Utilities
     public interface IUriBuilder
     {
         string BuildCssUrl(Guid key, byte[] bytes);
+        string BuildCssUrl(Guid key, string signature);
+        string BuildJavaScriptUrl(Guid key, byte[] bytes);
+        string BuildJavaScriptUrl(Guid key, string signature);
         string BuildSpriteUrl(Guid key, byte[] bytes);
         string ParseFileName(string url);
         Guid ParseKey(string url);
         string ParseSignature(string url);
-        string BuildCssUrl(Guid key, string signature);
     }
 
     public class UriBuilder : IUriBuilder
     {
         private readonly IRRConfiguration configuration;
         public const string CssFileName = "RequestReducedStyle.css";
+        public const string JsFileName = "RequestReducedStyle.js";
 
         public UriBuilder(IRRConfiguration configuration)
         {
@@ -31,6 +34,16 @@ namespace RequestReduce.Utilities
         public string BuildCssUrl(Guid key, string signature)
         {
             return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, CssFileName);
+        }
+
+        public string BuildJavaScriptUrl(Guid key, byte[] bytes)
+        {
+            return BuildJavaScriptUrl(key, Hasher.Hash(bytes).RemoveDashes());
+        }
+
+        public string BuildJavaScriptUrl(Guid key, string signature)
+        {
+            return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, JsFileName);
         }
 
         public string BuildSpriteUrl(Guid key, byte[] bytes)

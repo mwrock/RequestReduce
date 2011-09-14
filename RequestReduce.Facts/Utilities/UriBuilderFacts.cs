@@ -48,6 +48,39 @@ namespace RequestReduce.Facts.Utilities
 
         }
 
+
+        public class BuildJavaScriptUrl
+        {
+            [Fact]
+            public void WillCreateCorrectUrl()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = new byte[] { 1 };
+
+                var result = testable.ClassUnderTest.BuildJavaScriptUrl(guid, content);
+
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), UriBuilder.JsFileName), result);
+            }
+
+            [Fact]
+            public void WillCreateCorrectUrlFromString()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = "abc";
+
+                var result = testable.ClassUnderTest.BuildJavaScriptUrl(guid, content);
+
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, UriBuilder.JsFileName), result);
+            }
+
+        }
+
         public class BuildSpriteUrl
         {
             [Fact]

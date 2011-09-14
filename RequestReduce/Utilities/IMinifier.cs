@@ -2,6 +2,7 @@
 {
     public interface IMinifier
     {
-        string Minify(string unMinifiedContent);
+        string MinifyCss(string unMinifiedContent);
+        string MinifyJavaScript(string unMinifiedContent);
     }
 }

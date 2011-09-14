@@ -28,7 +28,6 @@ namespace RequestReduce
                                         x.For<SqlServerStore>().HybridHttpOrThreadLocalScoped().Use<SqlServerStore>().
                                             Ctor<IStore>().Is(y => y.GetInstance<DbDiskCache>());
                                         x.For<IFileRepository>().Use<FileRepository>();
-                                        x.For<IReducer>().Use<Reducer.Reducer>();
                                         x.For<IStore>().Use(y =>
                                                                             {
                                                                                 switch (
@@ -60,7 +59,7 @@ namespace RequestReduce
                 y.ExcludeNamespace("RequestReduce.Store");
                 y.ExcludeType<IReductionRepository>();
                 y.ExcludeType<IReducingQueue>();
-                y.ExcludeType<Reducer.Reducer>();
+                y.AddAllTypesOf<IReducer>();
                 y.WithDefaultConventions();
             }
             ));

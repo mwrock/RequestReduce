@@ -5,7 +5,8 @@
     var resourcePath = Server.MapPath("/") + "\\RRContent";
     var config = RRContainer.Current.GetInstance<IRRConfiguration>();
     config.SpritePhysicalPath = resourcePath;
-    var reducedCss = RRContainer.Current.GetInstance<IReducer>().Process("http://i4.social.s-msft.com/contentservice/274f1460-cf18-4ed7-b1df-9ee1013a9f9d/Msdn.css::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=masterstylessa");
+    var reducedCss = RRContainer.Current.GetInstance<CssReducer>().Process("http://i4.social.s-msft.com/contentservice/274f1460-cf18-4ed7-b1df-9ee1013a9f9d/Msdn.css::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=samplesstyles");
+    var reducedJS = RRContainer.Current.GetInstance<JavaScriptReducer>().Process("http://code.jquery.com/jquery-1.4.4.min.js::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=samplesscripts");
 }
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -19,17 +20,10 @@
 
     <link rel="shortcut icon" href="http://i4.code.msdn.s-msft.com/GlobalResources/images/Msdn/favicon.ico" type="image/x-icon" /> <link href="@reducedCss" rel="Stylesheet" type="text/css" /><meta name="CommunityInfo" content=" B=Msdn;A=Gallery::Samples;L=en-US;" />
 
-    <script src="http://code.jquery.com/jquery-1.4.4.min.js" type="text/javascript" language="javascript"></script>
-
-    
 
     <title>MSDN Samples Gallery</title>
 
-   <script src="http://i2.code.msdn.s-msft.com/pageresource.js?groupname=masterscriptssa" type="text/javascript">
-
-
-
-</script>
+   <script src="@reducedJS" type="text/javascript"></script>
 
     <link href="/site/feeds/searchRss" rel="Alternate" type="application/rss+xml"
 

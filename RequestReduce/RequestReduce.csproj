@@ -59,10 +59,13 @@
     <Compile Include="Configuration\RequestReduceConfigSection.cs" />
     <Compile Include="Module\AbstractFilter.cs" />
     <Compile Include="Module\IReductionRepository.cs" />
+    <Compile Include="Module\QueueItem.cs" />
     <Compile Include="Module\ReductionRepository.cs" />
+    <Compile Include="Module\ResourceType.cs" />
     <Compile Include="Module\ResponseTransformer.cs" />
     <Compile Include="Configuration\RRConfiguration.cs" />
     <Compile Include="Reducer\BackgroundImageClass.cs" />
+    <Compile Include="Reducer\JavaScriptReducer.cs" />
     <Compile Include="Reducer\CssImageTransformer.cs" />
     <Compile Include="Reducer\ICssImageTransformer.cs" />
     <Compile Include="Reducer\SpritedImage.cs" />
@@ -88,7 +91,7 @@
     <Compile Include="Utilities\IFileWrapper.cs" />
     <Compile Include="Reducer\SpriteManager.cs" />
     <Compile Include="Module\IReducingQueue.cs" />
-    <Compile Include="Reducer\Reducer.cs" />
+    <Compile Include="Reducer\CssReducer.cs" />
     <Compile Include="Module\ReducingQueue.cs" />
     <Compile Include="Module\RequestReduceModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
