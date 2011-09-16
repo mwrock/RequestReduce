@@ -38,6 +38,7 @@ namespace RequestReduce.Facts.Module
             [Fact]
             public void WillGetPreviouslySavedEntriesFromStore()
             {
+                RRContainer.Current = null;
                 var testable = new TestableReductionRepository();
                 var key = Hasher.Hash("url1");
                 var mockStore = new Mock<IStore>();

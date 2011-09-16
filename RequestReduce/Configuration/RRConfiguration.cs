@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Web;
 
 namespace RequestReduce.Configuration
 {
@@ -59,7 +60,9 @@ namespace RequestReduce.Configuration
             CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
             ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
-            SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath) ? "/RequestReduceContent" : config.SpriteVirtualPath;
+            SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath)
+                                    ? GetAbsolutePath("~/RequestReduceContent")
+                                    : GetAbsolutePath(config.SpriteVirtualPath);
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if(config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
@@ -68,6 +71,14 @@ namespace RequestReduce.Configuration
                     throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore));
             }
             CreatePhysicalPath();
+        }
+
+        private string GetAbsolutePath(string spriteVirtualPath)
+        {
+            if (HttpContext.Current != null)
+                return VirtualPathUtility.ToAbsolute(spriteVirtualPath);
+            else
+                return spriteVirtualPath.Replace("~", "");
         }
 
         public int SpriteColorLimit { get; set; }

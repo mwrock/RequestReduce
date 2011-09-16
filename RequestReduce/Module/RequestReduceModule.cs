@@ -30,6 +30,8 @@ namespace RequestReduce.Module
                 && !url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase))) return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
+                config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
             var user = httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {

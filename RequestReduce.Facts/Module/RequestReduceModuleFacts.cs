@@ -334,6 +334,32 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillSetPhysicalPathToMappedVirtualPathOnFlush()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
+            context.Setup(x => x.Server.MapPath("/RRContent")).Returns("physical");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(false);
+            context.Setup(x => x.User.Identity).Returns(identity.Object);
+            var queue = new Mock<IReducingQueue>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IReducingQueue>().Use(queue.Object);
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            config.VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillFlushFailuresOnFlushFailureUrlWhenAndAuthorizedUsersIsAnonymous()
         {
             var module = new RequestReduceModule();
@@ -342,6 +368,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
@@ -373,6 +400,7 @@ namespace RequestReduce.Facts.Module
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
             RRContainer.Current = new Container(x =>
             {
@@ -400,6 +428,7 @@ namespace RequestReduce.Facts.Module
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
             RRContainer.Current = new Container(x =>
             {
@@ -427,6 +456,7 @@ namespace RequestReduce.Facts.Module
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
             context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
             RRContainer.Current = new Container(x =>
             {
@@ -457,6 +487,7 @@ namespace RequestReduce.Facts.Module
             identity.Setup(x => x.Name).Returns("user3");
             context.Setup(x => x.User.Identity).Returns(identity.Object);
             context.Setup(x => x.Response).Returns(response.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
             RRContainer.Current = new Container(x =>
             {

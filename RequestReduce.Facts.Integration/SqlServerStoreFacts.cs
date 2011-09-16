@@ -198,16 +198,17 @@ namespace RequestReduce.Facts.Integration
 
         private void WaitToCreateCss()
         {
+            const int timeout = 20000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(UriBuilder.CssFileName) && !x.IsExpired) == null && watch.ElapsedMilliseconds < 10000)
+            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(UriBuilder.CssFileName) && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < 10000)
+            while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            if (watch.ElapsedMilliseconds >= 10000)
-                throw new TimeoutException(10000);
+            if (watch.ElapsedMilliseconds >= timeout)
+                throw new TimeoutException(timeout);
             Thread.Sleep(100);
         }
 
