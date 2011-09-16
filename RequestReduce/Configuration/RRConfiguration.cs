@@ -48,7 +48,7 @@ namespace RequestReduce.Configuration
 
         public RRConfiguration()
         {
-            AuthorizedUserList = config == null ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
+            AuthorizedUserList = config == null || string.IsNullOrWhiteSpace(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
             val = config == null ? 0 : config.SpriteColorLimit;
