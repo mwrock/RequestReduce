@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using RequestReduce.IOC;
+using Xunit;
 
 namespace RequestReduce.Facts
 {

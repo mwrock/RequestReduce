@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 

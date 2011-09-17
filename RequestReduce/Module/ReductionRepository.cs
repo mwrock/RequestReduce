@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 

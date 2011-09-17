@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using Moq;
+using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;

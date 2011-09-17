@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;

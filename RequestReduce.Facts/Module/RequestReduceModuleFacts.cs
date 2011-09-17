@@ -4,6 +4,7 @@ using System.Security.Principal;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;

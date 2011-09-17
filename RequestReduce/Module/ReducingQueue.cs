@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using RequestReduce.IOC;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using RequestReduce.Store;
