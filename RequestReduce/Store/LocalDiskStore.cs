@@ -15,8 +15,8 @@ namespace RequestReduce.Store
         protected readonly IFileWrapper fileWrapper;
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
-        private readonly IReductionRepository reductionRepository;
-        private readonly FileSystemWatcher watcher = new FileSystemWatcher();
+        protected IReductionRepository reductionRepository;
+        private FileSystemWatcher watcher = null;
 
         public LocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder, IReductionRepository reductionRepository)
         {
@@ -25,7 +25,8 @@ namespace RequestReduce.Store
             configuration.PhysicalPathChange += SetupWatcher;
             this.uriBuilder = uriBuilder;
             this.reductionRepository = reductionRepository;
-            SetupWatcher();
+            if(configuration.IsFullTrust)
+                SetupWatcher();
         }
 
         protected LocalDiskStore()
@@ -35,6 +36,7 @@ namespace RequestReduce.Store
         protected virtual void SetupWatcher()
         {
             if (string.IsNullOrEmpty(configuration.SpritePhysicalPath)) return;
+            watcher = new FileSystemWatcher();
             if (configuration != null)
             {
                 RRTracer.Trace("Setting up File System Watcher for {0}", configuration.SpritePhysicalPath);
@@ -68,7 +70,10 @@ namespace RequestReduce.Store
         {
             var file = GetFileNameFromConfig(url);
             var sig = uriBuilder.ParseSignature(url);
+            var guid = uriBuilder.ParseKey(url);
             fileWrapper.Save(content, file);
+            if (!url.ToLower().EndsWith(".png") && reductionRepository != null)
+                reductionRepository.AddReduction(guid, url);
             RRTracer.Trace("{0} saved to disk.", url);
             var expiredFile = file.Insert(file.IndexOf(sig), "Expired-");
             if (fileWrapper.FileExists(expiredFile))

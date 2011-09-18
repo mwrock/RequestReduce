@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Web;
+using RequestReduce.Configuration;
 
 namespace RequestReduce
 {
@@ -8,6 +10,12 @@ namespace RequestReduce
     {
         [Conditional("DEBUG")]
         public static void Trace(string messageFormat, params object[] args)
+        {
+            if (RRConfiguration.GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted)
+                LogImplementation(messageFormat, args);
+        }
+
+        private static void LogImplementation(string messageFormat, params object[] args)
         {
             if (System.Diagnostics.Trace.Listeners.Count <= 0) return;
             var msg = string.Format(messageFormat, args);

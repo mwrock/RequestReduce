@@ -63,6 +63,10 @@ namespace RequestReduce.Module
             if (!IsInRRContentDirectory(httpContextWrapper) 
                 || url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
                 || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)) return;
+            
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
+                config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();

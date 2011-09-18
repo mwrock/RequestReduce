@@ -28,6 +28,7 @@ namespace RequestReduce.Configuration
         bool ImageQuantizationDisabled { get; set; }
         int SpriteColorLimit { get; set; }
         int StorePollInterval { get; set; }
+        bool IsFullTrust { get; }
         event Action PhysicalPathChange; 
     }
 
@@ -48,6 +49,7 @@ namespace RequestReduce.Configuration
 
         public RRConfiguration()
         {
+            IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
             AuthorizedUserList = config == null || string.IsNullOrWhiteSpace(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit =  val == 0 ? 50000 : val;
@@ -123,7 +125,7 @@ namespace RequestReduce.Configuration
 
         public int SpriteSizeLimit { get; set; }
         public int ImageOptimizationCompressionLevel { get; set; }
-
+        public bool IsFullTrust { get; private set; }
         private void CreatePhysicalPath()
         {
             if (!string.IsNullOrEmpty(spritePhysicalPath) && !Directory.Exists(spritePhysicalPath))
@@ -133,6 +135,35 @@ namespace RequestReduce.Configuration
                     Thread.Sleep(0);
             }
         }
+
+        // Based on 
+        // http://blogs.msdn.com/b/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx
+        public static AspNetHostingPermissionLevel GetCurrentTrustLevel()
+        {
+            foreach (AspNetHostingPermissionLevel trustLevel in
+                    new AspNetHostingPermissionLevel[] {
+                    AspNetHostingPermissionLevel.Unrestricted,
+                    AspNetHostingPermissionLevel.High,
+                    AspNetHostingPermissionLevel.Medium,
+                    AspNetHostingPermissionLevel.Low,
+                    AspNetHostingPermissionLevel.Minimal 
+                })
+            {
+                try
+                {
+                    new AspNetHostingPermission(trustLevel).Demand();
+                }
+                catch (System.Security.SecurityException)
+                {
+                    continue;
+                }
+
+                return trustLevel;
+            }
+
+            return AspNetHostingPermissionLevel.None;
+        }
+
     }
 
     public static class ConfigExtensions

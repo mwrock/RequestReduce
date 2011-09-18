@@ -1,5 +1,6 @@
 ﻿<%@ Application Language="C#" %>
 <%@ Import Namespace="RequestReduce" %>
+<%@ Import Namespace="RequestReduce.Configuration" %>
 <%@ Import Namespace="RequestReduce.Module" %>
 <%@ Import Namespace="System.IO" %>
 
@@ -15,11 +16,19 @@
     void Application_Start(object sender, EventArgs e) 
     {
         RequestReduceModule.CaptureErrorAction = BuildErrorMessage;
-        System.Diagnostics.Trace.AutoFlush = true;
-        System.Diagnostics.Trace.Listeners.Add(listener);
+        if (RRConfiguration.GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted)
+        {
+            SetupTracing();
+        }
         RRTracer.Trace("Application Starting.");
     }
 
+    private void SetupTracing()
+    {
+        System.Diagnostics.Trace.AutoFlush = true;
+        System.Diagnostics.Trace.Listeners.Add(listener);
+    }
+    
     private void BuildErrorMessage(Exception ex)
     {
         errorBuffer.AppendLine(ex.ToString());

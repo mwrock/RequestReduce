@@ -89,6 +89,32 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillSetPhysicalPathToMappedVirtualPathWhenHandlingContent()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            context.Setup(x => x.Server.MapPath("/Virtual")).Returns("physical");
+            context.Setup(x => x.Request.RawUrl).Returns("/Virtual/blah");
+            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
+            var cache = new Mock<HttpCachePolicyBase>();
+            context.Setup(x => x.Response.Cache).Returns(cache.Object);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(new Mock<IStore>().Object);
+                x.For<IUriBuilder>().Use(new Mock<IUriBuilder>().Object);
+            });
+
+            module.HandleRRContent(context.Object);
+
+            config.VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillNotSetResponseFilterIfRRFilterQSIsDisabled()
         {
             var module = new RequestReduceModule();
@@ -151,6 +177,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -185,6 +212,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", "match" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -218,6 +246,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", "notmatch" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
@@ -258,6 +287,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Response).Returns(response.Object);
             context.Setup(x => x.Request.RawUrl).Returns(path);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var store = new Mock<IStore>();
@@ -289,6 +319,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
