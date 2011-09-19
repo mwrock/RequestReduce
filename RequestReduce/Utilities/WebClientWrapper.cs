@@ -19,6 +19,9 @@ namespace RequestReduce.Utilities
             try
             {
                 var client = WebRequest.Create(url);
+                var systemWebProxy = WebRequest.GetSystemWebProxy();
+                systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
+                client.Proxy = systemWebProxy;
                 using (var response = client.GetResponse())
                 {
                     if(!response.ContentType.Equals("text/css", StringComparison.OrdinalIgnoreCase) && requiresCssMimeType)
@@ -49,6 +52,9 @@ namespace RequestReduce.Utilities
             {
                 using (var client = new WebClient())
                 {
+                    var systemWebProxy = WebRequest.GetSystemWebProxy();
+                    systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
+                    client.Proxy = systemWebProxy;
                     return client.DownloadData(url);
                 }
             }
