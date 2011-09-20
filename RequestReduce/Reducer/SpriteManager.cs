@@ -37,7 +37,7 @@ namespace RequestReduce.Reducer
                 return;
             var spritedImage = SpriteContainer.AddImage(image);
             spriteList.Add(imageKey, spritedImage);
-            if (SpriteContainer.Size >= config.SpriteSizeLimit || SpriteContainer.Colors >= config.SpriteColorLimit)
+            if (SpriteContainer.Size >= config.SpriteSizeLimit || (SpriteContainer.Colors >= config.SpriteColorLimit && !config.ImageQuantizationDisabled && !config.ImageOptimizationDisabled))
                 Flush();
         }
 

@@ -90,6 +90,32 @@ namespace RequestReduce.Facts.Reducer
                 Assert.NotEqual(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
             }
 
+            [Fact]
+            public void WillNotFlushWhenColorCountPassesThresholdAndImageOptimizationIsDisabed()
+            {
+                var testable = new TestableSpriteManager();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteColorLimit).Returns(1);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(true);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Colors).Returns(1);
+
+                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
+
+                Assert.Same(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
+            }
+
+            [Fact]
+            public void WillNotFlushWhenColorCountPassesThresholdAndImageQuantizationIsDisabed()
+            {
+                var testable = new TestableSpriteManager();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteColorLimit).Returns(1);
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageQuantizationDisabled).Returns(true);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Colors).Returns(1);
+
+                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
+
+                Assert.Same(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
+            }
+
             [Theory,
             InlineData(40, 40, 0, 50, 40, 0),
             InlineData(40, 40, 0, 40, 50, 0),
