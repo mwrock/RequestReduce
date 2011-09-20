@@ -13,7 +13,7 @@ namespace RequestReduce.Module
     public class ResponseTransformer : IResponseTransformer
     {
         private readonly IReductionRepository reductionRepository;
-        private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex UrlPattern = new Regex(@"href=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly string cssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
         private readonly IReducingQueue reducingQueue;
