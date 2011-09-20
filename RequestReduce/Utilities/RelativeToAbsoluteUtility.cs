@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 
 namespace RequestReduce.Utilities
 {
@@ -6,6 +7,12 @@ namespace RequestReduce.Utilities
     {
         public static string ToAbsolute(Uri baseUrl, string relativeUrl)
         {
+            var context = HttpContext.Current;
+            if (context != null)
+            {
+                if (context.Request.Headers["X-Forwarded-For"] != null && !baseUrl.IsDefaultPort)
+                    baseUrl = new System.UriBuilder(baseUrl.Scheme, baseUrl.Host) { Path = baseUrl.PathAndQuery }.Uri;
+            }
             return IsAbsolute(relativeUrl) ? relativeUrl : new Uri(baseUrl, relativeUrl).AbsoluteUri;
         }
 
