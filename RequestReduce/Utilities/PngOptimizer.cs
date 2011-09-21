@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities.Quantizer;
+using System.Web;
 
 namespace RequestReduce.Utilities
 {
@@ -46,7 +47,7 @@ namespace RequestReduce.Utilities
                     }
                 }
 
-                 if (fileWrapper.FileExists(optiPngLocation))
+                 if (fileWrapper.FileExists(optiPngLocation) && RRConfiguration.GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted)
                  {
                     var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
                     try

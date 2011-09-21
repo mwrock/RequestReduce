@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using RequestReduce.Utilities;
+using RequestReduce.Configuration;
 
 namespace RequestReduce.Reducer
 {
@@ -49,13 +50,14 @@ namespace RequestReduce.Reducer
                         Size += imageBytes.Length;
                 }
             }
-            var avgColor = GetColors(bitmap);
+            var avgColor = RRConfiguration.GetCurrentTrustLevel() == System.Web.AspNetHostingPermissionLevel.Unrestricted ? GetColors(bitmap) : GetColorsInMediumTrust(bitmap);
             var spritedImage = new SpritedImage(avgColor, image, bitmap);
             images.Add(spritedImage);
             Width += bitmap.Width + 1;
             if (Height < bitmap.Height) Height = bitmap.Height;
             return spritedImage;
         }
+
 
         private int GetColors(Bitmap bitmap)
         {
@@ -87,6 +89,24 @@ namespace RequestReduce.Reducer
             {
                 bitmap.UnlockBits(data);
             }
+        }
+
+        private int GetColorsInMediumTrust(Bitmap bitmap)
+        {
+            long totalArgb = 0;
+            var total = 0;
+            for (var y = 0; y < bitmap.Height; y++)
+            {
+                for (var x = 0; x < bitmap.Width; x++)
+                {
+                    var argb = bitmap.GetPixel(x,y).ToArgb();
+                    uniqueColors.Add(argb);
+                    totalArgb += argb;
+                    ++total;
+                }
+            }
+
+            return (int)(totalArgb / total);
         }
 
         public int Size { get; private set; }
