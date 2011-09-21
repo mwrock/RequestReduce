@@ -5,7 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using RequestReduce.Configuration;
-using RequestReduce.Utilities.Quantizer;
+using nQuant;
 using System.Web;
 
 namespace RequestReduce.Utilities
@@ -38,7 +38,7 @@ namespace RequestReduce.Utilities
                 {
                     using(var unQuantized = new Bitmap(new MemoryStream(bytes)))
                     {
-                        using(var quantized = wuQuantizer.QuantizeImage(unQuantized))
+                        using(var quantized = wuQuantizer.QuantizeImage(unQuantized, 10, 70))
                         {
                             var memStream = new MemoryStream(); 
                             quantized.Save(memStream, ImageFormat.Png);

@@ -6,7 +6,7 @@ using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
-using RequestReduce.Utilities.Quantizer;
+using nQuant;
 using Xunit;
 
 namespace RequestReduce.Facts.Integration
@@ -72,13 +72,13 @@ namespace RequestReduce.Facts.Integration
             var opt = new WuQuantizer();
             var source = new Bitmap("c:\\requestreduce\\requestreduce.sampleweb\\vstest\\vstest.png");
 
-            var image = opt.QuantizeImage(source);
+            var image = opt.QuantizeImage(source, 10, 70);
             image.Dispose();
 
             opt = new WuQuantizer();
             var watch = new Stopwatch();
             watch.Start();
-            image = opt.QuantizeImage(source);
+            image = opt.QuantizeImage(source, 10, 70);
             var ms = watch.ElapsedMilliseconds;
 
             image.Save("c:\\requestreduce\\requestreduce.sampleweb\\vstest\\vstest-quant2.png", ImageFormat.Png);
