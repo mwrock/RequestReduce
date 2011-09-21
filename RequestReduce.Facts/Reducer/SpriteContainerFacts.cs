@@ -6,6 +6,7 @@ using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
+using RequestReduce.Configuration;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -13,7 +14,7 @@ namespace RequestReduce.Facts.Reducer
     {
         class FakeSpriteContainer : SpriteContainer
         {
-            public FakeSpriteContainer(IWebClientWrapper webClientWrapper) : base(webClientWrapper)
+            public FakeSpriteContainer(IWebClientWrapper webClientWrapper, IRRConfiguration config) : base(webClientWrapper, config)
             {
             }
 
@@ -27,7 +28,7 @@ namespace RequestReduce.Facts.Reducer
         {
             public TestableSpriteContainer()
             {
-                
+                Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(true);
             }
 
             public byte[] Image15X17 = File.ReadAllBytes("testimages\\delete.png");
@@ -259,6 +260,19 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void ColorCountWillBe0InRestrictedTrust()
+            {
+                var testable = new TestableSpriteContainer();
+                var fiveColorImage = new BackgroundImageClass("image1", "") { ImageUrl = "url" };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(TestableSpriteContainer.GetFiveColorImage());
+                testable.Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(false);
+
+                testable.ClassUnderTest.AddImage(fiveColorImage);
+
+                Assert.Equal(0, testable.ClassUnderTest.Colors);
+            }
+
+            [Fact]
             public void WillCountUniqueColorsOfAddedImages()
             {
                 var testable = new TestableSpriteContainer();
@@ -274,6 +288,22 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void UniqueColorsOfAddedImagesWillBe0WhenNotInFullTrust()
+            {
+                var testable = new TestableSpriteContainer();
+                var fiveColorImage = new BackgroundImageClass("image1", "") { ImageUrl = "url" };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(TestableSpriteContainer.GetFiveColorImage());
+                var fourColorImage = new BackgroundImageClass("image2", "") { ImageUrl = "url2" };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url2")).Returns(TestableSpriteContainer.GetFourColorImage());
+                testable.Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(false);
+
+                testable.ClassUnderTest.AddImage(fiveColorImage);
+                testable.ClassUnderTest.AddImage(fourColorImage);
+
+                Assert.Equal(0, testable.ClassUnderTest.Colors);
+            }
+
+            [Fact]
             public void WillCalculateAverageColorsOfAddedImages()
             {
                 var testable = new TestableSpriteContainer();
@@ -285,6 +315,21 @@ namespace RequestReduce.Facts.Reducer
                 var result = testable.ClassUnderTest.AddImage(halfvioletHalfGreyImage);
 
                 Assert.Equal((color1+color2)/2, result.AverageColor);
+            }
+
+            [Fact]
+            public void AverageColorsOfAddedImagesWillBe0WhenNotInFullTrust()
+            {
+                var testable = new TestableSpriteContainer();
+                var halfvioletHalfGreyImage = new BackgroundImageClass("image1", "") { ImageUrl = "url" };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(TestableSpriteContainer.GetHalfvioletHalfGreyImageImage(Color.DarkViolet));
+                var color1 = Color.DarkViolet.ToArgb();
+                var color2 = Color.DimGray.ToArgb();
+                testable.Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(false);
+
+                var result = testable.ClassUnderTest.AddImage(halfvioletHalfGreyImage);
+
+                Assert.Equal(0, result.AverageColor);
             }
 
         }

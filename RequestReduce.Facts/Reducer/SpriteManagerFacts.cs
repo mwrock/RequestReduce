@@ -41,6 +41,7 @@ namespace RequestReduce.Facts.Reducer
             {
                 Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1000);
                 Mock<IRRConfiguration>().Setup(x => x.SpriteColorLimit).Returns(1000);
+                Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(true);
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
@@ -367,6 +368,21 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(true);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                var optimizedBytes = new byte[0];
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).
+                    Callback<byte[], int, bool>((a, b, c) => optimizedBytes = a).Returns(() => optimizedBytes);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Empty(optimizedBytes);
+            }
+
+            [Fact]
+            public void WillNotOptimizeImageIfNotInFullTrust()
+            {
+                var testable = new TestableSpriteManager();
+                testable.Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(false);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var optimizedBytes = new byte[0];
                 testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).

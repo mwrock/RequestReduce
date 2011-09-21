@@ -15,11 +15,13 @@ namespace RequestReduce.Reducer
     {
         protected readonly IList<SpritedImage> images = new List<SpritedImage>();
         private readonly IWebClientWrapper webClientWrapper;
+        private readonly IRRConfiguration rrConfiguration;
         private readonly HashSet<int> uniqueColors = new HashSet<int>();
 
-        public SpriteContainer(IWebClientWrapper webClientWrapper)
+        public SpriteContainer(IWebClientWrapper webClientWrapper, IRRConfiguration rrConfiguration)
         {
             this.webClientWrapper = webClientWrapper;
+            this.rrConfiguration = rrConfiguration;
         }
 
         public SpritedImage AddImage (BackgroundImageClass image)
@@ -50,7 +52,7 @@ namespace RequestReduce.Reducer
                         Size += imageBytes.Length;
                 }
             }
-            var avgColor = RRConfiguration.GetCurrentTrustLevel() == System.Web.AspNetHostingPermissionLevel.Unrestricted ? GetColors(bitmap) : GetColorsInMediumTrust(bitmap);
+            var avgColor = rrConfiguration.IsFullTrust ? GetColors(bitmap) : 0;
             var spritedImage = new SpritedImage(avgColor, image, bitmap);
             images.Add(spritedImage);
             Width += bitmap.Width + 1;
@@ -89,24 +91,6 @@ namespace RequestReduce.Reducer
             {
                 bitmap.UnlockBits(data);
             }
-        }
-
-        private int GetColorsInMediumTrust(Bitmap bitmap)
-        {
-            long totalArgb = 0;
-            var total = 0;
-            for (var y = 0; y < bitmap.Height; y++)
-            {
-                for (var x = 0; x < bitmap.Width; x++)
-                {
-                    var argb = bitmap.GetPixel(x,y).ToArgb();
-                    uniqueColors.Add(argb);
-                    totalArgb += argb;
-                    ++total;
-                }
-            }
-
-            return (int)(totalArgb / total);
         }
 
         public int Size { get; private set; }
