@@ -42,6 +42,34 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillNotTransformIEConditionalCss()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+    <!--[if IE 6]>
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+    <![endif]-->
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+<meta name=""description"" content="""" />
+    <!--[if IE 6]>
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+    <![endif]-->
+
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me2.css::")).Returns("http://server/Me3.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
             public void WillTransformRelativeUrlToAbsolute()
             {
                 var testable = new TestableResponseTransformer();
