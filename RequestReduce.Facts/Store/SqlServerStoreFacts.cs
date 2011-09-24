@@ -308,7 +308,7 @@ namespace RequestReduce.Facts.Store
 
                 var result = testable.ClassUnderTest.GetUrlByKey(guid1);
 
-                Assert.Equal("file1", result);
+                Assert.Equal("url1", result);
             }
 
             [Fact]
