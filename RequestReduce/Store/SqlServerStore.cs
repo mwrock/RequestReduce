@@ -103,7 +103,7 @@ namespace RequestReduce.Store
         public string GetUrlByKey(Guid keyGuid)
         {
             var fileName = repository.GetActiveUrlByKey(keyGuid);
-            return uriBuilder.BuildCssUrl(uriBuilder.ParseKey(fileName), uriBuilder.ParseSignature(fileName));
+            return fileName == null ? null : uriBuilder.BuildCssUrl(uriBuilder.ParseKey(fileName), uriBuilder.ParseSignature(fileName));
         }
     }
 }

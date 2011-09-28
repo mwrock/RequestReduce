@@ -40,11 +40,14 @@ namespace RequestReduce.Utilities
 
         public string ParseFileName(string url)
         {
-            return url.Substring(url.LastIndexOf('/') + 1);
+            return string.IsNullOrWhiteSpace(url) ? null : url.Substring(url.LastIndexOf('/') + 1);
         }
 
         public Guid ParseKey(string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+                return Guid.Empty;
+
             var idx = url.LastIndexOf('/');
             string keyDir = idx > -1 ? url.Substring(idx + 1) : url;
             string strKey = string.Empty;
@@ -58,6 +61,9 @@ namespace RequestReduce.Utilities
 
         public string ParseSignature(string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+                return Guid.Empty.RemoveDashes();
+
             var idx = url.LastIndexOf('/');
             var keyDir = idx > -1 ? url.Substring(idx + 1) : url;
             var strKey = string.Empty;

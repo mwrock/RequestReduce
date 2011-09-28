@@ -69,7 +69,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit">
-      <HintPath>..\packages\xunit.1.8.0.1545\lib\xunit.dll</HintPath>
+      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.runner.tdnet">
+      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.runner.tdnet.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.runner.utility">
+      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.runner.utility.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

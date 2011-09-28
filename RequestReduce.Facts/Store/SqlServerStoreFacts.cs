@@ -315,12 +315,7 @@ namespace RequestReduce.Facts.Store
             public void WillGetNullFromStoreIfItDoesNotExists()
             {
                 var testable = new TestableSqlServerStore();
-                var guid1 = Guid.NewGuid();
-                var sig1 = Guid.NewGuid().RemoveDashes();
-                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(guid1, sig1)).Returns("url1");
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
-                testable.Mock<IFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1)).Returns("file1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildCssUrl(It.IsAny<Guid>(), It.IsAny<string>())).Returns("url1");
 
                 var result = testable.ClassUnderTest.GetUrlByKey(Guid.NewGuid());
 

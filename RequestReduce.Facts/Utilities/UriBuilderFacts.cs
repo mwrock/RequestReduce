@@ -2,6 +2,7 @@
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 using Xunit;
+using Xunit.Extensions;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
 
 namespace RequestReduce.Facts.Utilities
@@ -76,6 +77,19 @@ namespace RequestReduce.Facts.Utilities
 
                 Assert.Equal("key-file.css", result);
             }
+
+            [Theory,
+            InlineData(null),
+            InlineData(" "),
+            InlineData("")]
+            public void WillReturnNullIfNameIsNullOrEmpty(string input)
+            {
+                var testable = new TestableUriBuilder();
+
+                var result = testable.ClassUnderTest.ParseFileName(input);
+
+                Assert.Null(result);
+            }
         }
 
         public class ParseKey
@@ -102,6 +116,20 @@ namespace RequestReduce.Facts.Utilities
 
                 Assert.Equal(Guid.Empty, result);
             }
+
+            [Theory,
+            InlineData(null),
+            InlineData(" "),
+            InlineData("")]
+            public void WillReturnEmptyGuidIfKeyIsNullOrWhiteSpace(string input)
+            {
+                var testable = new TestableUriBuilder();
+
+                var result = testable.ClassUnderTest.ParseKey(input);
+
+                Assert.Equal(Guid.Empty, result);
+            }
+
         }
 
         public class ParseSignature
@@ -138,6 +166,20 @@ namespace RequestReduce.Facts.Utilities
 
                 Assert.Equal(Guid.Empty.RemoveDashes(), result);
             }
+
+            [Theory,
+            InlineData(null),
+            InlineData(" "),
+            InlineData("")]
+            public void WillReturnEmptyGuidIfkeyIsNullOrWhiteSpace(string input)
+            {
+                var testable = new TestableUriBuilder();
+
+                var result = testable.ClassUnderTest.ParseSignature(input);
+
+                Assert.Equal(Guid.Empty.RemoveDashes(), result);
+            }
+
         }
     }
 
