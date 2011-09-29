@@ -8,7 +8,7 @@ properties {
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
-	$version = "0.9." + (git log --pretty=oneline | measure-object).Count
+	$version = "v1.0." + (git log v1.0.. --pretty=oneline | measure-object).Count
 }
 
 task Debug -depends Default
@@ -27,7 +27,7 @@ task echo-path {
 	write-host "dir:" $webDir
 }
 task Update-AssemblyInfoFiles {
-	$commit = git log -1 --pretty=format:%H
+	$commit = git log -1 v1.0.. --pretty=format:%H
 	Update-AssemblyInfoFiles $version $commit
 }
 
