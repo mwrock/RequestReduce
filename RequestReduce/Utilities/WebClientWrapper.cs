@@ -3,18 +3,31 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Collections.Generic;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Utilities
 {
     public interface IWebClientWrapper
     {
-        string DownloadString(string url, bool requiresCssMimeType);
+        string DownloadString<T>(string url) where T : IResourceType, new();
+        string DownloadString(string url);
         byte[] DownloadBytes(string url);
     }
 
     public class WebClientWrapper : IWebClientWrapper
     {
-        public string DownloadString(string url, bool requiresCssMimeType)
+        public string DownloadString<T>(string url) where T : IResourceType, new()
+        {
+            return DownloadString(url, new T().SupportedMimeTypes);
+        }
+
+        public string DownloadString(string url)
+        {
+            return DownloadString(url, Enumerable.Empty<string>());
+        }
+
+        private string DownloadString(string url, IEnumerable<string> requiredMimeTypes)
         {
             try
             {
@@ -24,14 +37,14 @@ namespace RequestReduce.Utilities
                 client.Proxy = systemWebProxy;
                 using (var response = client.GetResponse())
                 {
-                    if(!response.ContentType.Equals("text/css", StringComparison.OrdinalIgnoreCase) && requiresCssMimeType)
-                        throw new InvalidOperationException(
-                            "RequestReduce has landed on a css url that does not contain a css mime type.");
-                    using(var responseStream = response.GetResponseStream())
+                    if (requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
+                        throw new InvalidOperationException(string.Format(
+                            "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes)));
+                    using (var responseStream = response.GetResponseStream())
                     {
                         if (responseStream == null)
                             return string.Empty;
-                        using(var streameader = new StreamReader(responseStream, Encoding.UTF8))
+                        using (var streameader = new StreamReader(responseStream, Encoding.UTF8))
                         {
                             return streameader.ReadToEnd();
                         }

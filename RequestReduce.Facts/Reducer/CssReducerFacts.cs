@@ -8,20 +8,33 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Module;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Reducer
 {
-    public class ReducerFacts
+    public class CssReducerFacts
     {
-        private class TestableReducer : Testable<RequestReduce.Reducer.Reducer>
+        private class TestableCssReducer : Testable<RequestReduce.Reducer.CssReducer>
         {
-            public TestableReducer()
+            public TestableCssReducer()
             {
-                Mock<IMinifier>().Setup(x => x.Minify(It.IsAny<string>())).Returns("minified");
+                Mock<IMinifier>().Setup(x => x.Minify<CssResource>(It.IsAny<string>())).Returns("minified");
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
+        }
+
+        public class SupportedResourceType
+        {
+            [Fact]
+            public void WillSupportCss()
+            {
+                var testable = new TestableCssReducer();
+
+                Assert.Equal(typeof(CssResource), testable.ClassUnderTest.SupportedResourceType);
+            }
         }
 
         public class Process
@@ -29,7 +42,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillReturnProcessedCssUrlInCorrectConfigDirectory()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
@@ -40,7 +53,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillReturnProcessedCssUrlWithKeyInPath()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 var guid = Guid.NewGuid();
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
@@ -53,7 +66,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillSetSpriteManagerCssKey()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
                 var guid = Guid.NewGuid();
 
                 testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
@@ -64,7 +77,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillUseHashOfUrlsIfNoKeyIsGiven()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
                 var guid = Hasher.Hash("http://host/css1.css::http://host/css2.css");
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
@@ -77,31 +90,31 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillReturnProcessedCssUrlWithARequestReducedFileName()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                Assert.True(result.EndsWith("-" + UriBuilder.CssFileName));
+                Assert.True(result.EndsWith("-" + new CssResource().FileName));
             }
 
             [Fact]
             public void WillDownloadContentOfEachOriginalCSS()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
-                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString("http://host/css1.css", true), Times.Once());
-                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString("http://host/css2.css", true), Times.Once());
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<CssResource>("http://host/css1.css"), Times.Once());
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<CssResource>("http://host/css2.css"), Times.Once());
             }
 
             [Fact]
             public void WillSaveMinifiedAggregatedCSS()
             {
-                var testable = new TestableReducer();
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString("http://host/css1.css", true)).Returns("css1");
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString("http://host/css2.css", true)).Returns("css2");
-                testable.Mock<IMinifier>().Setup(x => x.Minify("css1css2")).Returns("min");
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css1.css")).Returns("css1");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<CssResource>("css1css2")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
@@ -114,8 +127,8 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillAddSpriteToSpriteManager()
             {
-                var testable = new TestableReducer();
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>(), true)).Returns("css");
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns("css");
                 var image1 = new BackgroundImageClass("", "http://server/content/style.css") {ImageUrl = "image1"};
                 var image2 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image2" };
                 var css = "css";
@@ -129,11 +142,11 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillInjectSpritesToCssAfterFlush()
             {
-                var testable = new TestableReducer();
+                var testable = new TestableCssReducer();
                 var image1 = new BackgroundImageClass("", "http://server/content/style.css") {ImageUrl = "image1"};
                 var image2 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image2" };
                 var css = "css";
-                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString(It.IsAny<string>(), true)).Returns(css);
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns(css);
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new[] { image1, image2 });
                 var sprite1 = new SpritedImage(1, null, null){Position = -100};
                 var sprite2 = new SpritedImage(2, null, null) { Position = -100 };

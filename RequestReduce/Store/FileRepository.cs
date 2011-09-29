@@ -7,14 +7,16 @@ using System.Text;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.ResourceTypes;
+using RequestReduce.IOC;
 
 namespace RequestReduce.Store
 {
     public interface IFileRepository : IRepository<RequestReduceFile>
     {
-        IEnumerable<string> GetActiveCssFiles();
+        IEnumerable<string> GetActiveFiles();
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
-        string GetActiveUrlByKey(Guid key);
+        string GetActiveUrlByKey(Guid key, Type resourceType);
     }
     public class FileRepository : Repository<RequestReduceFile>, IFileRepository
     {
@@ -28,7 +30,7 @@ namespace RequestReduce.Store
             Context.Database.Initialize(false);
         }
 
-        public IEnumerable<string> GetActiveCssFiles()
+        public IEnumerable<string> GetActiveFiles()
         {
             return (from files in AsQueryable()
                     where !files.IsExpired
@@ -36,7 +38,7 @@ namespace RequestReduce.Store
                     into filegroup
                     join files2 in AsQueryable() on new {k = filegroup.Key, u = filegroup.Max(m => m.LastUpdated)}
                         equals new {k = files2.Key, u = files2.LastUpdated}
-                    where files2.FileName.Contains(Utilities.UriBuilder.CssFileName) select files2.FileName).ToList();
+                    where files2.FileName.Contains("RequestReduce") select files2.FileName).ToList();
         }
 
         public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
@@ -104,10 +106,11 @@ namespace RequestReduce.Store
         }
 
 
-        public string GetActiveUrlByKey(Guid key)
+        public string GetActiveUrlByKey(Guid key, Type resourceType)
         {
+            var fileName = (RRContainer.Current.GetInstance(resourceType) as IResourceType).FileName;
             return (from files in AsQueryable()
-                    where files.Key == key && !files.IsExpired && files.FileName.Contains(UriBuilder.CssFileName)
+                    where files.Key == key && !files.IsExpired && files.FileName.Contains(fileName)
                         select files.FileName).FirstOrDefault();
         }
     }

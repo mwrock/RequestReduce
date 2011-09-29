@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web;
 using RequestReduce.Module;
 using RequestReduce.Utilities;
+using RequestReduce.Reducer;
+using RequestReduce.ResourceTypes;
+using RequestReduce.IOC;
 
 namespace RequestReduce.Store
 {
@@ -95,15 +98,15 @@ namespace RequestReduce.Store
         public IDictionary<Guid, string> GetSavedUrls()
         {
             RRTracer.Trace("SqlServerStore Looking for previously saved content.");
-            var files = repository.GetActiveCssFiles();
-            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file)));
+            var files = repository.GetActiveFiles();
+            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file), RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => file.EndsWith(x.FileName)).GetType()));
         }
 
 
-        public string GetUrlByKey(Guid keyGuid)
+        public string GetUrlByKey(Guid keyGuid, Type resourceType)
         {
-            var fileName = repository.GetActiveUrlByKey(keyGuid);
-            return fileName == null ? null : uriBuilder.BuildCssUrl(uriBuilder.ParseKey(fileName), uriBuilder.ParseSignature(fileName));
+            var fileName = repository.GetActiveUrlByKey(keyGuid, resourceType);
+            return fileName == null ? null : uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(fileName), uriBuilder.ParseSignature(fileName), resourceType);
         }
     }
 }

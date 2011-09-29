@@ -43,7 +43,7 @@ namespace RequestReduce.Store
                     .Property(s => s.Content)
                     .IsRequired()
                     .HasColumnType("image")
-                    .HasMaxLength(null);
+                    .IsMaxLength();
                 base.Configuration.ValidateOnSaveEnabled = false;
             }
         }

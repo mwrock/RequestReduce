@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Store
 {
@@ -11,6 +12,6 @@ namespace RequestReduce.Store
         bool SendContent(string url, HttpResponseBase response);
         IDictionary<Guid, string> GetSavedUrls();
         void Flush(Guid keyGuid);
-        string GetUrlByKey(Guid keyGuid);
+        string GetUrlByKey(Guid keyGuid, Type resourceType);
     }
 }

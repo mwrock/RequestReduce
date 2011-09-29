@@ -6,6 +6,7 @@ using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
 using StructureMap;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.IOC
 {
@@ -19,6 +20,11 @@ namespace RequestReduce.IOC
             var initContainer = new StructureMap.Container();
             initContainer.Configure(x =>
                                         {
+                                            x.For<IResourceType>().OnCreationForAll((c, r) => 
+                                            { 
+                                                if (!r.FileName.Contains("RequestReduce")) 
+                                                    throw new System.InvalidOperationException ("ResourceType file names must contain the string 'RequestReduce'"); 
+                                            });
                                             x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                                             x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                                             x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
@@ -27,7 +33,6 @@ namespace RequestReduce.IOC
                                             x.For<SqlServerStore>().LifecycleIs(new RRHybridLifecycle()).Use<SqlServerStore>().
                                                 Ctor<IStore>().Is(y => y.GetInstance<DbDiskCache>());
                                             x.For<IFileRepository>().Use<FileRepository>();
-                                            x.For<IReducer>().Use<Reducer.Reducer>();
                                             x.For<IStore>().Use(y =>
                                                                     {
                                                                         switch (
@@ -57,9 +62,10 @@ namespace RequestReduce.IOC
                                                         y.ExcludeNamespace("RequestReduce.Utilities");
                                                         y.ExcludeNamespace("RequestReduce.Configuration");
                                                         y.ExcludeNamespace("RequestReduce.Store");
+                                                        y.ExcludeNamespace("RequestReduce.ResourceTypes");
                                                         y.ExcludeType<IReductionRepository>();
                                                         y.ExcludeType<IReducingQueue>();
-                                                        y.ExcludeType<Reducer.Reducer>();
+                                                        y.AddAllTypesOf<IReducer>();
                                                         y.WithDefaultConventions();
                                                     }
                                              ));
@@ -68,6 +74,8 @@ namespace RequestReduce.IOC
                                                         y.Assembly("RequestReduce");
                                                         y.IncludeNamespace("RequestReduce.Utilities");
                                                         y.IncludeNamespace("RequestReduce.Configuration");
+                                                        y.IncludeNamespace("RequestReduce.ResourceTypes");
+                                                        y.AddAllTypesOf<IResourceType>();
                                                         y.With(new SingletonConvention());
                                                     }
                                              ));

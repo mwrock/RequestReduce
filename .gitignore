@@ -28,5 +28,6 @@ RequestReduce/Nuget/pngoptimization
 *.pidb
 *.vsp
 *.psess
+*.log
 vstest
 App_Readme

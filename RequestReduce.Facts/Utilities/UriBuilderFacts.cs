@@ -4,6 +4,8 @@ using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Reducer;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Utilities
 {
@@ -17,10 +19,10 @@ namespace RequestReduce.Facts.Utilities
             }
         }
 
-        public class BuildCssUrl
+        public class BuildUrl
         {
             [Fact]
-            public void WillCreateCorrectUrl()
+            public void WillCreateCorrectCssUrl()
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
@@ -28,13 +30,13 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = new byte[] {1};
 
-                var result = testable.ClassUnderTest.BuildCssUrl(guid, content);
+                var result = testable.ClassUnderTest.BuildResourceUrl<CssResource>(guid, content);
 
-                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), UriBuilder.CssFileName), result);
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), new CssResource().FileName), result);
             }
 
             [Fact]
-            public void WillCreateCorrectUrlFromString()
+            public void WillCreateCorrectCssUrlFromString()
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
@@ -42,11 +44,52 @@ namespace RequestReduce.Facts.Utilities
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
-                var result = testable.ClassUnderTest.BuildCssUrl(guid, content);
+                var result = testable.ClassUnderTest.BuildResourceUrl<CssResource>(guid, content);
 
-                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, UriBuilder.CssFileName), result);
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, new CssResource().FileName), result);
             }
 
+            [Fact]
+            public void WillCreateCorrectJavascriptUrl()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = new byte[] { 1 };
+
+                var result = testable.ClassUnderTest.BuildResourceUrl<JavaScriptResource>(guid, content);
+
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), new JavaScriptResource().FileName), result);
+            }
+
+            [Fact]
+            public void WillCreateCorrectJavaScriptUrlFromString()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = "abc";
+
+                var result = testable.ClassUnderTest.BuildResourceUrl<JavaScriptResource>(guid, content);
+
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, new JavaScriptResource().FileName), result);
+            }
+
+            [Fact]
+            public void WillThrowArgumentExceptionIfResourceTypeIsUnknown()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = "abc";
+
+                var result = Record.Exception(() => testable.ClassUnderTest.BuildResourceUrl(guid, content, typeof(Object))) as ArgumentException;
+
+                Assert.NotNull(result);
+            }
         }
 
         public class BuildSpriteUrl

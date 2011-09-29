@@ -89,6 +89,17 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("javascriptProcesingDisabled")]
+        public bool JavaScriptProcesingDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["javascriptProcesingDisabled"].ToString(), out result);
+                return result;
+            }
+        }
+
         [ConfigurationProperty("imageOptimizationDisabled")]
         public bool ImageOptimizationDisabled
         {
@@ -132,5 +143,15 @@ namespace RequestReduce.Configuration
                 return limit;
             }
         }
+
+        [ConfigurationProperty("javascriptUrlsToIgnore")]
+        public string JavaScriptUrlsToIgnore
+        {
+            get
+            {
+                return base["javascriptUrlsToIgnore"].ToString();
+            }
+        }
+
     }
 }

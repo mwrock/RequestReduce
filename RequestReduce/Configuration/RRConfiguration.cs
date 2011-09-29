@@ -23,13 +23,15 @@ namespace RequestReduce.Configuration
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
         bool CssProcesingDisabled { get; set; }
+        bool JavaScriptProcesingDisabled { get; set; }
         bool ImageOptimizationDisabled { get; set; }
         int ImageOptimizationCompressionLevel { get; set; }
         bool ImageQuantizationDisabled { get; set; }
         int SpriteColorLimit { get; set; }
         int StorePollInterval { get; set; }
         bool IsFullTrust { get; }
-        event Action PhysicalPathChange; 
+        event Action PhysicalPathChange;
+        string JavaScriptUrlsToIgnore { get; set; }
     }
 
     public class RRConfiguration : IRRConfiguration
@@ -37,22 +39,23 @@ namespace RequestReduce.Configuration
         private readonly RequestReduceConfigSection config = ConfigurationManager.GetSection("RequestReduce") as RequestReduceConfigSection;
         private string spritePhysicalPath;
         private readonly Store contentStore = Store.LocalDiskStore;
-        public static readonly IEnumerable<string> Anonymous = new[]{"Anonymous"};
+        public static readonly IEnumerable<string> Anonymous = new[] { "Anonymous" };
 
         public bool CssProcesingDisabled { get; set; }
+        public bool JavaScriptProcesingDisabled { get; set; }
         public bool ImageOptimizationDisabled { get; set; }
         public bool ImageQuantizationDisabled { get; set; }
 
         public int StorePollInterval { get; set; }
 
-        public event Action PhysicalPathChange;  
+        public event Action PhysicalPathChange;
 
         public RRConfiguration()
         {
             IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
             AuthorizedUserList = config == null || string.IsNullOrWhiteSpace(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
-            SpriteSizeLimit =  val == 0 ? 50000 : val;
+            SpriteSizeLimit = val == 0 ? 50000 : val;
             val = config == null ? 0 : config.SpriteColorLimit;
             SpriteColorLimit = val == 0 ? 5000 : val;
             val = config == null ? 0 : config.StorePollInterval;
@@ -60,16 +63,20 @@ namespace RequestReduce.Configuration
             val = config == null ? 0 : config.ImageOptimizationCompressionLevel;
             ImageOptimizationCompressionLevel = val == 0 ? 5 : val;
             CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
+            JavaScriptProcesingDisabled = config == null ? false : config.JavaScriptProcesingDisabled;
             ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
             SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);
+            JavaScriptUrlsToIgnore = config == null || string.IsNullOrWhiteSpace(config.JavaScriptUrlsToIgnore)
+                                    ? "ajax.googleapis.com/ajax/libs/jquery/,ajax.aspnetcdn.com/ajax/jQuery/"
+                                    : config.JavaScriptUrlsToIgnore;
             spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
-            if(config != null && !string.IsNullOrEmpty(config.ContentStore))
+            if (config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
                 var success = Enum.TryParse(config.ContentStore, true, out contentStore);
-                if(!success)
+                if (!success)
                     throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore));
             }
             CreatePhysicalPath();
@@ -92,8 +99,8 @@ namespace RequestReduce.Configuration
         public string SpritePhysicalPath
         {
             get { return spritePhysicalPath; }
-            set 
-            { 
+            set
+            {
                 spritePhysicalPath = value;
                 CreatePhysicalPath();
                 if (PhysicalPathChange != null)
@@ -103,7 +110,7 @@ namespace RequestReduce.Configuration
 
         public string ContentHost
         {
-            get { return config ==null ? null : config.ContentHost; }
+            get { return config == null ? null : config.ContentHost; }
         }
 
         public string ConnectionStringName
@@ -164,6 +171,8 @@ namespace RequestReduce.Configuration
             return AspNetHostingPermissionLevel.None;
         }
 
+
+        public string JavaScriptUrlsToIgnore { get; set; }
     }
 
     public static class ConfigExtensions

@@ -6,7 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.Facts", "Requ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{334FCF8B-59F9-4FB4-8161-0A9E34387CE3}"
 	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
 		build.bat = build.bat
 		BuildScript.ps1 = BuildScript.ps1
 		index.html = index.html

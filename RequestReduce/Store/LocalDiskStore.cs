@@ -7,6 +7,9 @@ using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Utilities;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Reducer;
+using RequestReduce.IOC;
+using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Store
 {
@@ -43,7 +46,7 @@ namespace RequestReduce.Store
                 watcher.Path = configuration.SpritePhysicalPath;
             }
             watcher.IncludeSubdirectories = true;
-            watcher.Filter = "*.css";
+            watcher.Filter = "*RequestReduce*";
             watcher.Created += OnChange;
             watcher.Deleted += OnChange;
             watcher.Changed += OnChange;
@@ -58,11 +61,15 @@ namespace RequestReduce.Store
             var contentSignature = uriBuilder.ParseSignature(path.Replace('\\', '/'));
             if(guid != Guid.Empty)
             {
-                RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
-                if (e.ChangeType == WatcherChangeTypes.Deleted)
-                    reductionRepository.RemoveReduction(guid);
-                if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed))
-                    reductionRepository.AddReduction(guid, uriBuilder.BuildCssUrl(guid, contentSignature));
+                var resourceType = RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => path.EndsWith(x.FileName));
+                if (resourceType != null)
+                {
+                    RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
+                    if (e.ChangeType == WatcherChangeTypes.Deleted)
+                        reductionRepository.RemoveReduction(guid);
+                    if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed))
+                        reductionRepository.AddReduction(guid, uriBuilder.BuildResourceUrl(guid, contentSignature, resourceType.GetType()));
+                }
             }
         }
 
@@ -110,12 +117,13 @@ namespace RequestReduce.Store
             var dic = new Dictionary<Guid, string>();
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
-			var activeFiles = fileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, string.Format("*{0}", UriBuilder.CssFileName));
-			return (from files in activeFiles 
-				where !files.FileName.Contains("-Expired-") 
-				group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) into filegroup 
-				join files2 in activeFiles on new { k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate) } equals new { k = uriBuilder.ParseKey(files2.FileName.Replace("\\", "/")), u = files2.CreatedDate } select files2.FileName)
-				.ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildCssUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/"))));
+
+            var activeFiles = fileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, "*RequestReduce*");
+            return (from files in activeFiles 
+			where !files.FileName.Contains("-Expired-") 
+			group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) into filegroup 
+			join files2 in activeFiles on new { k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate) } equals new { k = uriBuilder.ParseKey(files2.FileName.Replace("\\", "/")), u = files2.CreatedDate } select files2.FileName)
+            .ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/")), RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => file.EndsWith(x.FileName)).GetType()));
         }
 
         public void Flush(Guid keyGuid)
@@ -151,7 +159,7 @@ namespace RequestReduce.Store
         }
 
 
-        public string GetUrlByKey(Guid keyGuid)
+        public string GetUrlByKey(Guid keyGuid, Type resourceType)
         {
             return null;
         }

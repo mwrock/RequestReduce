@@ -6,6 +6,7 @@ using RequestReduce.IOC;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using RequestReduce.Store;
+using System.Linq;
 
 namespace RequestReduce.Module
 {
@@ -13,7 +14,7 @@ namespace RequestReduce.Module
     {
         protected readonly IReductionRepository reductionRepository;
         protected readonly IStore store;
-        protected ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
+        protected ConcurrentQueue<IQueueItem> queue = new ConcurrentQueue<IQueueItem>();
         protected Thread backgroundThread;
         protected bool isRunning = true;
         protected Action<Exception> CaptureErrorAction;
@@ -29,9 +30,9 @@ namespace RequestReduce.Module
             backgroundThread.Start();
         }
 
-        public void Enqueue(string urls)
+        public void Enqueue(IQueueItem item)
         {
-            queue.Enqueue(urls);
+            queue.Enqueue(item);
         }
 
         public void ClearFailures()
@@ -57,16 +58,16 @@ namespace RequestReduce.Module
         protected void ProcessQueuedItem()
         {
             var key = Guid.Empty;
-            string urlsToReduce = null;
+            IQueueItem itemToReduce = null;
             if (!reductionRepository.HasLoadedSavedEntries)
                 return;
             try
             {
-                if (queue.TryDequeue(out urlsToReduce) && reductionRepository.FindReduction(urlsToReduce) == null)
+                if (queue.TryDequeue(out itemToReduce) && reductionRepository.FindReduction(itemToReduce.Urls) == null)
                 {
-                    key = Hasher.Hash(urlsToReduce);
-                    RRTracer.Trace("dequeued and processing {0} with key {1}.", urlsToReduce, key);
-                    var url = store.GetUrlByKey(key);
+                    key = Hasher.Hash(itemToReduce.Urls);
+                    RRTracer.Trace("dequeued and processing {0} with key {1}.", itemToReduce.Urls, key);
+                    var url = store.GetUrlByKey(key, itemToReduce.ResourceType);
                     if (url != null)
                     {
                         RRTracer.Trace("found url {0} in store for key {1}", url, key);
@@ -76,18 +77,18 @@ namespace RequestReduce.Module
                     {
                         if (dictionaryOfFailure.ContainsKey(key) && dictionaryOfFailure[key] >= FailureThreshold)
                         {
-                            RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", urlsToReduce);
+                            RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", itemToReduce.Urls);
                             return;
                         }
-                        var reducer = RRContainer.Current.GetInstance<IReducer>();
-                        reducer.Process(key, urlsToReduce);
+                        var reducer = RRContainer.Current.GetAllInstances<IReducer>().SingleOrDefault(x => x.SupportedResourceType == itemToReduce.ResourceType);
+                        reducer.Process(key, itemToReduce.Urls);
                     }
-                    RRTracer.Trace("dequeued and processed {0}.", urlsToReduce);
+                    RRTracer.Trace("dequeued and processed {0}.", itemToReduce.Urls);
                 }
             }
             catch(Exception e)
             {
-                var message = string.Format("There were errors reducing {0}", urlsToReduce);
+                var message = string.Format("There were errors reducing {0}", itemToReduce != null ? itemToReduce.Urls : "");
                 var wrappedException =
                     new ApplicationException(message, e);
                 RRTracer.Trace(message);
