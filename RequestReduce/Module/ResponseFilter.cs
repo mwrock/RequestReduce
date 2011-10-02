@@ -10,14 +10,17 @@ namespace RequestReduce.Module
     {
         private readonly Encoding encoding;
         private readonly IResponseTransformer responseTransformer;
-        private byte[] StartStringUpper;
-        private byte[] StartStringLower;
+        private IList<byte[]> StartStringUpper;
+        private bool[] currentStartStringsToSkip;
+        private IList<byte[]> StartStringLower;
         private byte[] StartCloseChar;
-        private byte[] EndStringUpper;
-        private byte[] EndStringLower;
+        private IList<byte[]> EndStringUpper;
+        private IList<byte[]> EndStringLower;
         private SearchState state = SearchState.LookForStart;
         private int matchPosition = 0;
         private List<byte> transformBuffer = new List<byte>();
+        private int actualOffset = 0;
+        private int actualLength = 0;
 
         private enum SearchState
         {
@@ -25,8 +28,7 @@ namespace RequestReduce.Module
             MatchingStart,
             MatchingStartClose,
             LookForStop,
-            MatchingStop,
-            MatchingFinished
+            MatchingStop
         }
 
         private enum MatchingEnd
@@ -41,11 +43,12 @@ namespace RequestReduce.Module
             this.responseTransformer = responseTransformer;
             BaseStream = baseStream;
 
-            StartStringUpper = encoding.GetBytes("<HEAD");
-            StartStringLower = encoding.GetBytes("<head");
+            StartStringUpper = new List<byte[]> { encoding.GetBytes("<HEAD"), encoding.GetBytes("<SCRIPT") };
+            StartStringLower = new List<byte[]> { encoding.GetBytes("<head"), encoding.GetBytes("<script") };
+            currentStartStringsToSkip =  new bool[StartStringUpper.Count];
             StartCloseChar = encoding.GetBytes("> ");
-            EndStringUpper = encoding.GetBytes("</HEAD>");
-            EndStringLower = encoding.GetBytes("</head>");
+            EndStringUpper = new List<byte[]>{encoding.GetBytes("</HEAD>"), encoding.GetBytes("</SCRIPT>")};
+            EndStringLower = new List<byte[]>{encoding.GetBytes("</head>"), encoding.GetBytes("</script>")};
         }
 
         protected Stream BaseStream { get; private set; }
@@ -82,44 +85,38 @@ namespace RequestReduce.Module
         {
             RRTracer.Trace("Beginning Filter Write");
             if (Closed) throw new ObjectDisposedException("ResponseFilter");
-            if(state==SearchState.MatchingFinished)
-            {
-                BaseStream.Write(buffer, offset, count);
-                return;
-            }
+            actualOffset = offset;
+            actualLength = count;
 
             var startTransformPosition = 0;
             var endTransformPosition = 0;
 
             for (var idx = offset; idx < (count+offset); idx++)
-                matchPosition = HandleMatch(idx, buffer[idx], ref startTransformPosition, ref endTransformPosition);
+                matchPosition = HandleMatch(idx, buffer[idx], buffer, ref startTransformPosition, ref endTransformPosition);
 
             RRTracer.Trace("Response filter state is {0}", state);
             switch (state)
             {
                 case SearchState.LookForStart:
-                    BaseStream.Write(buffer, offset, count);
+                    if (endTransformPosition > 0)
+                    {
+                        if ((actualOffset + actualLength) - endTransformPosition > 0)
+                            BaseStream.Write(buffer, endTransformPosition, (actualOffset + actualLength) - endTransformPosition);
+                    }
+                    else
+                        BaseStream.Write(buffer, actualOffset, actualLength);
                     break;
                 case SearchState.MatchingStart:
                 case SearchState.MatchingStartClose:
                 case SearchState.LookForStop:
                 case SearchState.MatchingStop:
-                    BaseStream.Write(buffer, offset, startTransformPosition);
-                    break;
-                case SearchState.MatchingFinished:
-                    if ((startTransformPosition - offset) >= 0)
-                        BaseStream.Write(buffer, offset, startTransformPosition-offset);
-                    var transformed =
-                        encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
-                    BaseStream.Write(transformed, 0, transformed.Length);
-                    if ((offset + count) - endTransformPosition > 0)
-                        BaseStream.Write(buffer, endTransformPosition, (offset + count) - endTransformPosition);
+                    BaseStream.Write(buffer, actualOffset, startTransformPosition);
                     break;
             }
             RRTracer.Trace("Ending Filter Write");
         }
 
-        private int HandleMatch(int i, byte b, ref int startTransformPosition, ref int endTransformPosition)
+        private int HandleMatch(int i, byte b, byte[] buffer, ref int startTransformPosition, ref int endTransformPosition)
         {
             switch (state)
             {
@@ -132,7 +129,7 @@ namespace RequestReduce.Module
                 case SearchState.LookForStop:
                     return HandleLookForStopMatch(b);
                 case SearchState.MatchingStop:
-                    return HandleMatchingStopMatch(i, b, ref endTransformPosition);
+                    return HandleMatchingStopMatch(i, b, buffer, ref endTransformPosition, ref startTransformPosition);
             }
 
             return matchPosition;
@@ -151,17 +148,31 @@ namespace RequestReduce.Module
             return 0;
         }
 
-        private int HandleMatchingStopMatch(int i, byte b, ref int endTransformPosition)
+        private int HandleMatchingStopMatch(int i, byte b, byte[] buffer, ref int endTransformPosition, ref int startTransformPosition)
         {
             transformBuffer.Add(b);
             if (IsMatch(MatchingEnd.End, b))
             {
                 matchPosition++;
-                if(matchPosition==EndStringUpper.Length)
+                for (var idx = 0; idx < currentStartStringsToSkip.Length; idx++)
                 {
-                    endTransformPosition = ++i;
-                    state = SearchState.MatchingFinished;
-                    return 0;
+                    if (!currentStartStringsToSkip[idx] && matchPosition == EndStringUpper[idx].Length)
+                    {
+                        endTransformPosition = ++i;
+                        state = SearchState.LookForStart;
+                        for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++ )
+                            currentStartStringsToSkip[idx2] = false;
+                        if ((startTransformPosition - actualOffset) >= 0)
+                            BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
+                        var transformed =
+                            encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
+                        BaseStream.Write(transformed, 0, transformed.Length);
+                        actualLength = actualLength - (i - actualOffset);
+                        actualOffset = i;
+                        startTransformPosition = 0;
+                        transformBuffer.Clear();
+                        return 0;
+                    }
                 }
             }
             else
@@ -189,14 +200,21 @@ namespace RequestReduce.Module
             {
                 transformBuffer.Add(b);
                 matchPosition++;
-                if (matchPosition == StartStringUpper.Length)
+                for (var i = 0; i < currentStartStringsToSkip.Length; i++)
                 {
-                    matchPosition = 0;
-                    state = SearchState.MatchingStartClose;
+                    if (!currentStartStringsToSkip[i] && matchPosition == StartStringUpper[i].Length)
+                    {
+                        matchPosition = 0;
+                        state = SearchState.MatchingStartClose;
+                    }
+                    else if (matchPosition == 0)
+                        currentStartStringsToSkip[i] = true;
                 }
                 return matchPosition;
             }
             state = SearchState.LookForStart;
+            for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++)
+                currentStartStringsToSkip[idx2] = false;
             return 0;
         }
 
@@ -214,8 +232,8 @@ namespace RequestReduce.Module
 
         private bool IsMatch(MatchingEnd end, byte b)
         {
-            byte[] upper;
-            byte[] lower;
+            IList<byte[]> upper;
+            IList<byte[]> lower;
             if(end == MatchingEnd.Start)
             {
                 upper = StartStringUpper;
@@ -226,7 +244,23 @@ namespace RequestReduce.Module
                 upper = EndStringUpper;
                 lower = EndStringLower;
             }
-            return b == lower[matchPosition] || b == upper[matchPosition];
+
+            for(var i = 0; i < currentStartStringsToSkip.Length; i++)
+            {
+                if (!currentStartStringsToSkip[i])
+                {
+                    var lowerToMatch = lower[i];
+                    var upperToMatch = upper[i];
+                    if (!(b == lowerToMatch[matchPosition] || b == upperToMatch[matchPosition]))
+                    {
+                        if (end == MatchingEnd.Start && state == SearchState.MatchingStart)
+                            currentStartStringsToSkip[i] = true;
+                        else
+                            return false;
+                    }
+                }
+            }
+            return currentStartStringsToSkip.Any(x => x == false);
         }
 
         public override int Read(byte[] buffer, int offset, int count)

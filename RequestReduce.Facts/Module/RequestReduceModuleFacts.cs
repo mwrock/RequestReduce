@@ -24,11 +24,19 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(true);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
 
             module.InstallFilter(context.Object);
 
             context.VerifySet((x => x.Response.Filter = It.IsAny<Stream>()), Times.Never());
+            RRContainer.Current = null;
         }
 
         [Fact]
@@ -36,15 +44,23 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
 
             module.InstallFilter(context.Object);
 
             context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
+            RRContainer.Current = null;
         }
 
         [Fact]
@@ -53,15 +69,23 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.Request.RawUrl).Returns("/favicon.ico");
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
 
             module.InstallFilter(context.Object);
 
             context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+            RRContainer.Current = null;
         }
 
         [Fact]
@@ -220,16 +244,24 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("type");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
 
             module.InstallFilter(context.Object);
 
             context.Verify(x => x.Items.Add(RequestReduceModule.CONTEXT_KEY, It.IsAny<Object>()), Times.Once());
+            RRContainer.Current = null;
         }
 
         [Theory]

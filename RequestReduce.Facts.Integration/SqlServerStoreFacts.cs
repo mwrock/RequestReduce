@@ -52,7 +52,7 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
-            Assert.Equal(1, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(3, new JavaScriptResource().ResourceRegex.Matches(response).Count);
         }
 
         [OutputTraceOnFailFact]
@@ -182,7 +182,7 @@ namespace RequestReduce.Facts.Integration
             WaitToCreateResources();
             new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
             DateTime fileDate = DateTime.MinValue;
-            var files = repo.AsQueryable().Where(x => x.FileName.Contains("RequestReduce"));
+            var files = repo.AsQueryable().Where(x => x.FileName.Contains(".css"));
             foreach (var file in files)
             {
                 file.IsExpired = false;
@@ -215,7 +215,7 @@ namespace RequestReduce.Facts.Integration
                 Thread.Sleep(0);
             while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.js").Length == 0 && watch.ElapsedMilliseconds < timeout)
+            while (Directory.GetFiles(rrFolder, "*.js").Length < 3 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= timeout)
                 throw new TimeoutException(timeout);

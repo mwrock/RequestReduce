@@ -92,6 +92,8 @@
     <Content Include="LocalError.html" />
     <Content Include="Scripts\script2.js" />
     <Content Include="Scripts\script1.js" />
+    <Content Include="Scripts\script3.js" />
+    <Content Include="Scripts\script4.js" />
     <Content Include="Styles\style1.css" />
     <Content Include="Styles\style2.css" />
     <Content Include="Styles\style3.css" />

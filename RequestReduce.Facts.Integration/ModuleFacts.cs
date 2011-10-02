@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
-        public void WillReduceToOneCssAndScript()
+        public void WillReduceToOneCssAndScriptInHeadAndTwoScriptsInBody()
         {
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
@@ -35,7 +35,8 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
-            Assert.Equal(1, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(3, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(4, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
         }
 
         [OutputTraceOnFailFact]
@@ -165,7 +166,7 @@ namespace RequestReduce.Facts.Integration
                 Thread.Sleep(0);
             while (Directory.GetFiles(rrFolder, "*.css").Where(x => !x.Contains("-Expired")).Count() == 0 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() == 0 && watch.ElapsedMilliseconds < 10000)
+            while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() < 3 && watch.ElapsedMilliseconds < 10000)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= 10000)
                 throw new TimeoutException(10000);

@@ -65,7 +65,7 @@ namespace RequestReduce.Module
                 if (transform != null)
                 {
                     RRTracer.Trace("Reduction found for {0}", urls);
-                    var closeHeadIdx = preTransform.IndexOf('>');
+                    var closeHeadIdx = preTransform.StartsWith("<head",StringComparison.OrdinalIgnoreCase) ? preTransform.IndexOf('>') : -1;
                     preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
                     foreach (var match in transformableMatches)
                         preTransform = preTransform.Replace(match, "");
