@@ -7,6 +7,7 @@ using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
 using RequestReduce.Configuration;
+using System;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -331,6 +332,20 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.Equal(0, result.AverageColor);
             }
+
+            [Fact]
+            public void WillThrowInvalidOperationExceptionIfCloningThrowsOutOfMemory()
+            {
+                var testable = new TestableSpriteContainer();
+                var fiveColorImage = new BackgroundImageClass("image1", "") { ImageUrl = "url", Width = 15, XOffset = new Position() { Offset = -16, Direction = Direction.Left }, OriginalImageUrl = "originalUrl" };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(testable.Image15X17);
+
+                var ex = Record.Exception(() => testable.ClassUnderTest.AddImage(fiveColorImage)) as InvalidOperationException;
+
+                Assert.NotNull(ex);
+                Assert.Contains("originalUrl", ex.Message);
+            }
+
 
         }
 

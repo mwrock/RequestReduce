@@ -41,9 +41,16 @@ namespace RequestReduce.Reducer
                     var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0;
                     var y = image.YOffset.Offset < 0 ? Math.Abs(image.YOffset.Offset) : 0;
 
-                    using (var bm = originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat))
+                    try
                     {
-                        writer.WriteImage(bm);
+                        using (var bm = originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat))
+                        {
+                            writer.WriteImage(bm);
+                        }
+                    }
+                    catch (OutOfMemoryException)
+                    {
+                        throw new InvalidOperationException(string.Format("Unable to Add {0} to Sprite.", image.OriginalImageUrl));
                     }
                     bitmap = writer.SpriteImage;
                     if ((originalBitmap.Width * originalBitmap.Height) > (bitmap.Width * bitmap.Height))
