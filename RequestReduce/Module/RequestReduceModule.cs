@@ -73,7 +73,7 @@ namespace RequestReduce.Module
             var sig = RRContainer.Current.GetInstance<IUriBuilder>().ParseSignature(url);
             if (sig == httpContextWrapper.Request.Headers["If-None-Match"] || store.SendContent(url, httpContextWrapper.Response))
             {
-                httpContextWrapper.Response.Cache.SetETag(sig);
+                httpContextWrapper.Response.Cache.SetETag(string.Format(@"""{0}""", sig));
                 httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
                 httpContextWrapper.Response.Expires = 60*24*360; //LITTLE under A YEAR
                 if (sig == httpContextWrapper.Request.Headers["If-None-Match"])

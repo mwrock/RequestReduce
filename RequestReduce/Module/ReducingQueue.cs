@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace RequestReduce.Module
 {
-    public class ReducingQueue : IReducingQueue
+    public class ReducingQueue : IReducingQueue, IDisposable
     {
         protected readonly IReductionRepository reductionRepository;
         protected readonly IStore store;
@@ -100,6 +100,11 @@ namespace RequestReduce.Module
                 if (RequestReduceModule.CaptureErrorAction != null)
                     RequestReduceModule.CaptureErrorAction(wrappedException);
             }
+        }
+
+        public void Dispose()
+        {
+            isRunning = false;
         }
     }
 }

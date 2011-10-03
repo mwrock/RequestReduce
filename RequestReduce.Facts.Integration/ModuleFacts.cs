@@ -79,7 +79,7 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
             Assert.Equal("text/css", response2.ContentType);
-            Assert.Equal(uriBuilder.ParseSignature(url), response2.Headers["ETag"]);
+            Assert.Equal(string.Format(@"""{0}""", uriBuilder.ParseSignature(url)), response2.Headers["ETag"]);
             response2.Close();
         }
 
@@ -102,7 +102,7 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal("public", response2.Headers["Cache-Control"].ToLower());
             Assert.Equal("application/x-javascript", response2.ContentType);
-            Assert.Equal(uriBuilder.ParseSignature(url), response2.Headers["ETag"]);
+            Assert.Equal(string.Format(@"""{0}""", uriBuilder.ParseSignature(url)), response2.Headers["ETag"]);
             response2.Close();
         }
 

@@ -296,7 +296,7 @@ namespace RequestReduce.Facts.Module
             module.HandleRRContent(context.Object);
 
             Assert.Equal(60*24*360, context.Object.Response.Expires);
-            cache.Verify(x => x.SetETag("sig"), Times.Once());
+            cache.Verify(x => x.SetETag(@"""sig"""), Times.Once());
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
             RRContainer.Current = null;
         }
@@ -328,7 +328,7 @@ namespace RequestReduce.Facts.Module
             module.HandleRRContent(context.Object);
 
             Assert.Equal(60 * 24 * 360, context.Object.Response.Expires);
-            cache.Verify(x => x.SetETag("match"), Times.Once());
+            cache.Verify(x => x.SetETag(@"""match"""), Times.Once());
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
             Assert.Equal(304, context.Object.Response.StatusCode);
             store.Verify(x => x.SendContent(It.IsAny<string>(), context.Object.Response), Times.Never());
@@ -365,7 +365,7 @@ namespace RequestReduce.Facts.Module
             module.HandleRRContent(context.Object);
 
             Assert.Equal(60 * 24 * 360, context.Object.Response.Expires);
-            cache.Verify(x => x.SetETag("match"), Times.Once());
+            cache.Verify(x => x.SetETag(@"""match"""), Times.Once());
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Once());
             RRContainer.Current = null;
         }

@@ -36,6 +36,8 @@ namespace RequestReduce.Facts
         public void ContainerIsValid()
         {
             RRContainer.Current.AssertConfigurationIsValid();
+            RRContainer.Current.Dispose();
+            RRContainer.Current = null;
         }
 
         [Fact]
@@ -49,6 +51,7 @@ namespace RequestReduce.Facts
             var ex = Record.Exception(() => RRContainer.Current.AssertConfigurationIsValid());
 
             Assert.NotNull(ex);
+            RRContainer.Current.Dispose();
             RRContainer.Current = null;
         }
     }
