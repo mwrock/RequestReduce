@@ -16,7 +16,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var wrapper = new WebClientWrapper();
 
-                var result = wrapper.DownloadString<CssResource>("http://localhost:8877/styles/style1.css");
+                var result = wrapper.DownloadString("http://localhost:8877/styles/style1.css");
 
                 Assert.False(result.StartsWith(Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble())));
             }
@@ -26,7 +26,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var wrapper = new WebClientWrapper();
 
-                var ex = Assert.Throws<InvalidOperationException>(() => wrapper.DownloadString<CssResource>("http://localhost:8877/local.html"));
+                var ex = Assert.Throws<InvalidOperationException>(() => wrapper.Download<CssResource>("http://localhost:8877/local.html"));
 
                 Assert.NotNull(ex);
             }
@@ -36,7 +36,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var wrapper = new WebClientWrapper();
 
-                var ex = Assert.Throws<InvalidOperationException>(() => wrapper.DownloadString<JavaScriptResource>("http://localhost:8877/local.html"));
+                var ex = Assert.Throws<InvalidOperationException>(() => wrapper.Download<JavaScriptResource>("http://localhost:8877/local.html"));
 
                 Assert.NotNull(ex);
             }

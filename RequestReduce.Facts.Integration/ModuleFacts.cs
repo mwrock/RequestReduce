@@ -40,6 +40,18 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
+        public void WillIgnoreNearFutureScripts()
+        {
+            new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
+            WaitToCreateResources();
+            var response = new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
+
+            Assert.Equal(3, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(3, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
+            Assert.Contains("www.google-analytics.com", response);
+        }
+
+        [OutputTraceOnFailFact]
         public void WillUseSameReductionAfterAppPoolRecycle()
         {
             var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
@@ -162,14 +174,14 @@ namespace RequestReduce.Facts.Integration
         {
             var watch = new Stopwatch();
             watch.Start();
-            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 10000)
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.css").Where(x => !x.Contains("-Expired")).Count() == 0 && watch.ElapsedMilliseconds < 10000)
+            while (Directory.GetFiles(rrFolder, "*.css").Where(x => !x.Contains("-Expired")).Count() == 0 && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() < 3 && watch.ElapsedMilliseconds < 10000)
+            while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() < 3 && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
-            if (watch.ElapsedMilliseconds >= 10000)
-                throw new TimeoutException(10000);
+            if (watch.ElapsedMilliseconds >= 20000)
+                throw new TimeoutException(20000);
             Thread.Sleep(100);
         }
     }

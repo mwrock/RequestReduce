@@ -5,6 +5,7 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
+using System.IO;
 
 namespace RequestReduce.Reducer
 {
@@ -34,7 +35,7 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
-            string cssContent = webClientWrapper.DownloadString<CssResource>(url);
+            string cssContent = webClientWrapper.DownloadString<CssResource>(url); 
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }

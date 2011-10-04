@@ -35,7 +35,7 @@ namespace RequestReduce.Facts.Module
 
             public FakeReductionRepository ReductionRepository { get { return reductionRepository as FakeReductionRepository;  } }
 
-            public void Dispose()
+            public new void Dispose()
             {
                 backgroundThread.Abort();
             }

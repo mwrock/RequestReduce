@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\RequestReduce.sdf" />
+    <Content Include="NearFuture.html" />
     <Content Include="Global.asax" />
     <Content Include="Images\menu-sprite.png" />
     <Content Include="Images\rss.png" />

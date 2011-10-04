@@ -5,29 +5,42 @@ using System.Net;
 using System.Text;
 using System.Collections.Generic;
 using RequestReduce.ResourceTypes;
+using RequestReduce.IOC;
 
 namespace RequestReduce.Utilities
 {
     public interface IWebClientWrapper
     {
-        string DownloadString<T>(string url) where T : IResourceType, new();
+        WebResponse Download<T>(string url) where T : IResourceType;
+        string DownloadString<T>(string url) where T : IResourceType;
         string DownloadString(string url);
         byte[] DownloadBytes(string url);
     }
 
     public class WebClientWrapper : IWebClientWrapper
     {
-        public string DownloadString<T>(string url) where T : IResourceType, new()
+        public WebResponse Download<T>(string url) where T : IResourceType
         {
-            return DownloadString(url, new T().SupportedMimeTypes);
+            return Download(url, RRContainer.Current.GetInstance<T>().SupportedMimeTypes);
         }
 
         public string DownloadString(string url)
         {
-            return DownloadString(url, Enumerable.Empty<string>());
+            using (var response = Download(url, Enumerable.Empty<string>()))
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    if (responseStream == null)
+                        return string.Empty;
+                    using (var streameader = new StreamReader(responseStream, Encoding.UTF8))
+                    {
+                        return streameader.ReadToEnd();
+                    }
+                }
+            }
         }
 
-        private string DownloadString(string url, IEnumerable<string> requiredMimeTypes)
+        private WebResponse Download(string url, IEnumerable<string> requiredMimeTypes)
         {
             try
             {
@@ -35,21 +48,11 @@ namespace RequestReduce.Utilities
                 var systemWebProxy = WebRequest.GetSystemWebProxy();
                 systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
                 client.Proxy = systemWebProxy;
-                using (var response = client.GetResponse())
-                {
-                    if (requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
-                        throw new InvalidOperationException(string.Format(
-                            "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes)));
-                    using (var responseStream = response.GetResponseStream())
-                    {
-                        if (responseStream == null)
-                            return string.Empty;
-                        using (var streameader = new StreamReader(responseStream, Encoding.UTF8))
-                        {
-                            return streameader.ReadToEnd();
-                        }
-                    }
-                }
+                var response = client.GetResponse();
+                if (requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
+                    throw new InvalidOperationException(string.Format(
+                        "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes)));
+                return response;
             }
             catch (Exception ex)
             {
@@ -79,5 +82,26 @@ namespace RequestReduce.Utilities
             }
         }
 
+        public string DownloadString<T>(string url) where T : IResourceType
+        {
+            string cssContent = string.Empty;
+            using (var response = Download<CssResource>(url))
+            {
+                if (response == null)
+                    return null;
+                using (var responseStream = response.GetResponseStream())
+                {
+                    if (responseStream != null)
+                    {
+                        using (var streameader = new StreamReader(responseStream, Encoding.UTF8))
+                        {
+                            cssContent = streameader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+
+            return cssContent;
+        }
     }
 }
