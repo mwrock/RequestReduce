@@ -53,7 +53,7 @@ namespace RequestReduce.Utilities
                     try
                     {
                         fileWrapper.Save(optimizedBytes, scratchFile);
-                        var arg = String.Format(@"-o{1} ""{0}""", scratchFile, compressionLevel);
+                        var arg = String.Format(@"-fix -o{1} ""{0}""", scratchFile, compressionLevel);
                         InvokeExecutable(arg, optiPngLocation);
                         optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
                         fileWrapper.DeleteFile(scratchFile);
