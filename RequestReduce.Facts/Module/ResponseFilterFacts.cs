@@ -214,6 +214,19 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillTransformWhenBufferEndsBetweenTwoFilteredTags()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = @"<head id=""Head1"">head</head><script src=""abc""></script>end";
+                var testTransform1 = @"<head id=""Head1"">head</head>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 30);
+
+                Assert.Equal(@"<head id=""Head1"">thead</head>", testable.FilteredResult);
+            }
+
+            [Fact]
             public void WillTransformMultipleSearchTags()
             {
                 var testable = new TestableResponseFilter(Encoding.UTF8);
