@@ -144,6 +144,22 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillMergeAjacenScriptsInBody()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me2.js"" type=""text/javascript"" ></script>";
+                var transformed = @"<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
+";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
             public void WillNotTransformScriptsContainingIgnoredUrls()
             {
                 var testable = new TestableResponseTransformer();

@@ -227,6 +227,24 @@ namespace RequestReduce.Facts.Module
 
                 Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""def""></script>end", testable.FilteredResult);
             }
+
+            [Fact]
+            public void WillTransformAdjacntScritTagsInBodyTags()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = @"<head id=""Head1"">head</head>after<script src=""abc""></script>
+                    <script src=""def""></script>end";
+                var testTransform1 = @"<head id=""Head1"">head</head>";
+                var testTransform2 = @"<script src=""abc""></script>
+                    <script src=""def""></script>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform2)).Returns(@"<script src=""ghi""></script>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""ghi""></script>end", testable.FilteredResult);
+            }
+
         }
     }
 }
