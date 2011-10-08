@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
+using RequestReduce.SqlServer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using Xunit;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Store
