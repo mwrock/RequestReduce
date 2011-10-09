@@ -14,13 +14,19 @@ namespace RequestReduce.Module
         private bool[] currentStartStringsToSkip;
         private IList<byte[]> StartStringLower;
         private byte[] StartCloseChar;
+        private byte[] WhiteSpaceChar;
         private IList<byte[]> EndStringUpper;
         private IList<byte[]> EndStringLower;
+        private IList<byte[]> okWhenAdjacentToScriptStartUpper;
+        private IList<byte[]> okWhenAdjacentToScriptStartLower;
+        private IList<byte[]> okWhenAdjacentToScriptEndUpper;
+        private IList<byte[]> okWhenAdjacentToScriptEndLower;
         private SearchState state = SearchState.LookForStart;
         private int matchPosition = 0;
         private List<byte> transformBuffer = new List<byte>();
         private int actualOffset = 0;
         private int actualLength = 0;
+        private bool isAdjacent;
 
         private enum SearchState
         {
@@ -28,7 +34,8 @@ namespace RequestReduce.Module
             MatchingStart,
             MatchingStartClose,
             LookForStop,
-            MatchingStop
+            MatchingStop,
+            LookForAdjacentScript
         }
 
         private enum MatchingEnd
@@ -47,6 +54,7 @@ namespace RequestReduce.Module
             StartStringLower = new List<byte[]> { encoding.GetBytes("<head"), encoding.GetBytes("<script") };
             currentStartStringsToSkip =  new bool[StartStringUpper.Count];
             StartCloseChar = encoding.GetBytes("> ");
+            WhiteSpaceChar = encoding.GetBytes("\t\n\r ");
             EndStringUpper = new List<byte[]>{encoding.GetBytes("</HEAD>"), encoding.GetBytes("</SCRIPT>")};
             EndStringLower = new List<byte[]>{encoding.GetBytes("</head>"), encoding.GetBytes("</script>")};
         }
@@ -77,13 +85,20 @@ namespace RequestReduce.Module
 
         public override void Flush()
         {
+            if (isAdjacent)
+            {
+                var transformed =
+                    encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
+                BaseStream.Write(transformed, 0, transformed.Length);
+                transformBuffer.Clear();
+            }
             BaseStream.Flush();
             RRTracer.Trace("Flushing Filter");
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            RRTracer.Trace("Beginning Filter Write");
+        RRTracer.Trace("Beginning Filter Write");
             if (Closed) throw new ObjectDisposedException("ResponseFilter");
             actualOffset = offset;
             actualLength = count;
@@ -92,7 +107,7 @@ namespace RequestReduce.Module
             var endTransformPosition = 0;
 
             for (var idx = offset; idx < (count+offset); idx++)
-                matchPosition = HandleMatch(idx, buffer[idx], buffer, ref startTransformPosition, ref endTransformPosition);
+                matchPosition = HandleMatch(ref idx, buffer[idx], buffer, ref startTransformPosition, ref endTransformPosition);
 
             RRTracer.Trace("Response filter state is {0}", state);
             switch (state)
@@ -110,26 +125,29 @@ namespace RequestReduce.Module
                 case SearchState.MatchingStartClose:
                 case SearchState.LookForStop:
                 case SearchState.MatchingStop:
+                case SearchState.LookForAdjacentScript:
                     BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
                     break;
             }
             RRTracer.Trace("Ending Filter Write");
         }
 
-        private int HandleMatch(int i, byte b, byte[] buffer, ref int startTransformPosition, ref int endTransformPosition)
+        private int HandleMatch(ref int i, byte b, byte[] buffer, ref int startTransformPosition, ref int endTransformPosition)
         {
             switch (state)
             {
                 case SearchState.LookForStart:
-                    return HandleLookForStartMatch(i, b, ref startTransformPosition);
+                    return HandleLookForStartMatch(ref i, b, buffer, ref endTransformPosition, ref startTransformPosition);
                 case SearchState.MatchingStart:
-                    return HandleMatchingStartMatch(b);
+                    return HandleMatchingStartMatch(b, ref i, buffer, ref endTransformPosition, ref startTransformPosition);
                 case SearchState.MatchingStartClose:
                     return HandleMatchingStartCloseMatch(i, b);
                 case SearchState.LookForStop:
                     return HandleLookForStopMatch(b);
                 case SearchState.MatchingStop:
                     return HandleMatchingStopMatch(i, b, buffer, ref endTransformPosition, ref startTransformPosition);
+                case SearchState.LookForAdjacentScript:
+                    return HandleLookForAdjacentScriptMatch(buffer, i, b, ref endTransformPosition, ref startTransformPosition);
             }
 
             return matchPosition;
@@ -159,18 +177,8 @@ namespace RequestReduce.Module
                     if (!currentStartStringsToSkip[idx] && matchPosition == EndStringUpper[idx].Length)
                     {
                         endTransformPosition = ++i;
-                        state = SearchState.LookForStart;
-                        for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++ )
-                            currentStartStringsToSkip[idx2] = false;
-                        if ((startTransformPosition - actualOffset) >= 0)
-                            BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
-                        var transformed =
-                            encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
-                        BaseStream.Write(transformed, 0, transformed.Length);
-                        actualLength = actualLength - (i - actualOffset);
-                        actualOffset = i;
-                        startTransformPosition = 0;
-                        transformBuffer.Clear();
+                        state = SearchState.LookForAdjacentScript;
+                        isAdjacent = true;
                         return 0;
                     }
                 }
@@ -181,6 +189,19 @@ namespace RequestReduce.Module
                 return 0;
             }
             return matchPosition;
+        }
+
+        private void DoTransform(byte[] buffer, ref int endTransformPosition, ref int startTransformPosition)
+        {
+            for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++)
+                currentStartStringsToSkip[idx2] = false;
+            if ((startTransformPosition - actualOffset) >= 0)
+                BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
+            var transformed =
+                encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
+            BaseStream.Write(transformed, 0, transformed.Length);
+            startTransformPosition = 0;
+            transformBuffer.Clear();
         }
 
         private int HandleLookForStopMatch(byte b)
@@ -194,23 +215,35 @@ namespace RequestReduce.Module
             return matchPosition;
         }
 
-        private int HandleMatchingStartMatch(byte b)
+        private int HandleMatchingStartMatch(byte b, ref int i, byte[] buffer, ref int endTransformPosition, ref int startTransformPosition)
         {
             if(IsMatch(MatchingEnd.Start, b))
             {
                 transformBuffer.Add(b);
                 matchPosition++;
-                for (var i = 0; i < currentStartStringsToSkip.Length; i++)
+                for (var idx = 0; idx < currentStartStringsToSkip.Length; idx++)
                 {
-                    if (!currentStartStringsToSkip[i] && matchPosition == StartStringUpper[i].Length)
+                    if (!currentStartStringsToSkip[idx] && matchPosition == StartStringUpper[idx].Length)
                     {
                         matchPosition = 0;
                         state = SearchState.MatchingStartClose;
                     }
                     else if (matchPosition == 0)
-                        currentStartStringsToSkip[i] = true;
+                        currentStartStringsToSkip[idx] = true;
                 }
                 return matchPosition;
+            }
+
+            if (isAdjacent)
+            {
+                isAdjacent = false;
+                var numToTrim = i - endTransformPosition;
+                if (numToTrim > 0)
+                    transformBuffer.RemoveRange(transformBuffer.Count - numToTrim, numToTrim);
+                DoTransform(buffer, ref endTransformPosition, ref startTransformPosition);
+                i = i - numToTrim - 1;
+                actualLength = actualLength - (i - actualOffset) - 1; 
+                actualOffset = i + 1;
             }
             state = SearchState.LookForStart;
             for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++)
@@ -218,15 +251,39 @@ namespace RequestReduce.Module
             return 0;
         }
 
-        private int HandleLookForStartMatch(int i, byte b, ref int startTransformPosition)
+        private int HandleLookForStartMatch(ref int i, byte b, byte[] buffer, ref int endTransformPosition, ref int startTransformPosition)
         {
             if(IsMatch(MatchingEnd.Start, b))
             {
                 state = SearchState.MatchingStart;
                 transformBuffer.Clear();
                 startTransformPosition = i;
-                return HandleMatchingStartMatch(b);
+                return HandleMatchingStartMatch(b, ref i, buffer, ref endTransformPosition, ref startTransformPosition);
             }
+            return matchPosition;
+        }
+
+        private int HandleLookForAdjacentScriptMatch(byte[] buffer, int i, byte b, ref int endTransformPosition, ref int startTransformPosition)
+        {
+            if (IsMatch(MatchingEnd.Start, b))
+            {
+                state = SearchState.MatchingStart;
+                return HandleMatchingStartMatch(b, ref i, buffer, ref endTransformPosition, ref startTransformPosition);
+            }
+
+            if (!WhiteSpaceChar.Contains(b))
+            {
+                isAdjacent = false;
+                state = SearchState.LookForStart;
+                var numToTrim = i - endTransformPosition;
+                if(numToTrim > 0)
+                    transformBuffer.RemoveRange(transformBuffer.Count - numToTrim, numToTrim);
+                DoTransform(buffer, ref endTransformPosition, ref startTransformPosition);
+                actualLength = actualLength - (i - actualOffset); actualOffset = i;
+                return 0;
+            }
+
+            transformBuffer.Add(b);
             return matchPosition;
         }
 
