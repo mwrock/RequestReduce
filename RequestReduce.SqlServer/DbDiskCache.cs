@@ -4,9 +4,10 @@ using System.Threading;
 using System.Collections.Concurrent;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
 
-namespace RequestReduce.Store
+namespace RequestReduce.SqlServer
 {
     public class DbDiskCache : LocalDiskStore
     {

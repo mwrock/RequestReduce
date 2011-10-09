@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Data.Entity;
+using RequestReduce.Store;
 
-namespace RequestReduce.Store
+namespace RequestReduce.SqlServer
 {
     public class RequestReduceContext : DbContext
     {

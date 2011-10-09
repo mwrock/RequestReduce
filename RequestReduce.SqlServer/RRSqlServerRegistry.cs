@@ -14,6 +14,7 @@ namespace RequestReduce.SqlServer
                          .Is(y => y.GetInstance<DbDiskCache>());
 
             For<IFileRepository>().Use<FileRepository>();
+            For<DbDiskCache>().Singleton();
         }
     }
 }

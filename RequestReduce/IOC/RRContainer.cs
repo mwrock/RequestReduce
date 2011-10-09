@@ -32,7 +32,6 @@ namespace RequestReduce.IOC
                 x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                 x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                 x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
-                x.For<DbDiskCache>().Singleton();
                 
                 x.For<HttpContextBase>().Use(() => HttpContext.Current == null 
                                                     ? null 

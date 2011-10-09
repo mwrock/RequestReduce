@@ -78,7 +78,6 @@
     <Compile Include="Reducer\SpritedImage.cs" />
     <Compile Include="ResourceTypes\JavaScriptResource.cs" />
     <Compile Include="RRTracer.cs" />
-    <Compile Include="Store\DbDiskCache.cs" />
     <Compile Include="Store\IStore.cs" />
     <Compile Include="Store\LocalDiskStore.cs" />
     <Compile Include="Utilities\GuidExtensions.cs" />
