@@ -23,7 +23,12 @@ namespace RequestReduce.Reducer
         {
             var mergedJSBuilder = new StringBuilder();
             foreach (var url in urls)
-                mergedJSBuilder.AppendLine(ProcessJavaScript(url));
+            {
+                mergedJSBuilder.Append(ProcessJavaScript(url));
+                if (mergedJSBuilder.Length > 0 && mergedJSBuilder[mergedJSBuilder.Length - 1] == ')')
+                    mergedJSBuilder.Append(";");
+                mergedJSBuilder.AppendLine();
+            }
             return mergedJSBuilder.ToString();
         }
 

@@ -105,6 +105,7 @@ namespace RequestReduce.Facts.Module
             [Fact]
             public void WillReduceQueuedCSS()
             {
+                RRContainer.Current = null;
                 var testable = new TestableReducingQueue();
                 testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(typeof(CssResource));
                 testable.ClassUnderTest.Enqueue(new QueueItem<CssResource> { Urls = "url" });
