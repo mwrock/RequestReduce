@@ -52,7 +52,7 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
-            Assert.Equal(3, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(2, new JavaScriptResource().ResourceRegex.Matches(response).Count);
         }
 
         [OutputTraceOnFailFact]
@@ -191,7 +191,7 @@ namespace RequestReduce.Facts.Integration
             }
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var cssCount1 = cssPattern.Matches(response).Count;
-            Thread.Sleep(400);
+            Thread.Sleep(1000);
 
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
@@ -215,11 +215,11 @@ namespace RequestReduce.Facts.Integration
                 Thread.Sleep(0);
             while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.js").Length < 3 && watch.ElapsedMilliseconds < timeout)
+            while (Directory.GetFiles(rrFolder, "*.js").Length < 2 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= timeout)
                 throw new TimeoutException(timeout);
-            Thread.Sleep(100);
+            Thread.Sleep(200);
         }
 
     }

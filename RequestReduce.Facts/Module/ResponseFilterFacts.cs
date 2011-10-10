@@ -61,6 +61,7 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("<head>thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+                testable.ClassUnderTest.Flush();
 
                 Assert.Equal("before<head>thead</head>", testable.FilteredResult);
             }
@@ -74,6 +75,7 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Returns("<head>thead</head>");
 
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+                testable.ClassUnderTest.Flush();
 
                 Assert.Equal("<head>thead</head>", testable.FilteredResult);
             }
@@ -208,7 +210,8 @@ namespace RequestReduce.Facts.Module
                 var testTransform1 = @"<head id=""Head1"">head</head>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
 
-                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 30);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 28);
+                testable.ClassUnderTest.Flush();
 
                 Assert.Equal(@"<head id=""Head1"">thead</head>", testable.FilteredResult);
             }
@@ -229,13 +232,79 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
-            public void WillTransformAdjacntScritTagsInBodyTags()
+            public void WillTransformAdjacntScritTagsInBodyTagsSeparatedByWhiteSpace()
             {
                 var testable = new TestableResponseFilter(Encoding.UTF8);
                 var testBuffer = @"<head id=""Head1"">head</head>after<script src=""abc""></script>
                     <script src=""def""></script>end";
                 var testTransform1 = @"<head id=""Head1"">head</head>";
                 var testTransform2 = @"<script src=""abc""></script>
+                    <script src=""def""></script>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform2)).Returns(@"<script src=""ghi""></script>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""ghi""></script>end", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillTransformAdjacentHeadAndScriptTags()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = @"<head id=""Head1"">head</head><script src=""abc""></script>end";
+                var testTransform1 = @"<head id=""Head1"">head</head>";
+                var testTransform2 = @"<script src=""abc""></script>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform2)).Returns(@"<script src=""def""></script>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(@"<head id=""Head1"">thead</head><script src=""def""></script>end", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillTransformAdjacntScritTagsInBodyTagsSeparatedByNoScriptTags()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = @"<head id=""Head1"">head</head>after<script src=""abc""></script><noscript>this is some stuff to do with js turned off.</noscript> 
+                    <script src=""def""></script>end";
+                var testTransform1 = @"<head id=""Head1"">head</head>";
+                var testTransform2 = @"<script src=""abc""></script><noscript>this is some stuff to do with js turned off.</noscript> 
+                    <script src=""def""></script>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform2)).Returns(@"<script src=""ghi""></script>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""ghi""></script>end", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillTransformAdjacntScritTagsInBodyTagsSeparatedByComments()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = @"<head id=""Head1"">head</head>after<script src=""abc""></script><!--This is a coment <script> a script </script>  -->
+                    <script src=""def""></script>end";
+                var testTransform1 = @"<head id=""Head1"">head</head>";
+                var testTransform2 = @"<script src=""abc""></script><!--This is a coment <script> a script </script>  -->
+                    <script src=""def""></script>";
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform2)).Returns(@"<script src=""ghi""></script>");
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""ghi""></script>end", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillTransformAdjacntScritTagsInBodyTagsSeparatedByCommentsAndNoscript()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = @"<head id=""Head1"">head</head>after<script src=""abc""></script><noscript>this is noscript</noscript><!--This is a coment <script> a script </script>  -->
+                    <script src=""def""></script>end";
+                var testTransform1 = @"<head id=""Head1"">head</head>";
+                var testTransform2 = @"<script src=""abc""></script><noscript>this is noscript</noscript><!--This is a coment <script> a script </script>  -->
                     <script src=""def""></script>";
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform1)).Returns(@"<head id=""Head1"">thead</head>");
                 testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform2)).Returns(@"<script src=""ghi""></script>");

@@ -23,7 +23,12 @@ namespace RequestReduce.Reducer
         {
             var mergedJSBuilder = new StringBuilder();
             foreach (var url in urls)
-                mergedJSBuilder.AppendLine(ProcessJavaScript(url));
+            {
+                mergedJSBuilder.Append(ProcessJavaScript(url));
+                if (mergedJSBuilder.Length > 0 && mergedJSBuilder[mergedJSBuilder.Length - 1] == ')')
+                    mergedJSBuilder.Append(";");
+                mergedJSBuilder.AppendLine();
+            }
             return mergedJSBuilder.ToString();
         }
 
@@ -38,7 +43,7 @@ namespace RequestReduce.Reducer
                 var expires = response.Headers["Expires"];
                 try
                 {
-                    if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(7))
+                    if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(6))
                         AddUrlToIgnores(url);
                 }
                 catch (FormatException) { };

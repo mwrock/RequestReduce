@@ -105,6 +105,7 @@ namespace RequestReduce.Facts.Module
             [Fact]
             public void WillReduceQueuedCSS()
             {
+                RRContainer.Current = null;
                 var testable = new TestableReducingQueue();
                 testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(typeof(CssResource));
                 testable.ClassUnderTest.Enqueue(new QueueItem<CssResource> { Urls = "url" });
@@ -118,6 +119,7 @@ namespace RequestReduce.Facts.Module
             [Fact]
             public void WillReduceQueuedJavaScript()
             {
+                RRContainer.Current = null;
                 var testable = new TestableReducingQueue();
                 testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(typeof(JavaScriptResource));
                 testable.ClassUnderTest.Enqueue(new QueueItem<JavaScriptResource> { Urls = "url" });
