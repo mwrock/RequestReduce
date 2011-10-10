@@ -38,7 +38,7 @@ namespace RequestReduce.Reducer
                 var expires = response.Headers["Expires"];
                 try
                 {
-                    if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(7))
+                    if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(6))
                         AddUrlToIgnores(url);
                 }
                 catch (FormatException) { };

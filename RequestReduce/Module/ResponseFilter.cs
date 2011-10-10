@@ -11,7 +11,7 @@ namespace RequestReduce.Module
         private readonly Encoding encoding;
         private readonly IResponseTransformer responseTransformer;
         private IList<byte[]> StartStringUpper;
-        private bool[] currentStartStringsToSkip;
+        private IList<bool> currentStartStringsToSkip;
         private IList<byte[]> StartStringLower;
         private byte[] StartCloseChar;
         private byte[] WhiteSpaceChar;
@@ -52,7 +52,11 @@ namespace RequestReduce.Module
 
             StartStringUpper = new List<byte[]> { encoding.GetBytes("<HEAD"), encoding.GetBytes("<SCRIPT") };
             StartStringLower = new List<byte[]> { encoding.GetBytes("<head"), encoding.GetBytes("<script") };
-            currentStartStringsToSkip =  new bool[StartStringUpper.Count];
+            okWhenAdjacentToScriptStartUpper = new List<byte[]> { encoding.GetBytes("<NOSCRIPT"), encoding.GetBytes("<!--") };
+            okWhenAdjacentToScriptStartLower = new List<byte[]> { encoding.GetBytes("<noscript"), encoding.GetBytes("<!--") };
+            okWhenAdjacentToScriptEndUpper = new List<byte[]> { encoding.GetBytes("</NOSCRIPT>"), encoding.GetBytes("-->") };
+            okWhenAdjacentToScriptEndLower = new List<byte[]> { encoding.GetBytes("</noscript>"), encoding.GetBytes("-->") };
+            currentStartStringsToSkip = new List<bool>(StartStringUpper.Select(x => false));
             StartCloseChar = encoding.GetBytes("> ");
             WhiteSpaceChar = encoding.GetBytes("\t\n\r ");
             EndStringUpper = new List<byte[]>{encoding.GetBytes("</HEAD>"), encoding.GetBytes("</SCRIPT>")};
@@ -155,7 +159,7 @@ namespace RequestReduce.Module
 
         private int HandleMatchingStartCloseMatch(int i, byte b)
         {
-            if (StartCloseChar.Contains(b))
+            if (StartCloseChar.Contains(b) || (currentStartStringsToSkip.Count == 4 && !currentStartStringsToSkip[3]))
             {
                 transformBuffer.Add(b);
                 state = SearchState.LookForStop;
@@ -172,13 +176,23 @@ namespace RequestReduce.Module
             if (IsMatch(MatchingEnd.End, b))
             {
                 matchPosition++;
-                for (var idx = 0; idx < currentStartStringsToSkip.Length; idx++)
+                for (var idx = 0; idx < currentStartStringsToSkip.Count; idx++)
                 {
                     if (!currentStartStringsToSkip[idx] && matchPosition == EndStringUpper[idx].Length)
                     {
                         endTransformPosition = ++i;
-                        state = SearchState.LookForAdjacentScript;
-                        isAdjacent = true;
+                        if (idx == 0) //head
+                        {
+                            DoTransform(buffer, ref endTransformPosition, ref startTransformPosition);
+                            state = SearchState.LookForStart;
+                            actualLength = actualLength - (i - actualOffset); actualOffset = i;
+                        }
+                        else
+                        {
+                            state = SearchState.LookForAdjacentScript;
+                            SetAdjacent(true);
+                            currentStartStringsToSkip[1] = false; //script tag
+                        }
                         return 0;
                     }
                 }
@@ -193,7 +207,7 @@ namespace RequestReduce.Module
 
         private void DoTransform(byte[] buffer, ref int endTransformPosition, ref int startTransformPosition)
         {
-            for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++)
+            for (var idx2 = 0; idx2 < currentStartStringsToSkip.Count; idx2++)
                 currentStartStringsToSkip[idx2] = false;
             if ((startTransformPosition - actualOffset) >= 0)
                 BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
@@ -221,7 +235,7 @@ namespace RequestReduce.Module
             {
                 transformBuffer.Add(b);
                 matchPosition++;
-                for (var idx = 0; idx < currentStartStringsToSkip.Length; idx++)
+                for (var idx = 0; idx < currentStartStringsToSkip.Count; idx++)
                 {
                     if (!currentStartStringsToSkip[idx] && matchPosition == StartStringUpper[idx].Length)
                     {
@@ -236,7 +250,7 @@ namespace RequestReduce.Module
 
             if (isAdjacent)
             {
-                isAdjacent = false;
+                SetAdjacent(false);
                 var numToTrim = i - endTransformPosition;
                 if (numToTrim > 0)
                     transformBuffer.RemoveRange(transformBuffer.Count - numToTrim, numToTrim);
@@ -246,7 +260,7 @@ namespace RequestReduce.Module
                 actualOffset = i + 1;
             }
             state = SearchState.LookForStart;
-            for (var idx2 = 0; idx2 < currentStartStringsToSkip.Length; idx2++)
+            for (var idx2 = 0; idx2 < currentStartStringsToSkip.Count; idx2++)
                 currentStartStringsToSkip[idx2] = false;
             return 0;
         }
@@ -273,7 +287,7 @@ namespace RequestReduce.Module
 
             if (!WhiteSpaceChar.Contains(b))
             {
-                isAdjacent = false;
+                SetAdjacent(false);
                 state = SearchState.LookForStart;
                 var numToTrim = i - endTransformPosition;
                 if(numToTrim > 0)
@@ -285,6 +299,41 @@ namespace RequestReduce.Module
 
             transformBuffer.Add(b);
             return matchPosition;
+        }
+
+
+        private void SetAdjacent(bool value)
+        {
+            if (value && !isAdjacent)
+            {
+                foreach (var val in okWhenAdjacentToScriptStartUpper)
+                    StartStringUpper.Add(val);
+                foreach (var val in okWhenAdjacentToScriptStartLower)
+                    StartStringLower.Add(val);
+                foreach (var val in okWhenAdjacentToScriptEndUpper)
+                    EndStringUpper.Add(val);
+                foreach (var val in okWhenAdjacentToScriptEndLower)
+                    EndStringLower.Add(val);
+                currentStartStringsToSkip = currentStartStringsToSkip.Concat(okWhenAdjacentToScriptStartUpper.Select(x => false)).ToList();
+            }
+            else if(!value)
+            {
+                foreach (var val in okWhenAdjacentToScriptStartUpper)
+                    StartStringUpper.Remove(val);
+                foreach (var val in okWhenAdjacentToScriptStartLower)
+                    StartStringLower.Remove(val);
+                foreach (var val in okWhenAdjacentToScriptEndUpper)
+                    EndStringUpper.Remove(val);
+                foreach (var val in okWhenAdjacentToScriptEndLower)
+                    EndStringLower.Remove(val);
+                currentStartStringsToSkip = new List<bool>(StartStringUpper.Select(x => false));
+            }
+            isAdjacent = value;
+            if(isAdjacent)
+            {
+                for (var i = 1; i < currentStartStringsToSkip.Count; i++)
+                    currentStartStringsToSkip[i] = false;
+            }
         }
 
         private bool IsMatch(MatchingEnd end, byte b)
@@ -302,7 +351,7 @@ namespace RequestReduce.Module
                 lower = EndStringLower;
             }
 
-            for(var i = 0; i < currentStartStringsToSkip.Length; i++)
+            for(var i = 0; i < currentStartStringsToSkip.Count; i++)
             {
                 if (!currentStartStringsToSkip[i])
                 {
