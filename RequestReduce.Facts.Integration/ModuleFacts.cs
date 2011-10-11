@@ -48,8 +48,8 @@ namespace RequestReduce.Facts.Integration
             Thread.Sleep(1000);
             var response = new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
 
-            Assert.Equal(3, new JavaScriptResource().ResourceRegex.Matches(response).Count);
-            Assert.Equal(3, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
+            Assert.Equal(4, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(4, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
             Assert.Contains("www.google-analytics.com", response);
         }
 
