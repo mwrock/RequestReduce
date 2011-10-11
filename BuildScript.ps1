@@ -224,6 +224,18 @@ function Change-Framework-Version ([string[]] $projFiles, [string] $frameworkVer
       $content.Project.PropertyGroup[1].OutputPath = "bin\v$frameworkVersion\Debug\"
       $content.Project.PropertyGroup[2].OutputPath = "bin\v$frameworkVersion\Release\"
     }
+    
+    if ($frameworkVersion -eq '4.0') {
+      $ref = $content.Project.ItemGroup[0].Reference | where-object { $_.GetAttribute('Include') -eq 'System.Web.Abstractions' }
+      if ($ref -ne $null) {
+        $content.Project.ItemGroup[0].RemoveChild($ref) | out-null
+      }
+    } else {
+      $ref = $content.CreateElement('Reference', 'http://schemas.microsoft.com/developer/msbuild/2003')
+      $ref.SetAttribute('Include', 'System.Web.Abstractions')
+      $content.Project.ItemGroup[0].AppendChild($ref) | out-null
+    }
+    
 		$content.Save($projFile)
 		
 		$content = [System.IO.File]::ReadAllText($projFile)

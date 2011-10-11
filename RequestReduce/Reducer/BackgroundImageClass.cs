@@ -51,9 +51,7 @@ namespace RequestReduce.Reducer
             var repeatMatch = repeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
             {
-                RepeatStyle rep;
-                Enum.TryParse(repeatMatch[repeatMatch.Count-1].Value.Replace("-",""), true, out rep);
-                Repeat = rep;
+                Repeat = (RepeatStyle) Enum.Parse(typeof(RepeatStyle), repeatMatch[repeatMatch.Count-1].Value.Replace("-",""), true);
             }
             var widthMatch = widthPattern.Matches(originalClassString);
             if (widthMatch.Count > 0)
@@ -203,11 +201,11 @@ namespace RequestReduce.Reducer
 
         private Position ParseStringOffset(string offsetString)
         {
-            var offset = new Position {PositionMode = PositionMode.Direction};
-            Direction direction;
-            Enum.TryParse(offsetString, true, out direction);
-            offset.Direction = direction;
-            return offset;
+            return new Position
+            {
+                PositionMode = PositionMode.Direction,
+                Direction = (Direction) Enum.Parse(typeof (Direction), offsetString, true)
+            };
         }
 
         private Position ParseNumericOffset(string offsetString)
