@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Moq;
 using RequestReduce.IOC;
 using RequestReduce.Module;
@@ -23,7 +23,7 @@ namespace RequestReduce.Facts.Module
                 ((FakeReductionRepository) reductionRepository).HasLoadedSavedEntries = true;
             }
 
-            public ConcurrentQueue<IQueueItem> BaseQueue
+            public Queue<IQueueItem> BaseQueue
             {
                 get { return queue; }
             }
@@ -94,7 +94,7 @@ namespace RequestReduce.Facts.Module
 
                 testable.ClassUnderTest.Enqueue(item);
 
-                testable.ClassUnderTest.BaseQueue.TryDequeue(out result);
+                result = testable.ClassUnderTest.BaseQueue.Dequeue();
                 Assert.Equal(item, result);
                 testable.Dispose();
             }
