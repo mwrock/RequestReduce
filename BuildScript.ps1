@@ -9,14 +9,32 @@ properties {
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
 	$version = "1.0." + (git log v1.0.. --pretty=oneline | measure-object).Count
+	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
 }
 
 task Debug -depends Default
-task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
+task Default -depends Setup-40-Projects, Clean-Solution, Setup-IIS, Build-Solution, Reset, Test-Solution
+task BuildNet35 -depends Setup-35-Projects, Clean-35-Solution, Setup-IIS, Build-Net35-Solution, Reset
+task Download -depends Setup-40-Projects, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Reset, Reset, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
+
+task Reset {
+  Change-Framework-Version $projectFiles '4.0' $true
+}
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
+}
+
+task Setup-35-Projects {
+  Change-Framework-Version $projectFiles '3.5' $false
+}
+
+task Setup-40-Projects {
+  Change-Framework-Version $projectFiles '4.0' $false
+}
+
+task Clean-35-Solution -depends Clean-BuildFiles {
+    exec { msbuild 'RequestReduce\RequestReduce.csproj' /t:Clean /v:quiet }
 }
 
 task Clean-Solution -depends Clean-BuildFiles {
@@ -32,10 +50,16 @@ task Update-AssemblyInfoFiles {
 }
 
 task create-WebProject-build-target {
-    create $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0
+  create $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0
 	Copy-Item $baseDir\Microsoft.WebApplication.targets $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0\Microsoft.WebApplication.targets
 }
+
+task Build-Net35-Solution {
+  exec { msbuild 'RequestReduce\RequestReduce.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
+}
+
 task Build-Solution {
+    Change-Framework-Version $projectFiles '4.0' $false
     exec { msbuild RequestReduce.sln /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
@@ -183,4 +207,29 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $commit) {
 			% {$_ -replace $fileCommitPattern, $commitVersion }
         } | Set-Content $filename
     }
+}
+
+function Change-Framework-Version ([string[]] $projFiles, [string] $frameworkVersion, [boolean] $setDefaultPath) {
+  $nQuantRegex = [regex] '<HintPath>\.\.\\packages\\nQuant.+\\Lib\\(net\d{2})\\nQuant\.Core\.dll</HintPath>'
+  if ($frameworkVersion -eq '4.0') { $nugetVer = 'net40' } else { $nugetVer = 'net20' }
+
+	foreach ($projFile in $projFiles) {	
+		$content = [xml] (get-content $projFile)
+		$content.Project.SetAttribute("ToolsVersion", $frameworkVersion)
+		$content.Project.PropertyGroup[0].TargetFrameworkVersion = "v$frameworkVersion"
+		if ($setDefaultPath) {
+      $content.Project.PropertyGroup[1].OutputPath = 'bin\Debug\'
+      $content.Project.PropertyGroup[2].OutputPath = 'bin\Release\'
+		} else {
+      $content.Project.PropertyGroup[1].OutputPath = "bin\v$frameworkVersion\Debug\"
+      $content.Project.PropertyGroup[2].OutputPath = "bin\v$frameworkVersion\Release\"
+    }
+		$content.Save($projFile)
+		
+		$content = [System.IO.File]::ReadAllText($projFile)
+		$match = $nQuantRegex.Match($content)
+		$content = $content.Remove($match.Groups[1].Index, $match.Groups[1].Length)
+		$content = $content.Insert($match.Groups[1].Index, $nugetVer)
+		set-content $projFile $content
+	}
 }
