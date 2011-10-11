@@ -19,7 +19,7 @@ namespace RequestReduce.Module
     {
         private readonly IReductionRepository reductionRepository;
         private readonly IRRConfiguration config;
-        private static readonly Regex UrlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex UrlPattern = new Regex(@"(href|src)=['""]?(?<url>[^'"" ]+)['""]?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private readonly IReducingQueue reducingQueue;
         private readonly HttpContextBase context;
 
@@ -50,30 +50,50 @@ namespace RequestReduce.Module
                 foreach (var match in matches)
                 {
                     var urlMatch = UrlPattern.Match(match.ToString());
+                    bool matched = false;
                     if (urlMatch.Success)
                     {
                         if (resource.TagValidator == null || resource.TagValidator(match.ToString(), urlMatch.Groups["url"].Value))
                         {
+                            matched = true;
                             urls.Append(RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value));
                             urls.Append("::");
                             transformableMatches.Add(match.ToString());
                         }
                     }
+                    if (!matched && transformableMatches.Count > 0)
+                    {
+                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches);
+                        urls.Clear();
+                        transformableMatches.Clear();
+                    }
                 }
-                RRTracer.Trace("Looking for reduction for {0}", urls);
-                var transform = reductionRepository.FindReduction(urls.ToString());
-                if (transform != null)
+                if (transformableMatches.Count > 0)
                 {
-                    RRTracer.Trace("Reduction found for {0}", urls);
-                    var closeHeadIdx = preTransform.StartsWith("<head",StringComparison.OrdinalIgnoreCase) ? preTransform.IndexOf('>') : -1;
-                    preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
-                    foreach (var match in transformableMatches)
-                        preTransform = preTransform.Replace(match, "");
-                    return preTransform;
+                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches);
+                    urls.Clear();
+                    transformableMatches.Clear();
                 }
-                reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
-                RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
             }
+            return preTransform;
+        }
+
+        private string DoTransform<T>(string preTransform, StringBuilder urls, List<string> transformableMatches) where T : IResourceType
+        {
+            var resource = RRContainer.Current.GetInstance<T>();
+            RRTracer.Trace("Looking for reduction for {0}", urls);
+            var transform = reductionRepository.FindReduction(urls.ToString());
+            if (transform != null)
+            {
+                RRTracer.Trace("Reduction found for {0}", urls);
+                var closeHeadIdx = (preTransform.StartsWith("<head", StringComparison.OrdinalIgnoreCase) && resource is CssResource) ? preTransform.IndexOf('>') : preTransform.IndexOf(transformableMatches[0])-1;
+                preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
+                foreach (var match in transformableMatches)
+                    preTransform = preTransform.Replace(match, "");
+                return preTransform;
+            }
+            reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
+            RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
             return preTransform;
         }
     }
