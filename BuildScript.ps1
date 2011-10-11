@@ -98,10 +98,12 @@ task Merge-35-Assembly {
 
 task Merge-40-Assembly -depends Build-Solution {
 	clean $baseDir\RequestReduce\Nuget\Lib\net40
+	clean $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
 	create $baseDir\RequestReduce\Nuget\Lib\net40
+	create $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
 	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
   exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
-      #"$baseDir\RequestReduce\bin\v4.0\$configuration\EntityFramework.dll" 
+  exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.dll "$baseDir\RequestReduce.SqlServer\bin\$configuration\RequestReduce.SqlServer.dll" "$baseDir\RequestReduce.SqlServer\bin\$configuration\EntityFramework.dll" }
 }
 
 task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
@@ -109,16 +111,21 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
 	create $filesDir
 	clean $baseDir\RequestReduce\Nuget\pngoptimization
 	create $baseDir\RequestReduce\Nuget\pngoptimization
-    $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
-    $Spec.package.metadata.version = $version
-    $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
+  $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
+  $Spec.package.metadata.version = $version
+  $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
+  $Spec = [xml](get-content "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
+  $Spec.package.metadata.version = $version
+  $Spec.package.metadata.dependencies.dependency.SetAttribute("version", $version)
+  $Spec.Save("RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
 	clean $baseDir\RequestReduce\Nuget\Content\App_Readme
 	create $baseDir\RequestReduce\Nuget\Content\App_Readme
 	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
 	Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
-	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net40-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
-  exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net20-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net40-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt }
+  exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net20-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.pdb" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.dll" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
   exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
+  exec { .\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
 }
 
 task Update-Website-Download-Links {
