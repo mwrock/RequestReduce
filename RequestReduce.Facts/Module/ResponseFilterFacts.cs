@@ -95,6 +95,41 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillNotDoubleFlushUnmatchedStartsIfNoMatcheFound()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = "before<heading>head</heading>after";
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal("before<heading>head</heading>after", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillNotLoseUntransformedMismatchFromPreviousWrite()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = "this is the first write<hdiv>and this is the second";
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 24);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 24, testBuffer.Length-24);
+
+                Assert.Equal("this is the first write<hdiv>and this is the second", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillNotLoseUntransformedMismatchFromPreviousWriteWhenMismatchIsOnStopStartMatch()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = "this is the first write<heading>and this is the second";
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, 25);
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 25, testBuffer.Length - 25);
+
+                Assert.Equal("this is the first write<heading>and this is the second", testable.FilteredResult);
+            }
+
+            [Fact]
             public void WillTransformHeadInmultipleWritesBrokenBeforeStartToken()
             {
                 var testable = new TestableResponseFilter(Encoding.UTF8);
