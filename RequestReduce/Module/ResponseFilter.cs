@@ -22,11 +22,12 @@ namespace RequestReduce.Module
         private IList<byte[]> okWhenAdjacentToScriptEndUpper;
         private IList<byte[]> okWhenAdjacentToScriptEndLower;
         private SearchState state = SearchState.LookForStart;
-        private int matchPosition = 0;
+        private int matchPosition;
         private List<byte> transformBuffer = new List<byte>();
-        private int actualOffset = 0;
-        private int actualLength = 0;
+        private int actualOffset;
+        private int actualLength;
         private bool isAdjacent;
+        private int originalOffset;
 
         private enum SearchState
         {
@@ -104,7 +105,7 @@ namespace RequestReduce.Module
         {
         RRTracer.Trace("Beginning Filter Write");
             if (Closed) throw new ObjectDisposedException("ResponseFilter");
-            actualOffset = offset;
+            originalOffset = actualOffset = offset;
             actualLength = count;
 
             var startTransformPosition = 0;
@@ -166,8 +167,10 @@ namespace RequestReduce.Module
                 state = SearchState.LookForStop;
                 return 0;
             }
+            if (i - originalOffset < transformBuffer.Count)
+                BaseStream.Write(transformBuffer.ToArray(), 0, (transformBuffer.Count - (i - originalOffset)));
+            transformBuffer.Clear();
             state = SearchState.LookForStart;
-            BaseStream.Write(transformBuffer.ToArray(), 0, transformBuffer.Count);
             return 0;
         }
 
@@ -259,6 +262,12 @@ namespace RequestReduce.Module
                 i = i - numToTrim - 1;
                 actualLength = actualLength - (i - actualOffset) - 1; 
                 actualOffset = i + 1;
+            }
+            else
+            {
+                if(i-originalOffset < transformBuffer.Count)
+                    BaseStream.Write(transformBuffer.ToArray(), 0, (transformBuffer.Count - (i - originalOffset)));
+                transformBuffer.Clear();
             }
             state = SearchState.LookForStart;
             for (var idx2 = 0; idx2 < currentStartStringsToSkip.Count; idx2++)
