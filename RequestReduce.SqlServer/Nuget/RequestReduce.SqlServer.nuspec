@@ -16,6 +16,7 @@
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <dependencies>
       <dependency id="RequestReduce" version="1.0.0" />
+      <dependency id="EntityFramework" version="4.1.10715.0" />
     </dependencies>
   </metadata>
 </package>
