@@ -1,13 +1,12 @@
 $psake.use_exit_on_error = $true
 properties {
-    $currentDir = resolve-path .
-    $Invocation = (Get-Variable MyInvocation -Scope 1).Value
-    $baseDir = Split-Path -parent $Invocation.MyCommand.Definition | split-path -parent | split-path -parent | split-path -parent
+  $currentDir = resolve-path .
+  $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+  $baseDir = Split-Path -parent $Invocation.MyCommand.Definition | split-path -parent | split-path -parent | split-path -parent
 	$port = "8877"
-    $configuration = "debug"
+  $configuration = "debug"
 	# Package Directories
-	#$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
-	$webDir = "$baseDir\_zip"
+	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
 	$version = "1.0." + (git log v1.0.. --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
@@ -17,8 +16,7 @@ task Debug -depends Default
 task Default -depends Setup-40-Projects, Clean-Solution, Setup-IIS, Build-Solution, Reset, Test-Solution
 task BuildNet35 -depends Setup-35-Projects, Clean-35-Solution, Setup-IIS, Build-35-Solution, Reset
 task Download35 -depends Setup-35-Projects, Clean-35-Solution, Update-AssemblyInfoFiles, Build-35-Solution, Reset
-#task Download -depends Setup-40-Projects, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Reset, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
-task Download -depends Setup-40-Projects, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Reset, Build-Output
+task Download -depends Setup-40-Projects, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Reset, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
 
 task Reset {
   Change-Framework-Version $projectFiles '4.0' $true
