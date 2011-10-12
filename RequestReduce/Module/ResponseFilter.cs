@@ -130,7 +130,8 @@ namespace RequestReduce.Module
                 case SearchState.LookForStop:
                 case SearchState.MatchingStop:
                 case SearchState.LookForAdjacentScript:
-                    BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
+                    if (startTransformPosition > actualOffset)
+                        BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
                     break;
             }
             RRTracer.Trace("Ending Filter Write");
