@@ -9,13 +9,14 @@ namespace RequestReduce.Utilities
     public class Minifier : IMinifier
     {
         private Microsoft.Ajax.Utilities.Minifier minifier = new Microsoft.Ajax.Utilities.Minifier();
+        private CodeSettings settings = new CodeSettings(){EvalTreatment = EvalTreatment.MakeAllSafe};
 
         public string Minify<T>(string unMinifiedContent) where T : IResourceType
         {
             if(typeof(T) == typeof(CssResource))
                 return minifier.MinifyStyleSheet(unMinifiedContent);
             if(typeof(T) == typeof(JavaScriptResource))
-                return minifier.MinifyJavaScript(unMinifiedContent);
+                return minifier.MinifyJavaScript(unMinifiedContent, settings);
 
             throw new ArgumentException("Cannot Minify Resources of unknown type", "resourceType");
         }
