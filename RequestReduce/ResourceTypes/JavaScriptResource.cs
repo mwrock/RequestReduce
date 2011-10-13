@@ -42,7 +42,6 @@ namespace RequestReduce.ResourceTypes
         }
 
 
-
         public Func<string, string, bool> TagValidator
         {
             get 

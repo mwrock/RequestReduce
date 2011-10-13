@@ -8,7 +8,6 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
-using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
 using System.Net;
 using System.IO;
@@ -17,13 +16,14 @@ namespace RequestReduce.Facts.Reducer
 {
     public class CssReducerFacts
     {
-        private class TestableCssReducer : Testable<RequestReduce.Reducer.CssReducer>
+        private class TestableCssReducer : Testable<CssReducer>
         {
             public TestableCssReducer()
             {
                 Mock<IMinifier>().Setup(x => x.Minify<CssResource>(It.IsAny<string>())).Returns("minified");
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
+                Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns(string.Empty);
             }
 
         }
@@ -170,6 +170,20 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), sprite1), Times.Once());
                 testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), sprite2), Times.Once());
                 Assert.True(flushCalled);
+            }
+
+            [Fact]
+            public void WillFetchImportedCss()
+            {
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css1.css")).Returns("@import url('css2.css');");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
+                
+                testable.ClassUnderTest.Process("http://host/css1.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>("css2"), Times.Once());
             }
 
         }

@@ -106,6 +106,16 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillDownloadACorrectlyDecodedUrl()
+            {
+                var testable = new TestableJavaScriptReducer();
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js?p=1&amp;q=2");
+
+                testable.Mock<IWebClientWrapper>().Verify(x => x.Download<JavaScriptResource>("http://host/js1.js?p=1&q=2"), Times.Once());
+            }
+
+            [Fact]
             public void WillSaveMinifiedAggregatedJS()
             {
                 var testable = new TestableJavaScriptReducer();

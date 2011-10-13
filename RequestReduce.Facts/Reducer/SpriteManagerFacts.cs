@@ -143,6 +143,18 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Exactly(1));
             }
 
+            [Fact]
+            public void WillSwallowInvalidOperationException()
+            {
+                var testable = new TestableSpriteManager();
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.AddImage(image)).Throws(new InvalidOperationException());
+
+                var ex = Record.Exception(() => testable.ClassUnderTest.Add(image));
+
+                Assert.Null(ex);
+            }
+
         }
 
         public class Flush

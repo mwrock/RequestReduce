@@ -85,7 +85,7 @@ namespace RequestReduce.Utilities
         public string DownloadString<T>(string url) where T : IResourceType
         {
             string cssContent = string.Empty;
-            using (var response = Download<CssResource>(url))
+            using (var response = Download<T>(url))
             {
                 if (response == null)
                     return null;

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
-using System.IO;
 
 namespace RequestReduce.Reducer
 {
     public class CssReducer : HeadResourceReducerBase<CssResource>
     {
-        private ISpriteManager spriteManager;
-        private ICssImageTransformer cssImageTransformer;
+        private readonly ISpriteManager spriteManager;
+        private readonly ICssImageTransformer cssImageTransformer;
+        private static readonly Regex cssImportPattern = new Regex(@"@import[\s]+url[\s]*\([\s]*['""]?(?<url>[^'"" ]+)['""]?[\s]*\)[\s]*?;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder) : base(webClientWrapper, store, minifier, uriBuilder)
         {
@@ -35,16 +36,29 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
-            string cssContent = webClientWrapper.DownloadString<CssResource>(url); 
+            var cssContent = webClientWrapper.DownloadString<CssResource>(url);
+            cssContent = ExpandImports(cssContent, url);
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
+            return cssContent;
+        }
+
+        private string ExpandImports(string cssContent, string parentUrl)
+        {
+            var imports = cssImportPattern.Matches(cssContent);
+            foreach (Match match in imports)
+            {
+                var url = match.Groups["url"].Value;
+                var absoluteUrl = RelativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
+                var importContent = webClientWrapper.DownloadString<CssResource>(absoluteUrl);
+                importContent = ExpandImports(importContent, absoluteUrl);
+                cssContent = cssContent.Replace(match.ToString(), importContent);
+            }
             return cssContent;
         }
 
         protected virtual string SpriteCss(string css, List<BackgroundImageClass> imageUrls)
         {
-            foreach (var spritedImage in spriteManager)
-                css = cssImageTransformer.InjectSprite(css, spritedImage);
-            return css;
+            return spriteManager.Aggregate(css, (current, spritedImage) => cssImageTransformer.InjectSprite(current, spritedImage));
         }
     }
 }
