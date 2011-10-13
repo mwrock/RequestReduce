@@ -49,7 +49,7 @@ namespace RequestReduce.Utilities
                 systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
                 client.Proxy = systemWebProxy;
                 var response = client.GetResponse();
-                if (requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
+                if (response.ContentLength > 0 && requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
                     throw new InvalidOperationException(string.Format(
                         "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes)));
                 return response;

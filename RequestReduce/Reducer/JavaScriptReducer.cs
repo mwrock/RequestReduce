@@ -25,7 +25,7 @@ namespace RequestReduce.Reducer
             foreach (var url in urls)
             {
                 mergedJSBuilder.Append(ProcessJavaScript(url));
-                if (mergedJSBuilder.Length > 0 && mergedJSBuilder[mergedJSBuilder.Length - 1] == ')')
+                if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] == ')' || mergedJSBuilder[mergedJSBuilder.Length - 1] == '}'))
                     mergedJSBuilder.Append(";");
                 mergedJSBuilder.AppendLine();
             }
@@ -39,7 +39,6 @@ namespace RequestReduce.Reducer
             {
                 if (response == null)
                     return null;
-
                 var expires = response.Headers["Expires"];
                 try
                 {
