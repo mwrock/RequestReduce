@@ -53,7 +53,7 @@ namespace RequestReduce.Configuration
         public RRConfiguration()
         {
             IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
-            AuthorizedUserList = config == null || string.IsNullOrWhiteSpace(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
+            AuthorizedUserList = config == null || string.IsNullOrEmpty(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit = val == 0 ? 50000 : val;
             val = config == null ? 0 : config.SpriteColorLimit;
@@ -66,18 +66,23 @@ namespace RequestReduce.Configuration
             JavaScriptProcesingDisabled = config == null ? false : config.JavaScriptProcesingDisabled;
             ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
-            SpriteVirtualPath = config == null || string.IsNullOrWhiteSpace(config.SpriteVirtualPath)
+            SpriteVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);
-            JavaScriptUrlsToIgnore = config == null || string.IsNullOrWhiteSpace(config.JavaScriptUrlsToIgnore)
+            JavaScriptUrlsToIgnore = config == null || string.IsNullOrEmpty(config.JavaScriptUrlsToIgnore)
                                     ? "ajax.googleapis.com/ajax/libs/jquery/,ajax.aspnetcdn.com/ajax/jQuery/"
                                     : config.JavaScriptUrlsToIgnore;
-            spritePhysicalPath = config == null ? null : string.IsNullOrWhiteSpace(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
+            spritePhysicalPath = config == null ? null : string.IsNullOrEmpty(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if (config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
-                var success = Enum.TryParse(config.ContentStore, true, out contentStore);
-                if (!success)
-                    throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore));
+                try
+                {
+                    contentStore = (Store)Enum.Parse(typeof(Store), config.ContentStore, true);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore), ex);
+                }
             }
             CreatePhysicalPath();
         }

@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
+using RequestReduce.Store;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
-namespace RequestReduce.Store
+namespace RequestReduce.SqlServer
 {
     public interface IFileRepository : IRepository<RequestReduceFile>
     {
@@ -18,11 +18,11 @@ namespace RequestReduce.Store
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
         string GetActiveUrlByKey(Guid key, Type resourceType);
     }
+
     public class FileRepository : Repository<RequestReduceFile>, IFileRepository
     {
         public FileRepository(IRRConfiguration config) : base(config)
         {
-
             if (RequestReduceContext.SqlCeType == null || RequestReduceContext.SqlCeType != Context.Database.Connection.GetType())
                 Database.SetInitializer<RequestReduceContext>(null);
             else

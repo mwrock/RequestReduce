@@ -1,22 +1,41 @@
 $psake.use_exit_on_error = $true
 properties {
-    $currentDir = resolve-path .
-    $Invocation = (Get-Variable MyInvocation -Scope 1).Value
-    $baseDir = Split-Path -parent $Invocation.MyCommand.Definition | split-path -parent | split-path -parent | split-path -parent
+  $currentDir = resolve-path .
+  $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+  $baseDir = Split-Path -parent $Invocation.MyCommand.Definition | split-path -parent | split-path -parent | split-path -parent
 	$port = "8877"
-    $configuration = "debug"
+  $configuration = "debug"
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
 	$version = "1.0." + (git log v1.0.. --pretty=oneline | measure-object).Count
+	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
 }
 
 task Debug -depends Default
-task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
+task Default -depends Setup-40-Projects, Clean-Solution, Setup-IIS, Build-Solution, Reset, Test-Solution
+task BuildNet35 -depends Setup-35-Projects, Clean-35-Solution, Setup-IIS, Build-35-Solution, Reset
+task Download35 -depends Setup-35-Projects, Clean-35-Solution, Update-AssemblyInfoFiles, Build-35-Solution, Reset
+task Download -depends Setup-40-Projects, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Reset, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
+
+task Reset {
+  Change-Framework-Version $projectFiles '4.0' $true
+}
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
+}
+
+task Setup-35-Projects {
+  Change-Framework-Version $projectFiles '3.5' $false
+}
+
+task Setup-40-Projects {
+  Change-Framework-Version $projectFiles '4.0' $false
+}
+
+task Clean-35-Solution -depends Clean-BuildFiles {
+    exec { msbuild 'RequestReduce\RequestReduce.csproj' /t:Clean /v:quiet }
 }
 
 task Clean-Solution -depends Clean-BuildFiles {
@@ -32,10 +51,16 @@ task Update-AssemblyInfoFiles {
 }
 
 task create-WebProject-build-target {
-    create $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0
+  create $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0
 	Copy-Item $baseDir\Microsoft.WebApplication.targets $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0\Microsoft.WebApplication.targets
 }
+
+task Build-35-Solution {
+  exec { msbuild 'RequestReduce\RequestReduce.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
+}
+
 task Build-Solution {
+    Change-Framework-Version $projectFiles '4.0' $false
     exec { msbuild RequestReduce.sln /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
@@ -62,31 +87,47 @@ task Push-Nuget {
 	exec { .\Tools\nuget.exe push $filesDir\RequestReduce.$version.nupkg }
 }
 
-task Merge-Assembly -depends Build-Solution {
-	clean $baseDir\RequestReduce\Nuget\Lib
-	create $baseDir\RequestReduce\Nuget\Lib
-	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
-    exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\RequestReduce.dll $baseDir\RequestReduce\bin\$configuration\AjaxMin.dll $baseDir\RequestReduce\bin\$configuration\EntityFramework.dll $baseDir\RequestReduce\bin\$configuration\StructureMap.dll $baseDir\RequestReduce\bin\$configuration\nquant.core.dll }
+task Merge-35-Assembly {
+  clean $baseDir\RequestReduce\Nuget\Lib\net20
+  create $baseDir\RequestReduce\Nuget\Lib\net20
+  if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
+  exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v2,$env:windir\Microsoft.NET\Framework$bitness\v2.0.50727" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll "$baseDir\RequestReduce\bin\v3.5\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v3.5\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v3.5\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v3.5\$configuration\nquant.core.dll" }
 }
 
-task Build-Output -depends Merge-Assembly {
+task Merge-40-Assembly -depends Build-Solution {
+	clean $baseDir\RequestReduce\Nuget\Lib\net40
+	clean $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
+	create $baseDir\RequestReduce\Nuget\Lib\net40
+	create $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
+	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
+  exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
+  copy-item $baseDir\RequestReduce.SqlServer\bin\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net40 | out-null
+}
+
+task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
 	clean $filesDir
 	create $filesDir
 	clean $baseDir\RequestReduce\Nuget\pngoptimization
 	create $baseDir\RequestReduce\Nuget\pngoptimization
-    $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
-    $Spec.package.metadata.version = $version
-    $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
+  $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
+  $Spec.package.metadata.version = $version
+  $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
+  $Spec = [xml](get-content "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
+  $Spec.package.metadata.version = $version
+  $Spec.package.metadata.dependencies.dependency[0].SetAttribute("version", $version)
+  $Spec.Save("RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
 	clean $baseDir\RequestReduce\Nuget\Content\App_Readme
 	create $baseDir\RequestReduce\Nuget\Content\App_Readme
 	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
 	Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
-	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce$version.zip $baseDir\RequestReduce\Nuget\Lib\RequestReduce.dll $baseDir\RequestReduce\Nuget\Lib\RequestReduce.pdb $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce\Nuget\Tools\RequestReduceFiles.sql }
-    exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net40-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.pdb" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.dll" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce.SqlServer\Nuget\Tools\RequestReduceFiles.sql }
+  exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net20-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt }
+  exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
+  exec { .\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
 }
 
 task Update-Website-Download-Links {
-	 $downloadUrl="BuildFiles/RequestReduce" + $version + ".zip"
+	 $downloadUrl="BuildFiles/RequestReduce-net40-" + $version + ".zip"
 	 $downloadButtonUrlPatern="BuildFiles/RequestReduce[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
 	 $downloadLinkTextPattern="V[0-9]+(\.([0-9]+|\*)){1,3}"
 	 $filename = "$webDir\index.html"
@@ -183,4 +224,42 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $commit) {
 			% {$_ -replace $fileCommitPattern, $commitVersion }
         } | Set-Content $filename
     }
+}
+
+function Change-Framework-Version ([string[]] $projFiles, [string] $frameworkVersion, [boolean] $setDefaultPath) {
+  $nQuantRegex = [regex] '<HintPath>\.\.\\packages\\nQuant.+\\Lib\\(net\d{2})\\nQuant\.Core\.dll</HintPath>'
+  if ($frameworkVersion -eq '4.0') { $nugetVer = 'net40' } else { $nugetVer = 'net20' }
+
+	foreach ($projFile in $projFiles) {	
+		$content = [xml] (get-content $projFile)
+		$content.Project.SetAttribute("ToolsVersion", $frameworkVersion)
+		$content.Project.PropertyGroup[0].TargetFrameworkVersion = "v$frameworkVersion"
+		if ($setDefaultPath) {
+      $paths = 'bin\Debug\', 'bin\Release\'
+		} else {
+      $paths = "bin\v$frameworkVersion\Debug\", "bin\v$frameworkVersion\Release\"
+    }
+    
+    $content.Project.PropertyGroup[1].OutputPath = $paths[0]
+    $content.Project.PropertyGroup[2].OutputPath = $paths[1]
+    
+    if ($frameworkVersion -eq '4.0') {
+      $ref = $content.Project.ItemGroup[0].Reference | where-object { $_.GetAttribute('Include') -eq 'System.Web.Abstractions' }
+      if ($ref -ne $null) {
+        $content.Project.ItemGroup[0].RemoveChild($ref) | out-null
+      }
+    } else {
+      $ref = $content.CreateElement('Reference', 'http://schemas.microsoft.com/developer/msbuild/2003')
+      $ref.SetAttribute('Include', 'System.Web.Abstractions')
+      $content.Project.ItemGroup[0].AppendChild($ref) | out-null
+    }
+    
+		$content.Save($projFile)
+		
+		$content = [System.IO.File]::ReadAllText($projFile)
+		$match = $nQuantRegex.Match($content)
+		$content = $content.Remove($match.Groups[1].Index, $match.Groups[1].Length)
+		$content = $content.Insert($match.Groups[1].Index, $nugetVer)
+		set-content $projFile $content
+	}
 }

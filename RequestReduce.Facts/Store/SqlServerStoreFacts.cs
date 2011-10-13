@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Web;
 using Moq;
 using RequestReduce.Module;
+using RequestReduce.SqlServer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 

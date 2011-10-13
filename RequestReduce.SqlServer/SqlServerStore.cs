@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RequestReduce.Module;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
-namespace RequestReduce.Store
+namespace RequestReduce.SqlServer
 {
     public class SqlServerStore : IStore
     {

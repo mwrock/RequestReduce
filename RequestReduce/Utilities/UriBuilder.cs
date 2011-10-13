@@ -58,12 +58,15 @@ namespace RequestReduce.Utilities
 
         public string ParseFileName(string url)
         {
-            return string.IsNullOrWhiteSpace(url) ? null : url.Substring(url.LastIndexOf('/') + 1);
+            if (string.IsNullOrEmpty(url))
+                return null;
+
+            return string.IsNullOrEmpty(url.Trim()) ? null : url.Substring(url.LastIndexOf('/') + 1);
         }
 
         public Guid ParseKey(string url)
         {
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrEmpty(url))
                 return Guid.Empty;
 
             var idx = url.LastIndexOf('/');
@@ -72,14 +75,20 @@ namespace RequestReduce.Utilities
             idx = keyDir.IndexOf('-');
             if (idx > -1)
                 strKey = keyDir.Substring(0, idx);
-            Guid key;
-            Guid.TryParse(strKey, out key);
-            return key;
+
+            try
+            {
+                return new Guid(strKey);
+            }
+            catch (FormatException)
+            {
+                return Guid.Empty;
+            }
         }
 
         public string ParseSignature(string url)
         {
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(url.Trim()))
                 return Guid.Empty.RemoveDashes();
 
             var idx = url.LastIndexOf('/');
@@ -88,13 +97,12 @@ namespace RequestReduce.Utilities
             try
             {
                 strKey = keyDir.Substring(33, 32);
+                return new Guid(strKey).RemoveDashes();
             }
-            catch (ArgumentOutOfRangeException)
+            catch (Exception)
             {
+                return Guid.Empty.RemoveDashes();
             }
-            Guid key;
-            Guid.TryParse(strKey, out key);
-            return key.RemoveDashes();
         }
     }
 }
