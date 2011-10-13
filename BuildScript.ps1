@@ -120,8 +120,8 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
 	create $baseDir\RequestReduce\Nuget\Content\App_Readme
 	Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
 	Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
-	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net40-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt }
-  exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net20-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.pdb" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.dll" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce.SqlServer\Nuget\Tools\RequestReduceFiles.sql }
+	exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net40-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.pdb" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.dll" "$baseDir\RequestReduce.SqlServer\Nuget\Lib\net40\RequestReduce.SqlServer.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt $baseDir\RequestReduce.SqlServer\Nuget\Tools\RequestReduceFiles.sql }
+  exec { .\Tools\zip.exe -j -9 $filesDir\RequestReduce-net20-$version.zip "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll" "$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.pdb" $baseDir\RequestReduce\Nuget\pngoptimization\*.* $baseDir\License.txt }
   exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
   exec { .\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
 }
