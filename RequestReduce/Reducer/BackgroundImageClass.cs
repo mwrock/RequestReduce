@@ -45,8 +45,11 @@ namespace RequestReduce.Reducer
             if (match.Success)
             {
                 OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
-                ImageUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, OriginalImageUrl);
-                OriginalClassString = OriginalClassString.Replace(OriginalImageUrl, ImageUrl);
+                if (OriginalImageUrl.Length > 0)
+                {
+                    ImageUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, OriginalImageUrl);
+                    OriginalClassString = OriginalClassString.Replace(OriginalImageUrl, ImageUrl);
+                }
             }
             var repeatMatch = repeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)

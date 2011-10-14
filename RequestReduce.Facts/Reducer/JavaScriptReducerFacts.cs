@@ -106,6 +106,16 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillDownloadACorrectlyDecodedUrl()
+            {
+                var testable = new TestableJavaScriptReducer();
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js?p=1&amp;q=2");
+
+                testable.Mock<IWebClientWrapper>().Verify(x => x.Download<JavaScriptResource>("http://host/js1.js?p=1&q=2"), Times.Once());
+            }
+
+            [Fact]
             public void WillSaveMinifiedAggregatedJS()
             {
                 var testable = new TestableJavaScriptReducer();
@@ -143,6 +153,24 @@ namespace RequestReduce.Facts.Reducer
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
                 testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("js1();\r\njs2\r\n"), Times.Once());
+            }
+
+            [Fact]
+            public void WillAddASemiColonToLoadedJsIfItEdsInAClosingBrace()
+            {
+                var testable = new TestableJavaScriptReducer();
+                var mockWebResponse = new Mock<WebResponse>();
+                mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection());
+                mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("{js1()}")));
+                var mockWebResponse2 = new Mock<WebResponse>();
+                mockWebResponse2.Setup(x => x.Headers).Returns(new WebHeaderCollection());
+                mockWebResponse2.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("js2")));
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js2.js")).Returns(mockWebResponse2.Object);
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
+
+                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("{js1()};\r\njs2\r\n"), Times.Once());
             }
 
             [Fact]

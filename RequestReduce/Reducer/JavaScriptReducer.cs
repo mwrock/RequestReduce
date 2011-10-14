@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Web;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
 using System.IO;
 using RequestReduce.Configuration;
+using UriBuilder = System.UriBuilder;
 
 namespace RequestReduce.Reducer
 {
@@ -25,7 +26,7 @@ namespace RequestReduce.Reducer
             foreach (var url in urls)
             {
                 mergedJSBuilder.Append(ProcessJavaScript(url));
-                if (mergedJSBuilder.Length > 0 && mergedJSBuilder[mergedJSBuilder.Length - 1] == ')')
+                if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] == ')' || mergedJSBuilder[mergedJSBuilder.Length - 1] == '}'))
                     mergedJSBuilder.Append(";");
                 mergedJSBuilder.AppendLine();
             }
@@ -35,11 +36,11 @@ namespace RequestReduce.Reducer
         protected virtual string ProcessJavaScript(string url)
         {
             string jsContent = string.Empty;
+            url = url.Replace("&amp;", "&");
             using (var response = webClientWrapper.Download<JavaScriptResource>(url))
             {
                 if (response == null)
                     return null;
-
                 var expires = response.Headers["Expires"];
                 try
                 {

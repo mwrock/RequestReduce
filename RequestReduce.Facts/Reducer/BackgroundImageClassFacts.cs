@@ -59,6 +59,20 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillLeaveImageUrlNullIfBackgroundImageUrlIsEmpty()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background-image: url("""");
+}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Null(testable.ImageUrl);
+            }
+
+            [Fact]
             public void WillSetImageAbsoluteUrlFromBackgroundImageStyle()
             {
                 var css =

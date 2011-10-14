@@ -35,7 +35,22 @@ namespace RequestReduce.Reducer
             var imageKey = new ImageMetadata(image);
             if (spriteList.ContainsKey(imageKey))
                 return;
-            var spritedImage = SpriteContainer.AddImage(image);
+            SpritedImage spritedImage = null;
+            try
+            {
+                spritedImage = SpriteContainer.AddImage(image);
+            }
+            catch (InvalidOperationException ex)
+            {
+                var message = string.Format("There were errors reducing {0}", image.ImageUrl);
+                var wrappedException =
+                    new ApplicationException(message, ex);
+                RRTracer.Trace(message);
+                RRTracer.Trace(ex.ToString());
+                if (RequestReduceModule.CaptureErrorAction != null)
+                    RequestReduceModule.CaptureErrorAction(wrappedException);
+                return;
+            }
             spriteList.Add(imageKey, spritedImage);
             if (SpriteContainer.Size >= config.SpriteSizeLimit || (SpriteContainer.Colors >= config.SpriteColorLimit && !config.ImageQuantizationDisabled && !config.ImageOptimizationDisabled))
                 Flush();
