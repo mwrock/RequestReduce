@@ -8,7 +8,7 @@ properties {
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
-	$version = "1.0." + (git log v1.0.. --pretty=oneline | measure-object).Count
+	$version = "1.1." + (git log v1.0.. --pretty=oneline | measure-object).Count
 }
 
 task Debug -depends Default
