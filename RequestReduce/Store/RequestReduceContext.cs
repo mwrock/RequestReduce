@@ -31,7 +31,7 @@ namespace RequestReduce.Store
                 modelBuilder.Entity<RequestReduceFile>()
                     .Property(s => s.LastUpdated)
                     .IsRequired()
-                    .HasColumnType("datetime2");
+                    .HasColumnType("datetime");
 
                 modelBuilder.Entity<RequestReduceFile>()
                     .Property(s => s.Content)
