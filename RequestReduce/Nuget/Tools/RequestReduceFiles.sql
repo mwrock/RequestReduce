@@ -5,7 +5,7 @@
 	[Content] [varbinary](max) NOT NULL,
 	[OriginalName] [nvarchar](max) NULL,
 	[IsExpired] [bit] NOT NULL,
-	[LastUpdated] [datetime2](7) NOT NULL,
+	[LastUpdated] [datetime] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[RequestReduceFileId] ASC
