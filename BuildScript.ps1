@@ -8,12 +8,12 @@ properties {
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
-	$version = "1.1." + (git log v1.0.. --pretty=oneline | measure-object).Count
+	$version = "1.2." + (git log v1.2.. --pretty=oneline | measure-object).Count
 }
 
 task Debug -depends Default
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Pull-Web, Build-Output, Update-Website-Download-Links, Push-Web
+task Download -depends Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Build-Output, Pull-Web, Update-Website-Download-Links, Push-Web
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
@@ -49,6 +49,10 @@ task Pull-Web {
 	cd $currentDir
 }
 
+task Pull-Repo {
+	exec {git pull }
+}
+
 task Push-Web {
     $message="deploying $version"
 	cd $webDir
@@ -56,6 +60,13 @@ task Push-Web {
 	exec { git commit -a -m $message }
 	exec { git push }
 	cd $currentDir
+}
+
+task Push-Repo {
+    $message="deploying $version"
+	exec { git add . }
+	exec { git commit -a -m $message }
+	exec { git push }
 }
 
 task Push-Nuget {
@@ -168,7 +179,7 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $commit) {
     $fileVersion = 'AssemblyFileVersion("' + $version + '")';
     $commitVersion = 'AssemblyTrademarkAttribute("' + $commit + '")';
 
-    Get-ChildItem -path $baseDir -r -filter AssemblyInfo.cs | ForEach-Object {
+    Get-ChildItem -path $baseDir -r -filter GlobalAssemblyInfo.cs | ForEach-Object {
         $filename = $_.Directory.ToString() + '\' + $_.Name
         $filename + ' -> ' + $version
         
