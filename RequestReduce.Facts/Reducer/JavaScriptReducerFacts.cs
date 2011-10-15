@@ -245,6 +245,7 @@ namespace RequestReduce.Facts.Reducer
             [InlineData("max-age=7200000, no-store")]
             [InlineData("max-age=7200000, no-cache")]
             [InlineData("max-age=7200, public")]
+            [InlineData("public,  max-age=7200")]
             public void WillAddUrlToIgnoreListIfMaxAgeIsAtLeastAWeekOrCachingIsTurnedOff(string cacheVal)
             {
                 var testable = new TestableJavaScriptReducer();

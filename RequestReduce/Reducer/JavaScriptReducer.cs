@@ -57,7 +57,7 @@ namespace RequestReduce.Reducer
                     {
                         try
                         {
-                            if((val.Contains("no-") || (val.Contains("max-age") && Int32.Parse(val.Remove(0, 8)) < (60*60*24*7))))
+                            if((val.Contains("no-") || (val.Contains("max-age") && Int32.Parse(val.Trim().Remove(0, 8)) < (60*60*24*7))))
                                 AddUrlToIgnores(url);
                         }
                         catch(FormatException){}
