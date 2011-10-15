@@ -70,7 +70,8 @@ task Push-Repo {
 }
 
 task Push-Nuget {
-	exec { .\Tools\nuget.exe push $filesDir\RequestReduce.$version.nupkg }
+	$pkg = Get-Item -path $filesDir/RequestReduce.*.nupkg
+	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Merge-Assembly -depends Build-Solution {
