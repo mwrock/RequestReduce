@@ -13,7 +13,7 @@ properties {
 
 task Debug -depends Default
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
-task Download -depends Pull-Repo, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Build-Output, Push-Repo, Pull-Web, Update-Website-Download-Links, Push-Web
+task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Build-Output, Push-Repo, Update-Website-Download-Links, Push-Web
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
