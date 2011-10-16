@@ -186,6 +186,22 @@ namespace RequestReduce.Facts.Reducer
                     x.Minify<CssResource>("css2"), Times.Once());
             }
 
+            [Fact]
+            public void WillResolveImagePathsOfImportedCss()
+            {
+                var testable = new TestableCssReducer();
+                var css = "css2";
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/style1/css1.css")).Returns("@import url('../style2/css2.css');");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/style2/css2.css")).Returns(css);
+                var anyStr = It.IsAny<string>();
+
+                testable.ClassUnderTest.Process("http://host/style1/css1.css");
+
+                testable.Mock<ICssImageTransformer>().Verify(
+                    x =>
+                    x.ExtractImageUrls(ref css, "http://host/style2/css2.css"), Times.Once());
+            }
+
         }
     }
 }

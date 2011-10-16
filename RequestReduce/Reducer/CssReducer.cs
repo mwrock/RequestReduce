@@ -13,6 +13,7 @@ namespace RequestReduce.Reducer
     {
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
+        private List<BackgroundImageClass> imageUrls = new List<BackgroundImageClass>();
         private static readonly Regex cssImportPattern = new Regex(@"@import[\s]+url[\s]*\([\s]*['""]?(?<url>[^'"" ]+)['""]?[\s]*\)[\s]*?;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder) : base(webClientWrapper, store, minifier, uriBuilder)
@@ -25,11 +26,8 @@ namespace RequestReduce.Reducer
         {
             spriteManager.SpritedCssKey = key;
             var mergedCss = new StringBuilder();
-            var imageUrls = new List<BackgroundImageClass>();
             foreach (var url in urls)
                 mergedCss.Append(ProcessCss(url, imageUrls));
-            foreach (var imageUrl in imageUrls)
-                spriteManager.Add(imageUrl);
             spriteManager.Flush();
             return SpriteCss(mergedCss.ToString(), imageUrls);
         }
@@ -37,8 +35,8 @@ namespace RequestReduce.Reducer
         protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
         {
             var cssContent = webClientWrapper.DownloadString<CssResource>(url);
+            cssContent = ProcessSprites(cssContent, url);
             cssContent = ExpandImports(cssContent, url);
-            imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, url));
             return cssContent;
         }
 
@@ -50,9 +48,18 @@ namespace RequestReduce.Reducer
                 var url = match.Groups["url"].Value;
                 var absoluteUrl = RelativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
                 var importContent = webClientWrapper.DownloadString<CssResource>(absoluteUrl);
+                importContent = ProcessSprites(importContent, absoluteUrl);
                 importContent = ExpandImports(importContent, absoluteUrl);
                 cssContent = cssContent.Replace(match.ToString(), importContent);
             }
+            return cssContent;
+        }
+
+        private string ProcessSprites(string cssContent, string parentUrl)
+        {
+            imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, parentUrl));
+            foreach (var imageUrl in imageUrls)
+                spriteManager.Add(imageUrl);
             return cssContent;
         }
 
