@@ -22,15 +22,22 @@ namespace RequestReduce.Reducer
 
         protected override string ProcessResource(Guid key, IEnumerable<string> urls)
         {
-            var mergedJSBuilder = new StringBuilder();
-            foreach (var url in urls)
+            try
             {
-                mergedJSBuilder.Append(ProcessJavaScript(url));
-                if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] == ')' || mergedJSBuilder[mergedJSBuilder.Length - 1] == '}'))
-                    mergedJSBuilder.Append(";");
-                mergedJSBuilder.AppendLine();
+                var mergedJSBuilder = new StringBuilder();
+                foreach (var url in urls)
+                {
+                    mergedJSBuilder.Append(ProcessJavaScript(url));
+                    if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] == ')' || mergedJSBuilder[mergedJSBuilder.Length - 1] == '}'))
+                        mergedJSBuilder.Append(";");
+                    mergedJSBuilder.AppendLine();
+                }
+                return mergedJSBuilder.ToString();
             }
-            return mergedJSBuilder.ToString();
+            catch(NearFutureJavascriptException)
+            {
+                return null;
+            }
         }
 
         protected virtual string ProcessJavaScript(string url)
@@ -83,6 +90,11 @@ namespace RequestReduce.Reducer
             var urlToIgnore = url.Replace(uriBuilder.Query.Length == 0 ? "?" : uriBuilder.Query, "").Replace(uriBuilder.Scheme + "://", "");
             if (!config.JavaScriptUrlsToIgnore.ToLower().Contains(urlToIgnore.ToLower()))
                 config.JavaScriptUrlsToIgnore += "," + urlToIgnore;
+            throw new NearFutureJavascriptException();
+        }
+
+        private class NearFutureJavascriptException : Exception
+        {
         }
     }
 }

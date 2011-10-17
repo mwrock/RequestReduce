@@ -8,7 +8,6 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
-using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
 using System.Net;
 using System.IO;
@@ -18,7 +17,7 @@ namespace RequestReduce.Facts.Reducer
 {
     public class JavaScriptReducerFacts
     {
-        private class TestableJavaScriptReducer : Testable<RequestReduce.Reducer.JavaScriptReducer>
+        private class TestableJavaScriptReducer : Testable<JavaScriptReducer>
         {
             public TestableJavaScriptReducer()
             {
@@ -200,7 +199,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillAddUrlToIgnoreListIfExpiresIsAtLeastAWeekAppendingToExistingList()
+            public void WillAddUrlToIgnoreListAndNotSaveIfExpiresIsAtLeastAWeekAppendingToExistingList()
             {
                 var testable = new TestableJavaScriptReducer();
                 var mockWebResponse = new Mock<WebResponse>();
@@ -210,7 +209,9 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js?qs=875::");
 
+                Assert.Equal(0, result.Length);
                 testable.Mock<IRRConfiguration>().VerifySet(x => x.JavaScriptUrlsToIgnore = "url1,host/js1.js", Times.Once());
+                testable.Mock<IStore>().Verify(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
             }
 
             [Fact]
@@ -256,6 +257,8 @@ namespace RequestReduce.Facts.Reducer
                 var result = testable.ClassUnderTest.Process("http://host/js1.js?qs=875::");
 
                 testable.Mock<IRRConfiguration>().VerifySet(x => x.JavaScriptUrlsToIgnore = ",host/js1.js", Times.Once());
+                Assert.Equal(0, result.Length);
+                testable.Mock<IStore>().Verify(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
             }
 
             [Fact]
