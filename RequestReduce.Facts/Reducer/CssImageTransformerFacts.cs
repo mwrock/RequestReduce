@@ -330,6 +330,30 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.Equal(expectedCss, result);
             }
+
+            [Fact]
+            public void WillAddImportanceDirectiveIfImportant()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.localnavigation {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 -30px;
+    width: 50;
+}";
+                var expected =
+    @"
+.localnavigation {    
+    background: url('spriteUrl') no-repeat 0 -30px;
+    width: 50;
+;background-position: -120px 0 !important;}";
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, "http://server/content/style.css") {Important = true }, null) { Url = "spriteUrl", Position = 120 };
+
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
+
+                Assert.Equal(expected, result);
+            }
+
         }
     }
 }

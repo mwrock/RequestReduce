@@ -27,8 +27,8 @@ namespace RequestReduce.Reducer
                 yOffset = string.Format("{0}px", CssClass.YOffset.Offset);
 
             newClass = newClass.Replace("}",
-                                        string.Format(";background-position: -{0}px {1};}}",
-                                                      Position, yOffset));
+                                        string.Format(";background-position: -{0}px {1}{2};}}",
+                                        Position, yOffset, CssClass.Important ? " !important" : string.Empty));
             return newClass;
         }
     }
