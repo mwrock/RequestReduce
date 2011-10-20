@@ -7,5 +7,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("RequestReduce")]
 [assembly: AssemblyCopyright("Copyright Matt Wrock 2011")]
 [assembly: AssemblyTrademarkAttribute("")]
-[assembly: AssemblyVersion("1.2.11")]
-[assembly: AssemblyFileVersion("1.2.11")]
+[assembly: AssemblyVersion("1.2.13")]
+[assembly: AssemblyFileVersion("1.2.13")]
