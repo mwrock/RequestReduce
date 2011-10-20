@@ -27,7 +27,7 @@ namespace RequestReduce.Reducer
                 var mergedJSBuilder = new StringBuilder();
                 foreach (var url in urls)
                 {
-                    mergedJSBuilder.Append(ProcessJavaScript(url));
+                    mergedJSBuilder.Append(ProcessJavaScript(url).Trim());
                     if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] == ')' || mergedJSBuilder[mergedJSBuilder.Length - 1] == '}'))
                         mergedJSBuilder.Append(";");
                     mergedJSBuilder.AppendLine();
