@@ -36,9 +36,13 @@ namespace RequestReduce.Reducer
             RRTracer.Trace("beginning reducing process for {0}", urls);
             var urlList = SplitUrls(urls);
             var processedResource = ProcessResource(key, urlList);
-            var bytes = Encoding.UTF8.GetBytes(minifier.Minify<T>(processedResource));
-            var virtualfileName = uriBuilder.BuildResourceUrl<T>(key, bytes);
-            store.Save(bytes, virtualfileName, urls);
+            string virtualfileName = string.Empty;
+            if(processedResource != null)
+            {
+                var bytes = Encoding.UTF8.GetBytes(minifier.Minify<T>(processedResource));
+                virtualfileName = uriBuilder.BuildResourceUrl<T>(key, bytes);
+                store.Save(bytes, virtualfileName, urls);
+            }
             RRTracer.Trace("finishing reducing process for {0}", urls);
             return virtualfileName;
         }

@@ -8,7 +8,6 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
-using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
 using System.Net;
 using System.IO;
@@ -18,7 +17,7 @@ namespace RequestReduce.Facts.Reducer
 {
     public class JavaScriptReducerFacts
     {
-        private class TestableJavaScriptReducer : Testable<RequestReduce.Reducer.JavaScriptReducer>
+        private class TestableJavaScriptReducer : Testable<JavaScriptReducer>
         {
             public TestableJavaScriptReducer()
             {
@@ -174,6 +173,25 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillTrimResponse()
+            {
+                var testable = new TestableJavaScriptReducer();
+                var mockWebResponse = new Mock<WebResponse>();
+                mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection());
+                mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("{js1()}\r\n")));
+                var mockWebResponse2 = new Mock<WebResponse>();
+                mockWebResponse2.Setup(x => x.Headers).Returns(new WebHeaderCollection());
+                mockWebResponse2.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("js2")));
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js2.js")).Returns(mockWebResponse2.Object);
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
+
+                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("{js1()};\r\njs2\r\n"), Times.Once());
+            }
+
+
+            [Fact]
             public void WillAddUrlToIgnoreListIfExpiresIsAtLeastAWeek()
             {
                 var testable = new TestableJavaScriptReducer();
@@ -200,7 +218,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillAddUrlToIgnoreListIfExpiresIsAtLeastAWeekAppendingToExistingList()
+            public void WillAddUrlToIgnoreListAndNotSaveIfExpiresIsAtLeastAWeekAppendingToExistingList()
             {
                 var testable = new TestableJavaScriptReducer();
                 var mockWebResponse = new Mock<WebResponse>();
@@ -210,7 +228,9 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js?qs=875::");
 
+                Assert.Equal(0, result.Length);
                 testable.Mock<IRRConfiguration>().VerifySet(x => x.JavaScriptUrlsToIgnore = "url1,host/js1.js", Times.Once());
+                testable.Mock<IStore>().Verify(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
             }
 
             [Fact]
@@ -256,6 +276,8 @@ namespace RequestReduce.Facts.Reducer
                 var result = testable.ClassUnderTest.Process("http://host/js1.js?qs=875::");
 
                 testable.Mock<IRRConfiguration>().VerifySet(x => x.JavaScriptUrlsToIgnore = ",host/js1.js", Times.Once());
+                Assert.Equal(0, result.Length);
+                testable.Mock<IStore>().Verify(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
             }
 
             [Fact]

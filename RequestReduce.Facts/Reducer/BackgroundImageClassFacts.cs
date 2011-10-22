@@ -529,6 +529,49 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(Direction.Top, testable.YOffset.Direction);
             }
 
+            [Fact]
+            public void WillSetImportantIfLonghandpositionIsImportant()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    background-position:  50 60 !important
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.True(testable.Important);
+            }
+
+            [Fact]
+            public void WillSetImportantIfShorthandpositionIsImportant()
+            {
+                var css =
+    @"
+img.icon {
+    background: url(""http://galchameleon.redmond.corp.microsoft.com/contentservice/d046de6b-2d8e-43ec-9b37-9f5d010e51dd/icons_windows.png"") no-repeat 0 0 !important;width: 20px;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.True(testable.Important);
+            }
+
+            [Fact]
+            public void WillNotSetImportantIfNotImportant()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 50 60;
+}}";
+
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.False(testable.Important);
+            }
+
         }
 
         public class ShortcutOffsets

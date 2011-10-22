@@ -44,12 +44,16 @@ namespace RequestReduce.Facts.Integration
         {
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
             WaitToCreateResources();
+            Thread.Sleep(0);
+            Thread.Sleep(2000);
+            Thread.Sleep(0);
+            Thread.Sleep(2000);
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
-            Thread.Sleep(1000);
+            WaitToCreateResources(1, 4);
             var response = new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
 
-            Assert.Equal(4, new JavaScriptResource().ResourceRegex.Matches(response).Count);
-            Assert.Equal(4, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
+            Assert.Equal(5, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(5, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
             Assert.Contains("www.google-analytics.com", response);
         }
 
@@ -172,15 +176,15 @@ namespace RequestReduce.Facts.Integration
             Assert.False(cssFilesAfterRefresh[0].Contains("-Expired-"));
         }
 
-        private void WaitToCreateResources()
+        private void WaitToCreateResources(int expectedCssFiles = 1, int expectedJsFiles = 2)
         {
             var watch = new Stopwatch();
             watch.Start();
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.css").Where(x => !x.Contains("-Expired")).Count() == 0 && watch.ElapsedMilliseconds < 20000)
+            while (Directory.GetFiles(rrFolder, "*.css").Where(x => !x.Contains("-Expired")).Count() < expectedCssFiles && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() < 2 && watch.ElapsedMilliseconds < 20000)
+            while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() < expectedJsFiles && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= 20000)
                 throw new TimeoutException(20000);
