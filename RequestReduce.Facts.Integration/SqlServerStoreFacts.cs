@@ -18,7 +18,7 @@ using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Integration
 {
-    public class SqlServerStoreFacts
+    public class SqlServerStoreFacts : IDisposable
     {
         private readonly IRRConfiguration config;
         private readonly IFileRepository repo;
@@ -222,5 +222,9 @@ namespace RequestReduce.Facts.Integration
             Thread.Sleep(200);
         }
 
+        public void Dispose()
+        {
+            IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore);
+        }
     }
 }
