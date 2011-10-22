@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -34,9 +34,6 @@
     <Reference Include="AjaxMin, Version=4.19.4141.18463, Culture=neutral, PublicKeyToken=24297a69a7eae424, processorArchitecture=MSIL">
       <HintPath>..\packages\AjaxMin.4.19.4141.18463\lib\AjaxMin.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
-    </Reference>
     <Reference Include="nQuant.Core, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\nQuant.0.9.8\Lib\net40\nQuant.Core.dll</HintPath>
@@ -48,13 +45,11 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -66,6 +61,7 @@
     <Compile Include="IOC\RRContainer.cs" />
     <Compile Include="IOC\RRHttpContextLifecycle.cs" />
     <Compile Include="IOC\RRHybridLifecycle.cs" />
+    <Compile Include="IOC\RRLocalStoreRegistry.cs" />
     <Compile Include="IOC\SingletonConvention.cs" />
     <Compile Include="Module\AbstractFilter.cs" />
     <Compile Include="Module\IQueueItem.cs" />
@@ -85,14 +81,8 @@
     <Compile Include="Reducer\SpritedImage.cs" />
     <Compile Include="ResourceTypes\JavaScriptResource.cs" />
     <Compile Include="RRTracer.cs" />
-    <Compile Include="Store\DbDiskCache.cs" />
-    <Compile Include="Store\FileRepository.cs" />
-    <Compile Include="Store\Repository.cs" />
     <Compile Include="Store\IStore.cs" />
     <Compile Include="Store\LocalDiskStore.cs" />
-    <Compile Include="Store\RequestReduceContext.cs" />
-    <Compile Include="Store\RequestReduceFile.cs" />
-    <Compile Include="Store\SqlServerStore.cs" />
     <Compile Include="Utilities\GuidExtensions.cs" />
     <Compile Include="Utilities\IMinifier.cs" />
     <Compile Include="Reducer\IReducer.cs" />
@@ -124,7 +114,9 @@
     <None Include="Nuget\Tools\AddPostBuildScript.ps1" />
     <None Include="Nuget\Tools\install.ps1" />
     <None Include="Nuget\Tools\uninstall.ps1" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Nuget\Tools\RequestReduceFiles.sql" />
@@ -134,7 +126,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\pngoptimization\*.exe" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(ProjectDir)..\packages\pngoptimization\*.exe" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

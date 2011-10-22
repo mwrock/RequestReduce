@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
+using RequestReduce.SqlServer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using Xunit;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Store
@@ -20,16 +19,22 @@ namespace RequestReduce.Facts.Store
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
             {
-                Database.SetInitializer<RequestReduceContext>(new DropCreateDatabaseAlways<RequestReduceContext>());
+                Database.SetInitializer(new DropCreateDatabaseAlways<RequestReduceContext>());
                 Context.Database.Initialize(true);
             }
         }
 
-        class TestableRepository : Testable<FakeFileRepository>
+        class TestableRepository : Testable<FakeFileRepository>, IDisposable
         {
             public TestableRepository()
             {
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns("RRConnection");
+            }
+
+            public void Dispose()
+            {
+                RRContainer.Current.Dispose();
+                RRContainer.Current = null;
             }
         }
 
@@ -313,6 +318,7 @@ namespace RequestReduce.Facts.Store
                 var result = testable.ClassUnderTest.GetActiveUrlByKey(id, typeof(CssResource));
 
                 Assert.Equal(file.FileName, result);
+                testable.Dispose();
             }
         }
 
@@ -346,6 +352,7 @@ namespace RequestReduce.Facts.Store
             var result = testable.ClassUnderTest.GetActiveUrlByKey(id, typeof(CssResource));
 
             Assert.Equal(file2.FileName, result);
+            testable.Dispose();
         }
 
 

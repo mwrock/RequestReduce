@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>RequestReduce.SqlServer</id>
+    <version>1.2.10</version>
+    <authors>Matt Wrock</authors>
+    <owners>Matt Wrock</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://www.requestreduce.com/</projectUrl>
+    <iconUrl>http://www.requestreduce.com/nuget_icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      RequestReduce.SqlServer is an add-on to RequestReduce allowing you to store your optimized CSS, JavaScript and sprited images in a SqlServer or SqlServer CE database.
+    </description>
+    <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
+    <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
+    <dependencies>
+      <dependency id="RequestReduce" version="1.2.10" />
+      <dependency id="EntityFramework" version="4.1.10715.0" />
+    </dependencies>
+  </metadata>
+</package>

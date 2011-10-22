@@ -64,14 +64,14 @@ namespace RequestReduce.Module
                     if (!matched && transformableMatches.Count > 0)
                     {
                         preTransform = DoTransform<T>(preTransform, urls, transformableMatches);
-                        urls.Clear();
+                        urls.Length = 0;
                         transformableMatches.Clear();
                     }
                 }
                 if (transformableMatches.Count > 0)
                 {
                     preTransform = DoTransform<T>(preTransform, urls, transformableMatches);
-                    urls.Clear();
+                    urls.Length = 0;
                     transformableMatches.Clear();
                 }
             }

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.SqlServer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RequestReduce.Store
+namespace RequestReduce.SqlServer
 {
     public class RequestReduceFile
     {

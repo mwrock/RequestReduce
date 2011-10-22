@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RequestReduce.Module;
+using RequestReduce.Store;
 using RequestReduce.Utilities;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
-namespace RequestReduce.Store
+namespace RequestReduce.SqlServer
 {
     public class SqlServerStore : IStore
     {
@@ -99,7 +99,7 @@ namespace RequestReduce.Store
         {
             RRTracer.Trace("SqlServerStore Looking for previously saved content.");
             var files = repository.GetActiveFiles();
-            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file), RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => file.EndsWith(x.FileName)).GetType()));
+            return files.ToDictionary(file => uriBuilder.ParseKey(file), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file), uriBuilder.ParseSignature(file), RRContainer.GetAllResourceTypes().SingleOrDefault(x => file.EndsWith(x.FileName)).GetType()));
         }
 
 

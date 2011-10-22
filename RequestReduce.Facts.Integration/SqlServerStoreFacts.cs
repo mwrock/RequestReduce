@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
-using RequestReduce.Store;
+using RequestReduce.SqlServer;
 using RequestReduce.Utilities;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;

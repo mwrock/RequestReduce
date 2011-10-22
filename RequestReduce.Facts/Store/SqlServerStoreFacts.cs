@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Web;
 using Moq;
 using RequestReduce.Module;
+using RequestReduce.SqlServer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
@@ -318,6 +318,8 @@ namespace RequestReduce.Facts.Store
                 var result = testable.ClassUnderTest.GetUrlByKey(guid1, typeof(CssResource));
 
                 Assert.Equal("url1", result);
+                RRContainer.Current.Dispose();
+                RRContainer.Current = null;
             }
 
             [Fact]

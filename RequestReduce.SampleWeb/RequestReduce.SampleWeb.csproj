@@ -109,6 +109,10 @@
     <Content Include="index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RequestReduce.SqlServer\RequestReduce.SqlServer.csproj">
+      <Project>{81E3A2F1-45B0-45BD-9738-6708F44284AC}</Project>
+      <Name>RequestReduce.SqlServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RequestReduce\RequestReduce.csproj">
       <Project>{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}</Project>
       <Name>RequestReduce</Name>

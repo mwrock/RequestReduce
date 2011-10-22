@@ -5,6 +5,7 @@ using System.Threading;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -37,11 +38,17 @@ namespace RequestReduce.Facts.Store
 
         }
 
-        class TestableLocalDiskStore : Testable<FakeLocalDiskStore>
+        class TestableLocalDiskStore : Testable<FakeLocalDiskStore>, IDisposable
         {
             public TestableLocalDiskStore()
             {
                 
+            }
+
+            public void Dispose()
+            {
+                RRContainer.Current.Dispose();
+                RRContainer.Current = null;
             }
         }
 
@@ -226,6 +233,7 @@ namespace RequestReduce.Facts.Store
 
                 Assert.Equal(1, result.Count);
                 Assert.True(result[guid2] == "url2");
+                testable.Dispose();
             }
 			
 			[Fact]
@@ -259,6 +267,7 @@ namespace RequestReduce.Facts.Store
 
                 Assert.Equal(1, result.Count);
                 Assert.True(result[guid2] == "url2");
+                testable.Dispose();
             }
 
         }

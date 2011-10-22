@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using RequestReduce.IOC;
@@ -12,9 +11,10 @@ namespace RequestReduce.Module
 {
     public class ReducingQueue : IReducingQueue, IDisposable
     {
+        private readonly ReaderWriterLockSlim queueLock;
         protected readonly IReductionRepository reductionRepository;
         protected readonly IStore store;
-        protected ConcurrentQueue<IQueueItem> queue = new ConcurrentQueue<IQueueItem>();
+        protected Queue<IQueueItem> queue = new Queue<IQueueItem>();
         protected Thread backgroundThread;
         protected bool isRunning = true;
         protected Action<Exception> CaptureErrorAction;
@@ -24,6 +24,7 @@ namespace RequestReduce.Module
         public ReducingQueue(IReductionRepository reductionRepository, IStore store)
         {
             RRTracer.Trace("Instantiating new Reducing queue.");
+            queueLock = new ReaderWriterLockSlim();
             this.reductionRepository = reductionRepository;
             this.store = store;
             backgroundThread = new Thread(ProcessQueue) { IsBackground = true };
@@ -32,7 +33,16 @@ namespace RequestReduce.Module
 
         public void Enqueue(IQueueItem item)
         {
-            queue.Enqueue(item);
+            queueLock.EnterWriteLock();
+
+            try
+            {
+                queue.Enqueue(item);
+            }
+            finally
+            {
+                queueLock.ExitWriteLock();
+            }
         }
 
         public void ClearFailures()
@@ -42,7 +52,19 @@ namespace RequestReduce.Module
 
         public int Count
         {
-            get { return queue.Count; }
+            get
+            {
+                queueLock.EnterReadLock();
+
+                try
+                {
+                    return queue.Count;
+                }
+                finally
+                {
+                    queueLock.ExitReadLock();
+                }
+            }
         }
 
         private void ProcessQueue()
@@ -63,7 +85,19 @@ namespace RequestReduce.Module
                 return;
             try
             {
-                if (queue.TryDequeue(out itemToReduce) && reductionRepository.FindReduction(itemToReduce.Urls) == null)
+                queueLock.EnterWriteLock();
+
+                try
+                {
+                    if (queue.Count > 0)
+                        itemToReduce = queue.Dequeue();
+                }
+                finally
+                {
+                    queueLock.ExitWriteLock();
+                }
+
+                if (itemToReduce != null && reductionRepository.FindReduction(itemToReduce.Urls) == null)
                 {
                     key = Hasher.Hash(itemToReduce.Urls);
                     RRTracer.Trace("dequeued and processing {0} with key {1}.", itemToReduce.Urls, key);

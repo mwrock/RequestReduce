@@ -51,7 +51,7 @@ namespace RequestReduce.Utilities
                 var response = client.GetResponse();
                 if (response.ContentLength > 0 && requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
                     throw new InvalidOperationException(string.Format(
-                        "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes)));
+                        "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes.ToArray())));
                 return response;
             }
             catch (Exception ex)
