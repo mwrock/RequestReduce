@@ -32,6 +32,7 @@ namespace RequestReduce.Configuration
         bool IsFullTrust { get; }
         event Action PhysicalPathChange;
         string JavaScriptUrlsToIgnore { get; set; }
+        bool ImageSpritingDisabled { get; set; }
     }
 
     public class RRConfiguration : IRRConfiguration
@@ -45,6 +46,7 @@ namespace RequestReduce.Configuration
         public bool JavaScriptProcesingDisabled { get; set; }
         public bool ImageOptimizationDisabled { get; set; }
         public bool ImageQuantizationDisabled { get; set; }
+        public bool ImageSpritingDisabled { get; set; }
 
         public int StorePollInterval { get; set; }
 
@@ -66,6 +68,7 @@ namespace RequestReduce.Configuration
             JavaScriptProcesingDisabled = config == null ? false : config.JavaScriptProcesingDisabled;
             ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
+            ImageSpritingDisabled = config == null ? false : config.ImageSpritingDisabled;
             SpriteVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);

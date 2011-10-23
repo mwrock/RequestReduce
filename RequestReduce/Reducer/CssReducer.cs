@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.ResourceTypes;
@@ -13,12 +14,14 @@ namespace RequestReduce.Reducer
     {
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
+        private readonly IRRConfiguration configuration;
         private List<BackgroundImageClass> imageUrls = new List<BackgroundImageClass>();
         private static readonly Regex cssImportPattern = new Regex(@"@import[\s]+url[\s]*\([\s]*['""]?(?<url>[^'"" ]+)['""]?[\s]*\)[\s]*?;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder) : base(webClientWrapper, store, minifier, uriBuilder)
+        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration) : base(webClientWrapper, store, minifier, uriBuilder)
         {
             this.cssImageTransformer = cssImageTransformer;
+            this.configuration = configuration;
             this.spriteManager = spriteManager;
         }
 
@@ -58,8 +61,11 @@ namespace RequestReduce.Reducer
         private string ProcessSprites(string cssContent, string parentUrl)
         {
             imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, parentUrl));
-            foreach (var imageUrl in imageUrls)
-                spriteManager.Add(imageUrl);
+            if(!configuration.ImageSpritingDisabled)
+            {
+                foreach (var imageUrl in imageUrls)
+                    spriteManager.Add(imageUrl);
+            }
             return cssContent;
         }
 

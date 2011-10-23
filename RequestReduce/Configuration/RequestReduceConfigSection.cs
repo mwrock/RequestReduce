@@ -153,5 +153,15 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("imageSpritingDisabled")]
+        public bool ImageSpritingDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["imageSpritingDisabled"].ToString(), out result);
+                return result;
+            }
+        }
     }
 }

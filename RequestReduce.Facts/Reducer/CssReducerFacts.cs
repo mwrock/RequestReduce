@@ -202,6 +202,22 @@ namespace RequestReduce.Facts.Reducer
                     x.ExtractImageUrls(ref css, "http://host/style2/css2.css"), Times.Once());
             }
 
+            [Fact]
+            public void WillNotSpriteImagesWhenSpritingIsDisabled()
+            {
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns("css");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ImageSpritingDisabled).Returns(true);
+                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1" };
+                var image2 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image2" };
+                var css = "css";
+                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new BackgroundImageClass[] { image1, image2 });
+
+                testable.ClassUnderTest.Process("http://host/css2.css");
+
+                testable.Mock<ISpriteManager>().Verify(x => x.Add(image1), Times.Never());
+            }
+
         }
     }
 }
