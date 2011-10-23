@@ -9,7 +9,7 @@ namespace RequestReduce.ResourceTypes
     public class JavaScriptResource : IResourceType
     {
         private static readonly string scriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
-        private static readonly Regex ScriptPattern = new Regex(@"<script[^>]+.*?[^>]+>(\s*)?(</script>)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex ScriptPattern = new Regex(@"<script[^>]+>(?![\s]*(</script>)?[^>]*<!\[endif]-->)[^>]*</script>?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Func<string, string, bool> tagValidator = ((tag, url) => 
                 {
                     var urlsToIgnore = RRContainer.Current.GetInstance<IRRConfiguration>().JavaScriptUrlsToIgnore;
