@@ -26,7 +26,8 @@ Assuming you are using IIS 7, you would add it by ensuring that your web.config'
 If RequestReduce does not appear to be doing anything, check out this [troubleshooting wiki] (https://github.com/mwrock/RequestReduce/wiki/RequestReduce-is-not-working.-I-don%27t-see-any-spriting-or-minification.-How-can-I-troubleshoot-this%3F) which provides several scenarios, options and debugging tips for figuring out why your content may not be being reduced. Also check the [list of wiki support pages] (https://github.com/mwrock/RequestReduce/wiki) which provides documentation addressing several topics to help you optimize RequestReduce and explain how RequestReduce works.
 
 ##Requirements
-* Thus far, RequestReduce has only been tested using the .Net framework version 4 on IIS 7
+* Compatible with Framework versions 3.5 and 4.0
+* Standard Features are Medium Trust compliant
 * The identity that your asp.net worker process runs under must have write access to your web root directory for creating sprite and css files
 
 ##What's Next?

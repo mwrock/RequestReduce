@@ -14,5 +14,6 @@
     </description>
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript</tags>
+    <releaseNotes>Add support for .net 3.5 and Move SqlServer configuration to New Package RequestReduce.SqlServer. Ignore javascripts inside conditional comments. Provide imageSpritingDisabled config setting to turn off image spriting.</releaseNotes>
   </metadata>
 </package>
