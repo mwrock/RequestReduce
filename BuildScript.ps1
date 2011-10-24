@@ -98,7 +98,7 @@ task Push-Repo {
 }
 
 task Push-Nuget-Core {
-	$pkg = Get-Item -path $filesDir/RequestReduce.*.*.*.nupkg
+	$pkg = Get-Item -path $filesDir/RequestReduce.1.*.*.nupkg
 	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
