@@ -9,8 +9,8 @@
   </system.web>
   <system.webServer>
     <validation validateIntegratedModeConfiguration="false"/>
-		<modules runAllManagedModulesForAllRequests="true">
-      <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce"/>
+		<modules>
+      <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
 		</modules>
 	</system.webServer>
 </configuration>
