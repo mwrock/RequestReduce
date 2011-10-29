@@ -12,7 +12,7 @@ namespace RequestReduce.Module
     public class ReductionRepository : IReductionRepository, IDisposable
     {
         private readonly IRRConfiguration configuration;
-        protected readonly IDictionary dictionary = new Hashtable();
+        protected IDictionary dictionary = new Hashtable();
         private readonly object lockObject = new object();
         protected Timer refresher;
 
@@ -41,14 +41,13 @@ namespace RequestReduce.Module
                 if (store == null)
                     return;
 
-                var content = store.GetSavedUrls();
-                if (content != null)
+                lock(lockObject)
                 {
-                    lock(lockObject)
-                    {
-                        foreach (var pair in content)
-                            AddReduction(pair.Key, pair.Value);
-                    }
+                    var content = store.GetSavedUrls();
+                    var hash = new Hashtable(content.Count);
+                    foreach (var pair in content)
+                        hash.Add(pair.Key, pair.Value);
+                    dictionary = hash;
                 }
             }
             catch (Exception ex)

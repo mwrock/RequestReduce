@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
 using Xunit;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Store
@@ -82,7 +79,6 @@ namespace RequestReduce.Facts.Store
                     Content = new byte[] { 2 },
                     FileName = "fileName",
                     Key = Guid.NewGuid(),
-                    LastUpdated = new DateTime(2011, 1, 1),
                     OriginalName = "originalName",
                     RequestReduceFileId = id
                 };
@@ -91,31 +87,7 @@ namespace RequestReduce.Facts.Store
 
                 var savedFile = testable.ClassUnderTest[id];
                 Assert.Equal(2, savedFile.Content[0]);
-                Assert.Equal(new DateTime(2011, 1, 1), savedFile.LastUpdated);
-            }
-
-            [Fact]
-            public void WillUpdateLastUpdatedTimeOnUpdate()
-            {
-                var testable = new TestableRepository();
-                var id = Guid.NewGuid();
-                var file = new RequestReduceFile()
-                {
-                    Content = new byte[] { 1 },
-                    FileName = "fileName",
-                    Key = Guid.NewGuid(),
-                    LastUpdated = new DateTime(2010, 1, 1),
-                    OriginalName = "originalName",
-                    RequestReduceFileId = id
-                };
-                testable.ClassUnderTest.Save(file);
-                file.Content = new byte[] {2};
-
-                testable.ClassUnderTest.Save(file);
-
-                var savedFile = testable.ClassUnderTest[id];
-                Assert.Equal(2, savedFile.Content[0]);
-                Assert.True(savedFile.LastUpdated > new DateTime(2011,1,1));
+                Assert.True(savedFile.LastUpdated > new DateTime(2011, 1, 1));
             }
 
         }
