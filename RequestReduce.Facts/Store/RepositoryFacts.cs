@@ -94,7 +94,32 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(new DateTime(2011, 1, 1), savedFile.LastUpdated);
             }
 
+            [Fact]
+            public void WillUpdateLastUpdatedTimeOnUpdate()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "fileName",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = new DateTime(2010, 1, 1),
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+                testable.ClassUnderTest.Save(file);
+                file.Content = new byte[] {2};
+
+                testable.ClassUnderTest.Save(file);
+
+                var savedFile = testable.ClassUnderTest[id];
+                Assert.Equal(2, savedFile.Content[0]);
+                Assert.True(savedFile.LastUpdated > new DateTime(2011,1,1));
+            }
+
         }
+
 
         public class GetActiveFiles
         {
