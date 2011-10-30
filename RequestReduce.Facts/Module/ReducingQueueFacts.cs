@@ -35,6 +35,21 @@ namespace RequestReduce.Facts.Module
 
             public FakeReductionRepository ReductionRepository { get { return reductionRepository as FakeReductionRepository;  } }
 
+            public IQueueItem LastProcessedItem { get; set; }
+
+            public override IQueueItem ItemBeingProcessed
+            {
+                protected set { 
+                    base.ItemBeingProcessed = value;
+                    if(value != null) LastProcessedItem = value;
+                }
+            }
+
+            public QueueItem<CssResource> ForceSetItemBeingProcessed
+            {
+                set { ItemBeingProcessed = value; }
+            }
+
             public new void Dispose()
             {
                 backgroundThread.Abort();
@@ -61,6 +76,11 @@ namespace RequestReduce.Facts.Module
             public void AddReduction(Guid key, string reducedUrl)
             {
                 dict[key] = reducedUrl;
+            }
+
+            public string[] ToArray()
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -98,6 +118,34 @@ namespace RequestReduce.Facts.Module
                 Assert.Equal(item, result);
                 testable.Dispose();
             }
+
+            [Fact]
+            public void WillNotPutUrlsInTheQueueThatAreAlreadyQueued()
+            {
+                var testable = new TestableReducingQueue();
+                var item = new QueueItem<CssResource>(){Urls = "urls"};
+                testable.ClassUnderTest.Enqueue(item);
+                var item2 = new QueueItem<CssResource>() { Urls = "urls" };
+                
+                testable.ClassUnderTest.Enqueue(item2);
+
+                Assert.Equal(1, testable.ClassUnderTest.BaseQueue.Count);
+                testable.Dispose();
+            }
+
+            [Fact]
+            public void WillNotPutUrlsInTheQueueThatAreBeingProcessed()
+            {
+                var testable = new TestableReducingQueue();
+                var item = new QueueItem<CssResource>() { Urls = "urls" };
+                testable.ClassUnderTest.ForceSetItemBeingProcessed = new QueueItem<CssResource>() { Urls = "urls" };
+
+                testable.ClassUnderTest.Enqueue(item);
+
+                Assert.Equal(0, testable.ClassUnderTest.BaseQueue.Count);
+                testable.Dispose();
+            }
+
         }
 
         public class ProcessQueuedItem
@@ -187,6 +235,35 @@ namespace RequestReduce.Facts.Module
                 testable.MockedReducer.Verify(x => x.Process(It.IsAny<Guid>(), "url"), Times.Never());
                 testable.Dispose();
             }
+
+            [Fact]
+            public void WillSetCurrentProcessedItem()
+            {
+                RRContainer.Current = null;
+                var testable = new TestableReducingQueue();
+                var item = new QueueItem<CssResource> {Urls = "url"};
+                testable.ClassUnderTest.Enqueue(item);
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                Assert.Equal(item, testable.ClassUnderTest.LastProcessedItem);
+                testable.Dispose();
+            }
+
+            [Fact]
+            public void WillReSetCurrentProcessedItemToNullAfterProcessing()
+            {
+                RRContainer.Current = null;
+                var testable = new TestableReducingQueue();
+                var item = new QueueItem<CssResource> { Urls = "url" };
+                testable.ClassUnderTest.Enqueue(item);
+
+                testable.ClassUnderTest.ProcessQueuedItem();
+
+                Assert.Null(testable.ClassUnderTest.ItemBeingProcessed);
+                testable.Dispose();
+            }
+
         }
 
         public class Count
@@ -196,7 +273,7 @@ namespace RequestReduce.Facts.Module
             {
                 var testable = new TestableReducingQueue();
                 testable.ClassUnderTest.Enqueue(new QueueItem<CssResource> { Urls = "url" });
-                testable.ClassUnderTest.Enqueue(new QueueItem<CssResource> { Urls = "url" });
+                testable.ClassUnderTest.Enqueue(new QueueItem<CssResource> { Urls = "url2" });
 
                 var result = testable.ClassUnderTest.Count;
 

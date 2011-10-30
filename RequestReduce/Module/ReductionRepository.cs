@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
@@ -83,6 +84,14 @@ namespace RequestReduce.Module
             catch (ArgumentException)
             {
                 
+            }
+        }
+
+        public string[] ToArray()
+        {
+            lock (lockObject)
+            {
+                return dictionary.Values.Cast<string>().ToArray();
             }
         }
 

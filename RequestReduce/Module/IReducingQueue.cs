@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RequestReduce.Module
 {
@@ -7,5 +8,8 @@ namespace RequestReduce.Module
         void Enqueue(IQueueItem item);
         int Count { get; }
         void ClearFailures();
+        IQueueItem ItemBeingProcessed { get; }
+        IQueueItem[] ToArray();
+        KeyValuePair<Guid, int>[] Failures { get; }
     }
 }

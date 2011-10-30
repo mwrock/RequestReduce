@@ -44,7 +44,7 @@ namespace RequestReduce.Facts.Integration
         {
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
             WaitToCreateResources();
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
             WaitToCreateResources(1, 4);
             var response = new WebClient().DownloadString("http://localhost:8877/NearFuture.html");

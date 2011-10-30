@@ -63,7 +63,7 @@ namespace RequestReduce.Store
                         throw exception;
                     exception = null;
                     existingFile.Content = entity.Content;
-                    existingFile.LastUpdated = DateTime.Now;
+                    existingFile.LastUpdated = entity.LastUpdated = DateTime.Now;
                     existingFile.IsExpired = entity.IsExpired;
                     try
                     {

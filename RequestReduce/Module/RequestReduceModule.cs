@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
+using RequestReduce.Properties;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
@@ -20,7 +22,77 @@ namespace RequestReduce.Module
             context.ReleaseRequestState += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.PreSendRequestHeaders += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.BeginRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
-            context.PostAuthenticateRequest += (sender, e) => HandleRRFlush(new HttpContextWrapper(((HttpApplication)sender).Context));
+            context.PostAuthenticateRequest += (sender, e) => HandleAuthenticatedActions(new HttpContextWrapper(((HttpApplication)sender).Context));
+        }
+
+        private void HandleAuthenticatedActions(HttpContextWrapper httpContextWrapper)
+        {
+            var url = httpContextWrapper.Request.RawUrl;
+            if (IsInRRContentDirectory(httpContextWrapper) && (
+                url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
+                || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)))
+                HandleRRFlush(httpContextWrapper);
+
+            else if (IsInRRContentDirectory(httpContextWrapper)
+                && url.EndsWith("/dashboard", StringComparison.OrdinalIgnoreCase))
+                WriteDashboard(httpContextWrapper);
+
+            return;
+        }
+
+        private void WriteDashboard(HttpContextBase httpContextWrapper)
+        {
+            var dashboardHtml = Resources.Dashboard;
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var user = httpContextWrapper.User.Identity.Name;
+            if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            {
+                var transformedDashboard = TransformDashboard(dashboardHtml);
+                httpContextWrapper.Response.Write(transformedDashboard);
+            }
+            else
+                httpContextWrapper.Response.StatusCode = 401;
+            if (httpContextWrapper.ApplicationInstance != null)
+                httpContextWrapper.ApplicationInstance.CompleteRequest();
+        }
+
+        private string TransformDashboard(string dashboard)
+        {
+            var queue = RRContainer.Current.GetInstance<IReducingQueue>();
+            var repo = RRContainer.Current.GetInstance<IReductionRepository>(); 
+            var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
+            var transformed = dashboard.Replace("<%server%>", Environment.MachineName);
+            transformed = transformed.Replace("<%app%>", AppDomain.CurrentDomain.BaseDirectory);
+            transformed = transformed.Replace("<%processedItem%>", queue.ItemBeingProcessed == null ? "Shhhh. I'm Sleeping" : queue.ItemBeingProcessed.Urls);
+            var queueArray = queue.ToArray();
+            var queueList = new StringBuilder();
+            foreach (var item in queueArray)
+            {
+                queueList.Append(item.Urls);
+                queueList.Append("<br/>");
+            }
+            transformed = transformed.Replace("<%queue%>", queueList.ToString());
+            var repoArray = repo.ToArray();
+            var repoList = new StringBuilder();
+            foreach (var item in repoArray)
+            {
+                repoList.Append(item);
+                repoList.Append(string.Format(" <a href='{0}/flush'>Flush</a>", uriBuilder.ParseKey(item).RemoveDashes()));
+                repoList.Append("<br/>");
+            }
+            transformed = transformed.Replace("<%repo%>", repoList.ToString());
+            var failures = queue.Failures;
+            var failureList = new StringBuilder();
+            foreach (var item in failures)
+            {
+                failureList.Append("key: ");
+                failureList.Append(item.Key);
+                failureList.Append(" Number: ");
+                failureList.Append(item.Value);
+                failureList.Append("<br/>");
+            }
+            transformed = transformed.Replace("<%failures%>", failureList.ToString());
+            return transformed;
         }
 
         public void HandleRRFlush(HttpContextBase httpContextWrapper)
@@ -50,11 +122,11 @@ namespace RequestReduce.Module
                     store.Flush(key);
                     RRTracer.Trace("{0} Flushed {1}", user, key);
                 }
+                if(HttpContext.Current != null)
+                    httpContextWrapper.Response.Redirect(string.Format("{0}/dashboard", config.SpriteVirtualPath));
             }
             else
                 httpContextWrapper.Response.StatusCode = 401;
-            if (httpContextWrapper.ApplicationInstance != null)
-                httpContextWrapper.ApplicationInstance.CompleteRequest();
         }
 
         public void HandleRRContent(HttpContextBase httpContextWrapper)
@@ -62,7 +134,8 @@ namespace RequestReduce.Module
             var url = httpContextWrapper.Request.RawUrl;
             if (!IsInRRContentDirectory(httpContextWrapper) 
                 || url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
-                || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)) return;
+                || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)
+                || url.EndsWith("/dashboard", StringComparison.OrdinalIgnoreCase)) return;
             
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))

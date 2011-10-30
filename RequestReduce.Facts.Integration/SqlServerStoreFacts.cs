@@ -186,8 +186,8 @@ namespace RequestReduce.Facts.Integration
             foreach (var file in files)
             {
                 file.IsExpired = false;
-                fileDate = file.LastUpdated;
                 repo.Save(file);
+                fileDate = file.LastUpdated;
             }
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var cssCount1 = cssPattern.Matches(response).Count;

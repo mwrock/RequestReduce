@@ -32,12 +32,19 @@ namespace RequestReduce.Module
 
         public void Enqueue(IQueueItem item)
         {
-            queue.Enqueue(item);
+            if (!queue.Any(x => x.Urls == item.Urls) && (ItemBeingProcessed== null || ItemBeingProcessed.Urls != item.Urls))
+                queue.Enqueue(item);
         }
 
         public void ClearFailures()
         {
             dictionaryOfFailure.Clear();
+        }
+        public KeyValuePair<Guid, int>[] Failures { get { return dictionaryOfFailure.ToArray(); } } 
+        public virtual IQueueItem ItemBeingProcessed { get; protected set; }
+        public IQueueItem[] ToArray()
+        {
+            return queue.ToArray();
         }
 
         public int Count
@@ -65,6 +72,7 @@ namespace RequestReduce.Module
             {
                 if (queue.TryDequeue(out itemToReduce) && reductionRepository.FindReduction(itemToReduce.Urls) == null)
                 {
+                    ItemBeingProcessed = itemToReduce;
                     key = Hasher.Hash(itemToReduce.Urls);
                     RRTracer.Trace("dequeued and processing {0} with key {1}.", itemToReduce.Urls, key);
                     var url = store.GetUrlByKey(key, itemToReduce.ResourceType);
@@ -99,6 +107,10 @@ namespace RequestReduce.Module
                     dictionaryOfFailure.Add(key, 1);
                 if (RequestReduceModule.CaptureErrorAction != null)
                     RequestReduceModule.CaptureErrorAction(wrappedException);
+            }
+            finally
+            {
+                ItemBeingProcessed = null;
             }
         }
 
