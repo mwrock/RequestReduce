@@ -22,7 +22,7 @@ namespace RequestReduce.Facts.Integration
 
         public ModuleFacts()
         {
-            rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore);
+            rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore, Timeout.Infinite);
             uriBuilder = new UriBuilder(new Mock<IRRConfiguration>().Object);
         }
 
@@ -43,11 +43,7 @@ namespace RequestReduce.Facts.Integration
         public void WillIgnoreNearFutureScripts()
         {
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
-            WaitToCreateResources();
-            Thread.Sleep(0);
-            Thread.Sleep(2000);
-            Thread.Sleep(0);
-            Thread.Sleep(2000);
+            WaitToCreateResources(1,3);
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
             WaitToCreateResources(1, 4);
             var response = new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
@@ -186,9 +182,9 @@ namespace RequestReduce.Facts.Integration
                 Thread.Sleep(0);
             while (Directory.GetFiles(rrFolder, "*.js").Where(x => !x.Contains("-Expired")).Count() < expectedJsFiles && watch.ElapsedMilliseconds < 20000)
                 Thread.Sleep(0);
-            if (watch.ElapsedMilliseconds >= 20000)
+            if (watch.ElapsedMilliseconds >= 50000)
                 throw new TimeoutException(20000);
-            Thread.Sleep(100);
+            Thread.Sleep(0);
         }
     }
 }

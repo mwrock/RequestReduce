@@ -62,7 +62,7 @@ namespace RequestReduce.SqlServer
                         throw exception;
                     exception = null;
                     existingFile.Content = entity.Content;
-                    existingFile.LastUpdated = entity.LastUpdated;
+                    existingFile.LastUpdated = entity.LastUpdated = DateTime.Now;
                     existingFile.IsExpired = entity.IsExpired;
                     try
                     {

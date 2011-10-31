@@ -8,7 +8,7 @@ namespace RequestReduce.Facts.Integration
 {
     internal class IntegrationFactHelper
     {
-        public static string ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store store)
+        public static string ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store store, int poleInterval)
         {
             var poolRecycled = false;
             var rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\RRContent";
@@ -40,6 +40,7 @@ namespace RequestReduce.Facts.Integration
             if (cs == null || cs.Value.ToLower() != store.ToString().ToLower())
             {
                 doc.Element("configuration").Element("RequestReduce").SetAttributeValue("contentStore", store.ToString());
+                doc.Element("configuration").Element("RequestReduce").SetAttributeValue("storePollInterval", poleInterval.ToString());
                 if (!poolRecycled)
                     RecyclePool();
                 doc.Save(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +

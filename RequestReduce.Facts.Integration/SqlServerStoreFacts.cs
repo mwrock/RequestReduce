@@ -39,7 +39,7 @@ namespace RequestReduce.Facts.Integration
             IntegrationFactHelper.RecyclePool();
             repo.Context.Database.Delete();
             repo.Context.Database.Create();
-            rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore);
+            rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore, 3000);
             uriBuilder = new UriBuilder(config);
         }
 
@@ -186,8 +186,8 @@ namespace RequestReduce.Facts.Integration
             foreach (var file in files)
             {
                 file.IsExpired = false;
-                fileDate = file.LastUpdated;
                 repo.Save(file);
+                fileDate = file.LastUpdated;
             }
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var cssCount1 = cssPattern.Matches(response).Count;
@@ -200,6 +200,26 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
             Assert.Equal(fileDate, file2.LastUpdated);
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillFlushExpiredContentFromInternalRepo()
+        {
+            var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateResources();
+            var files = repo.AsQueryable().Where(x => x.FileName.Contains(".css"));
+            foreach (var file in files)
+            {
+                file.IsExpired = true;
+                repo.Save(file);
+            }
+            Thread.Sleep(4000);
+
+            var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+
+            var cssCount1 = cssPattern.Matches(response).Count;
+            Assert.Equal(2, cssCount1);
         }
 
         private void WaitToCreateResources()
@@ -224,7 +244,7 @@ namespace RequestReduce.Facts.Integration
 
         public void Dispose()
         {
-            IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore);
+            IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore, Timeout.Infinite);
         }
     }
 }

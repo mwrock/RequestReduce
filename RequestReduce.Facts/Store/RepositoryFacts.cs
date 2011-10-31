@@ -87,7 +87,6 @@ namespace RequestReduce.Facts.Store
                     Content = new byte[] { 2 },
                     FileName = "fileName",
                     Key = Guid.NewGuid(),
-                    LastUpdated = new DateTime(2011, 1, 1),
                     OriginalName = "originalName",
                     RequestReduceFileId = id
                 };
@@ -96,10 +95,11 @@ namespace RequestReduce.Facts.Store
 
                 var savedFile = testable.ClassUnderTest[id];
                 Assert.Equal(2, savedFile.Content[0]);
-                Assert.Equal(new DateTime(2011, 1, 1), savedFile.LastUpdated);
+                Assert.True(savedFile.LastUpdated > new DateTime(2011, 1, 1));
             }
 
         }
+
 
         public class GetActiveFiles
         {

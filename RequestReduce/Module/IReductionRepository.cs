@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace RequestReduce.Module
 {
@@ -8,5 +9,6 @@ namespace RequestReduce.Module
         bool HasLoadedSavedEntries { get; }
         void RemoveReduction(Guid key);
         void AddReduction(Guid key, string reducedUrl);
+        string[] ToArray();
     }
 }
