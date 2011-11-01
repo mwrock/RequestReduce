@@ -1,68 +1,4271 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head id="Head1">
-    <meta name="description" content="" />
+<head id="ctl00_ctl00_Head1">
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
 
-    <link rel="shortcut icon" href="http://i1.ppe.code.msdn.s-msft.com/windowsapps/GlobalResources/images/Msdn/favicon.ico" type="image/x-icon" /> <link href="http://i1.qa.social.s-msft.com/contentservice/12e3f1bd-7cce-497a-bd7f-9f510118c99a/Msdn.css" rel="Stylesheet" type="text/css" /><link href="http://i1.qa.social.s-msft.com/contentservice/271b0fc8-5324-44e5-b638-9dad00d725c4/Site.css" rel="Stylesheet" type="text/css" /><link href="http://i1.qa.social.s-msft.com/contentservice/f5b8eb0f-5d10-49a3-be39-9f5c011d59d7/MSDN_windows_apps.css" rel="Stylesheet" type="text/css" /><meta name="CommunityInfo" content=" B=Msdn;A=Gallery::WindowsM;L=en-US;" />
+    
+        <link rel="shortcut icon" href="http://i1.qa.social.s-msft.com/Forums/GlobalResources/images/Msdn/favicon.ico" type="image/x-icon" /> 
+    <link href="http://i1.qa.social.s-msft.com/contentservice/00f64a55-4e67-4089-b732-9f88011697ee/Msdn.css" rel="Stylesheet" type="text/css" /><meta name="CommunityInfo" content=" B=Msdn;A=Forums;L=en-US;" />
     <script src="http://code.jquery.com/jquery-1.6.1.min.js" type="text/javascript" language="javascript"></script>
     
-    <title>Metro style app samples - Windows 8 Code Samples and Examples</title>
-    <link href="http://i1.ppe.code.msdn.s-msft.com/windowsapps/pageresource.css?groupname=windowsmstyles&amp;v=2011.3.26.0" type="text/css" rel="Stylesheet" /><script src="http://i1.ppe.code.msdn.s-msft.com/windowsapps/pageresource.js?groupname=windowsmscripts&amp;v=2011.3.26.0" type="text/javascript">
-<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTM5OTAxNDYyNWRkvI787cXLvh9XHlDReEjVejxzcZ4=" />
-
-</script>
-    <link href="/windowsapps/site/feeds/searchRss" rel="Alternate" type="application/rss+xml"
-        title="Metro style app samples" />
-    <link rel="P3Pv1" href="/W3C/p3p.xml" />
-    
-    <style type="text/css">
-        #sideNav
-        {
-            width: 0px;
-        }
-        
-    </style>
-    <script src="http://i1.ppe.code.msdn.s-msft.com/windowsapps/content/common/jquery-impromptu.3.1.min.js" type="text/javascript"></script>
+    <title>
+    MSDN Forums
+</title>
+	
+    <link type="text/css" rel="Stylesheet" href="http://i2.qa.social.s-msft.com/Forums/resources/styles/Core.css?cver=1864.1119%0d%0a" />
+    <!--[if IE 6]>
+    <link type="text/css" rel="Stylesheet" href="http://i4.qa.social.s-msft.com/Forums/resources/styles/IE6Core.css?cver=1864.1119%0d%0a" />
+    <![endif]-->
+    <link type="text/css" rel="Stylesheet" href="http://i3.qa.social.s-msft.com/Forums/resources/brand/Msdn/forums.css?cver=1864.1119%0d%0a" />
     <script type="text/javascript">
-        $(function () {
-            $('.tabHeaders > div').Tabify('current', 'Contributions');
-            if ($.browser.msie && $.browser.version == "6.0") {
-                $('#subscriptionsLink').hide();
-            }
-        });
+    //<![CDATA[
+        var fms_site_culture = 'en-US'; var fms_site_lcid = '1033';
+    //]]>
+     </script>
+    
+    <script type="text/javascript">        document.domain = "microsoft.com"</script>
+    
 
-        function showSubscribeDialog() {
+</head>
+<body class="Chrome" dir= "ltr">
+    <form name="aspnetForm" method="post" action="categories" id="aspnetForm">
+<div>
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJOTM1NzQyMzAxZGQHjBfp22gFpNIX5wr25Lrvw87vkw==" />
+</div>
 
-            $.get('\x2fwindowsapps\x2fsite\x2fmysubscriptions', function (data) {
+    </form>
+    <div id="BodyBackground" class="ltr">
+        <div id="JelloSizer">    
+            <div id="JelloExpander">
+                <div id="JelloWrapper">
+                    <div class="Clear"> </div>
+                    
+                    <div class="Masthead">
+                        
+                        <div id="BrandLogo" class="BrandLogo"><a class="BrandLogoLink" href="http://msdn.microsoft.com/en-us/ms348103.aspx"><span id="BrandDisplayText">Microsoft Developer Network</span></a></div>
+                                 
+                        <div class="Search">
+                            <div id="SearchBox" class="SearchBox"><input name="SearchTextBox" type="text" id="SearchTextBox" class="TextBoxSearch TextBoxSearchIE7" /><input type="image" name="SearchButton" id="SearchButton" class="SearchButton" src="http://i1.qa.social.s-msft.com/globalresources/Images/trans.gif" /><span class="Bing"> </span></div>
+                        </div>
 
-                $.prompt(data, {
-                    prefix: 'subscribeForm',
-                    top: '35%',
-                    buttons: { 'Save': true, 'Cancel': false },
-                    submit: function (isSave, formContainer, formData) {
-                        if (!isSave) return true;
-                        var shouldClose = false;
-                        $.ajax({
-                            type: "POST",
-                            async: false,
-                            url: '\x2fwindowsapps\x2fsite\x2fmysubscriptions',
-                            data: formData,
-                            success: function (data) {
-                                if (data.isError) {
-                                    shouldClose = false;
-                                    $("#emailErrorMessage").text(data.emailErrorMessage);
-                                }
-                                else { shouldClose = true; }
-                            },
-                            dataType: "json"
-                        });
-                        return shouldClose;
-                    }
+                        <div class="GlobalBar">                       
+                            <div class="PassportScarab">
+                            <a id="idPPScarab" href="https://login.live.com/login.srf?wa=wsignout1.0&id=254354&wreply=https%3a%2f%2fqa.social.msdn.microsoft.com%2fForums%2fen-US%2fcategories%3fstoAI%3d20">Sign out</a>
+                            </div> 
+                                
+                            <div id="LocaleFlyout" class="LocaleFlyout">
+                                <div id="LocaleSelector">
+                    <div id="TargetPanel">
+                        <a>United States (English)</a><span class="DropDownArrow">&nbsp;</span>
+                    </div>
+                    <div id="PopupPanel" class="ContextMenuPanel">
+                        <a href="/Forums/pt-BR/categories" class="ContextMenuItem" rel="nofollow">Brasil (Português)</a><a href="/Forums/cs-CZ/categories" class="ContextMenuItem" rel="nofollow">Česká republika (Čeština)</a><a href="/Forums/de-DE/categories" class="ContextMenuItem" rel="nofollow">Deutschland (Deutsch)</a><a href="/Forums/es-ES/categories" class="ContextMenuItem" rel="nofollow">España (Español)</a><a href="/Forums/fr-FR/categories" class="ContextMenuItem" rel="nofollow">France (Français)</a><a href="/Forums/id-ID/categories" class="ContextMenuItem" rel="nofollow">Indonesia (Bahasa)</a><a href="/Forums/it-IT/categories" class="ContextMenuItem" rel="nofollow">Italia (Italiano)</a><a href="/Forums/ro-RO/categories" class="ContextMenuItem" rel="nofollow">România (Română)</a><a href="/Forums/tr-TR/categories" class="ContextMenuItem" rel="nofollow">Türkiye (Türkçe)</a><a href="/Forums/ru-RU/categories" class="ContextMenuItem" rel="nofollow">Россия (Русский)</a><a href="/Forums/he-IL/categories" class="ContextMenuItem" rel="nofollow">ישראל (עברית)</a><a href="/Forums/th-TH/categories" class="ContextMenuItem" rel="nofollow">ไทย (ไทย)</a><a href="/Forums/ko-KR/categories" class="ContextMenuItem" rel="nofollow">대한민국 (한국어)</a><a href="/Forums/zh-CN/categories" class="ContextMenuItem" rel="nofollow">中华人民共和国 (中文)</a><a href="/Forums/zh-TW/categories" class="ContextMenuItem" rel="nofollow">台灣 (中文)</a><a href="/Forums/ja-JP/categories" class="ContextMenuItem" rel="nofollow">日本 (日本語)</a>
+                    </div>
+                 </div>
+                 <script language="javascript" type="text/javascript">
+                     $(function () {
+                         var targetPanel = $("div#TargetPanel");
+                         var popupPanel = $("div#PopupPanel");
+                         var speed = 0;
+
+                         positionPopup = function () {
+                             var outerPanel = $("div#LocaleFlyout");
+
+                             if (outerPanel.length == "0") {
+                                 outerPanel = $("div#LocaleSelector");
+                             }
+                             popupPanel.css("left", outerPanel.position().left - (popupPanel.outerWidth() - outerPanel.outerWidth()));
+                             popupPanel.css("top", outerPanel.position().top + outerPanel.outerHeight());
+                         }
+
+                         showPanel = function () {
+                             positionPopup();
+                             popupPanel.show(speed);
+                         }
+
+                         hidePanel = function (event) {
+                             if (event != undefined) {
+                                 popupPanel.hide(speed);
+                             }
+                         }
+
+                         hidePopUpIfVisible = function () {
+                             if (popupPanel.css("display") == "block") {
+                                 targetPanel.click();
+                             }
+                         }
+
+                         var doc = $(document);
+                         doc.click(hidePopUpIfVisible);
+                         $(window).resize(hidePanel);
+
+                         // setup
+                         popupPanel.hide(speed);
+                         targetPanel.toggle(showPanel, hidePanel);
+
+                     });
+</script>
+                            </div>
+                            
+                            <div class="Clear"> </div>
+
+                            
+                            <div class="UserName" id="UserName"><a id="ctl00_ctl00_ctl01_UserNameLink" title="Migrated Galleries Content" href="http://qa.social.msdn.microsoft.com/profile/migrated%20galleries%20content/">Migrated Galleries Content</a></div>
+                             
+
+                        </div>
+                    
+                        <div class="Clear"> </div>
+
+                        <div id="NetworkTagLineArea" class="NetworkLogo">
+                            <a id="NetworkLink" href="http://Msdn.microsoft.com/en-US">
+                                &nbsp;
+                            </a>
+                        </div>
+
+                        <div class="leftcap" xmlns:msxsl="urn:schemas-microsoft-com:xslt"> </div><div class="internav" xmlns:msxsl="urn:schemas-microsoft-com:xslt"><a href="http://msdn.microsoft.com/en-us/ms348103.aspx">Home</a><a href="http://msdn.microsoft.com/en-us/library/default.aspx">Library</a><a href="http://msdn.microsoft.com/en-us/bb188199.aspx">Learn</a><a href="http://code.msdn.microsoft.com/">Samples</a><a href="http://msdn.microsoft.com/en-us/aa570309.aspx">Downloads</a><a href="http://msdn.microsoft.com/en-us/hh361695.aspx">Support</a><a href="http://msdn.microsoft.com/en-us/aa497440.aspx">Community</a><a class="&#xA;          active&#xA;        " href="http://social.msdn.microsoft.com/Forums/en-US/categories">Forums</a></div>
+                    </div>
+                     
+                    
+                    <div class="Clear"> </div>
+                          
+                    <div class="topleftcorner"></div>           
+                    <div class="toprightcorner"></div>                                
+                    <div class="alley"> <!-- Left Side -->
+                        <div class="wrapper"> <!-- Right Side -->
+                            <div class="inner">  
+                            
+                                                 
+                                <div class="Clear"></div>   
+
+
+                                <div class="SystemMessage" id="SystemMessage">
+	<html>
+    <head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii"></head>
+    <body>
+        <b>Please note:</b> 
+        This is a PRODUCTION equivalent (PPE/QA) environment. 
+        Please do not expect to get answers from the forums here - or for  searches to be 
+        reflected in production. To get to the production version of this site, please 
+        remove "QA." from the URL.  
+    </body>
+</html>
+
+</div>
+                                
+                                
+                                
+                                <div id="MainContent" class="Msdn">
+                                    
+    <div id="contentWrapper">
+        <div id="content">
+            <div id="forumsMessage"></div>
+            
+    
+<div class="bread">    
+    <span><a href="http://msdn.microsoft.com/en-us/ms348103.aspx">Microsoft Developer Network</a></span><span> &gt; </span>
+  
+    
+            <span>Forums Home</span>
+        
+</div>
+<div id="announcement">
+    <h2>Welcome to the MSDN Forums!</h2>
+    <p><p style="line-height: 125%; margin: 0in 0in 0pt; background: white;"><strong><span style="line-height: 125%; font-family: &quot;Segoe UI&quot;,&quot;sans-serif&quot;; color: #333333; font-size: 9pt;">Looking for Windows 7 Content?</span></strong><strong><span style="line-height: 125%; font-family: &quot;Segoe UI&quot;,&quot;sans-serif&quot;; color: #333333; font-size: 9pt;"><br /></span></strong><span style="line-height: 125%; font-family: &quot;Segoe UI&quot;,&quot;sans-serif&quot;; color: #333333; font-size: 9pt;">If you are developing on Windows 7, check out the <a href="http://social.msdn.microsoft.com/Forums/en-US/category/windevgeneral,windevui,windevavg,windevsearch,windevsensorandtouch,windevnetworking,windevdiagnostics,windevother">Windows Native Development Forums</a>. If you need help working with Windows 7, check out the&nbsp;<a href="http://social.technet.microsoft.com/Forums/en-US/category/w7itpro/">Windows 7</a> forums on TechNet.</span></p>
+<p class="MsoNormal" style="text-indent: 0.5in; margin: 0in 0in 0pt;"><span style="font-family: &quot;Segoe UI&quot;,&quot;sans-serif&quot;; color: #333333; font-size: 9pt;">&nbsp;</span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><strong><span style="font-family: &quot;Segoe UI&quot;,&quot;sans-serif&quot;; color: #333333; font-size: 9pt;">Forums Feedback:</span></strong><span style="font-family: &quot;Segoe UI&quot;,&quot;sans-serif&quot;; color: #333333; font-size: 9pt;"> If you have&nbsp;feedback please leave it in the&nbsp;<a href="http://social.msdn.microsoft.com/Forums/en-US/category/usingforums">Feedback and Discussions</a> forum below.</span></p></p>
+</div>
+    <table width="100%">
+        <tr valign="middle">
+            <td>
+                <div class="forumSearch">
+                    <input type="text" name="query" id="btnText" title="Find Your Forum" /><br />
+                </div>
+            </td>
+            <td>
+            <div style="margin-left:1em;">
+<!-- Scope: -->
+<div class="box discover">
+    <div class="content">        
+        <div class="search">
+        <form action="/Forums/en-US/search" id="forumsSearch" method="post">
+            <input class="searchTerm" type="text" value="" name="searchTerm" id="searchTerm"/><input type="image" src="http://i2.qa.social.s-msft.com/Forums/resources/images/trans.gif?cver=1864.1119%0d%0a"/>
+            <a id="searchRefinements" name="searchRefinements" href="javascript:void(0);" class="popup" style="display:none;height: 18px;"></a>
+            <ul name="searchRefinementsPopup" class="popup" popupAlign="left">
+            
+	                <li>
+		                <a scopeType="Brand" scopeData="" href="#" title="Search All MSDN Forums">
+		                Search All MSDN Forums
+		                </a>
+	                </li>
+            
+            </ul>
+            <input type="hidden" name="scopeType" value="Brand" id="scopeType" />
+            <input type="hidden" name="scopeData" value="" id="scopeData" />
+            <input type="hidden" name="currentScopeType" value="Brand" id="currentScopeType" />
+            <input type="hidden" name="currentScopeData" value="" id="currentScopeData" />
+        </form>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#forumsSearch #searchTerm").watermark('Search All MSDN Forums');
+                $("#btnSubmit").attr("disabled", "disabled");
+                $("a#searchRefinements").show();
+
+                $("#forumsSearch").submit(function () {
+                    var strippedVal = $("#forumsSearch #searchTerm").watermarkVal().replace(/^\s+|\s+$/g, "");
+                    return (strippedVal.length > 0)
+                });
+
+                $("#forumsSearch ul.popup a").click(function () {
+                    $("#forumsSearch #scopeType").val($(this).attr("scopeType"));
+                    $("#forumsSearch #scopeData").val($(this).attr("scopeData"));
+                    $("#forumsSearch").submit();
+                    return false;
                 });
             });
+        </script>
+        </div>
+        <div>
+        <a class="btn" title="Ask a question" href="/Forums/en-US/newthread" name="ask" rel="nofollow">
+        <img src="http://i2.qa.social.s-msft.com/Forums/resources/images/trans.gif?cver=1864.1119%0d%0a" alt="Ask a question" class="icon ask"/>Ask a question</a>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+</div>
+            </td>
+        </tr>
+        <tr valign="top">
+            <td width="40%">
+                
+<ul class="categoryHome">
+    <li>
+        <label name="message" class="hide">
+            No Results.</label>
+    </li>
+    
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/usingforums">Using Forums</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="89a61008-0ec7-44d2-8e8e-f4298bd11382">
+            <h5>
+                <a href="/Forums/en-US/announce/threads">Announcements for all Forums</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6375a3a4-fbcc-471b-bb92-66322e9864f4">
+            <h5>
+                <a href="/Forums/en-US/whatforum/threads">Where is the Forum For…?</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ee8d83ad-ac35-4b2f-bc9a-002933131292">
+            <h5>
+                <a href="/Forums/en-US/reportabug/threads">Forums Issues (not product support)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e21e7118-4af4-4b36-82af-289d41705113">
+            <h5>
+                <a href="/Forums/en-US/suggest/threads">Suggestions and Feedback for the Forums</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8847836a-b8e0-4513-8100-6acea9429135">
+            <h5>
+                <a href="/Forums/en-US/Offtopic/threads">Off-Topic Posts (Do Not Post Here)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f786758c-f8d0-4209-b549-ffcabc0de656">
+            <h5>
+                <a href="/Forums/en-US/Profile/threads">MSDN, TechNet, and Expression Profile and Recognition System Discussions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/netdevelopment">.NET Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="8a93298d-e8be-4731-a512-c8230582f9e4">
+            <h5>
+                <a href="/Forums/en-US/netfxsetup/threads">.NET Framework Setup</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7ea22a5b-087d-4187-b5fc-182712ac450f">
+            <h5>
+                <a href="/Forums/en-US/netfxbcl/threads">.NET Base Class Library</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="43e1b4ad-eb8d-427f-90a9-161e7af74457">
+            <h5>
+                <a href="/Forums/en-US/wpf/threads">Windows Presentation Foundation (WPF)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d22c4513-a1d5-4186-9445-3be44591f4bf">
+            <h5>
+                <a href="/Forums/en-US/regexp/threads">Regular Expressions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b208970f-689b-48d5-a9e6-382448c391ab">
+            <h5>
+                <a href="/Forums/en-US/netfxjscript/threads">JScript for the .NET Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="79d315f8-1308-498d-98ac-b200954bffdd">
+            <h5>
+                <a href="/Forums/en-US/clr/threads">Common Language Runtime</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5634b11a-4477-412c-962b-55073ddd891d">
+            <h5>
+                <a href="/Forums/en-US/netfxtoolsdev/threads">Building Development and Diagnostic Tools for .Net</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7b956220-a7d7-4a66-b66a-4789d0753c8b">
+            <h5>
+                <a href="/Forums/en-US/asmxandxml/threads">ASMX Web Services and XML Serialization</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="866ccbce-53c9-4c68-afb2-d314c5915f4b">
+            <h5>
+                <a href="/Forums/en-US/netfx64bit/threads">.NET Platform Architecture Development Discussions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="76f1d04c-f341-42ac-a3a0-5c6f221ad666">
+            <h5>
+                <a href="/Forums/en-US/netfxremoting/threads">.NET Remoting and Runtime Serialization</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9a657749-56cc-4c35-af80-b514c8693c79">
+            <h5>
+                <a href="/Forums/en-US/netfxnetcom/threads">.NET Framework Networking and Communication</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ccdfce7e-74f3-402b-a636-a7548faf29d3">
+            <h5>
+                <a href="/Forums/en-US/MEFramework/threads">Managed Extensibility Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c6db59dc-d8a0-4b10-b925-253b94b87b55">
+            <h5>
+                <a href="/Forums/en-US/ncl/threads">Network Class Library (System.Net)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="47a66177-42e0-4b00-b472-86d8640fea62">
+            <h5>
+                <a href="/Forums/en-US/wcf/threads">Windows Communication Foundation (WCF)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3c97858d-1005-49ee-bc11-22a52768efc5">
+            <h5>
+                <a href="/Forums/en-US/Geneva/threads">Claims based access platform (CBA), code-named Geneva</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="1f1c3c1b-2ead-47c9-bd27-883e86ed067e">
+            <h5>
+                <a href="/Forums/en-US/MSWinWebChart/threads">Chart Controls for .NET Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="69f9baff-5097-473f-823e-a6097c70c97e">
+            <h5>
+                <a href="/Forums/en-US/dotnetstocktradersampleapplication/threads">.NET StockTrader Sample Application</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9cf59bad-2a10-4e08-ad8a-6b432b577ec6">
+            <h5>
+                <a href="/Forums/en-US/posfordotnet/threads">POS for .NET</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="730ff620-bd6e-43a8-a744-0a9b5736392f">
+            <h5>
+                <a href="/Forums/en-US/windowsworkflowfoundation/threads">Windows Workflow Foundation 3</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9bef07ef-f101-4922-8153-31e8126ac18d">
+            <h5>
+                <a href="/Forums/en-US/windowstransactionsprogramming/threads">Transactions Programming</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="db11bbf7-a030-4e8c-b652-5728f55e0cf6">
+            <h5>
+                <a href="/Forums/en-US/dlr/threads">Dynamic Languages on .NET</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="611bb0fb-d15b-4e79-b9b3-5d358a88bf5b">
+            <h5>
+                <a href="/Forums/en-US/windowscardspace/threads">Windows CardSpace (&#39;InfoCard&#39;)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="76ffbd67-f55e-4b7b-bb2b-29bc8637316d">
+            <h5>
+                <a href="/Forums/en-US/wfprerelease/threads">Windows Workflow Foundation 4</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="94686d47-8a85-417b-9378-e5e85bd42c56">
+            <h5>
+                <a href="/Forums/en-US/velocity/threads">AppFabric Caching</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f90360f8-28dd-4d47-a251-f6c833e47a5d">
+            <h5>
+                <a href="/Forums/en-US/dublin/threads">AppFabric Service and Workflow Management</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsvnext">Visual Studio vNext</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="95a74b68-c924-4b6f-b8a2-90d570073944">
+            <h5>
+                <a href="/Forums/en-US/TFSvnext/threads">Team Foundation Server and Visual Studio Agile Tools in Visual Studio Vnext</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="4acbd98c-62bb-42c9-b139-b99c3d55b9ee">
+            <h5>
+                <a href="/Forums/en-US/vstest/threads">Test Tools in Visual Studio vNext</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f90360f8-28dd-4d47-a251-f6c833e47a5d">
+            <h5>
+                <a href="/Forums/en-US/dublin/threads">AppFabric Service and Workflow Management</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="833cecbd-59f3-4f49-96a3-d44da6b36337">
+            <h5>
+                <a href="/Forums/en-US/vseditor/threads">Visual Studio Editor</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2cc1b5c1-e6f6-4788-99eb-cdcb264d92a8">
+            <h5>
+                <a href="/Forums/en-US/vssetup/threads">Visual Studio Setup and Installation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6746789a-3e25-49d7-a092-4322ad079849">
+            <h5>
+                <a href="/Forums/en-US/sharepoint2010programming/threads">SharePoint 2010 - Using Visual Studio with SharePoint and other programming</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="805bdc3f-bf13-4784-9e81-548b5030302b">
+            <h5>
+                <a href="/Forums/en-US/vcgeneral/threads">Visual C++ General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3b53ef70-1bd7-41c4-9d8c-432df988e137">
+            <h5>
+                <a href="/Forums/en-US/ssdt/threads">SQL Server Developer Tools - Codename “Juneau”</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="47a66177-42e0-4b00-b472-86d8640fea62">
+            <h5>
+                <a href="/Forums/en-US/wcf/threads">Windows Communication Foundation (WCF)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="34e350de-e536-461e-aa38-c2c7a24570e9">
+            <h5>
+                <a href="/Forums/en-US/async/threads">Visual Studio Async CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="095b78ec-40fd-4070-a054-4262c10da555">
+            <h5>
+                <a href="/Forums/en-US/tpldataflow/threads">TPL Dataflow</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="1fdb607c-fe5f-45a1-8980-14b7e06196b0">
+            <h5>
+                <a href="/Forums/en-US/parallelextensions/threads">Parallel Extensions to the .NET Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="09fad886-1bc9-4d4b-9402-fdeb640ebc47">
+            <h5>
+                <a href="/Forums/en-US/parallelcppnative/threads">Parallel Computing in C++ and Native Code</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="76ffbd67-f55e-4b7b-bb2b-29bc8637316d">
+            <h5>
+                <a href="/Forums/en-US/wfprerelease/threads">Windows Workflow Foundation 4</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7ea22a5b-087d-4187-b5fc-182712ac450f">
+            <h5>
+                <a href="/Forums/en-US/netfxbcl/threads">.NET Base Class Library</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9a657749-56cc-4c35-af80-b514c8693c79">
+            <h5>
+                <a href="/Forums/en-US/netfxnetcom/threads">.NET Framework Networking and Communication</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8a93298d-e8be-4731-a512-c8230582f9e4">
+            <h5>
+                <a href="/Forums/en-US/netfxsetup/threads">.NET Framework Setup</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="43e1b4ad-eb8d-427f-90a9-161e7af74457">
+            <h5>
+                <a href="/Forums/en-US/wpf/threads">Windows Presentation Foundation (WPF)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="79d315f8-1308-498d-98ac-b200954bffdd">
+            <h5>
+                <a href="/Forums/en-US/clr/threads">Common Language Runtime</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visualstudio">Visual Studio</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="2cc1b5c1-e6f6-4788-99eb-cdcb264d92a8">
+            <h5>
+                <a href="/Forums/en-US/vssetup/threads">Visual Studio Setup and Installation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2626f485-00df-49a0-8e07-99571fdebaf4">
+            <h5>
+                <a href="/Forums/en-US/vswpfdesigner/threads">Visual Studio WPF/SL Designer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5e9ccea1-1ca1-464a-ab77-cd20cb826d72">
+            <h5>
+                <a href="/Forums/en-US/vssourcecontrol/threads">Visual Studio Source Control and SourceSafe</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8caf5310-b9be-4d69-9da3-b8d0091f9b37">
+            <h5>
+                <a href="/Forums/en-US/vsgatk/threads">Visual Studio Guidance Automation Toolkit</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a6b3f7be-4a18-4637-a55a-41b5596cd903">
+            <h5>
+                <a href="/Forums/en-US/vsx/threads">Visual Studio Extensibility</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="dec09a29-21cd-4f3e-a666-5d68693ba799">
+            <h5>
+                <a href="/Forums/en-US/vsdebug/threads">Visual Studio Debugger</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8cffca30-b85c-40e8-8b2b-fbc96eb1c2d7">
+            <h5>
+                <a href="/Forums/en-US/vsclassdesigner/threads">Visual Studio Class Designer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="faccaeb9-4c90-494e-b950-aba41d1547b1">
+            <h5>
+                <a href="/Forums/en-US/devdocs/threads">Developer Documentation and Help System</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8ce383d7-fb2c-4e72-8840-072a806af2c8">
+            <h5>
+                <a href="/Forums/en-US/vsreportcontrols/threads">Visual Studio Report Controls</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0e69520a-0af0-4085-a8c4-c5f21ce20e01">
+            <h5>
+                <a href="/Forums/en-US/vsto/threads">Visual Studio Tools for Office</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fe869c8d-235c-47b6-997e-bbb928a3cc20">
+            <h5>
+                <a href="/Forums/en-US/vsgalleryfeedback/threads">Visual Studio Gallery Feedback</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="833cecbd-59f3-4f49-96a3-d44da6b36337">
+            <h5>
+                <a href="/Forums/en-US/vseditor/threads">Visual Studio Editor</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="34e350de-e536-461e-aa38-c2c7a24570e9">
+            <h5>
+                <a href="/Forums/en-US/async/threads">Visual Studio Async CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d7ac22f9-5d1e-4498-95f5-477daff4fecd">
+            <h5>
+                <a href="/Forums/en-US/msbuild/threads">MSBuild</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="46ce20b4-a4af-4f38-a941-0be5c4d3421c">
+            <h5>
+                <a href="/Forums/en-US/roslyn/threads">Microsoft &quot;Roslyn&quot; CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vstest">Visual Studio Testing Tools</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="3852290f-4656-4bf6-8675-a8ad9f591d81">
+            <h5>
+                <a href="/Forums/en-US/vstswebtest/threads">Visual Studio Web Performance and Load Testing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b1e56bd0-ac34-479e-88a3-11f2ea72d406">
+            <h5>
+                <a href="/Forums/en-US/specexplorer/threads">Model-Based Testing with Spec Explorer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="81fd8d73-5d4b-4661-bde7-feae77da95e8">
+            <h5>
+                <a href="/Forums/en-US/vsunittest/threads">Visual Studio Unit Testing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="1fa3460c-6ddf-495e-93b1-3d72ed233cb4">
+            <h5>
+                <a href="/Forums/en-US/vsmantest/threads">Testing with Visual Studio Test Manager (MTM)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="02fc3489-33a2-418f-a5a1-bb787202bea7">
+            <h5>
+                <a href="/Forums/en-US/vsautotest/threads">Visual Studio UI Automation Testing (includes CodedUI)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="39d61e1e-8370-40bc-bd47-52ae582a1a15">
+            <h5>
+                <a href="/Forums/en-US/vslab/threads">Visual Studio Lab Management</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="596e5f89-2b6c-4ee5-95fd-98f570a71b83">
+            <h5>
+                <a href="/Forums/en-US/vststest/threads">Visual Studio Team System - Testing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsexpress">Visual Studio Express Editions</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="2dbbf3a6-a6bf-450e-be2c-c481b7bf0a03">
+            <h5>
+                <a href="/Forums/en-US/Vsexpressvb/threads">Visual Basic Express Edition</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3738fd76-4981-4830-bafa-cd04a2898dd8">
+            <h5>
+                <a href="/Forums/en-US/Vsexpressvcs/threads">Visual C# Express Edition</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="4b7538bb-bb04-48c1-8c91-94ab75452e62">
+            <h5>
+                <a href="/Forums/en-US/Vsexpressvc/threads">Visual C++ Express Edition</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="403d27fa-b0c0-4ec5-9a1a-2972905a5295">
+            <h5>
+                <a href="/Forums/en-US/Vsexpressinstall/threads">Installing and Registering Visual Studio Express Editions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsts">Visual Studio Team System</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="06f64d9c-2469-45d8-a69c-13721ea2ad78">
+            <h5>
+                <a href="/Forums/en-US/vstsstart/threads">Getting Started With Visual Studio Team System</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f54e0f11-eace-42e9-b10f-6ade3124dbfc">
+            <h5>
+                <a href="/Forums/en-US/vstsprofiler/threads">Visual Studio Performance Tools (Profiler)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c6b9a35b-6695-45a4-8fc8-dae73e167f0a">
+            <h5>
+                <a href="/Forums/en-US/vstscode/threads">Visual Studio Code Analysis and Code Metrics</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3852290f-4656-4bf6-8675-a8ad9f591d81">
+            <h5>
+                <a href="/Forums/en-US/vstswebtest/threads">Visual Studio Web Performance and Load Testing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="57d87e34-a13c-48ad-ae4d-e6b3655c1f8c">
+            <h5>
+                <a href="/Forums/en-US/vstsdb/threads">Visual Studio Database Development Tools (Formerly &quot;Database Edition Forum&quot;)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="cf9f445f-fc80-421b-8fe0-672bc5daf302">
+            <h5>
+                <a href="/Forums/en-US/tfsgeneral/threads">Team Foundation Server - General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e20b32de-a6af-4950-abdb-9f7a4bd19bcf">
+            <h5>
+                <a href="/Forums/en-US/tfssetup/threads">Team Foundation Server - Setup</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f7643980-5423-4dbc-8fd2-b2fad04277a1">
+            <h5>
+                <a href="/Forums/en-US/tfsadmin/threads">Team Foundation Server - Administration</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="02db4821-3b55-4f15-8844-8cedc8e51558">
+            <h5>
+                <a href="/Forums/en-US/tfsbuild/threads">Team Foundation Server - Build Automation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7f342b9a-ee37-4d7a-a674-0a81be3e2873">
+            <h5>
+                <a href="/Forums/en-US/tfspowertools/threads">Team Foundation Server – Power Tools &amp; Add-ons</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2892bf0c-a162-44f9-b9d3-7ad437a7b3cf">
+            <h5>
+                <a href="/Forums/en-US/tfsprocess/threads">Team Foundation Server - Process Templates</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="13f1514e-20c5-41c3-8592-8519718c2cbe">
+            <h5>
+                <a href="/Forums/en-US/tfsreporting/threads">Team Foundation Server - Reporting &amp; Warehouse</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f7df9f72-cef8-4ada-b5c6-ead01c6f8cfe">
+            <h5>
+                <a href="/Forums/en-US/tfswebaccess/threads">Team Foundation Server - Team System Web Access</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3db1e921-db6b-4f17-b14c-339a09308c7e">
+            <h5>
+                <a href="/Forums/en-US/tfsversioncontrol/threads">Team Foundation Server - Version Control</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b83c5939-5e54-414e-b220-432774394bab">
+            <h5>
+                <a href="/Forums/en-US/tfsworkitemtracking/threads">Team Foundation Server - Work Item Tracking</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b1e56bd0-ac34-479e-88a3-11f2ea72d406">
+            <h5>
+                <a href="/Forums/en-US/specexplorer/threads">Model-Based Testing with Spec Explorer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6ae7880b-4665-46bc-b54c-e95e011a9850">
+            <h5>
+                <a href="/Forums/en-US/tfsintegration/threads">Team Foundation Server – Migration and Integration</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="1fa3460c-6ddf-495e-93b1-3d72ed233cb4">
+            <h5>
+                <a href="/Forums/en-US/vsmantest/threads">Testing with Visual Studio Test Manager (MTM)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="02fc3489-33a2-418f-a5a1-bb787202bea7">
+            <h5>
+                <a href="/Forums/en-US/vsautotest/threads">Visual Studio UI Automation Testing (includes CodedUI)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="39d61e1e-8370-40bc-bd47-52ae582a1a15">
+            <h5>
+                <a href="/Forums/en-US/vslab/threads">Visual Studio Lab Management</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="81fd8d73-5d4b-4661-bde7-feae77da95e8">
+            <h5>
+                <a href="/Forums/en-US/vsunittest/threads">Visual Studio Unit Testing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9e41c9bc-64fe-4051-8cd8-5fbac41c3452">
+            <h5>
+                <a href="/Forums/en-US/tee/threads">Team Foundation Server - Eclipse and Cross Platform</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="596e5f89-2b6c-4ee5-95fd-98f570a71b83">
+            <h5>
+                <a href="/Forums/en-US/vststest/threads">Visual Studio Team System - Testing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visualbasic">Visual Basic</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="0f60fa48-1ceb-41ee-a10a-0dfcee7e19bd">
+            <h5>
+                <a href="/Forums/en-US/vbgeneral/threads">Visual Basic General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e5b560c7-34c9-4419-91d7-1b06519eed09">
+            <h5>
+                <a href="/Forums/en-US/vbpowerpacks/threads">Visual Basic Power Packs</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7d82547a-0253-4a8c-8ff4-a4883f409aad">
+            <h5>
+                <a href="/Forums/en-US/vblanguage/threads">Visual Basic Language</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="bf15fb7f-28a9-4ff7-842c-fb36b80f18b8">
+            <h5>
+                <a href="/Forums/en-US/vbinterop/threads">Visual Basic Interop and Upgrade</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e8f98939-325d-485c-b3d0-8ac9acaf6917">
+            <h5>
+                <a href="/Forums/en-US/vbide/threads">Visual Basic IDE</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="34e350de-e536-461e-aa38-c2c7a24570e9">
+            <h5>
+                <a href="/Forums/en-US/async/threads">Visual Studio Async CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visualcsharp">Visual C#</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="24becc9b-b984-47b2-a748-a62e38c0066f">
+            <h5>
+                <a href="/Forums/en-US/csharpgeneral/threads">Visual C# General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ee0ba90b-2020-4d46-848e-7278d11047e8">
+            <h5>
+                <a href="/Forums/en-US/csharplanguage/threads">Visual C# Language</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9c7d3d09-a015-452f-9a90-8d30c45cfeca">
+            <h5>
+                <a href="/Forums/en-US/csharpide/threads">Visual C# IDE</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="34e350de-e536-461e-aa38-c2c7a24570e9">
+            <h5>
+                <a href="/Forums/en-US/async/threads">Visual Studio Async CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visualc">Visual C++</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="805bdc3f-bf13-4784-9e81-548b5030302b">
+            <h5>
+                <a href="/Forums/en-US/vcgeneral/threads">Visual C++ General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5ac7f30f-4625-4162-bdbb-2416a72b7047">
+            <h5>
+                <a href="/Forums/en-US/vclanguage/threads">Visual C++ Language</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ac4f52f6-a109-4872-b9b7-06285e6d11f4">
+            <h5>
+                <a href="/Forums/en-US/vcmfcatl/threads">Visual C++ MFC and ATL</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="09fad886-1bc9-4d4b-9402-fdeb640ebc47">
+            <h5>
+                <a href="/Forums/en-US/parallelcppnative/threads">Parallel Computing in C++ and Native Code</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visualfsharp">Visual F#</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="293a0df4-c66a-496e-ab66-75f962e854c4">
+            <h5>
+                <a href="/Forums/en-US/fsharpgeneral/threads">Visual F# General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visualfoxpro">Visual FoxPro</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="92afcc91-0f79-4ff3-8329-6cbd63d3f871">
+            <h5>
+                <a href="/Forums/en-US/visualfoxprogeneral/threads">Visual FoxPro General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/architecture">Architecture</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="340bab4f-2c0a-4c82-8ef6-43790c2a7205">
+            <h5>
+                <a href="/Forums/en-US/architecturegeneral/threads">Architecture General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="efc857bb-1973-433b-8a56-62a0774bf263">
+            <h5>
+                <a href="/Forums/en-US/modelingandtools/threads">Modeling and Tools</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3fa85a78-91be-4e56-93d5-115446486ef3">
+            <h5>
+                <a href="/Forums/en-US/architect/threads">The Architect Role</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsazureplatform">Windows Azure Platform</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="9ea8fe18-c775-424d-bf75-877638e690ff">
+            <h5>
+                <a href="/Forums/en-US/windowsazuredevelopment/threads">Windows Azure Platform Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="96fe3bc7-df59-4d23-940b-9b6f8d31d8cf">
+            <h5>
+                <a href="/Forums/en-US/windowsazuretroubleshooting/threads">Windows Azure Platform Troubleshooting, Diagnostics &amp; Logging</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d348e06f-2c84-4d43-8fa4-41b72d272f2b">
+            <h5>
+                <a href="/Forums/en-US/windowsazuredata/threads">Windows Azure Storage, CDN and Caching</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d899cc50-42ae-40da-82e0-460ad93ad6c0">
+            <h5>
+                <a href="/Forums/en-US/ssdsgetstarted/threads">SQL Azure</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a8a1005c-445c-4648-9f84-18d286fc016c">
+            <h5>
+                <a href="/Forums/en-US/windowsazureconnectivity/threads">Connectivity and Messaging - Windows Azure Platform</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b18b6f1c-e7c1-403d-8c26-75d810d3f437">
+            <h5>
+                <a href="/Forums/en-US/windowsazuremanagement/threads">Managing Services on the Windows Azure Platform</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d74d510f-183c-44a0-a5ba-d9ad642d93b8">
+            <h5>
+                <a href="/Forums/en-US/windowsazuresecurity/threads">Security for the Windows Azure Platform</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8641327d-141c-42ed-a309-0d2f31b95755">
+            <h5>
+                <a href="/Forums/en-US/windowsazurepurchasing/threads">Windows Azure Platform Purchasing, Pricing &amp; Billing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsazureplatformctp">Windows Azure Platform – CTPs, Betas &amp; Labs</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="2a589ef8-e205-40fd-98c3-0a863e8edfc1">
+            <h5>
+                <a href="/Forums/en-US/appfabricctp/threads">Windows Azure AppFabric CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9236b743-3eb7-4dcc-ba9b-bef3f942a19c">
+            <h5>
+                <a href="/Forums/en-US/sqlazurelabssupport/threads">SQL Azure Labs Support</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d5f8eb41-b0fa-41c7-af38-2be6b5b08550">
+            <h5>
+                <a href="/Forums/en-US/dataexplorer/threads">Microsoft codename Data Explorer </a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/azuremarketplace">Windows Azure Marketplace</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="f33450af-21ca-46a9-ac3a-448c0259768e">
+            <h5>
+                <a href="/Forums/en-US/DataMarket/threads">Windows Azure Marketplace</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/biztalkserver">BizTalk Server</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="c950573c-6508-4b40-bb16-1d65e00f4085">
+            <h5>
+                <a href="/Forums/en-US/biztalkgeneral/threads">BizTalk Server General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="886558fb-7e27-4771-84e8-433339725ecc">
+            <h5>
+                <a href="/Forums/en-US/biztalkr2adapters/threads">BizTalk Server Adapters and Adapter Pack</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3fe3223e-45f6-4ee9-a681-2478cdd168ce">
+            <h5>
+                <a href="/Forums/en-US/biztalkediandas2/threads">BizTalk Server EDI and AS2</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8e085dd8-2716-4494-af0e-3f467f8b995b">
+            <h5>
+                <a href="/Forums/en-US/biztalkrfid/threads">BizTalk Server RFID</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="16818e62-77d3-4dab-bcb6-af54f9cf3793">
+            <h5>
+                <a href="/Forums/en-US/biztalkesb/threads">BizTalk ESB Toolkit</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/commserver">Commerce Server</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="a1b69ffc-95f0-443e-a6cf-6df6c2578460">
+            <h5>
+                <a href="/Forums/en-US/commserver2007/threads">Commerce Server 2007</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="670d7d90-ac71-4d57-8edc-15d20ea65715">
+            <h5>
+                <a href="/Forums/en-US/commserver2009/threads">Commerce Server 2009</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/dataplatformdev">Data Platform Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="0145d595-6d1f-4e9a-959d-5b947b82600f">
+            <h5>
+                <a href="/Forums/en-US/adodotnetdataproviders/threads">ADO.NET Managed Providers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="bcfe430c-5d14-41e0-95c4-3c09dbaa597a">
+            <h5>
+                <a href="/Forums/en-US/adodotnetdataservices/threads">WCF Data Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d30e694c-a286-4349-a8aa-7f6945748ab6">
+            <h5>
+                <a href="/Forums/en-US/adodotnetdataset/threads">ADO.NET DataSet</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="87fece06-ac7e-4c8a-af2d-f163c38c59e1">
+            <h5>
+                <a href="/Forums/en-US/adodotnetentityframework/threads">ADO.NET Entity Framework and LINQ to Entities</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="91085c4d-89fc-483f-8274-171226580741">
+            <h5>
+                <a href="/Forums/en-US/linqtosql/threads">LINQ to SQL</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="56db59f7-d2b6-4f01-a8c8-f953d4447405">
+            <h5>
+                <a href="/Forums/en-US/xmlandnetfx/threads">XML, System.Xml, MSXML and XmlLite</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="086f4289-916d-4a05-9297-023f0c295544">
+            <h5>
+                <a href="/Forums/en-US/rx/threads">Reactive Extensions for .NET (Rx)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/devlabs">DevLabs</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="971f4c89-b711-4609-9d6e-87af0021bd2f">
+            <h5>
+                <a href="/Forums/en-US/codecontracts/threads">Code Contracts</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="784354a2-de7c-4be0-8cd5-0bc8b0df16b2">
+            <h5>
+                <a href="/Forums/en-US/axum/threads">Axum Incubation Project</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b1e56bd0-ac34-479e-88a3-11f2ea72d406">
+            <h5>
+                <a href="/Forums/en-US/specexplorer/threads">Model-Based Testing with Spec Explorer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d1f888a3-0af7-47c2-a4d9-9f7bbdabc2ff">
+            <h5>
+                <a href="/Forums/en-US/dryad/threads">Dryad, DSC, and DryadLINQ CTP Release on HPC Server 2008 R2 SP1</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c319fc43-4195-4e9d-a596-2621add58403">
+            <h5>
+                <a href="/Forums/en-US/theforumofsho/threads">The Forum of Sho</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="095b78ec-40fd-4070-a054-4262c10da555">
+            <h5>
+                <a href="/Forums/en-US/tpldataflow/threads">TPL Dataflow</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b45a9b82-0a53-4371-90b2-2542a119d2b1">
+            <h5>
+                <a href="/Forums/en-US/solverfoundation/threads">Microsoft Solver Foundation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="76f1f0ad-d913-4a84-8859-f29a193a60c4">
+            <h5>
+                <a href="/Forums/en-US/debuggercanvas/threads">Debugger Canvas</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/dataplatformdevprerelease">Data Platform Development (Pre-release)</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="7204254c-56dd-4ec6-a81e-5c58e555aa3e">
+            <h5>
+                <a href="/Forums/en-US/livelabsvolta/threads">Microsoft Live Labs Volta</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3b53ef70-1bd7-41c4-9d8c-432df988e137">
+            <h5>
+                <a href="/Forums/en-US/ssdt/threads">SQL Server Developer Tools - Codename “Juneau”</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/jscript">JScript and Scripting</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="b2768195-42e0-422d-9e20-2ad17b9e847d">
+            <h5>
+                <a href="/Forums/en-US/jscript/threads">JScript Native</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="62a500a0-af23-4edb-9769-2507640fc665">
+            <h5>
+                <a href="/Forums/en-US/scripting/threads">Scripting</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/iedevelopment">Internet Explorer Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="46f63ce5-4a0c-4354-9ca8-82ea8d765775">
+            <h5>
+                <a href="/Forums/en-US/ieextensiondevelopment/threads">Internet Explorer Extension Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="dfff6b19-c23b-4872-8d5c-e18a5edcb428">
+            <h5>
+                <a href="/Forums/en-US/iewebdevelopment/threads">Internet Explorer Web Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/translation">Machine Translation and Language Tools</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="fd040a5f-f3dd-44f2-89c5-cd0ed9de5985">
+            <h5>
+                <a href="/Forums/en-US/microsofttranslator/threads">Microsoft Translator Developer &amp; Web Master Support</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="270585cd-0ff4-4b2e-a0ae-bda9c32d8178">
+            <h5>
+                <a href="/Forums/en-US/translator/threads">Microsoft Translator User Forum (Including Bing Translator)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/isvcommunitycenter">Microsoft ISV Community Center</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="970f5573-bcbb-4f05-9ee9-61cc5937df06">
+            <h5>
+                <a href="/Forums/en-US/isv/threads">ISV Open Discussions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ef99ea68-a79d-4f5b-a139-66f10c6a56d9">
+            <h5>
+                <a href="/Forums/en-US/isvpartneringwithmsft/threads">Partnering with Microsoft</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="388e3d98-cb21-42dc-aa2e-a3956fa4f272">
+            <h5>
+                <a href="/Forums/en-US/isvvba/threads">Visual Basic for Applications (VBA)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/learning">Learning</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="deb34d70-4c37-48cc-bad0-28ab643244c3">
+            <h5>
+                <a href="/Forums/en-US/CertGeneral/threads">Training and Certification</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b9d14f54-4152-4184-a196-04929580a541">
+            <h5>
+                <a href="/Forums/en-US/smallbasic/threads">Small Basic</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/sync">Microsoft Sync Framework</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="436c0b4c-e737-48d6-a0fd-664c20042b2d">
+            <h5>
+                <a href="/Forums/en-US/syncgeneral/threads">SyncFx - General [ReadOnly]</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="590397a9-5a4f-443e-b90d-2268973fee19">
+            <h5>
+                <a href="/Forums/en-US/synctoy/threads">SyncFx - SyncToy-File Synchronization</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6cffc200-c66a-4a5a-9f2e-c65f699262e8">
+            <h5>
+                <a href="/Forums/en-US/syncdevdiscussions/threads">SyncFx - Microsoft Sync Framework Developer Discussions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="aa7467fa-589a-4ab9-bc46-45e434f9dcbf">
+            <h5>
+                <a href="/Forums/en-US/synclab/threads">SyncFx – Microsoft Sync Framework Toolkit</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/robotics">Microsoft Robotics</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="403aebde-eef2-4439-8b60-93b3e5903b68">
+            <h5>
+                <a href="/Forums/en-US/roboticscommunity/threads">Microsoft Robotics - Community</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c936d61e-8411-4971-92c0-1ebac09ddbb3">
+            <h5>
+                <a href="/Forums/en-US/roboticsccr/threads">Microsoft Robotics - Concurrency and Coordination Runtime (CCR)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2d6bb1ba-2ee0-4887-8f7c-d1ae507959d1">
+            <h5>
+                <a href="/Forums/en-US/roboticsdss/threads">Microsoft Robotics - Decentralized Software Services (DSS)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="03be716c-6a7f-4cad-9f6f-cd148959e34b">
+            <h5>
+                <a href="/Forums/en-US/roboticssimulation/threads">Microsoft Robotics - Simulation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="044c497c-02ec-4fb0-a806-fb9ba74f8594">
+            <h5>
+                <a href="/Forums/en-US/roboticsvisualprogramminglanguage/threads">Microsoft Robotics - Visual Programming Language</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="eb16f3d4-7474-4024-846c-f122e1b48722">
+            <h5>
+                <a href="/Forums/en-US/roboticstroubleshooting/threads">Microsoft Robotics - Hardware Configuration and Troubleshooting</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/officedev">Microsoft Office for Developers</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="887f204c-68f7-4d0c-b346-eca6d02a8fae">
+            <h5>
+                <a href="/Forums/en-US/accessdev/threads">Access for Developers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f9a65fd5-6bcb-4734-a466-2bf4c6b122fa">
+            <h5>
+                <a href="/Forums/en-US/exceldev/threads">Excel for Developers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fd2e7273-6db9-4bba-9200-a91e143827aa">
+            <h5>
+                <a href="/Forums/en-US/outlookdev/threads">Outlook for Developers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="30da2cab-1845-444d-959d-2460c98af3ae">
+            <h5>
+                <a href="/Forums/en-US/worddev/threads">Word for Developers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="31ebd0a4-3d8b-46c1-b2c5-a37dbe7f84ff">
+            <h5>
+                <a href="/Forums/en-US/oxmlsdk/threads">Open XML Format SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0e69520a-0af0-4085-a8c4-c5f21ce20e01">
+            <h5>
+                <a href="/Forums/en-US/vsto/threads">Visual Studio Tools for Office</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="66b42b8c-b556-4e9c-9373-55e95f1b12d4">
+            <h5>
+                <a href="/Forums/en-US/officegeneral/threads">General Office Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/oldevelopment">Office Live Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="bcbff741-cb1f-4785-bd76-7b6bca03c1de">
+            <h5>
+                <a href="/Forums/en-US/olbasics/threads">Office Live Basics, Essentials and Premium</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/sharepoint2010">SharePoint 2010</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="a9b00933-a142-4f30-b512-a22956e279dd">
+            <h5>
+                <a href="/Forums/en-US/sharepoint2010general/threads">SharePoint 2010 - General Questions and Answers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c28ad644-8c91-47a4-99a6-ec30e30ec2f7">
+            <h5>
+                <a href="/Forums/en-US/sharepoint2010setup/threads">SharePoint 2010 - Setup, Upgrade, Administration and Operation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0d2fa275-7afb-4070-8c37-2a9801cc5968">
+            <h5>
+                <a href="/Forums/en-US/sharepoint2010customization/threads">SharePoint 2010 - Using SharePoint Designer, Infopath, and other customization</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6746789a-3e25-49d7-a092-4322ad079849">
+            <h5>
+                <a href="/Forums/en-US/sharepoint2010programming/threads">SharePoint 2010 - Using Visual Studio with SharePoint and other programming</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/sharepoint">SharePoint Products and Technologies</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="ec796e1b-329d-4c48-8b89-b122e10d1e76">
+            <h5>
+                <a href="/Forums/en-US/sharepointgeneral/threads">SharePoint - General Question and Answers and Discussion (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ce2c06c3-f928-444d-94bd-4cbc6888dbad">
+            <h5>
+                <a href="/Forums/en-US/sharepointadmin/threads">SharePoint - Setup, Upgrade, Administration and Operation (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="46c9b519-9e74-47e1-b411-c0338d600a18">
+            <h5>
+                <a href="/Forums/en-US/sharepointcustomization/threads">SharePoint - Design and Customization (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="175b2de3-6a0a-4b73-8882-93446f9133e3">
+            <h5>
+                <a href="/Forums/en-US/sharepointdevelopment/threads">SharePoint - Development and Programming (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="cfb90844-a5bc-469f-ba10-6dc50a6862d4">
+            <h5>
+                <a href="/Forums/en-US/sharepointbdc/threads">SharePoint - Business Data Catalog (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="37dc0fa2-ccac-4815-965e-ea86bb1f265b">
+            <h5>
+                <a href="/Forums/en-US/sharepointbi/threads">SharePoint - Business Intelligence (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d23dff71-b399-4c75-b75b-fcfa7dedbc7e">
+            <h5>
+                <a href="/Forums/en-US/sharepointinfopath/threads">SharePoint - InfoPath Forms Services (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3e8a437c-38c7-408c-8964-b363d633081c">
+            <h5>
+                <a href="/Forums/en-US/sharepointworkflow/threads">SharePoint - Workflow (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="bc2676f6-4850-42bd-b527-915abe7572df">
+            <h5>
+                <a href="/Forums/en-US/sharepointexcel/threads">SharePoint - Excel Services (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="18fa92a1-5b8f-4979-b2d9-edb3f9ee3dbf">
+            <h5>
+                <a href="/Forums/en-US/sharepointsearch/threads">SharePoint - Search (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="29c92bc3-238e-4f34-9a6b-5ba255812157">
+            <h5>
+                <a href="/Forums/en-US/sharepointecm/threads">SharePoint - Enterprise Content Management (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8e6fec32-7120-4c70-9162-27ca3a83c5ab">
+            <h5>
+                <a href="/Forums/en-US/sharepointaccessibility/threads">SharePoint - Accessibility (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6810bb57-4523-4aa4-abf7-ca78eeb2e197">
+            <h5>
+                <a href="/Forums/en-US/sharepointsocialcomputing/threads">SharePoint - Social Computing (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7944c6c8-e02c-4579-8638-8e3ef76e715c">
+            <h5>
+                <a href="/Forums/en-US/sharepointcommunity/threads">SharePoint - Community Advancement (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5460e5d0-6823-43ac-99af-e92b8587d64a">
+            <h5>
+                <a href="/Forums/en-US/sharepointcollaboration/threads">SharePoint - Collaboration (pre-SharePoint 2010)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="85d79b4e-62e4-4289-8a06-82ce8c0fbcb9">
+            <h5>
+                <a href="/Forums/en-US/projectserver/threads">Project Server General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3f3ce8da-68dc-4fe3-9ff7-5c21a7e38c47">
+            <h5>
+                <a href="/Forums/en-US/sharepointserverknowledgenetwork/threads">SharePoint - Knowledge Network</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/uc">Unified Communications</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="31081e92-e981-43c7-b5aa-e8582fd8ae24">
+            <h5>
+                <a href="/Forums/en-US/ucmanagedsdk/threads">Microsoft Unified Communications Managed API SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="25ab5013-85de-4694-9ef3-2abedd246b2b">
+            <h5>
+                <a href="/Forums/en-US/ucclientsdk/threads">Microsoft Unified Communications Client SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="19d84cf5-fd07-40c0-b24c-4297854419ec">
+            <h5>
+                <a href="/Forums/en-US/communicatorsdk/threads">Microsoft Lync Client Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="1c2875a3-e84f-4635-84cd-5096dee35305">
+            <h5>
+                <a href="/Forums/en-US/communicationsserversdk/threads">Microsoft Lync Server SDK and Office Communications Server SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/openspecifications">Open Specifications</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="eed1d681-c8b0-4441-bde6-e09241f34be6">
+            <h5>
+                <a href="/Forums/en-US/os_windowsprotocols/threads">Windows Protocols</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2f926b9b-6fc1-4857-ba6b-55372223b79d">
+            <h5>
+                <a href="/Forums/en-US/os_specifications/threads">Using the Open Specifications</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b4a918e5-bb42-4979-8a60-55e58bd16803">
+            <h5>
+                <a href="/Forums/en-US/os_sharepoint/threads">Using the SharePoint Products and Technologies Protocols</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f168e86a-eed9-4d09-ba65-b63e1077a6b4">
+            <h5>
+                <a href="/Forums/en-US/os_fileservices/threads">File Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f1b5ba25-6c07-4eef-8bbd-eb5aace44a87">
+            <h5>
+                <a href="/Forums/en-US/os_exchangeprotocols/threads">Using the Exchange Server Protocols</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fe74c70d-cdf1-45d8-b2bb-166862ccc8a2">
+            <h5>
+                <a href="/Forums/en-US/os_office/threads">Using the Office Protocols</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="191899f6-1c3e-4641-b334-d735204d8116">
+            <h5>
+                <a href="/Forums/en-US/os_binaryfile/threads">Office File Formats</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="bc99d852-21ec-4172-9732-fffd2daca7db">
+            <h5>
+                <a href="/Forums/en-US/os_sqlserver/threads">Using the Microsoft SQL Server Protocols</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8cf07693-1be4-4d9b-96fd-b0004eed22f3">
+            <h5>
+                <a href="/Forums/en-US/os_standocs/threads">Documentation on Standards</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b396f3b1-c14b-4ece-9684-71173f638ee9">
+            <h5>
+                <a href="/Forums/en-US/os_openXML-ecma/threads">Office Open XML File Format Implementation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="16accb93-de95-4c0c-9992-b4749ebddbeb">
+            <h5>
+                <a href="/Forums/en-US/os_interopscenarios/threads">Interoperability Scenarios: Technical Questions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="44062c2e-6ea9-48a8-a355-2c28643a176c">
+            <h5>
+                <a href="/Forums/en-US/os_odf/threads">Office Open Document Format Implementation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="aebb654e-754e-4c2d-b9c5-8663462fdaf2">
+            <h5>
+                <a href="/Forums/en-US/os_opc/threads">Open Packaging Conventions (OPC)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/parallelcomputing">Parallel Computing</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="909b5348-d4c1-43a1-8271-49026f02db24">
+            <h5>
+                <a href="/Forums/en-US/parallelgeneral/threads">Parallel Computing General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="1fdb607c-fe5f-45a1-8980-14b7e06196b0">
+            <h5>
+                <a href="/Forums/en-US/parallelextensions/threads">Parallel Extensions to the .NET Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="09fad886-1bc9-4d4b-9402-fdeb640ebc47">
+            <h5>
+                <a href="/Forums/en-US/parallelcppnative/threads">Parallel Computing in C++ and Native Code</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="784354a2-de7c-4be0-8cd5-0bc8b0df16b2">
+            <h5>
+                <a href="/Forums/en-US/axum/threads">Axum Incubation Project</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="34e350de-e536-461e-aa38-c2c7a24570e9">
+            <h5>
+                <a href="/Forums/en-US/async/threads">Visual Studio Async CTP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="095b78ec-40fd-4070-a054-4262c10da555">
+            <h5>
+                <a href="/Forums/en-US/tpldataflow/threads">TPL Dataflow</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/projectserver2010">Project Server</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="5f9f40b1-0fdc-40d8-b012-8d0971b82046">
+            <h5>
+                <a href="/Forums/en-US/projectserver2010general/threads">Project Server General Questions and Answers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="af258d21-d720-4e5f-aec4-0f9d8c80a586">
+            <h5>
+                <a href="/Forums/en-US/project2010custprog/threads">Project Customization and Programming</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b8833aa8-4eb9-4f5e-85ce-a7ffceb81fe4">
+            <h5>
+                <a href="/Forums/en-US/projserv2010setup/threads">Project Server - Setup, Upgrade, Administration and Operation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/projectprofessional2010">Project Professional</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="187908a5-0fc2-41e8-a099-10defc67c822">
+            <h5>
+                <a href="/Forums/en-US/projectprofessional2010general/threads">Project Standard and Professional General Questions and Answers</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/visio2010">Visio 2010</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="5313aa55-50c2-41fd-9817-4e52294469fb">
+            <h5>
+                <a href="/Forums/en-US/visiogeneral/threads">Visio General Questions and Answers for IT Professionals</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/smartdevicedevelopment">Smart Device Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="161b0fc0-d41e-4f45-b358-39ea72aa31bc">
+            <h5>
+                <a href="/Forums/en-US/microsoftdeviceemu/threads">Microsoft Device Emulator</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="92dac368-83df-4992-8a24-0d8efbd632ad">
+            <h5>
+                <a href="/Forums/en-US/netfxcompact/threads">.NET Compact Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="589c75fe-fc4e-411b-a351-a8eaa3ec633c">
+            <h5>
+                <a href="/Forums/en-US/windowsmobiledev/threads">Windows Mobile Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="cd05e869-43e2-4bc9-9944-b64427a03970">
+            <h5>
+                <a href="/Forums/en-US/vssmartdevicesvbcs/threads">Visual Studio Smart Device Development – Visual Basic and C# Projects</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="81fc8292-cccf-43a1-bb62-73b133393347">
+            <h5>
+                <a href="/Forums/en-US/vssmartdevicesnative/threads">Visual Studio Smart Device Development - Native C++ Project</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/sqlserver">SQL Server</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="00e50af7-5f43-43ad-af05-d98b73c1f760">
+            <h5>
+                <a href="/Forums/en-US/sqlintegrationservices/threads">SQL Server Integration Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7a905e4f-2b22-40a8-abce-aaa14ab7a09a">
+            <h5>
+                <a href="/Forums/en-US/sqldatamining/threads">Data Mining</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="055ccfc1-78f5-46ff-8171-33f8ff760a7c">
+            <h5>
+                <a href="/Forums/en-US/sqlreportingservices/threads">SQL Server Reporting Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ecde1c15-32e3-464c-96c4-0df1d801872d">
+            <h5>
+                <a href="/Forums/en-US/sqlanalysisservices/threads">SQL Server Analysis Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e59f31f8-8c25-4fa0-9df4-45706c4981b4">
+            <h5>
+                <a href="/Forums/en-US/sqltools/threads">SQL Server Tools General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6a68166e-b521-48a8-9454-ec36622eb8ae">
+            <h5>
+                <a href="/Forums/en-US/transactsql/threads">Transact-SQL</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b5a4d3f3-22a4-481f-a422-6fc395cc3302">
+            <h5>
+                <a href="/Forums/en-US/sqlnetfx/threads">.NET Framework inside SQL Server</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5e806456-f67c-4874-b193-28232add9c53">
+            <h5>
+                <a href="/Forums/en-US/sqldataaccess/threads">SQL Server Data Access</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fec0c733-c7ac-4cde-bb42-c6a76d06ae18">
+            <h5>
+                <a href="/Forums/en-US/sqlsmoanddmo/threads">SQL Server SMO/DMO</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0b6c62b4-3a1c-41b1-8596-e76b7703d78a">
+            <h5>
+                <a href="/Forums/en-US/sqlxml/threads">SQL Server XML</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e77b6ab1-f790-4f28-b3fd-c354173746ba">
+            <h5>
+                <a href="/Forums/en-US/sqlreplication/threads">SQL Server Replication</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="cb51583a-90d0-4960-9362-ac25870e5252">
+            <h5>
+                <a href="/Forums/en-US/sqlservicebroker/threads">SQL Service Broker</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="be43918e-c6d3-45c5-9caf-769ab0d180ea">
+            <h5>
+                <a href="/Forums/en-US/sqlsecurity/threads">SQL Server Security</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="53c5f5c4-8fab-48fb-92ef-a8a0ac73befb">
+            <h5>
+                <a href="/Forums/en-US/sqldatabaseengine/threads">SQL Server Database Engine</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d9bae94c-bb95-4702-bbc3-a23933acd40a">
+            <h5>
+                <a href="/Forums/en-US/sqldocumentation/threads">SQL Server Documentation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5bc30920-5d3c-4a4e-8672-ff97b0e9252f">
+            <h5>
+                <a href="/Forums/en-US/sqlsetupandupgrade/threads">SQL Server Setup &amp; Upgrade</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="91a6d335-4c9f-485d-a943-74957ce01d38">
+            <h5>
+                <a href="/Forums/en-US/sqldisasterrecovery/threads">SQL Server Disaster Recovery and Availability</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0f05a8b5-5589-4ce4-b66f-2dbf12153379">
+            <h5>
+                <a href="/Forums/en-US/sqlnotificationservices/threads">SQL Server Notification Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2c3752d7-6550-4f74-85be-10395b003938">
+            <h5>
+                <a href="/Forums/en-US/sqlce/threads">SQL Server Compact</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="13e5c981-20c0-47db-9df8-5bf7aae3a479">
+            <h5>
+                <a href="/Forums/en-US/sqlgetstarted/threads">Getting started with SQL Server</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="dd785eab-c668-4c0a-af4f-0054bc91294d">
+            <h5>
+                <a href="/Forums/en-US/sqldatabasemirroring/threads">Database Mirroring</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="4dfc1132-ed0e-4490-865b-89dcc2402af9">
+            <h5>
+                <a href="/Forums/en-US/sqlexpress/threads">SQL Server Express</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="325db3f8-bd74-4d6d-bf84-109416629a0e">
+            <h5>
+                <a href="/Forums/en-US/sqldriverforphp/threads">SQL Server Driver for PHP</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6053929a-7d13-41d8-8360-e3bcdfb63cd3">
+            <h5>
+                <a href="/Forums/en-US/sqldatawarehousing/threads">SQL Server Data Warehousing</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2f82d42a-4723-4f6c-b545-395bd9a7bf96">
+            <h5>
+                <a href="/Forums/en-US/sqlsearch/threads">SQL Server Search</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="264afbfa-113f-400e-b4a9-5faead328944">
+            <h5>
+                <a href="/Forums/en-US/sqlspatial/threads">SQL Server Spatial</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="707ced18-32ee-42dd-861d-282865f68164">
+            <h5>
+                <a href="/Forums/en-US/sqlserversamples/threads">SQL Server Samples and Community Projects</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="bf8613c5-ec73-4823-8735-4b47c74a31fd">
+            <h5>
+                <a href="/Forums/en-US/streaminsight/threads">Microsoft StreamInsight</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5a78c299-4be8-4edd-8d87-b48b193da81c">
+            <h5>
+                <a href="/Forums/en-US/databasedesign/threads">Database Design</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fa5df8d1-f53a-4783-81a1-ba0015e69a2a">
+            <h5>
+                <a href="/Forums/en-US/sqlservermigration/threads">SQL Server Migration</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7d8f2e7b-d70b-4799-8771-f09d6cf08b23">
+            <h5>
+                <a href="/Forums/en-US/sqlmds/threads">SQL Server Master Data Services</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d4dfa0e2-6997-472a-9ea6-c2421c0c98bc">
+            <h5>
+                <a href="/Forums/en-US/sqlkjappmsmgmt/threads">SQL Server Application and Multi-Server Management</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="20542506-d051-4902-b765-b9c1003aa758">
+            <h5>
+                <a href="/Forums/en-US/sqlkjpowerpivotforexcel/threads">SQL Server PowerPivot for Excel</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="70a00407-df18-4e37-b54b-cc6611396ef6">
+            <h5>
+                <a href="/Forums/en-US/sqlkjpowerpointforsharepoint/threads">SQL Server PowerPivot for SharePoint</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="de03fcce-5cd0-4e5f-809c-471c9a62476e">
+            <h5>
+                <a href="/Forums/en-US/sqlkjmanageability/threads">SQL Server Manageability</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/embeddedwindows">Windows Embedded Standard</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="a0fc2828-d273-4df2-ac4c-9bb1ea24602d">
+            <h5>
+                <a href="/Forums/en-US/embeddedwindowseefs/threads">Standard 2009: Embedded Enabling Features (EEFs)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b734837e-1b21-4e93-97ad-f30b6d64003b">
+            <h5>
+                <a href="/Forums/en-US/embeddedwindowscomponents/threads">Standard 2009: Components/Run-time Issues</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8cb6cd0b-93e0-4896-bfcf-c578fbe63f73">
+            <h5>
+                <a href="/Forums/en-US/embeddedwindowstools/threads">Standard 2009: Tools</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="20c873b8-d2a2-42dc-8042-01d866a6cb8e">
+            <h5>
+                <a href="/Forums/en-US/embeddedwindowsmisc/threads">Standard 2009: Misc</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="20d41c42-81bf-49a5-8722-f6fdfc125d29">
+            <h5>
+                <a href="/Forums/en-US/quebeceefs/threads">Standard 7: Embedded Enabling Features (EEFs)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3f3ef8f2-7720-4a7e-9d85-4e057904467a">
+            <h5>
+                <a href="/Forums/en-US/quebeccomponentsforum/threads">Standard 7: Components/Run-time Issues</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="51d7117e-ab09-4556-b754-44959fea7280">
+            <h5>
+                <a href="/Forums/en-US/quebectools/threads">Standard 7: Tools</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2cbe0813-b4d3-41b4-bcec-842c8202c867">
+            <h5>
+                <a href="/Forums/en-US/quebecservicingdeployment/threads">Standard 7: Servicing and Deployment</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e76199e3-bf65-4c48-9c7f-b0b9359aa0f4">
+            <h5>
+                <a href="/Forums/en-US/quebecmisc/threads">Standard 7: Misc</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsembeddedcompact">Windows Embedded Compact</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="d968eb4f-afaf-4743-87ea-e680c6ed8c65">
+            <h5>
+                <a href="/Forums/en-US/winembmngdapp/threads">Windows Embedded Compact Managed Application Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="6381bf2a-4280-4c17-83ba-ae5ef16a06c8">
+            <h5>
+                <a href="/Forums/en-US/winembnatapp/threads">Windows Embedded Compact Native Application Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="982836d2-05dc-4d47-8ebf-67f4806d704d">
+            <h5>
+                <a href="/Forums/en-US/winembplatdev/threads">Windows Embedded Compact Platform Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/sqlserverprerelease">SQL Server (Pre-release)</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="cefc715c-cabc-4367-99fc-4464312cec6c">
+            <h5>
+                <a href="/Forums/en-US/sqldru/threads">SQL Server Distributed Replay (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5912b7a8-7a4a-438b-a999-c305e013af39">
+            <h5>
+                <a href="/Forums/en-US/sqldensetup/threads">SQL Server &quot;Denali&quot; Setup and Installation (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="49a5a745-ac61-4ec6-bcd3-67dc8f6a2d31">
+            <h5>
+                <a href="/Forums/en-US/sqldenpowerpivotforexcel/threads">SQL Server &quot;Denali&quot; PowerPivot for Excel (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c9e57753-4caa-4029-a70d-20578911713e">
+            <h5>
+                <a href="/Forums/en-US/sqldenintegrationservices/threads">SQL Server &quot;Denali&quot; Integration Services (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="84b0084d-cfb2-4d2d-9f09-244c2422b02a">
+            <h5>
+                <a href="/Forums/en-US/sqlhadr/threads">SQL Server &quot;Denali&quot; High Availability and Disaster Recovery (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b065d45d-4745-455a-8fb9-4ab2184fdade">
+            <h5>
+                <a href="/Forums/en-US/sqldenspatial/threads">SQL Server &quot;Denali&quot; Spatial (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="50ca9af0-d73d-4159-84c6-836e296655c8">
+            <h5>
+                <a href="/Forums/en-US/sqldataqualityservices/threads">SQL Server &quot;Denali&quot; Data Quality Services (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b93e97b6-9f3c-43ab-ba53-549a868f171f">
+            <h5>
+                <a href="/Forums/en-US/sqldenanalysisservices/threads">SQL Server &quot;Denali&quot; Analysis Services (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e91dbc7e-95ee-4129-a9fa-688dd43aecef">
+            <h5>
+                <a href="/Forums/en-US/sqldenpowerpointforsharepoint/threads">SQL Server &quot;Denali&quot; PowerPivot for SharePoint (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="01fa3278-7a3c-4979-90d9-b65c50b8c2e8">
+            <h5>
+                <a href="/Forums/en-US/sqldenreportingservices/threads">SQL Server &quot;Denali&quot; Reporting Services (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="cdbcdf92-6317-4779-98d2-cce5b1ec81a5">
+            <h5>
+                <a href="/Forums/en-US/sqldenmds/threads">SQL Server &quot;Denali&quot; Master Data Services (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7e0e6e32-dcc4-4770-a2b3-600fe9a94249">
+            <h5>
+                <a href="/Forums/en-US/sqldenengine/threads">SQL Server Database Engine (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fac65f3d-2662-4992-96ae-872b9a057a11">
+            <h5>
+                <a href="/Forums/en-US/sqldentsql/threads">SQL Server &quot;Denali&quot; SQL Tools (Pre-Release)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsforms">Windows Forms</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="1951d2ee-e302-4af7-b219-b23d38efb268">
+            <h5>
+                <a href="/Forums/en-US/winforms/threads">Windows Forms General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="757f930b-d67e-4ab5-96c7-d11fb9703aa1">
+            <h5>
+                <a href="/Forums/en-US/winformsdesigner/threads">Windows Forms Designer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="01583cde-9be2-42b3-966c-b3d5618945b1">
+            <h5>
+                <a href="/Forums/en-US/winformssetup/threads">ClickOnce and Setup &amp; Deployment Projects</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="260fc7a6-e69a-432d-9b70-3d8bc1ef7b59">
+            <h5>
+                <a href="/Forums/en-US/winformsdatacontrols/threads">Windows Forms Data Controls and Databinding</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c24874d6-7700-4d5a-9009-8a78e6d4d7ec">
+            <h5>
+                <a href="/Forums/en-US/winformsapplications/threads">Windows Forms Sample Applications</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsserver">Windows Server</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="efd214a3-28dd-4810-b40b-fba3794c1b1c">
+            <h5>
+                <a href="/Forums/en-US/winserver2008appcompatabilityandcertification/threads">Windows Server 2008 Application Compatibility and Certification</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a51dcc5e-0e4c-43ba-a38b-e4913b479a8c">
+            <h5>
+                <a href="/Forums/en-US/servervirtualization/threads">Server Virtualization</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c2ef711e-35fe-41e6-8321-c82f2b03cd2f">
+            <h5>
+                <a href="/Forums/en-US/windowsserversolutionssdk/threads">Windows Server Solutions SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/wldev">Windows Live Developer</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="4488e584-8001-4558-bea7-51ccd3376800">
+            <h5>
+                <a href="/Forums/en-US/messengerconnect/threads">Live Connect</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="31e85669-549c-4678-9096-daa27e9da00b">
+            <h5>
+                <a href="/Forums/en-US/wlgeneraldev/threads">Windows Live General: Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e9ce8d5f-2cd3-458b-bd90-6dabf35aacfa">
+            <h5>
+                <a href="/Forums/en-US/wlmessengerapidev/threads">Windows Live Messenger Web APIs: Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="135aaafc-4354-40a9-badd-64a06a6e9a10">
+            <h5>
+                <a href="/Forums/en-US/wlmessengerdev/threads">Windows Live Messenger Client: Development (retired)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e0794144-7c61-41ca-a8c2-d6799dbbf787">
+            <h5>
+                <a href="/Forums/en-US/wlspacesdev/threads">Windows Live &#160;Spaces: Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="70841621-063d-4bee-a39e-1fc35ca5a1eb">
+            <h5>
+                <a href="/Forums/en-US/vemapcontroldev/threads">Bing Maps: Map Control and Web services Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="56d695f0-3dc6-445e-983e-2ad049cb01e3">
+            <h5>
+                <a href="/Forums/en-US/wliddev/threads">Windows Live ID: Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="92e7f850-f961-4f07-83bd-572c97581606">
+            <h5>
+                <a href="/Forums/en-US/wlwdev/threads">Windows Live Writer: Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/dynamics">Dynamics</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="c88a1fe4-ea6a-43ec-acb2-1677a96c1141">
+            <h5>
+                <a href="/Forums/en-US/crm/threads">CRM</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="750a4dad-7650-4aab-ace4-2d5dbcfe8ad2">
+            <h5>
+                <a href="/Forums/en-US/crmdeployment/threads">CRM Deployment</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="42b91635-70bd-49ab-a143-ef01bb5186d6">
+            <h5>
+                <a href="/Forums/en-US/crmdevelopment/threads">CRM Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/feedbackanddiscussions">Feedback and Discussions</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="70cafda5-d867-4b8f-b752-938946b57348">
+            <h5>
+                <a href="/Forums/en-US/msdnfeedback/threads">MSDN Subscriptions Feedback</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ef4dcf6f-d08c-4d1c-b752-10f1d1e9807d">
+            <h5>
+                <a href="/Forums/en-US/SearchFeedback/threads">MSDN and TechNet Search Feedback</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0254c2aa-2429-4ada-bbf0-2bc8462b3f25">
+            <h5>
+                <a href="/Forums/en-US/libraryfeedback/threads">MSDN, TechNet and Expression Library Feedback</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsdbg">Visual Studio Debugging and Diagnostic Tools</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="dec09a29-21cd-4f3e-a666-5d68693ba799">
+            <h5>
+                <a href="/Forums/en-US/vsdebug/threads">Visual Studio Debugger</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f54e0f11-eace-42e9-b10f-6ade3124dbfc">
+            <h5>
+                <a href="/Forums/en-US/vstsprofiler/threads">Visual Studio Performance Tools (Profiler)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c6b9a35b-6695-45a4-8fc8-dae73e167f0a">
+            <h5>
+                <a href="/Forums/en-US/vstscode/threads">Visual Studio Code Analysis and Code Metrics</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsphone">Windows Phone</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="8a0c28fb-c952-43f0-a135-215cc9ed0e56">
+            <h5>
+                <a href="/Forums/en-US/windowsphone7series/threads">Windows Phone 7</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsarch">Visual Studio Design and Architecture Tools</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="8cffca30-b85c-40e8-8b2b-fbc96eb1c2d7">
+            <h5>
+                <a href="/Forums/en-US/vsclassdesigner/threads">Visual Studio Class Designer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7a0e0e00-c86b-45e8-9601-764decb0bc27">
+            <h5>
+                <a href="/Forums/en-US/vsarch/threads">Visual Studio Visualization &amp; Modeling Tools</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="db0b2401-0a3f-4893-9243-2fecb5c0d34e">
+            <h5>
+                <a href="/Forums/en-US/dslvsarchx/threads">Visual Studio Visualization &amp; Modeling SDK (DSL Tools)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/patternsandpractices">Patterns &amp; Practices</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="fe8d3c9f-a651-432f-859c-eb042a360059">
+            <h5>
+                <a href="/Forums/en-US/pnpgeneral/threads">patterns &amp; practices: General Discussion</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vstfs">Visual Studio Team Foundation Server </a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="cf9f445f-fc80-421b-8fe0-672bc5daf302">
+            <h5>
+                <a href="/Forums/en-US/tfsgeneral/threads">Team Foundation Server - General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e20b32de-a6af-4950-abdb-9f7a4bd19bcf">
+            <h5>
+                <a href="/Forums/en-US/tfssetup/threads">Team Foundation Server - Setup</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f7643980-5423-4dbc-8fd2-b2fad04277a1">
+            <h5>
+                <a href="/Forums/en-US/tfsadmin/threads">Team Foundation Server - Administration</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="02db4821-3b55-4f15-8844-8cedc8e51558">
+            <h5>
+                <a href="/Forums/en-US/tfsbuild/threads">Team Foundation Server - Build Automation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7f342b9a-ee37-4d7a-a674-0a81be3e2873">
+            <h5>
+                <a href="/Forums/en-US/tfspowertools/threads">Team Foundation Server – Power Tools &amp; Add-ons</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2892bf0c-a162-44f9-b9d3-7ad437a7b3cf">
+            <h5>
+                <a href="/Forums/en-US/tfsprocess/threads">Team Foundation Server - Process Templates</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="13f1514e-20c5-41c3-8592-8519718c2cbe">
+            <h5>
+                <a href="/Forums/en-US/tfsreporting/threads">Team Foundation Server - Reporting &amp; Warehouse</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f7df9f72-cef8-4ada-b5c6-ead01c6f8cfe">
+            <h5>
+                <a href="/Forums/en-US/tfswebaccess/threads">Team Foundation Server - Team System Web Access</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3db1e921-db6b-4f17-b14c-339a09308c7e">
+            <h5>
+                <a href="/Forums/en-US/tfsversioncontrol/threads">Team Foundation Server - Version Control</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b83c5939-5e54-414e-b220-432774394bab">
+            <h5>
+                <a href="/Forums/en-US/tfsworkitemtracking/threads">Team Foundation Server - Work Item Tracking</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9e41c9bc-64fe-4051-8cd8-5fbac41c3452">
+            <h5>
+                <a href="/Forums/en-US/tee/threads">Team Foundation Server - Eclipse and Cross Platform</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="295bac74-8235-496e-a96a-c282e1603def">
+            <h5>
+                <a href="/Forums/en-US/tfsprojectsrvint/threads">Team Foundation Server and Project Server Integration</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2295b47c-317d-481d-9a46-e8f5dcc74f88">
+            <h5>
+                <a href="/Forums/en-US/TFService/threads">Team Foundation Service Preview</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/orchard">Orchard</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="b7450a91-32fd-4d9c-bbe8-961c8dcd7e21">
+            <h5>
+                <a href="/Forums/en-US/orcharddiscussions/threads">Orchard –Discussions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7c85f496-7bd2-44a0-9e32-357df2f0ec8f">
+            <h5>
+                <a href="/Forums/en-US/orchardsupport/threads">Orchard - Help and Support</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/scriptjunkie">ScriptJunkie</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="47745501-f4c2-4891-90fe-9d3135914555">
+            <h5>
+                <a href="/Forums/en-US/sjgeneral/threads">Script Junkie Discussion</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsappdev">Developing Applications with Visual Studio</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="0e69520a-0af0-4085-a8c4-c5f21ce20e01">
+            <h5>
+                <a href="/Forums/en-US/vsto/threads">Visual Studio Tools for Office</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2626f485-00df-49a0-8e07-99571fdebaf4">
+            <h5>
+                <a href="/Forums/en-US/vswpfdesigner/threads">Visual Studio WPF/SL Designer</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2a0dd604-c492-42e8-87e9-ad1d0f85537b">
+            <h5>
+                <a href="/Forums/en-US/windowsazure/threads">Windows Azure - Archive</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vsdata">Working with Data in Visual Studio</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="260fc7a6-e69a-432d-9b70-3d8bc1ef7b59">
+            <h5>
+                <a href="/Forums/en-US/winformsdatacontrols/threads">Windows Forms Data Controls and Databinding</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="57d87e34-a13c-48ad-ae4d-e6b3655c1f8c">
+            <h5>
+                <a href="/Forums/en-US/vstsdb/threads">Visual Studio Database Development Tools (Formerly &quot;Database Edition Forum&quot;)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8ce383d7-fb2c-4e72-8840-072a806af2c8">
+            <h5>
+                <a href="/Forums/en-US/vsreportcontrols/threads">Visual Studio Report Controls</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/websitepanel">WebsitePanel</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="b73c1886-0f10-416f-afa1-ee4f3221340a">
+            <h5>
+                <a href="/Forums/en-US/wspdiscuss/threads">WebsitePanel - Discussions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="94709b7b-5fc7-422b-b916-b2897e13fe97">
+            <h5>
+                <a href="/Forums/en-US/wspsupport/threads">WebsitePanel - Support</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0d6c11f6-42a8-487c-9cba-b3929c88f47b">
+            <h5>
+                <a href="/Forums/en-US/wspentsupport/threads">WebsitePanel - Enterprise Modules Support</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a0bab3df-cbbf-4842-9c6b-d6f24ae60a2f">
+            <h5>
+                <a href="/Forums/en-US/wspdev/threads">WebsitePanel - Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/vslightswitch">Visual Studio LightSwitch</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="34c3f1ae-716a-481f-b51b-96833b8d2f8a">
+            <h5>
+                <a href="/Forums/en-US/lsextensibility/threads">Visual Studio LightSwitch Extensibility</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ccecdbfe-ce7e-42d0-823a-e453a556996a">
+            <h5>
+                <a href="/Forums/en-US/lightswitch/threads">Visual Studio LightSwitch - General Questions</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/azure">Windows Azure</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="2a0dd604-c492-42e8-87e9-ad1d0f85537b">
+            <h5>
+                <a href="/Forums/en-US/windowsazure/threads">Windows Azure - Archive</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="650f1f7b-ce2a-471e-80b6-aa49173df257">
+            <h5>
+                <a href="/Forums/en-US/netservices/threads">Windows Azure AppFabric - Archive</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/msftresearch">Microsoft Research</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="3fa7e227-be4e-4f60-b59a-29a53887b270">
+            <h5>
+                <a href="/Forums/en-US/automaticgraphlayout/threads">Microsoft Automatic Graph Layout</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/kinectsdk">Kinect for Windows SDK Beta</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="9d22cad0-a512-40ee-a053-da1d6314b79a">
+            <h5>
+                <a href="/Forums/en-US/kinectsdk/threads">General Discussion—Kinect for Windows SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="82100fe2-5d35-44fd-b00d-e8d6383af8f2">
+            <h5>
+                <a href="/Forums/en-US/kinectsdknuiapi/threads">NUI API and Programming—Kinect for Windows SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0935515a-b416-423d-9e44-5f7b6fc0484c">
+            <h5>
+                <a href="/Forums/en-US/kinectsdkaudioapi/threads">Audio API and Programming—Kinect for Windows SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/otherforums">Other Forums</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="f1a2d13c-7403-491e-9191-091723128a4f">
+            <h5>
+                <a href="/Forums/en-US/MOSIDeveloperSupport/threads">Microsoft Online Syndication Interface Developer Forum (MOSI)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7e5b27ef-578d-48a5-858b-82fdb447b2fc">
+            <h5>
+                <a href="/Forums/en-US/msatlasapidev/threads">Microsoft Atlas APIs: Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f374b610-02bb-4eeb-bf9d-483da2ab3175">
+            <h5>
+                <a href="/Forums/en-US/wptk_v4/threads">Windows Performance Toolkit</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="ffef3f69-b89d-4f91-8e56-7011c52b60db">
+            <h5>
+                <a href="/Forums/en-US/refsourceserver/threads">Reference Source Server Discussion</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3da0f33d-da6c-427c-a963-dded0030da41">
+            <h5>
+                <a href="/Forums/en-US/healthvault/threads">HealthVault</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a974c792-8443-4792-b832-a646aa7286f4">
+            <h5>
+                <a href="/Forums/en-US/customercareframework/threads">Customer Care Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2d3a6be6-1a16-4486-b3f6-0f466331c23a">
+            <h5>
+                <a href="/Forums/en-US/csf/threads">Connected Services Framework</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9dad3d16-cbc5-459b-93b2-b1f0b43a64c8">
+            <h5>
+                <a href="/Forums/en-US/surfaceappdevelopment/threads">Surface Application Design and Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="44c1d940-e9c0-41d8-83ab-e6352ad2c0a5">
+            <h5>
+                <a href="/Forums/en-US/searchserverinstallconfigandadminstration/threads">Search Server: Installation, Configuration and Administration</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7853b02e-4543-44e7-ae50-e0863917342b">
+            <h5>
+                <a href="/Forums/en-US/sdlprocess/threads">Microsoft Security Development Lifecycle (SDL)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/archived">Archived Forums</a>
+        </h4>
+    <ul class="forumHome">
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsapps">Windows Metro style apps</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="91481d18-a3b4-46b4-9e28-816947bec05d">
+            <h5>
+                <a href="/Forums/en-US/winappsuidesign/threads">UI Design for Metro style apps</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f926d643-cfd5-4678-9d89-ea4d90b7d505">
+            <h5>
+                <a href="/Forums/en-US/tailoringappsfordevices/threads">Tailoring your Metro style app for hardware and devices     </a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="0befe8a5-d7fb-40ee-882a-2a143bc73489">
+            <h5>
+                <a href="/Forums/en-US/winappswithhtml5/threads">Building Metro style apps with HTML5/JavaScript</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="d172d1c3-8bff-4c62-89a6-0a63de52c24e">
+            <h5>
+                <a href="/Forums/en-US/winappswithnativecode/threads">Building Metro style apps with C++ </a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="04848c5b-0a82-4be1-bab1-eab13c543e5a">
+            <h5>
+                <a href="/Forums/en-US/winappswithcsharp/threads">Building Metro style apps with C# or VB </a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e359fc1f-41c5-4448-b21e-a1669d6db933">
+            <h5>
+                <a href="/Forums/en-US/wingameswithdirectx/threads">Building Metro style games with DirectX</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e1e5d93d-a914-4b4b-aac8-a28d57fc7b51">
+            <h5>
+                <a href="/Forums/en-US/toolsforwinapps/threads">Tools for Metro style apps </a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="99d57a91-519c-489b-8cac-fcdfe9b8365b">
+            <h5>
+                <a href="/Forums/en-US/windowsdeveloperpreviewgeneral/threads">Windows Developer Preview: General OS questions </a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/samsungpc">Samsung PC</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="3917b979-cd40-459c-b785-45c549714bfb">
+            <h5>
+                <a href="/Forums/en-US/samsungpcgeneral/threads">The Samsung Windows Developer Preview PC General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowshardwaredev">Windows Hardware Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="afce7791-9580-4405-ac13-09996a236d5d">
+            <h5>
+                <a href="/Forums/en-US/wdk/threads">Windows Hardware WDK and Driver Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f183901c-3131-4ea1-9871-93e7cfd7a78a">
+            <h5>
+                <a href="/Forums/en-US/wptkv5/threads">Windows Performance Toolkit (WPT) v5</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/windowsdesktopdev">Windows Desktop Development</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="fba4de8f-9459-4ca1-92a9-ea28f763178d">
+            <h5>
+                <a href="/Forums/en-US/windowscompatibility/threads">Application Compatibility for Windows Desktop Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2edfa9ee-eaa8-4af2-881e-59c2ab1ef3a7">
+            <h5>
+                <a href="/Forums/en-US/powermanagement/threads">Developing Windows Desktop Applications with Power Management</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="b4e793cc-392f-4bb5-bb93-7a9357847766">
+            <h5>
+                <a href="/Forums/en-US/windowsaccessibilityandautomation/threads">Windows Desktop Development for Accessibility and Automation</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="e17d4690-29b7-46c1-b2a2-34394bf59032">
+            <h5>
+                <a href="/Forums/en-US/windowsdirectshowdevelopment/threads">DirectShow Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="763abe90-7e17-4568-a399-654fd6b2ccd2">
+            <h5>
+                <a href="/Forums/en-US/windowsgeneraldevelopmentissues/threads">General Windows Desktop Development Issues</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a96797a4-2058-48c4-bfc0-77d632dbee49">
+            <h5>
+                <a href="/Forums/en-US/tabletandtouch/threads">Windows Desktop Development for Ink, Touch, and Tablet PC</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="04b27282-a6c2-47f6-a892-36227b5bc127">
+            <h5>
+                <a href="/Forums/en-US/mediafoundationdevelopment/threads">Media Foundation Development for Windows Desktop</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="75fce8f2-2392-4d18-8e68-ccb36a4b5eea">
+            <h5>
+                <a href="/Forums/en-US/msmq/threads">Microsoft Message Queuing (MSMQ)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7e8133c0-f756-4058-9c20-32e041f07b06">
+            <h5>
+                <a href="/Forums/en-US/netmon/threads">Network Monitor</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2c9ed423-354e-4f07-9c60-9b7e8b5f16f9">
+            <h5>
+                <a href="/Forums/en-US/windowsopticalplatform/threads">Windows Desktop Optical Platform Discussion</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c86994c2-ae4b-4b37-95f5-b8ff5e9b69d6">
+            <h5>
+                <a href="/Forums/en-US/peertopeer/threads">Peer-to-Peer Networking for Windows Desktop</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="05f07fa1-277b-42fb-8f7b-733cc25af237">
+            <h5>
+                <a href="/Forums/en-US/windowssecurity/threads">Application Security for Windows Desktop</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="92d8a724-85ea-4f36-8adb-8456c30cf591">
+            <h5>
+                <a href="/Forums/en-US/sidebargadfetdevelopment/threads">Windows Desktop Sidebar Gadget Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="c6913349-b2fa-4fe0-8faf-35e7adcd63cc">
+            <h5>
+                <a href="/Forums/en-US/windowsuidevelopment/threads">User Interface development for Windows Desktop</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="805bdc3f-bf13-4784-9e81-548b5030302b">
+            <h5>
+                <a href="/Forums/en-US/vcgeneral/threads">Visual C++ General</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="5ac7f30f-4625-4162-bdbb-2416a72b7047">
+            <h5>
+                <a href="/Forums/en-US/vclanguage/threads">Visual C++ Language</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="33ee59f3-7af1-47ff-9397-d208791276a1">
+            <h5>
+                <a href="/Forums/en-US/windbg/threads">Windows Desktop Debugging</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="fc103b53-4f6a-4cdf-bc31-89e5585b0494">
+            <h5>
+                <a href="/Forums/en-US/windowsdesktopsearchdevelopment/threads">Windows Desktop Search Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="986f8063-c572-44a2-921a-1a6d337fa008">
+            <h5>
+                <a href="/Forums/en-US/windowsdesktopsearchhelp/threads">Windows Desktop Search Help</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3f38576c-d975-4bca-8127-6c1309547db7">
+            <h5>
+                <a href="/Forums/en-US/wfp/threads">Windows Filtering Platform (WFP)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="4e931954-0d3c-43df-8c51-45fc3e585f11">
+            <h5>
+                <a href="/Forums/en-US/windowswic/threads">Windows Imaging Component (WIC)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="f157f732-9fcd-43e9-a346-68cf8a49c5c2">
+            <h5>
+                <a href="/Forums/en-US/perfmon/threads">Windows Desktop Perfmon and Diagnostic tools</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="27ac24aa-3a60-4893-b849-e27611e7eace">
+            <h5>
+                <a href="/Forums/en-US/windowspro-audiodevelopment/threads">Windows Desktop Pro-Audio Application Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="daeb9618-69e1-4b6b-9542-6f9218d0af56">
+            <h5>
+                <a href="/Forums/en-US/windowssdk/threads">Windows Desktop SDK</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="3b2d327e-ae60-42b0-8b5b-ff7be72c891c">
+            <h5>
+                <a href="/Forums/en-US/wwsapi/threads">Windows Desktop Web Services API (webservices.dll)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="2ebdc025-eec6-4b9d-99df-33df1b19251d">
+            <h5>
+                <a href="/Forums/en-US/wsk/threads">Windows Desktop Winsock Kernel (WSK)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="afce7791-9580-4405-ac13-09996a236d5d">
+            <h5>
+                <a href="/Forums/en-US/wdk/threads">Windows Hardware WDK and Driver Development</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="a526d3af-0d80-4f1f-a8f6-2980f096d58d">
+            <h5>
+                <a href="/Forums/en-US/windowssensorandlocationplatform/threads">Development with the Windows Sensor and Location Platform</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+<li class="categoryHome">
+    <h4>
+        <a href="/Forums/en-US/category/netframeworkvnext">.NET Framework vNext</a>
+        </h4>
+    <ul class="forumHome">
+        
+        <li class="forumHome" fid="76ffbd67-f55e-4b7b-bb2b-29bc8637316d">
+            <h5>
+                <a href="/Forums/en-US/wfprerelease/threads">Windows Workflow Foundation 4</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="7ea22a5b-087d-4187-b5fc-182712ac450f">
+            <h5>
+                <a href="/Forums/en-US/netfxbcl/threads">.NET Base Class Library</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="9a657749-56cc-4c35-af80-b514c8693c79">
+            <h5>
+                <a href="/Forums/en-US/netfxnetcom/threads">.NET Framework Networking and Communication</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="8a93298d-e8be-4731-a512-c8230582f9e4">
+            <h5>
+                <a href="/Forums/en-US/netfxsetup/threads">.NET Framework Setup</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="43e1b4ad-eb8d-427f-90a9-161e7af74457">
+            <h5>
+                <a href="/Forums/en-US/wpf/threads">Windows Presentation Foundation (WPF)</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+        <li class="forumHome" fid="79d315f8-1308-498d-98ac-b200954bffdd">
+            <h5>
+                <a href="/Forums/en-US/clr/threads">Common Language Runtime</a></h5>
+            <div class="clear">
+                &nbsp;</div>
+        </li>
+        
+    </ul>
+</li>
+
+</ul>
+
+            </td>
+            <td>
+                <ul id="ulPopularOrRecent">
+                    <li id="liRecentForums">My Recent Forums</li>
+                    <li id="liPopularForums">Popular Forums</li>
+                </ul>
+                <div id="divRecentForums">
+                    <ul class="forum">
+                        
+<li class="forum"><label>You have not visited any Forums.</label></li>
 
 
-        };
+                    </ul>
+                </div>
+                <div id="divPopularForums" style="display: none;">
+                    <ul class="forum">
+                        
+                        <li class="forum" fid="ee8d83ad-ac35-4b2f-bc9a-002933131292">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/reportabug/threads">Forums Issues (not product support)</a></h3>
+                                        
+                                        <p>
+                                            Use this forum to report issues with the online forums application. When reporting an issue please include relevant details such as repro steps, error messages and browser version.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/reportabug/thread/ef55a670-0496-49b2-8c43-f6a2203b68e4#57915cba-2ad2-4a90-8bc3-4ee51c38a77b" title="Checking&#32;Post&#32;status"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/test_arungg_mvp/?type=forum" rel="nofollow"
+                                                    title="About Test_ArunGG_MVP">
+                                                    <span class="name">
+                                                        Test_ArunGG_MVP</span>
+                                                    <abbr class="affil">
+                                                        Microsoft Contingent Staff</abbr>
+                                                </a><span class="date">
+                                                    Wednesday, October 26, 2011 11:40 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                1
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="3917b979-cd40-459c-b785-45c549714bfb">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/samsungpcgeneral/threads">The Samsung Windows Developer Preview PC General</a></h3>
+                                        
+                                        <p>
+                                            Welcome to the Samsung Windows Developer Preview PC forum. This forum provides technical support for users who received the Samsung PC during the Microsoft &#47;&#47;BUILD conference.  Samsung provides updates for this device on their site, http&#58;&#47;&#47;www.samsung.com&#47;windowsbuild. </p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/samsungpcgeneral/thread/edfdcfce-561d-4541-ab54-0333ee22bec2#c6637c72-ea2d-40cc-bb4d-c7ef8ba471ae" title="How&#32;do&#32;I&#32;get&#32;assistance&#32;for&#32;my&#32;Samsung&#32;PC&#63;"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/vamcalerts/?type=forum" rel="nofollow"
+                                                    title="About VamcAlerts">
+                                                    <span class="name">
+                                                        VamcAlerts</span>
+                                                    <abbr class="affil">
+                                                        Microsoft Contingent Staff</abbr>
+                                                </a><span class="date">
+                                                    Thursday, October 27, 2011 12:17 AM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                1
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="0e69520a-0af0-4085-a8c4-c5f21ce20e01">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/vsto/threads">Visual Studio Tools for Office</a></h3>
+                                        
+                                        <p>
+                                            Questions about using Visual Studio to create managed code solutions for Office 2003, Office 2007, and Office 2010.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/vsto/thread/405fb8b9-19c1-4f1d-ae48-09f6502e6f91#405fb8b9-19c1-4f1d-ae48-09f6502e6f91" title="Licensing&#32;around&#32;automated&#32;Excel&#32;functionality"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/leon_greeff/?type=forum" rel="nofollow"
+                                                    title="About Leon_Greeff">
+                                                    <span class="name">
+                                                        Leon_Greeff</span>
+                                                    <abbr class="affil">
+                                                        </abbr>
+                                                </a><span class="date">
+                                                    Friday, October 28, 2011 9:25 AM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                1
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="c950573c-6508-4b40-bb16-1d65e00f4085">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/biztalkgeneral/threads">BizTalk Server General</a></h3>
+                                        
+                                        <p>
+                                            General BizTalk Server discussions.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/biztalkgeneral/thread/d4dd5503-dbb1-4ad5-99f6-5bd1a134bb94#07141e94-c3f6-455a-9037-46e7d7f5d5f6" title="Cannot&#32;seem&#32;to&#32;be&#32;able&#32;to&#32;expose&#32;SharePoint&#32;search.asmx&#32;through&#32;biztalk"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/test_arungg_mvp/?type=forum" rel="nofollow"
+                                                    title="About Test_ArunGG_MVP">
+                                                    <span class="name">
+                                                        Test_ArunGG_MVP</span>
+                                                    <abbr class="affil">
+                                                        Microsoft Contingent Staff</abbr>
+                                                </a><span class="date">
+                                                    Wednesday, October 26, 2011 11:45 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="2cc1b5c1-e6f6-4788-99eb-cdcb264d92a8">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/vssetup/threads">Visual Studio Setup and Installation</a></h3>
+                                        
+                                        <p>
+                                            Discuss and ask questions about the install and setup of Visual Studio.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/vssetup/thread/5c12fb6c-9e37-449e-bd38-471a4d4fd27e#5c12fb6c-9e37-449e-bd38-471a4d4fd27e" title="Windows&#32;7&#32;ultimate&#32;laptop&#32;x86.&#32;Web&#32;developer.&#32;Need&#32;to&#32;setup&#32;SQL&#32;Server&#32;2005,2008&#32;SSRS,&#32;SSAS,&#32;SSIS.&#32;vs&#32;2008,&#32;2010.&#32;"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/stephenmas/?type=forum" rel="nofollow"
+                                                    title="About StephenMas">
+                                                    <span class="name">
+                                                        StephenMas</span>
+                                                    <abbr class="affil">
+                                                        </abbr>
+                                                </a><span class="date">
+                                                    Sunday, October 23, 2011 8:52 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="2295b47c-317d-481d-9a46-e8f5dcc74f88">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/TFService/threads">Team Foundation Service Preview</a></h3>
+                                        
+                                        <p>
+                                            Discuss Team Foundation Server Service Preview concepts, post questions and suggestions</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/TFService/thread/895c41b9-c790-4a22-9909-916edbecebdd#895c41b9-c790-4a22-9909-916edbecebdd" title="Adding&#32;files&#32;directly"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/archmage/?type=forum" rel="nofollow"
+                                                    title="About archmage">
+                                                    <span class="name">
+                                                        archmage</span>
+                                                    <abbr class="affil">
+                                                        </abbr>
+                                                </a><span class="date">
+                                                    Sunday, October 23, 2011 4:12 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="b2768195-42e0-422d-9e20-2ad17b9e847d">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/jscript/threads">JScript Native</a></h3>
+                                        
+                                        <p>
+                                            Discuss and ask questions about JScript language, error&#47;problems faced and future plans.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/jscript/thread/4d46ef46-55d0-4df6-af7c-1f1a3ba96398#4d46ef46-55d0-4df6-af7c-1f1a3ba96398" title="Document&#32;object&#32;model"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/w3-logics/?type=forum" rel="nofollow"
+                                                    title="About w3-logics">
+                                                    <span class="name">
+                                                        w3-logics</span>
+                                                    <abbr class="affil">
+                                                        </abbr>
+                                                </a><span class="date">
+                                                    Wednesday, October 19, 2011 1:37 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="8a0c28fb-c952-43f0-a135-215cc9ed0e56">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/windowsphone7series/threads">Windows Phone 7</a></h3>
+                                        
+                                        <p>
+                                            Discuss tools, general development issues and questions related to developing applications and games for Windows Phone 7.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/windowsphone7series/thread/c0f0200e-2731-48b1-9970-fa8aaf74cb3d#91a3113b-5ea1-4aa3-81c8-fa718d04256e" title="How&#32;many&#32;days&#32;until&#32;app&#32;gets&#32;tested&#32;by&#32;ms&#63;"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/ginny%20caughey/?type=forum" rel="nofollow"
+                                                    title="About Ginny Caughey">
+                                                    <span class="name">
+                                                        Ginny Caughey</span>
+                                                    <abbr class="affil">
+                                                        MVP</abbr>
+                                                </a><span class="date">
+                                                    Tuesday, October 19, 2010 7:59 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="34e350de-e536-461e-aa38-c2c7a24570e9">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/async/threads">Visual Studio Async CTP</a></h3>
+                                        
+                                        <p>
+                                            Discuss and ask questions about the Visual Studio Async CTP</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/async/thread/3d7dc958-78ca-42dc-8a2f-6adad7dff4d8#3d7dc958-78ca-42dc-8a2f-6adad7dff4d8" title="SharePoint&#32;2010&#32;ExecuteQueryAsync&#32;-&#32;ClientRequestFailed"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/mikiii_/?type=forum" rel="nofollow"
+                                                    title="About MiKiii_">
+                                                    <span class="name">
+                                                        MiKiii_</span>
+                                                    <abbr class="affil">
+                                                        </abbr>
+                                                </a><span class="date">
+                                                    Sunday, October 23, 2011 4:22 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                        <li class="forum" fid="9d22cad0-a512-40ee-a053-da1d6314b79a">
+                            <table width="100%">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 class="forumLink">
+                                            <a href="/Forums/en-US/kinectsdk/threads">General Discussion—Kinect for Windows SDK</a></h3>
+                                        
+                                        <p>
+                                            Share experiences and provide feedback about the Kinect for Windows SDK.</p>
+                                        
+                                        <div>
+                                            <a href="/Forums/en-US/kinectsdk/thread/d3ae6beb-289b-42e5-b49f-3304e8027ab0#d3ae6beb-289b-42e5-b49f-3304e8027ab0" title="Kinect&#32;sensor&#32;install&#32;error"
+                                                rel="nofollow">
+                                                Last Reply</a> &nbsp; <a class="author" href="http://qa.social.msdn.microsoft.com/profile/thincrazyninja/?type=forum" rel="nofollow"
+                                                    title="About thincrazyninja">
+                                                    <span class="name">
+                                                        thincrazyninja</span>
+                                                    <abbr class="affil">
+                                                        </abbr>
+                                                </a><span class="date">
+                                                    Sunday, October 23, 2011 9:09 PM</span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td width="5%">
+                                    </td>
+                                    <td width="20%"  valign="top">
+                                        <div class="stats">
+                                            <span class="stat" name="messages">
+                                                0
+                                                <label>
+                                                    posts this week</label></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="clear">
+                                &nbsp;</div>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+            <div class="clear"></div>
+        </div>
+    </div>  
+    <div id="nrSurvey">
+        
+    </div>  
+    <div id="rail">
+        
+    
+
+        <a href="/Forums/en-US/help" class="help" rel="Help">Need Help with Forums? (FAQ)</a>
+    </div>
+ 
+                                    <div class="Clear"></div>
+                                </div>
+    
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="Clearbottom"></div>          
+                    <div class="bottomleftcorner"></div>            
+                    <div class="bottomrightcorner"></div> 
+                    
+                    <div id="Footer">
+                        <div class="FooterLogoContainer"><a href="http://www.microsoft.com/en/us/default.aspx"><div class="FooterLogo" title="Microsoft Corporation"> </div></a></div><div id="FooterCopyright" class="FooterCopyright">© 2011  Microsoft. All rights reserved.</div><div class="FooterLinks"><span class="FooterAnchorList"><a href="http://msdn.microsoft.com/cc300389.aspx">Terms of Use</a><span class="Pipe">|</span><a href="http://www.microsoft.com/library/toolbar/3.0/trademarks/en-us.mspx">Trademarks</a><span class="Pipe">|</span><a href="http://www.microsoft.com/info/privacy.mspx">Privacy Statement</a><span class="Pipe">|</span><a href="https://lab.msdn.microsoft.com/mailform/contactus.aspx?refurl=http%3a%2f%2fqa.social.msdn.microsoft.com%2fForums%2fen-US%2fcategories">Site Feedback</a></span></div>
+                        
+    
+ 
+                    </div>                             
+                </div>
+            </div>
+        </div>  
+    </div>
+    
+    
+    <script src="http://qa.social.s-msft.com/Forums/RequestReduceContent/c65855856c09245cce0b2e17fc6529cd-5cab9e4cae1447afd54be34c918e5145-RequestReducedScript.js" type="text/javascript" ></script><script type="text/javascript" language="javascript">
+                                                                                                                                                                                                         var railItems = ["/Forums/en-US/rightrailannouncement/Msdn", "/Forums/en-US/user/mylinks", "/Forums/en-US/user/leaderboards", "/Forums/en-US/stats/thissite"];
+
+</script>
+
+    <script src="http://qa.social.s-msft.com/Forums/RequestReduceContent/e79eef8c8a9fb83197828b8f277bdf68-fce81f6add896b59784f0850d75e0312-RequestReducedScript.js" type="text/javascript" ></script><script type="text/javascript" language="javascript">
+
+                                                                                                                                                                                                         Forums.Categories.RecentOrPopular(true);
+    
     </script>
-
-</head></html>
+     
+    
+    <script src="http://qa.social.s-msft.com/Forums/RequestReduceContent/e3086ef7db30abeb3af82de10285b97f-7c71de1678a4ba22f7481d9af682cb13-RequestReducedScript.js" type="text/javascript" ></script><noscript>
+        <img alt="" border="0" id="DCSIMG" width="1" height="1" src="http://m.webtrends.com/dcsour5e80000008ybade4ttg_1i1l/njs.gif?dcsuri=/nojavascript&amp;WT.js=No">
+    </noscript>
+    
+        
+    
+        <script src="http://qa.widgets.membership.s-msft.com/v1/loader.js?brand=Msdn&lang=en-US" type="text/javascript" language="javascript"></script>
+        
+    <script src="http://i2.qa.services.social.microsoft.com/Search/Widgets/SearchBox.jss?boxid=SearchTextBox&btnid=SearchButton&brand=Msdn&loc=en-US&resref=&addEnglish=&rn=&rq=&watermark=&focusOnInit=False&beta=0&iroot=&overrideWatermark=false&cver=1864.1119%0d%0a" type="text/javascript" language="javascript"></script>
+    <script src="http://qa.social.s-msft.com/Forums/RequestReduceContent/c8476fb2b62a1421e48118abce055f8c-de2a9bef5429550fb262afea40aaec27-RequestReducedScript.js" type="text/javascript" ></script><script type="text/javascript">
+                                                                                                                                                                                                         loadJavaScript('http://i1.qa.social.s-msft.com/Forums/GlobalResources/Scripts/omni_rsid_social_min.js?cver=1864.1119%0d%0a');
+        </script>
+        <noscript><a href="http://www.omniture.com" title="Web Analytics">
+        <img src="http://msstonojssocial.112.2O7.net/b/ss/msstonojssocial/1/H.20.2--NS/0" height="1" width="1" border="0" alt="" />
+        </a></noscript>
+    
+</body>
+</html>

@@ -183,7 +183,7 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillReturnMostRecentActiveEntryPerKeyKey()
+            public void WillReturnMostRecentActiveEntryPerKey()
             {
                 var testable = new TestableRepository();
                 var builder = new RequestReduce.Utilities.UriBuilder(testable.Mock<IRRConfiguration>().Object);
@@ -220,16 +220,27 @@ namespace RequestReduce.Facts.Store
                 var file4 = new RequestReduceFile()
                 {
                     Content = new byte[] { 1 },
-                    FileName = builder.BuildResourceUrl<CssResource>(id, new byte[] { 4 }),
+                    FileName = builder.BuildResourceUrl<CssResource>(id2, new byte[] { 4 }),
                     Key = id2,
-                    LastUpdated = DateTime.Now,
+                    LastUpdated = DateTime.Now.Subtract(new TimeSpan(0, 0, 3)),
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 4 })
                 };
+                var file5 = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "file.png",
+                    Key = id2,
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName2",
+                    RequestReduceFileId = Hasher.Hash(new byte[] { 5 })
+                };
+
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
                 testable.ClassUnderTest.Save(file4);
+                testable.ClassUnderTest.Save(file5);
 
                 var result = testable.ClassUnderTest.GetActiveFiles();
 
