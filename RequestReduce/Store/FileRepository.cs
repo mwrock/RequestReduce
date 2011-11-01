@@ -33,7 +33,7 @@ namespace RequestReduce.Store
         public IEnumerable<string> GetActiveFiles()
         {
             return (from files in AsQueryable()
-                    where !files.IsExpired
+                    where !files.IsExpired && files.FileName.Contains("RequestReduce")
                     group files by files.Key
                     into filegroup
                     join files2 in AsQueryable() on new {k = filegroup.Key, u = filegroup.Max(m => m.LastUpdated)}
