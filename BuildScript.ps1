@@ -14,9 +14,7 @@ properties {
 
 task Debug -depends Default
 task Default -depends Setup-40-Projects, Clean-Solution, Setup-IIS, Build-Solution, Reset, Test-Solution
-task BuildNet35 -depends Setup-35-Projects, Clean-35-Solution, Setup-IIS, Build-35-Solution, Reset
-task Download35 -depends Setup-35-Projects, Clean-35-Solution, Update-AssemblyInfoFiles, Build-35-Solution, Reset
-task Download -depends Pull-Repo, Setup-40-Projects, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Solution, Build-Output, Push-Repo, Update-Website-Download-Links, Push-Web
+task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Output, Reset, Push-Repo, Update-Website-Download-Links, Push-Web
 task Push-Nuget-All -depends Push-Nuget-Core, Push-Nuget-SqlServer
 
 task Reset {
@@ -33,10 +31,6 @@ task Setup-35-Projects {
 
 task Setup-40-Projects {
   Change-Framework-Version $projectFiles '4.0' $false
-}
-
-task Clean-35-Solution -depends Clean-BuildFiles {
-    exec { msbuild 'RequestReduce\RequestReduce.csproj' /t:Clean /v:quiet }
 }
 
 task Clean-Solution -depends Clean-BuildFiles {
@@ -58,12 +52,11 @@ task create-WebProject-build-target {
 	Copy-Item $baseDir\Microsoft.WebApplication.targets $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0\Microsoft.WebApplication.targets
 }
 
-task Build-35-Solution {
+task Build-35-Solution -depends Setup-35-Projects{
   exec { msbuild 'RequestReduce\RequestReduce.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
-task Build-Solution {
-    Change-Framework-Version $projectFiles '4.0' $false
+task Build-Solution -depends Setup-40-Projects {
     exec { msbuild RequestReduce.sln /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
@@ -107,7 +100,7 @@ task Push-Nuget-SqlServer {
 	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
-task Merge-35-Assembly {
+task Merge-35-Assembly -depends Build-35-Solution {
   clean $baseDir\RequestReduce\Nuget\Lib\net20
   create $baseDir\RequestReduce\Nuget\Lib\net20
   if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
