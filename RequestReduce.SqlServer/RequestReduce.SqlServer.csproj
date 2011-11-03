@@ -68,6 +68,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Nuget\Content\web.config.transform">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Nuget\RequestReduce.SqlServer.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>

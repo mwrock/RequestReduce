@@ -18,7 +18,7 @@ namespace RequestReduce.Configuration
         string SpriteVirtualPath { get; set; }
         string SpritePhysicalPath { get; set; }
         string ContentHost { get; }
-        string ConnectionStringName { get; }
+        string ConnectionStringName { get; set; }
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
@@ -87,6 +87,10 @@ namespace RequestReduce.Configuration
                     throw new ConfigurationErrorsException(string.Format("{0} is not a valid Content Store.", config.ContentStore), ex);
                 }
             }
+            ConnectionStringName = config == null ? null : config.ConnectionStringName;
+            if (ContentStore == Store.SqlServerStore && string.IsNullOrEmpty(ConnectionStringName))
+                throw new ApplicationException("Your RequestReduce configuration is missing a connectionStringName. This is required with a SqlServerStore. This name should either correspond to one of your connectionStrings configs, a database name in sql express or a full sql connection string. The database must contain the RequestReduceFiles table which you can create using the script located either in the Tools directory of the Nuget package install or in the download zip.");
+
             CreatePhysicalPath();
         }
 
@@ -121,17 +125,7 @@ namespace RequestReduce.Configuration
             get { return config == null ? null : config.ContentHost; }
         }
 
-        public string ConnectionStringName
-        {
-            get
-            {
-                return config != null
-                           ? string.IsNullOrEmpty(config.ConnectionStringName)
-                                 ? "RRConnection"
-                                 : config.ConnectionStringName
-                           : "RRConnection";
-            }
-        }
+        public string ConnectionStringName  { get; set; }
 
         public Store ContentStore
         {
