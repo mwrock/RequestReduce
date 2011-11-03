@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
@@ -8,17 +9,12 @@ namespace RequestReduce.ResourceTypes
 {
     public class JavaScriptResource : IResourceType
     {
-        private static readonly string scriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
-        private static readonly Regex ScriptPattern = new Regex(@"<script[^>]+>(?![\s]*(</script>)?[^>]*<!\[endif]-->)[^>]*</script>?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private const string ScriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
+        private readonly Regex scriptPattern = new Regex(@"<script[^>]+>(?![\s]*(</script>)?[^>]*<!\[endif]-->)[^>]*</script>?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Func<string, string, bool> tagValidator = ((tag, url) => 
                 {
                     var urlsToIgnore = RRContainer.Current.GetInstance<IRRConfiguration>().JavaScriptUrlsToIgnore;
-                    foreach (var ignoredUrl in urlsToIgnore.Split(new char[]{','}, System.StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        if(url.ToLower().Contains(ignoredUrl.ToLower().Trim()))
-                            return false;
-                    }
-                    return true;
+                    return urlsToIgnore.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).All(ignoredUrl => !url.ToLower().Contains(ignoredUrl.ToLower().Trim()));
                 });
 
         public string FileName
@@ -33,12 +29,12 @@ namespace RequestReduce.ResourceTypes
 
         public string TransformedMarkupTag(string url)
         {
-            return string.Format(scriptFormat, url);
+            return string.Format(ScriptFormat, url);
         }
 
         public Regex ResourceRegex
         {
-            get { return ScriptPattern; }
+            get { return scriptPattern; }
         }
 
 

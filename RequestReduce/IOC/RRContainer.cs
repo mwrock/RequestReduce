@@ -35,7 +35,8 @@ namespace RequestReduce.IOC
                 x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                 x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                 x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
-                
+                x.For<ICssImageTransformer>().Singleton().Use<CssImageTransformer>();
+
                 x.For<HttpContextBase>().Use(() => HttpContext.Current == null 
                                                     ? null 
                                                     : new HttpContextWrapper(HttpContext.Current));
@@ -63,6 +64,7 @@ namespace RequestReduce.IOC
                 y.ExcludeNamespace("RequestReduce.ResourceTypes");
                 y.ExcludeType<IReductionRepository>();
                 y.ExcludeType<IReducingQueue>();
+                y.ExcludeType<ICssImageTransformer>();
                 y.AddAllTypesOf<IReducer>();
                 y.WithDefaultConventions();
             }));

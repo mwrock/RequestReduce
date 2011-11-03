@@ -6,8 +6,6 @@ using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Utilities;
-using UriBuilder = RequestReduce.Utilities.UriBuilder;
-using RequestReduce.Reducer;
 using RequestReduce.IOC;
 using RequestReduce.ResourceTypes;
 
@@ -19,7 +17,7 @@ namespace RequestReduce.Store
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
         protected IReductionRepository reductionRepository;
-        private FileSystemWatcher watcher = null;
+        private FileSystemWatcher watcher;
 
         public LocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder, IReductionRepository reductionRepository)
         {

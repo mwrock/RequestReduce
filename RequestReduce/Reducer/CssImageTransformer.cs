@@ -5,7 +5,7 @@ namespace RequestReduce.Reducer
 {
     public class CssImageTransformer : ICssImageTransformer
     {
-        private static readonly Regex classPattern = new Regex("\\{[^\\}]+\\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private readonly Regex classPattern = new Regex("\\{[^\\}]+\\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public IEnumerable<BackgroundImageClass> ExtractImageUrls(ref string cssContent, string cssUrl)
         {

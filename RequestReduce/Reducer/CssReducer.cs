@@ -15,8 +15,8 @@ namespace RequestReduce.Reducer
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
         private readonly IRRConfiguration configuration;
-        private List<BackgroundImageClass> imageUrls = new List<BackgroundImageClass>();
-        private static readonly Regex cssImportPattern = new Regex(@"@import[\s]+url[\s]*\([\s]*['""]?(?<url>[^'"" ]+)['""]?[\s]*\)[\s]*?;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private readonly List<BackgroundImageClass> imageUrls = new List<BackgroundImageClass>();
+        private static readonly RegexCache Regex = new RegexCache();
 
         public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration) : base(webClientWrapper, store, minifier, uriBuilder)
         {
@@ -30,12 +30,12 @@ namespace RequestReduce.Reducer
             spriteManager.SpritedCssKey = key;
             var mergedCss = new StringBuilder();
             foreach (var url in urls)
-                mergedCss.Append(ProcessCss(url, imageUrls));
+                mergedCss.Append(ProcessCss(url));
             spriteManager.Flush();
-            return SpriteCss(mergedCss.ToString(), imageUrls);
+            return SpriteCss(mergedCss.ToString());
         }
 
-        protected virtual string ProcessCss(string url, List<BackgroundImageClass> imageUrls)
+        protected virtual string ProcessCss(string url)
         {
             var cssContent = webClientWrapper.DownloadString<CssResource>(url);
             cssContent = ProcessSprites(cssContent, url);
@@ -45,7 +45,7 @@ namespace RequestReduce.Reducer
 
         private string ExpandImports(string cssContent, string parentUrl)
         {
-            var imports = cssImportPattern.Matches(cssContent);
+            var imports = Regex.CssImportPattern.Matches(cssContent);
             foreach (Match match in imports)
             {
                 var url = match.Groups["url"].Value;
@@ -69,7 +69,7 @@ namespace RequestReduce.Reducer
             return cssContent;
         }
 
-        protected virtual string SpriteCss(string css, List<BackgroundImageClass> imageUrls)
+        protected virtual string SpriteCss(string css)
         {
             return spriteManager.Aggregate(css, (current, spritedImage) => cssImageTransformer.InjectSprite(current, spritedImage));
         }

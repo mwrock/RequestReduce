@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text;
 using System.Web;
 using RequestReduce.Utilities;
 using System;
@@ -19,7 +19,7 @@ namespace RequestReduce.Module
     {
         private readonly IReductionRepository reductionRepository;
         private readonly IRRConfiguration config;
-        private static readonly Regex UrlPattern = new Regex(@"(href|src)=['""]?(?<url>[^'"" ]+)['""]?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly RegexCache Regex = new RegexCache();
         private readonly IReducingQueue reducingQueue;
         private readonly HttpContextBase context;
 
@@ -49,7 +49,7 @@ namespace RequestReduce.Module
                 var transformableMatches = new List<string>();
                 foreach (var match in matches)
                 {
-                    var urlMatch = UrlPattern.Match(match.ToString());
+                    var urlMatch = Regex.UrlPattern.Match(match.ToString());
                     bool matched = false;
                     if (urlMatch.Success)
                     {
@@ -88,9 +88,7 @@ namespace RequestReduce.Module
                 RRTracer.Trace("Reduction found for {0}", urls);
                 var closeHeadIdx = (preTransform.StartsWith("<head", StringComparison.OrdinalIgnoreCase) && resource is CssResource) ? preTransform.IndexOf('>') : preTransform.IndexOf(transformableMatches[0])-1;
                 preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
-                foreach (var match in transformableMatches)
-                    preTransform = preTransform.Replace(match, "");
-                return preTransform;
+                return transformableMatches.Aggregate(preTransform, (current, match) => current.Replace(match, ""));
             }
             reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
             RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);

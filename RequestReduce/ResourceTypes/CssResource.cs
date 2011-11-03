@@ -6,8 +6,8 @@ namespace RequestReduce.ResourceTypes
 {
     public class CssResource : IResourceType
     {
-        private static readonly string cssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
-        private static readonly Regex CssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private const string CssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
+        private readonly Regex cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public string FileName
         {
@@ -21,12 +21,12 @@ namespace RequestReduce.ResourceTypes
 
         public string TransformedMarkupTag(string url)
         {
-            return string.Format(cssFormat, url);
+            return string.Format(CssFormat, url);
         }
 
         public Regex ResourceRegex
         {
-            get { return CssPattern; }
+            get { return cssPattern; }
         }
 
 

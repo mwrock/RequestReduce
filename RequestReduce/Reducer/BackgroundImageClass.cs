@@ -31,17 +31,12 @@ namespace RequestReduce.Reducer
 
     public class BackgroundImageClass
     {
-        private static readonly Regex imageUrlPattern = new Regex(@"background(-image)?:[\s\w#]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;}]*", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly Regex offsetPattern = new Regex(@"background(?:-position)?:(?:[^;]*?)(?<offset1>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;](?:(?<offset2>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?)))?[^;}]*", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly Regex repeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex widthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*[;}]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex heightPattern = new Regex(@"\b(max-)?height:[\s]*(?<height>[0-9]+)(px)?[\s]*[;}]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex paddingPattern = new Regex(@"padding(?<side>-(left|top|right|bottom))?:[\s]*(?<pad1>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;]((?<pad2>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?((?<pad3>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?((?<pad4>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.ExplicitCapture);
+        private static readonly RegexCache Regex = new RegexCache();
 
         public BackgroundImageClass(string originalClassString, string parentCssUrl)
         {
             OriginalClassString = originalClassString;
-            var match = imageUrlPattern.Match(originalClassString);
+            var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
             {
                 OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
@@ -51,22 +46,22 @@ namespace RequestReduce.Reducer
                     OriginalClassString = OriginalClassString.Replace(OriginalImageUrl, ImageUrl);
                 }
             }
-            var repeatMatch = repeatPattern.Matches(originalClassString);
+            var repeatMatch = Regex.RepeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
             {
                 Repeat = (RepeatStyle) Enum.Parse(typeof(RepeatStyle), repeatMatch[repeatMatch.Count-1].Value.Replace("-",""), true);
             }
-            var widthMatch = widthPattern.Matches(originalClassString);
+            var widthMatch = Regex.WidthPattern.Matches(originalClassString);
             if (widthMatch.Count > 0)
                 Width = Int32.Parse(widthMatch[widthMatch.Count - 1].Groups["width"].Value);
 
-            var heightMatch = heightPattern.Matches(originalClassString);
+            var heightMatch = Regex.HeightPattern.Matches(originalClassString);
             if (heightMatch.Count > 0)
                 Height = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
 
             if(Width != null || Height != null)
             {
-                var paddingMatches = paddingPattern.Matches(originalClassString);
+                var paddingMatches = Regex.PaddingPattern.Matches(originalClassString);
                 if (paddingMatches.Count > 0)
                 {
                     var padVals = new int[4];
@@ -98,7 +93,7 @@ namespace RequestReduce.Reducer
                 }
             }
 
-            var offsetMatches = offsetPattern.Matches(originalClassString);
+            var offsetMatches = Regex.OffsetPattern.Matches(originalClassString);
             if (offsetMatches.Count > 0)
             {
                 foreach (Match offsetMatch in offsetMatches)
