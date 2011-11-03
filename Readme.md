@@ -15,8 +15,8 @@ RequestReduce provides several [configuration options] (http://github.com/mwrock
 Assuming you are using IIS 7, you would add it by ensuring that your web.config's system.webServer/modules element contains an add element as follows:
 
     <system.webServer>
-        <modules runAllManagedModulesForAllRequests="true">
-            <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce, Version=1.0.0.0, Culture=neutral" />
+        <modules>
+            <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
         </modules>
     </system.webServer>
 
