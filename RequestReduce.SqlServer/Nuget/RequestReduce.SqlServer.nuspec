@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>RequestReduce.SqlServer</id>
-    <version>1.4.2</version>
+    <version>1.4.4</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -15,14 +15,13 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
-      * Add support for CSS Media attribute - wraps css in @medis braces<br/>
-      * Improved web.config transform no longer deletes existing config attributes<br/>
-      * Some perf olptimizations to Response Filter and better regex cache management<br/>
-      * Dashboard page located at http://mysite/RequestReduceContent/dashboard for troubleshooting, monitoring and flushing<br/>
-      * Fixes and improvements SqlServer flushing and content syncing<br/>
-    </releaseNotes>
+      * Add support for CSS Media attribute - wraps css in @medis braces
+      * Improved web.config transform no longer deletes existing config attributes
+      * Some perf olptimizations to Response Filter and better regex cache management
+      * Dashboard page located at http://mysite/RequestReduceContent/dashboard for troubleshooting, monitoring and flushing
+      * Fixes and improvements SqlServer flushing and content syncing<br /></releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.4.2" />
+      <dependency id="RequestReduce" version="1.4.4" />
       <dependency id="EntityFramework" version="4.1.10715.0" />
     </dependencies>
   </metadata>
