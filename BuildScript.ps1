@@ -154,7 +154,7 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
 
 task Update-Website-Download-Links {
 	 $downloadUrl="BuildFiles/RequestReduce-" + $version + ".zip"
-	 $downloadButtonUrlPatern="BuildFiles/RequestReduce[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
+	 $downloadButtonUrlPatern="BuildFiles/RequestReduce-[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
 	 $downloadLinkTextPattern="V[0-9]+(\.([0-9]+|\*)){1,3}"
 	 $filename = "$webDir\index.html"
      (Get-Content $filename) | % {$_ -replace $downloadButtonUrlPatern, $downloadUrl } | % {$_ -replace $downloadLinkTextPattern, ("v"+$version) } | Set-Content $filename
