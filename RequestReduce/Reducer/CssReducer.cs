@@ -62,6 +62,9 @@ namespace RequestReduce.Reducer
                 var importContent = webClientWrapper.DownloadString<CssResource>(absoluteUrl);
                 importContent = ProcessSprites(importContent, absoluteUrl);
                 importContent = ExpandImports(importContent, absoluteUrl);
+                var media = match.Groups["media"];
+                if (media != null)
+                    importContent = WrapMedia(importContent, media.Value);
                 cssContent = cssContent.Replace(match.ToString(), importContent);
             }
             return cssContent;

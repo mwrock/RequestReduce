@@ -210,6 +210,20 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillWrapImportedCssInMediaIfAMediaIsSpecified()
+            {
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css1.css")).Returns("@import url('css2.css') print,screen;");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
+
+                testable.ClassUnderTest.Process("http://host/css1.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>("@media print,screen {css2}"), Times.Once());
+            }
+
+            [Fact]
             public void WillResolveImagePathsOfImportedCss()
             {
                 var testable = new TestableCssReducer();
