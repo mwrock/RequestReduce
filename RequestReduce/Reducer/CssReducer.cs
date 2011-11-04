@@ -37,10 +37,19 @@ namespace RequestReduce.Reducer
 
         protected virtual string ProcessCss(string url)
         {
+            var urlParts = url.Split(new[] {'|'}, 2);
+            url = urlParts[0];
             var cssContent = webClientWrapper.DownloadString<CssResource>(url);
             cssContent = ProcessSprites(cssContent, url);
             cssContent = ExpandImports(cssContent, url);
+            if (urlParts.Length > 1)
+                cssContent = WrapMedia(cssContent, urlParts[1]);
             return cssContent;
+        }
+
+        private string WrapMedia(string cssContent, string media)
+        {
+            return string.Format("@media {0} {{{1}}}", media, cssContent);
         }
 
         private string ExpandImports(string cssContent, string parentUrl)

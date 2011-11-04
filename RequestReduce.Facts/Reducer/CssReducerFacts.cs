@@ -111,15 +111,22 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillRemoveMediaFromCSSUrl()
+            {
+                var testable = new TestableCssReducer();
+
+                testable.ClassUnderTest.Process("http://host/css1.css|print,screen::http://host/css2.css");
+
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<CssResource>("http://host/css1.css"), Times.Once());
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<CssResource>("http://host/css2.css"), Times.Once());
+            }
+
+            [Fact]
             public void WillSaveMinifiedAggregatedCSS()
             {
                 var testable = new TestableCssReducer();
-                var mockWebResponse = new Mock<WebResponse>();
-                mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("css1")));
-                var mockWebResponse2 = new Mock<WebResponse>();
-                mockWebResponse2.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("css2")));
-                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<CssResource>("http://host/css1.js")).Returns(mockWebResponse.Object);
-                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<CssResource>("http://host/css1.js")).Returns(mockWebResponse2.Object);
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css1.css")).Returns("css1");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
                 testable.Mock<IMinifier>().Setup(x => x.Minify<CssResource>("css1css2")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
@@ -128,6 +135,22 @@ namespace RequestReduce.Facts.Reducer
                     x =>
                     x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result,
                            "http://host/css1.css::http://host/css2.css"), Times.Once());
+            }
+
+            [Fact]
+            public void WillSaveMinifiedAggregatedCSSWrappedInMedia()
+            {
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css1.css")).Returns("css1");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<CssResource>("@media print,screen {css1}css2")).Returns("min");
+
+                var result = testable.ClassUnderTest.Process("http://host/css1.css|print,screen::http://host/css2.css");
+
+                testable.Mock<IStore>().Verify(
+                    x =>
+                    x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result,
+                           "http://host/css1.css|print,screen::http://host/css2.css"), Times.Once());
             }
 
             [Fact]

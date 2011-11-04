@@ -126,7 +126,7 @@ namespace RequestReduce.Facts.Reducer
                 mockWebResponse2.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("js2")));
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js2.js")).Returns(mockWebResponse2.Object);
-                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("js1\rnjs2\r\n")).Returns("min");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("js1\r\njs2\r\n")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 

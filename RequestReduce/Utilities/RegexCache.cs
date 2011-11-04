@@ -12,5 +12,6 @@ namespace RequestReduce.Utilities
         internal readonly Regex PaddingPattern = new Regex(@"padding(?<side>-(left|top|right|bottom))?:[\s]*(?<pad1>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;]((?<pad2>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?((?<pad3>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?((?<pad4>(?:\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;])?", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.ExplicitCapture);
         internal readonly Regex CssImportPattern = new Regex(@"@import[\s]+url[\s]*\([\s]*['""]?(?<url>[^'"" ]+)['""]?[\s]*\)[\s]*?;", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         internal readonly Regex UrlPattern = new Regex(@"(href|src)=['""]?(?<url>[^'"" ]+)['""]?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        internal readonly Regex MediaPattern = new Regex(@"media=['""]?(?<media>[^'"" ]+)['""]?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     }
 }

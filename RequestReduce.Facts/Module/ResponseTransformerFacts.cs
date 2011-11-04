@@ -436,6 +436,25 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css::http://server/Me2.css::")), Times.Once());
             }
 
+            [Fact]
+            public void WillQueueCssUrlsAppendingMediaIfRepoReturnsNull()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head>
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" media=""print,screen""/>
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(
+                    x => x.FindReduction("http://server/Me.css|print,screen::http://server/Me2.css::"));
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                testable.ClassUnderTest.Transform(transform);
+
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css|print,screen::http://server/Me2.css::")), Times.Once());
+            }
+
         }
     }
 }

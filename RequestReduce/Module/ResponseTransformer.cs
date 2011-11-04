@@ -49,16 +49,18 @@ namespace RequestReduce.Module
                 var transformableMatches = new List<string>();
                 foreach (var match in matches)
                 {
-                    var urlMatch = Regex.UrlPattern.Match(match.ToString());
+                    var strMatch = match.ToString();
+                    var urlMatch = Regex.UrlPattern.Match(strMatch);
                     bool matched = false;
                     if (urlMatch.Success)
                     {
-                        if (resource.TagValidator == null || resource.TagValidator(match.ToString(), urlMatch.Groups["url"].Value))
+                        if (resource.TagValidator == null || resource.TagValidator(strMatch, urlMatch.Groups["url"].Value))
                         {
                             matched = true;
                             urls.Append(RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value));
+                            urls.Append(GetMedia(strMatch));
                             urls.Append("::");
-                            transformableMatches.Add(match.ToString());
+                            transformableMatches.Add(strMatch);
                         }
                     }
                     if (!matched && transformableMatches.Count > 0)
@@ -76,6 +78,14 @@ namespace RequestReduce.Module
                 }
             }
             return preTransform;
+        }
+
+        private string GetMedia(string strMatch)
+        {
+            var mediaMatch = Regex.MediaPattern.Match(strMatch);
+            if (mediaMatch.Success)
+                return "|" + mediaMatch.Groups["media"].Value;
+            return null;
         }
 
         private string DoTransform<T>(string preTransform, StringBuilder urls, List<string> transformableMatches) where T : IResourceType

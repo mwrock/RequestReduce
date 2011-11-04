@@ -9,12 +9,12 @@ namespace RequestReduce.Facts
     {
         public static T[] MatchEnumerable<T>(this T[] enumerable)
         {
-            return Match.Create<T[]>(x => (enumerable.All(x.Contains)));
+            return Match.Create<T[]>(x => (enumerable.SequenceEqual(x)));
         }
 
         public static IEnumerable<T> MatchEnumerable<T>(this IEnumerable<T> enumerable)
         {
-            return Match.Create<IEnumerable<T>>(x => (enumerable.All(x.Contains)));
+            return Match.Create<IEnumerable<T>>(x => (enumerable.SequenceEqual(x)));
         }
     }
 }
