@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>RequestReduce.SqlServer</id>
-    <version>1.4.4</version>
+    <version>1.4.5</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -19,9 +19,10 @@
       * Improved web.config transform no longer deletes existing config attributes
       * Some perf olptimizations to Response Filter and better regex cache management
       * Dashboard page located at http://mysite/RequestReduceContent/dashboard for troubleshooting, monitoring and flushing
-      * Fixes and improvements SqlServer flushing and content syncing<br /></releaseNotes>
+      * Fixes and improvements SqlServer flushing and content syncing
+    </releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.4.4" />
+      <dependency id="RequestReduce" version="1.4.5" />
       <dependency id="EntityFramework" version="4.1.10715.0" />
     </dependencies>
   </metadata>
