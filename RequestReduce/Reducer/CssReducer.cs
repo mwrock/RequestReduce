@@ -63,7 +63,7 @@ namespace RequestReduce.Reducer
                 importContent = ProcessSprites(importContent, absoluteUrl);
                 importContent = ExpandImports(importContent, absoluteUrl);
                 var media = match.Groups["media"];
-                if (media != null)
+                if (media.Success)
                     importContent = WrapMedia(importContent, media.Value);
                 cssContent = cssContent.Replace(match.ToString(), importContent);
             }
