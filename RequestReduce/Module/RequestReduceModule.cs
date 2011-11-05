@@ -144,6 +144,8 @@ namespace RequestReduce.Module
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();
             var sig = RRContainer.Current.GetInstance<IUriBuilder>().ParseSignature(url);
+            if (sig == Guid.Empty.RemoveDashes())
+                return;
             if (sig == httpContextWrapper.Request.Headers["If-None-Match"] || store.SendContent(url, httpContextWrapper.Response))
             {
                 httpContextWrapper.Response.Cache.SetETag(string.Format(@"""{0}""", sig));
@@ -201,6 +203,5 @@ namespace RequestReduce.Module
         }
 
         public static Action<Exception> CaptureErrorAction { get; set; }
-
     }
 }
