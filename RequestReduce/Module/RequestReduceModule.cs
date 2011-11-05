@@ -167,6 +167,8 @@ namespace RequestReduce.Module
         {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var rrPath = config.SpriteVirtualPath;
+            if (!rrPath.EndsWith("/"))
+                rrPath = rrPath + "/";
             var url = httpContextWrapper.Request.RawUrl;
             if(rrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 url = httpContextWrapper.Request.Url.AbsoluteUri;

@@ -371,10 +371,10 @@ namespace RequestReduce.Facts.Module
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/sprite1.png", "image/png", true)]
-        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", "text/css", true)]
-        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedScript.js", "application/x-javascript", true)]
-        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a/RequestReducedStyle.css", null, false)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a-sprite1.png", "image/png", true)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a-RequestReducedStyle.css", "text/css", true)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a-RequestReducedScript.js", "application/x-javascript", true)]
+        [InlineData("/RRContent/f5623565-7406-5742-1d87-5131b8f5ce3a-RequestReducedStyle.css", null, false)]
         public void WillCorrectlySetContentType(string path, string contentType, bool contentInStore)
         {
             var module = new RequestReduceModule();
@@ -631,6 +631,30 @@ namespace RequestReduce.Facts.Module
 
             store.Verify(x => x.Flush(It.IsAny<Guid>()), Times.Never());
             Assert.Equal(401, response.Object.StatusCode);
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillNotHandleRequestsNotInMyDirectory()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContents/someresource");
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            var store = new Mock<IStore>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRContent(context.Object);
+
+            store.Verify(x => x.SendContent(It.IsAny<string>(), It.IsAny<HttpResponseBase>()), Times.Never());
             RRContainer.Current = null;
         }
 
