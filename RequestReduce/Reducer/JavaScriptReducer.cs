@@ -14,10 +14,12 @@ namespace RequestReduce.Reducer
     public class JavaScriptReducer : HeadResourceReducerBase<JavaScriptResource>
     {
         private readonly IRRConfiguration config;
+        private readonly IResponseDecoder responseDecoder;
 
-        public JavaScriptReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder, IRRConfiguration config) : base(webClientWrapper, store, minifier, uriBuilder)
+        public JavaScriptReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder, IRRConfiguration config, IResponseDecoder responseDecoder) : base(webClientWrapper, store, minifier, uriBuilder)
         {
             this.config = config;
+            this.responseDecoder = responseDecoder;
         }
 
         protected override string ProcessResource(Guid key, IEnumerable<string> urls)
@@ -74,9 +76,12 @@ namespace RequestReduce.Reducer
                 {
                     if (responseStream != null)
                     {
-                        using (var streameader = new StreamReader(responseStream, Encoding.UTF8))
+                        using (var streamDecoder = responseDecoder.GetDecodableStream(responseStream, response.Headers["Content-Encoding"]))
                         {
-                            jsContent = streameader.ReadToEnd();
+                            using (var streameader = new StreamReader(streamDecoder, Encoding.UTF8))
+                            {
+                                jsContent = streameader.ReadToEnd();
+                            }
                         }
                     }
                 }

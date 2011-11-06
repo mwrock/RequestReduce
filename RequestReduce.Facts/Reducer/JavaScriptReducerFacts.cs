@@ -24,6 +24,7 @@ namespace RequestReduce.Facts.Reducer
                 Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>(It.IsAny<string>())).Returns("minified");
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
+                Inject<IResponseDecoder>(new ResponseDecoder());
                 Mock<IRRConfiguration>().Setup(x => x.JavaScriptUrlsToIgnore).Returns(string.Empty);
                 var mockWebResponse = new Mock<WebResponse>();
                 mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection());
@@ -293,6 +294,63 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.Null(ex);
             }
+
+            [Fact]
+            public void WillDecodeGZipedResponse()
+            {
+                var testable = new TestableJavaScriptReducer();
+                var mockWebResponse = new Mock<WebResponse>();
+                var ms = new MemoryStream();
+                var stream =
+                    new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionMode.Compress);
+                stream.Write(new UTF8Encoding().GetBytes("my response"), 0, "my response".Length);
+                stream.Close();
+                var encodedArray = ms.ToArray();
+                ms.Close();
+                stream.Dispose();
+                ms.Dispose();
+                mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(encodedArray));
+                mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection() { { "Content-Encoding", "gzip" } });
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("my response\r\n")).Returns("min");
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js::");
+
+                testable.Mock<IStore>().Verify(
+                    x =>
+                    x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result,
+                           "http://host/js1.js::"), Times.Once());
+                ms.Dispose();
+            }
+
+            [Fact]
+            public void WillDecodeDeflateResponse()
+            {
+                var testable = new TestableJavaScriptReducer();
+                var mockWebResponse = new Mock<WebResponse>();
+                var ms = new MemoryStream();
+                var stream =
+                    new System.IO.Compression.DeflateStream(ms, System.IO.Compression.CompressionMode.Compress);
+                stream.Write(new UTF8Encoding().GetBytes("my response"), 0, "my response".Length);
+                stream.Close();
+                var encodedArray = ms.ToArray();
+                ms.Close();
+                stream.Dispose();
+                ms.Dispose();
+                mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(encodedArray));
+                mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection() { { "Content-Encoding", "deflate" } });
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("my response\r\n")).Returns("min");
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js::");
+
+                testable.Mock<IStore>().Verify(
+                    x =>
+                    x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result,
+                           "http://host/js1.js::"), Times.Once());
+                ms.Dispose();
+            }
+
         }
     }
 }

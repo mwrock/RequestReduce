@@ -93,6 +93,7 @@
     <Compile Include="Reducer\IReducer.cs" />
     <Compile Include="Reducer\ISpriteContainer.cs" />
     <Compile Include="Reducer\ISpriteManager.cs" />
+    <Compile Include="Utilities\ResponseDecoder.cs" />
     <Compile Include="Utilities\Minifier.cs" />
     <Compile Include="Reducer\SpriteContainer.cs" />
     <Compile Include="Reducer\SpriteWriter.cs" />

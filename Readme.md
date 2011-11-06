@@ -14,11 +14,17 @@ RequestReduce provides several [configuration options] (http://github.com/mwrock
 
 Assuming you are using IIS 7, you would add it by ensuring that your web.config's system.webServer/modules element contains an add element as follows:
 
+    <system.web>
+      <httpModules>
+        <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
+      </httpModules>
+    </system.web>
     <system.webServer>
-        <modules>
-            <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
-        </modules>
-    </system.webServer>
+      <validation validateIntegratedModeConfiguration="false"/>  
+		<modules>
+          <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
+		</modules>
+	</system.webServer>
 
 **All background images you want to sprite [must have an explicit width in their css class] (http://github.com/mwrock/RequestReduce/wiki/Can-I-make-changes-to-my-CSS-classes-to-optimize-RequestReduce-spriting%3F).** Otherwise RequestReduce cannot guarantee that the background positions it injects will not cause adjacent sprites to bleed into a background image's view port. Also, RequestReduce will ignore repeating images so make sure to mark the image **no-repeat** if it is not a repeating image.
 
