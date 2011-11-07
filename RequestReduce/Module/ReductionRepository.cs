@@ -59,6 +59,8 @@ namespace RequestReduce.Module
             finally
             {
                 HasLoadedSavedEntries = true;
+                if (configuration.StorePollInterval == Timeout.Infinite && refresher != null)
+                    refresher.Dispose();
             }
         }
 

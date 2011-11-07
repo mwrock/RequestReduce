@@ -44,16 +44,14 @@ namespace RequestReduce.Facts.Integration
         {
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
             WaitToCreateResources();
-            Thread.Sleep(0);
-            Thread.Sleep(5000);
-            Thread.Sleep(0);
+            Thread.Sleep(2000);
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
             WaitToCreateResources(1, 4);
             var response = new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
 
             Assert.Equal(5, new JavaScriptResource().ResourceRegex.Matches(response).Count);
             Assert.Equal(5, response.Split(new[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
-            Assert.Contains("www.google-analytics.com", response);
+            Assert.Contains("nearFuture.js", response);
         }
 
         [OutputTraceOnFailFact]

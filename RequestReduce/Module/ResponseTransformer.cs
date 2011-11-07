@@ -54,10 +54,11 @@ namespace RequestReduce.Module
                     bool matched = false;
                     if (urlMatch.Success)
                     {
-                        if (resource.TagValidator == null || resource.TagValidator(strMatch, urlMatch.Groups["url"].Value))
+                        var url = RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value);
+                        if (resource.TagValidator == null || resource.TagValidator(strMatch, url))
                         {
                             matched = true;
-                            urls.Append(RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value));
+                            urls.Append(url);
                             urls.Append(GetMedia(strMatch));
                             urls.Append("::");
                             transformableMatches.Add(strMatch);
