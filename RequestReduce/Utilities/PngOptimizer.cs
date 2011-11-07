@@ -56,7 +56,6 @@ namespace RequestReduce.Utilities
                         var arg = String.Format(@"-fix -o{1} ""{0}""", scratchFile, compressionLevel);
                         InvokeExecutable(arg, optiPngLocation);
                         optimizedBytes = fileWrapper.GetFileBytes(scratchFile);
-                        fileWrapper.DeleteFile(scratchFile);
                     }
                     finally
                     {
