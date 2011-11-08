@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,6 +57,16 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Api\CssFilter.cs" />
+    <Compile Include="Api\CssJsFilterContext.cs" />
+    <Compile Include="Api\IFilter.cs" />
+    <Compile Include="Api\IFilterContext.cs" />
+    <Compile Include="Api\JavascriptFilter.cs" />
+    <Compile Include="Api\PageFilter.cs" />
+    <Compile Include="Api\PageFilterContext.cs" />
+    <Compile Include="Api\Registry.cs" />
+    <Compile Include="Api\SpriteFilter.cs" />
+    <Compile Include="Api\SpriteFilterContext.cs" />
     <Compile Include="Configuration\RequestReduceConfigSection.cs" />
     <Compile Include="IOC\RRContainer.cs" />
     <Compile Include="IOC\RRHttpContextLifecycle.cs" />

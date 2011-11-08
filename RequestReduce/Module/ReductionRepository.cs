@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Store;
@@ -53,8 +54,8 @@ namespace RequestReduce.Module
             }
             catch (Exception ex)
             {
-                if (RequestReduceModule.CaptureErrorAction != null)
-                    RequestReduceModule.CaptureErrorAction(ex);
+                if (Registry.CaptureErrorAction != null)
+                    Registry.CaptureErrorAction(ex);
             }
             finally
             {

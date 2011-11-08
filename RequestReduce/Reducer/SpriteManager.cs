@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -47,8 +48,8 @@ namespace RequestReduce.Reducer
                     new ApplicationException(message, ex);
                 RRTracer.Trace(message);
                 RRTracer.Trace(ex.ToString());
-                if (RequestReduceModule.CaptureErrorAction != null)
-                    RequestReduceModule.CaptureErrorAction(wrappedException);
+                if (Registry.CaptureErrorAction != null)
+                    Registry.CaptureErrorAction(wrappedException);
                 return;
             }
             spriteList.Add(imageKey, spritedImage);
@@ -79,8 +80,8 @@ namespace RequestReduce.Reducer
                     {
                         optBytes = bytes;
                         RRTracer.Trace(string.Format("Errors optimizing {0}. Received Error: {1}", SpritedCssKey, optEx.Message));
-                        if (RequestReduceModule.CaptureErrorAction != null)
-                            RequestReduceModule.CaptureErrorAction(optEx);
+                        if (Registry.CaptureErrorAction != null)
+                            Registry.CaptureErrorAction(optEx);
                     }
                     var url = GetSpriteUrl(optBytes);
                     store.Save(optBytes, url, null);

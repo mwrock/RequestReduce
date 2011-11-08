@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using System.Web;
+using RequestReduce.Api;
 using RequestReduce.Utilities;
 using System;
 using RequestReduce.ResourceTypes;
@@ -55,7 +56,7 @@ namespace RequestReduce.Module
                     if (urlMatch.Success)
                     {
                         var url = RelativeToAbsoluteUtility.ToAbsolute(context.Request.Url, urlMatch.Groups["url"].Value);
-                        if (resource.TagValidator == null || resource.TagValidator(strMatch, url))
+                        if ((resource.TagValidator == null || resource.TagValidator(strMatch, url)) && (RRContainer.Current.GetAllInstances<IFilter>().Where(x => (x is CssFilter && typeof(T) == typeof(CssResource)) || (x is JavascriptFilter && typeof(T) == typeof(JavaScriptResource))).FirstOrDefault(y => y.IgnoreTarget(new CssJsFilterContext(context.Request, url, strMatch))) == null))
                         {
                             matched = true;
                             urls.Append(url);

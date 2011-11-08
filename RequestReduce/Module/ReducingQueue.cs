@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using RequestReduce.Api;
 using RequestReduce.IOC;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
@@ -139,8 +140,8 @@ namespace RequestReduce.Module
                     dictionaryOfFailure[key] += 1;
                 else
                     dictionaryOfFailure.Add(key, 1);
-                if (RequestReduceModule.CaptureErrorAction != null)
-                    RequestReduceModule.CaptureErrorAction(wrappedException);
+                if (Registry.CaptureErrorAction != null)
+                    Registry.CaptureErrorAction(wrappedException);
             }
             finally
             {

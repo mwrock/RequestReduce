@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\RegistryFacts.cs" />
     <Compile Include="BitmapPixelComparer.cs" />
     <Compile Include="MatchExtensions.cs" />
     <Compile Include="Reducer\BackgroundImageClassFacts.cs" />

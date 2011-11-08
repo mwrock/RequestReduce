@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using Moq;
+using RequestReduce.Api;
 using RequestReduce.Module;
 using Xunit;
 using RequestReduce.ResourceTypes;
@@ -16,6 +17,24 @@ namespace RequestReduce.Facts.Module
         {
             public TestableResponseTransformer()
             {
+            }
+        }
+
+        class MyCssFilter : CssFilter
+        {
+            public override bool IgnoreTarget(CssJsFilterContext context)
+            {
+                if (context.FilteredUrl.Contains("3")) return true;
+                return false;
+            }
+        }
+
+        class MyJavascriptFilter : JavascriptFilter
+        {
+            public override bool IgnoreTarget(CssJsFilterContext context)
+            {
+                if (context.FilteredUrl.Contains("ignore")) return true;
+                return false;
             }
         }
 
@@ -252,6 +271,60 @@ namespace RequestReduce.Facts.Module
                 var config = new Mock<IRRConfiguration>();
                 config.Setup(x => x.JavaScriptUrlsToIgnore).Returns("server/Ignore, server/alsoignore");
                 RRContainer.Current = new Container(x =>x.For<IRRConfiguration>().Use(config.Object));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotTransformScriptsIgnoredByFilter()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
+<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/alsoignore/Me.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                var transformed = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
+
+<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/alsoignore/Me.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+                Registry.AddFilter<MyJavascriptFilter>();
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotTransformCssIgnoredByFilter()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
+                ";
+                var transformed = @"<head id=""Head1""><link href=""http://server/Me4.css"" rel=""Stylesheet"" type=""text/css"" />
+
+
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me4.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+                Registry.AddFilter<MyCssFilter>();
 
                 var result = testable.ClassUnderTest.Transform(transform);
 

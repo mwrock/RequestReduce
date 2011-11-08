@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Collections.Concurrent;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.Module;
 using RequestReduce.Store;
@@ -36,8 +37,8 @@ namespace RequestReduce.SqlServer
                 }
                 catch (Exception ex)
                 {
-                    if (RequestReduceModule.CaptureErrorAction != null)
-                       RequestReduceModule.CaptureErrorAction(ex);
+                    if (Registry.CaptureErrorAction != null)
+                        Registry.CaptureErrorAction(ex);
                 }
             }
         }

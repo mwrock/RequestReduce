@@ -10,6 +10,7 @@ using StructureMap;
 using Xunit;
 using RequestReduce.Store;
 using RequestReduce.ResourceTypes;
+using RequestReduce.Api;
 
 namespace RequestReduce.Facts.Module
 {
@@ -316,7 +317,7 @@ namespace RequestReduce.Facts.Module
                 var testable = new TestableReducingQueue();
                 Exception error = null;
                 var innerError = new ApplicationException();
-                RequestReduceModule.CaptureErrorAction = (x => error= x);
+                Registry.CaptureErrorAction = (x => error= x);
                 testable.MockedReducer.Setup(x => x.SupportedResourceType).Returns(typeof(CssResource));
                 testable.MockedReducer.Setup(x => x.Process(It.IsAny<Guid>(), "url")).Throws(innerError);
                 testable.ClassUnderTest.Enqueue(new QueueItem<CssResource> { Urls = "url" });

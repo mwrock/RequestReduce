@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.IO;
 using Moq;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
@@ -477,7 +478,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 var exception = new OptimizationException("Appropriately friendly error message");
                 Exception error = null;
-                RequestReduceModule.CaptureErrorAction = (x => error = x);
+                Registry.CaptureErrorAction = (x => error = x);
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationCompressionLevel).Returns(2);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);

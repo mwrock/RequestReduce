@@ -4,9 +4,8 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
-using RequestReduce.Module;
-using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
 namespace RequestReduce.SqlServer
@@ -76,8 +75,8 @@ namespace RequestReduce.SqlServer
                             throw exception;
                     }
                 }
-                if (RequestReduceModule.CaptureErrorAction != null && exception != null)
-                    RequestReduceModule.CaptureErrorAction(exception);
+                if (Registry.CaptureErrorAction != null && exception != null)
+                    Registry.CaptureErrorAction(exception);
             }
             catch(Exception)
             {

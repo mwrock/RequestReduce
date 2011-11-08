@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Web;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Properties;
@@ -197,11 +198,7 @@ namespace RequestReduce.Module
             RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
         }
 
-        public static int QueueCount
-        {
-            get { return RRContainer.Current.GetInstance<IReducingQueue>().Count; }
-        }
-
-        public static Action<Exception> CaptureErrorAction { get; set; }
+        [Obsolete("Use RequestReduce.Registry.CaptureErrorAction")]
+        public static Action<Exception> CaptureErrorAction { set { Registry.CaptureErrorAction = value; } }
     }
 }

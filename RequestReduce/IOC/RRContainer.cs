@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 using RequestReduce.Utilities;
-using StructureMap.Exceptions;
 using StructureMap.Pipeline;
 using nQuant;
 using RequestReduce.Configuration;
@@ -88,35 +87,28 @@ namespace RequestReduce.IOC
             var store = initContainer.GetInstance<IRRConfiguration>().ContentStore;
             if (store == Configuration.Store.SqlServerStore)
             {
-                try
-                {
-                    var sqlAssembly = Assembly.Load("RequestReduce.SqlServer");
-                    initContainer.Configure(x => 
-                                                {
-                                                    x.For(sqlAssembly.GetType("RequestReduce.SqlServer.IFileRepository"))
-                                                        .Use(
-                                                            sqlAssembly.GetType(
-                                                                "RequestReduce.SqlServer.FileRepository"));
-                                                    x.For(sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache"))
-                                                        .Singleton();
-                                                    var diskStore =
-                                                        new ConfiguredInstance(
-                                                            sqlAssembly.GetType("RequestReduce.SqlServer.SqlServerStore"));
-                                                    diskStore.CtorDependency<IStore>("fileStore").Is(
-                                                        new ConfiguredInstance(
-                                                            sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache")));
-                                                    diskStore.CtorDependency<IUriBuilder>("uriBuilder").Is(
-                                                        initContainer.GetInstance<IUriBuilder>());
-                                                    diskStore.CtorDependency<IReductionRepository>("reductionRepository").Is(
-                                                        initContainer.GetInstance<IReductionRepository>());
-                                                    x.For<IStore>().LifecycleIs(new RRHybridLifecycle())
-                                                        .Use(diskStore);
-                                                });
-                }
-                catch
-                {
-                    throw;
-                }
+                var sqlAssembly = Assembly.Load("RequestReduce.SqlServer");
+                initContainer.Configure(x => 
+                                            {
+                                                x.For(sqlAssembly.GetType("RequestReduce.SqlServer.IFileRepository"))
+                                                    .Use(
+                                                        sqlAssembly.GetType(
+                                                            "RequestReduce.SqlServer.FileRepository"));
+                                                x.For(sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache"))
+                                                    .Singleton();
+                                                var diskStore =
+                                                    new ConfiguredInstance(
+                                                        sqlAssembly.GetType("RequestReduce.SqlServer.SqlServerStore"));
+                                                diskStore.CtorDependency<IStore>("fileStore").Is(
+                                                    new ConfiguredInstance(
+                                                        sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache")));
+                                                diskStore.CtorDependency<IUriBuilder>("uriBuilder").Is(
+                                                    initContainer.GetInstance<IUriBuilder>());
+                                                diskStore.CtorDependency<IReductionRepository>("reductionRepository").Is(
+                                                    initContainer.GetInstance<IReductionRepository>());
+                                                x.For<IStore>().LifecycleIs(new RRHybridLifecycle())
+                                                    .Use(diskStore);
+                                            });
             }
             else
                 initContainer.Configure(x => x.AddRegistry<RRLocalStoreRegistry>());
