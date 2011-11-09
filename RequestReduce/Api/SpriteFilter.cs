@@ -1,11 +1,9 @@
+using System;
+
 namespace RequestReduce.Api
 {
-    public abstract class SpriteFilter : IFilter
+    public class SpriteFilter : Filter<SpriteFilterContext>
     {
-        public abstract bool IgnoreTarget(SpriteFilterContext context);
-        public bool IgnoreTarget(IFilterContext context)
-        {
-            return IgnoreTarget(context as SpriteFilterContext);
-        }
+        public SpriteFilter(Predicate<SpriteFilterContext> test) : base(test) { }
     }
 }

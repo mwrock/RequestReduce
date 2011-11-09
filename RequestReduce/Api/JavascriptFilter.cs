@@ -1,11 +1,9 @@
+using System;
+
 namespace RequestReduce.Api
 {
-    public abstract class JavascriptFilter : IFilter
+    public class JavascriptFilter : Filter<CssJsFilterContext>
     {
-        public abstract bool IgnoreTarget(CssJsFilterContext context);
-        public bool IgnoreTarget(IFilterContext context)
-        {
-            return IgnoreTarget(context as CssJsFilterContext);
-        }
+        public JavascriptFilter(Predicate<CssJsFilterContext> test) : base(test) { }
     }
 }

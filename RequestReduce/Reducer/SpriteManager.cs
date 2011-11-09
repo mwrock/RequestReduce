@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.Module;
@@ -34,9 +35,9 @@ namespace RequestReduce.Reducer
         public virtual void Add(BackgroundImageClass image)
         {
             var imageKey = new ImageMetadata(image);
-            if (spriteList.ContainsKey(imageKey))
+            if (RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is SpriteFilter).FirstOrDefault(y => y.IgnoreTarget(new SpriteFilterContext(image))) != null || spriteList.ContainsKey(imageKey))
                 return;
-            SpritedImage spritedImage = null;
+            SpritedImage spritedImage;
             try
             {
                 spritedImage = SpriteContainer.AddImage(image);

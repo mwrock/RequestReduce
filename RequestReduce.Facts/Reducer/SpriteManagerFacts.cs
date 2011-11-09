@@ -145,6 +145,18 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillNotAddImageToSpriteContainerIfTheRegistryFiltersIt()
+            {
+                var testable = new TestableSpriteManager();
+                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "", Width = 110};
+                Registry.AddFilter(new SpriteFilter(x => x.BackgroundImage.Width > 100));
+
+                testable.ClassUnderTest.Add(image);
+
+                testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(image), Times.Never());
+            }
+
+            [Fact]
             public void WillSwallowInvalidOperationException()
             {
                 var testable = new TestableSpriteManager();

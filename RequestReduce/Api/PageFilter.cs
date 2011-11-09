@@ -1,11 +1,11 @@
+using System;
+
 namespace RequestReduce.Api
 {
-    public abstract class PageFilter : IFilter
+    public class PageFilter : Filter<PageFilterContext>
     {
-        public abstract bool IgnoreTarget(PageFilterContext context);
-        public bool IgnoreTarget(IFilterContext context)
+        public PageFilter(Predicate<PageFilterContext> pageTest) : base(pageTest)
         {
-            return IgnoreTarget(context as PageFilterContext);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Web;
 using Moq;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Module;
@@ -18,7 +19,6 @@ namespace RequestReduce.Facts.Module
 {
     public class RequestReduceModuleFacts : IDisposable
     {
-
         [Fact]
         public void WillSetResponseFilterOnce()
         {
@@ -155,6 +155,31 @@ namespace RequestReduce.Facts.Module
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
             });
+
+            module.InstallFilter(context.Object);
+
+            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillNotSetResponseFilterIfPageFilterIgnoresTarget()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Response.ContentType).Returns("text/html");
+            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
+            Registry.AddFilter(new PageFilter(x => x.HttpRequest.RawUrl.Contains("blah")));
 
             module.InstallFilter(context.Object);
 

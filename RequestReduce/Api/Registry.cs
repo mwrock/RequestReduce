@@ -14,6 +14,12 @@ namespace RequestReduce.Api
 
             RRContainer.Current.Configure(x => x.For<IMinifier>().Use(minifier));
         }
+        public static void AddFilter(IFilter filter)
+        {
+            if (!RRContainer.Current.GetAllInstances<IFilter>().Contains(filter))
+                RRContainer.Current.Configure(x => x.For<IFilter>().Add(filter));
+        }
+
         public static void AddFilter<T>() where T : IFilter, new()
         {
             RRContainer.Current.Configure(x => x.For<IFilter>().Singleton().Add<T>());

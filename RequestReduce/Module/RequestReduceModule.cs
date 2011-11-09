@@ -6,6 +6,7 @@ using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Properties;
+using RequestReduce.ResourceTypes;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
@@ -188,6 +189,7 @@ namespace RequestReduce.Module
                 (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
                 (config.CssProcesingDisabled && config.JavaScriptProcesingDisabled) ||
                 request.RawUrl == "/favicon.ico" || 
+                RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is PageFilter).FirstOrDefault(y => y.IgnoreTarget(new PageFilterContext(context.Request))) != null ||
                 IsInRRContentDirectory(context))
                 return;
 

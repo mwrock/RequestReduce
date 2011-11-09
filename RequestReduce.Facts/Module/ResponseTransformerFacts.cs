@@ -20,24 +20,6 @@ namespace RequestReduce.Facts.Module
             }
         }
 
-        class MyCssFilter : CssFilter
-        {
-            public override bool IgnoreTarget(CssJsFilterContext context)
-            {
-                if (context.FilteredUrl.Contains("3")) return true;
-                return false;
-            }
-        }
-
-        class MyJavascriptFilter : JavascriptFilter
-        {
-            public override bool IgnoreTarget(CssJsFilterContext context)
-            {
-                if (context.FilteredUrl.Contains("ignore")) return true;
-                return false;
-            }
-        }
-
         public class Transform
         {
             [Fact]
@@ -300,7 +282,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
-                Registry.AddFilter<MyJavascriptFilter>();
+                Registry.AddFilter(new JavascriptFilter(x => x.FilteredUrl.Contains("ignore")));
 
                 var result = testable.ClassUnderTest.Transform(transform);
 
@@ -324,7 +306,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me4.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
-                Registry.AddFilter<MyCssFilter>();
+                Registry.AddFilter(new CssFilter(x => x.FilteredUrl.Contains("3")));
 
                 var result = testable.ClassUnderTest.Transform(transform);
 

@@ -11,11 +11,16 @@ namespace RequestReduce.Facts.Api
     {
         class TestFilter : CssFilter
         {
+            public TestFilter() : base(null)
+            {
+            }
+
             public override bool IgnoreTarget(CssJsFilterContext context)
             {
                 return false;
             }
         }
+
         [Fact]
         public void WillThrowArgumentNullExceptionIfPassedNull()
         {

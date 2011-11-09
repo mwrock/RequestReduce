@@ -1,5 +1,6 @@
 ﻿<%@ Application Language="C#" %>
 <%@ Import Namespace="RequestReduce" %>
+<%@ Import Namespace="RequestReduce.Api" %>
 <%@ Import Namespace="RequestReduce.Configuration" %>
 <%@ Import Namespace="RequestReduce.Module" %>
 <%@ Import Namespace="System.IO" %>
@@ -20,6 +21,7 @@
         {
             SetupTracing();
         }
+        Registry.AddFilter(new PageFilter(x => x.HttpRequest.QueryString["triggerPageFilter"] != null));
         RRTracer.Trace("Application Starting.");
     }
 
