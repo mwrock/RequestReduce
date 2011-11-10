@@ -136,6 +136,32 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillAutoCorrectWidthIfWidthAndOffsetAreGreaterThanOriginal()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "url1", Width = 10, XOffset = new Position(){PositionMode = PositionMode.Unit, Offset = -10}};
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                Assert.Equal(11, testable.ClassUnderTest.Width);
+            }
+
+            [Fact]
+            public void WillAutoCorrectHeightIfHeightAndOffsetAreGreaterThanOriginal()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "url1", Height = 10, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = -10 } };
+                testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
+                    testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                Assert.Equal(10, testable.ClassUnderTest.Height);
+            }
+
+            [Fact]
             public void WillClipLeftEdgeOfBackgroundClassWhenOffsetIsNegative()
             {
                 var testable = new TestableSpriteContainer();

@@ -28,19 +28,19 @@ namespace RequestReduce.Reducer
         {
             var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
             Bitmap bitmap;
+
             using (var originalBitmap = new Bitmap(new MemoryStream(imageBytes)))
             {
                 using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height))
                 {
-                    var width = image.Width ?? originalBitmap.Width;
-                    if (width > originalBitmap.Width)
-                        width = originalBitmap.Width;
-                    var height = image.Height ?? originalBitmap.Height;
-                    if (height > originalBitmap.Height)
-                        height = originalBitmap.Height;
                     var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0;
                     var y = image.YOffset.Offset < 0 ? Math.Abs(image.YOffset.Offset) : 0;
-
+                    var width = image.Width ?? originalBitmap.Width;
+                    if (width + x > originalBitmap.Width)   
+                        width = originalBitmap.Width - x;
+                    var height = image.Height ?? originalBitmap.Height;
+                    if (height + y > originalBitmap.Height)
+                        height = originalBitmap.Height - y;
                     try
                     {
                         using (var bm = originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat))
