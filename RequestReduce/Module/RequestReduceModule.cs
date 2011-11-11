@@ -201,6 +201,10 @@ namespace RequestReduce.Module
         }
 
         [Obsolete("Use RequestReduce.Registry.CaptureErrorAction")]
-        public static Action<Exception> CaptureErrorAction { set { Registry.CaptureErrorAction = value; } }
+        public static Action<Exception> CaptureErrorAction
+        {
+            set { Registry.CaptureErrorAction = value; }
+            get { return Registry.CaptureErrorAction;  }
+        }
     }
 }
