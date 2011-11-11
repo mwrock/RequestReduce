@@ -200,7 +200,7 @@ namespace RequestReduce.Module
             RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
         }
 
-        [Obsolete("Use RequestReduce.Registry.CaptureErrorAction")]
+        [Obsolete("Use RequestReduce.Api.Registry.CaptureErrorAction")]
         public static Action<Exception> CaptureErrorAction
         {
             set { Registry.CaptureErrorAction = value; }
