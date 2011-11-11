@@ -46,6 +46,17 @@ namespace RequestReduce.Facts.Reducer
 
                 Assert.Equal(TestableSpriteWriter.Image18X18.GraphicsImage(), testable.SpriteImage.Clone(new Rectangle(16, 0, 18, 18), TestableSpriteWriter.Image18X18.PixelFormat), new BitmapPixelComparer(true));
             }
+
+            [Fact]
+            public void WillWriteImageToSurfaceAtTheCorrectOffsetWhenProvidedExplicitOffsets()
+            {
+                var testable = new SpriteWriter(35, 28);
+
+                testable.WriteImage(TestableSpriteWriter.Image18X18, 10, 5);
+
+                Assert.Equal(TestableSpriteWriter.Image18X18.GraphicsImage(), testable.SpriteImage.Clone(new Rectangle(10, 5, 18, 18), TestableSpriteWriter.Image18X18.PixelFormat), new BitmapPixelComparer(true));
+            }
+
         }
     }
 }

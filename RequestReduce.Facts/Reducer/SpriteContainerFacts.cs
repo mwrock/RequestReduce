@@ -103,6 +103,34 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void RightPositionedImagesWillBeRightAlligned()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "url1", Width = 30, XOffset = new Position(){PositionMode = PositionMode.Direction, Direction = Direction.Right}};
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                var image = testable.ClassUnderTest.First();
+                var image2 = new Bitmap(new MemoryStream(testable.Image15X17));
+                Assert.Equal(image2.GraphicsImage(), image.Image.Clone(new Rectangle(15, 0, 15, 17), image2.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
+            public void RightPositionedImagesLargerThanWidthWillBeRightAlligned()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "url1", Width = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right } };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                var image = testable.ClassUnderTest.First();
+                var image2 = new Bitmap(new MemoryStream(testable.Image15X17));
+                Assert.Equal(image2.Clone(new Rectangle(5,0,10,17), image2.PixelFormat).GraphicsImage(), image.Image.Clone(new Rectangle(0, 0, 10, 17), image2.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
             public void WidthWillBeAggregateOfAddedImageWidthsPlusOnePixelEach()
             {
                 var testable = new TestableSpriteContainer();

@@ -18,9 +18,15 @@ namespace RequestReduce.Reducer
             drawingSurface.Clear(Color.Transparent);
         }
 
+
         public void WriteImage(Bitmap image)
         {
-            drawingSurface.DrawImage(image, new Rectangle(OffsetWidth, 0, image.Width, image.Height));
+            WriteImage(image, 0, 0);
+        }
+
+        public void WriteImage(Bitmap image, int offsetX, int offsetY)
+        {
+            drawingSurface.DrawImage(image, new Rectangle(OffsetWidth + offsetX, offsetY, image.Width, image.Height));
             OffsetWidth += image.Width + 1;
         }
 

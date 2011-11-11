@@ -41,11 +41,20 @@ namespace RequestReduce.Reducer
                     var height = image.Height ?? originalBitmap.Height;
                     if (height + y > originalBitmap.Height)
                         height = originalBitmap.Height - y;
+                    var offset = 0;
+                    if (image.XOffset.Direction == Direction.Right)
+                    {
+                        if (originalBitmap.Width > width)
+                            x = originalBitmap.Width - width;
+                        else
+                            offset = (image.Width ?? 0) - originalBitmap.Width;
+                    }
+
                     try
                     {
                         using (var bm = originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat))
                         {
-                            writer.WriteImage(bm);
+                            writer.WriteImage(bm, offset, 0);
                         }
                     }
                     catch (OutOfMemoryException)

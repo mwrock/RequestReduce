@@ -173,6 +173,23 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillReturnRightPositionedBackgroundImages()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat right 0px;
+    width: 20;
+}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(1, result.Count());
+                Assert.Equal(Direction.Right, result.First().XOffset.Direction);
+            }
+
+            [Fact]
             public void WillNotReturnpositivelywidthedBackgroundImages()
             {
                 var testable = new TestableCssImageTransformer();
@@ -253,12 +270,6 @@ namespace RequestReduce.Facts.Reducer
                     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") center;
-    background-repeat: no-repeat;
-    width: 50;
-}
-
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") right;
     background-repeat: no-repeat;
     width: 50;
 }";
