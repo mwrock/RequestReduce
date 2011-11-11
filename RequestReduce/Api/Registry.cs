@@ -7,12 +7,9 @@ namespace RequestReduce.Api
     public static class Registry
     {
         public static Action<Exception> CaptureErrorAction { get; set; }
-        public static void RegisterMinifier(IMinifier minifier)
+        public static void RegisterMinifier<T>() where T : IMinifier, new()
         {
-            if (minifier == null)
-                throw new ArgumentNullException("minifier", "Cannot register a null minifier");
-
-            RRContainer.Current.Configure(x => x.For<IMinifier>().Use(minifier));
+            RRContainer.Current.Configure(x => x.For<IMinifier>().Use<T>());
         }
         public static void AddFilter(IFilter filter)
         {

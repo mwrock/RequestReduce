@@ -2,6 +2,7 @@
 using System.Linq;
 using RequestReduce.Api;
 using RequestReduce.IOC;
+using RequestReduce.ResourceTypes;
 using RequestReduce.Utilities;
 using Xunit;
 
@@ -21,23 +22,22 @@ namespace RequestReduce.Facts.Api
             }
         }
 
-        [Fact]
-        public void WillThrowArgumentNullExceptionIfPassedNull()
+        public class CrazyMinifier : IMinifier
         {
-            var ex = Record.Exception(() => Registry.RegisterMinifier(null));
-
-            Assert.NotNull(ex);
-            Assert.IsType<ArgumentNullException>(ex);
+            public string Minify<T>(string unMinifiedContent) where T : IResourceType
+            {
+                return "crazy";
+            }
         }
 
         [Fact]
         public void WillPlugMinifierIntoContainer()
         {
-            var minifier = new Minifier();
+            var minText = new CrazyMinifier().Minify<CssResource>("unminified");
+            Registry.RegisterMinifier<CrazyMinifier>();
 
-            Registry.RegisterMinifier(minifier);
-
-            Assert.Equal(minifier, RRContainer.Current.GetInstance<IMinifier>());
+            var customMinifier = RRContainer.Current.GetInstance<IMinifier>();
+            Assert.Equal(minText, customMinifier.Minify<CssResource>("unminified"));
             RRContainer.Current = null;
         }
 
