@@ -30,7 +30,10 @@ namespace RequestReduce.IOC
                     if (!r.FileName.Contains("RequestReduce")) 
                         throw new InvalidOperationException ("ResourceType file names must contain the string 'RequestReduce'"); 
                 });
-
+                x.For<IResourceType>().Singleton().Add<JavaScriptResource>();
+                x.For<IResourceType>().Singleton().Add<CssResource>();
+                x.For<JavaScriptResource>().Singleton().Add<JavaScriptResource>();
+                x.For<CssResource>().Singleton().Add<CssResource>();
                 x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                 x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                 x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
@@ -46,7 +49,7 @@ namespace RequestReduce.IOC
             });
 
             LoadAllReducers(initContainer);
-            LoadAllResourceTypes(initContainer);
+            LoadAllSingletons(initContainer);
             LoadAppropriateStoreRegistry(initContainer);
 
             return initContainer;
@@ -69,15 +72,13 @@ namespace RequestReduce.IOC
             }));
         }
 
-        private static void LoadAllResourceTypes(IContainer initContainer)
+        private static void LoadAllSingletons(IContainer initContainer)
         {
             initContainer.Configure(x => x.Scan(y =>
             {
                 y.Assembly("RequestReduce");
                 y.IncludeNamespace("RequestReduce.Utilities");
                 y.IncludeNamespace("RequestReduce.Configuration");
-                y.IncludeNamespace("RequestReduce.ResourceTypes");
-                y.AddAllTypesOf<IResourceType>();
                 y.With(new SingletonConvention());
             }));
         }

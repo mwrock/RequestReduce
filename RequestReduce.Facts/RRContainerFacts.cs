@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
@@ -98,6 +99,17 @@ namespace RequestReduce.Facts
             var result = container.GetInstance<IStore>();
 
             Assert.IsType<SqlServerStore>(result);
+        }
+
+        [Fact]
+        public void ResouceTypesAreSingletons()
+        {
+            var resources1 = RRContainer.GetAllResourceTypes();
+            var resources2 = RRContainer.GetAllResourceTypes();
+
+            var r1 = resources1.First(x => x is JavaScriptResource);
+            var r2 = resources2.First(x => x is JavaScriptResource);
+            Assert.Equal(r1,r2);
         }
 
         public void Dispose()
