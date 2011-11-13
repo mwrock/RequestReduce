@@ -49,7 +49,13 @@ namespace RequestReduce.Reducer
                         else
                             offset = (image.Width ?? 0) - originalBitmap.Width;
                     }
-
+                    else if (image.XOffset.Direction == Direction.Center && image.XOffset.PositionMode == PositionMode.Direction)
+                    {
+                        if (originalBitmap.Width > width)
+                            x = (originalBitmap.Width - width)/2;
+                        else
+                            offset = ((image.Width ?? 0) - originalBitmap.Width)/2;
+                    }
                     try
                     {
                         using (var bm = originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat))
