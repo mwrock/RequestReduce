@@ -41,26 +41,42 @@ namespace RequestReduce.Reducer
                     var height = image.Height ?? originalBitmap.Height;
                     if (height + y > originalBitmap.Height)
                         height = originalBitmap.Height - y;
-                    var offset = 0;
+                    var offsetX = 0;
+                    var offsetY = 0;
                     if (image.XOffset.Direction == Direction.Right)
                     {
                         if (originalBitmap.Width > width)
                             x = originalBitmap.Width - width;
                         else
-                            offset = (image.Width ?? 0) - originalBitmap.Width;
+                            offsetX = (image.Width ?? 0) - originalBitmap.Width;
                     }
                     else if (image.XOffset.Direction == Direction.Center && image.XOffset.PositionMode == PositionMode.Direction)
                     {
                         if (originalBitmap.Width > width)
                             x = (originalBitmap.Width - width)/2;
                         else
-                            offset = ((image.Width ?? 0) - originalBitmap.Width)/2;
+                            offsetX = ((image.Width ?? 0) - originalBitmap.Width)/2;
                     }
+                    if (image.YOffset.Direction == Direction.Bottom)
+                    {
+                        if (originalBitmap.Height > height)
+                            y = originalBitmap.Height - height;
+                        else
+                            offsetY = (image.Height ?? 0) - originalBitmap.Height;
+                    }
+                    else if (image.YOffset.Direction == Direction.Center && image.YOffset.PositionMode == PositionMode.Direction)
+                    {
+                        if (originalBitmap.Height > height)
+                            y = (originalBitmap.Height - height) / 2;
+                        else
+                            offsetY = ((image.Height ?? 0) - originalBitmap.Height) / 2;
+                    }
+
                     try
                     {
                         using (var bm = originalBitmap.Clone(new Rectangle(x, y, width, height), originalBitmap.PixelFormat))
                         {
-                            writer.WriteImage(bm, offset, 0);
+                            writer.WriteImage(bm, offsetX, offsetY);
                         }
                     }
                     catch (OutOfMemoryException)

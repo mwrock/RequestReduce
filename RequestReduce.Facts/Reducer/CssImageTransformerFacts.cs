@@ -180,13 +180,47 @@ namespace RequestReduce.Facts.Reducer
                     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat right 0px;
-    width: 20;
+    width: 20px;
 }";
 
                 var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Right, result.First().XOffset.Direction);
+            }
+
+            [Fact]
+            public void WillReturnBottomPositionedBackgroundImages()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat right bottom;
+    width: 20px;
+    height: 20px;
+}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(1, result.Count());
+                Assert.Equal(Direction.Bottom, result.First().YOffset.Direction);
+            }
+
+            [Fact]
+            public void WillNotReturnBottomPositionedBackgroundImagesWithNoHeight()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat right bottom;
+    width: 20px;
+}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(0, result.Count());
             }
 
             [Fact]
@@ -197,13 +231,49 @@ namespace RequestReduce.Facts.Reducer
                     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat center 0px;
-    width: 20;
+    width: 20px;
 }";
 
                 var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
 
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Center, result.First().XOffset.Direction);
+                Assert.Equal(PositionMode.Direction, result.First().XOffset.PositionMode);
+            }
+
+            [Fact]
+            public void WillReturnYCenterPositionedBackgroundImages()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0px center;
+    width: 20px;
+    height: 20px
+}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(1, result.Count());
+                Assert.Equal(Direction.Center, result.First().YOffset.Direction);
+                Assert.Equal(PositionMode.Direction, result.First().YOffset.PositionMode);
+            }
+
+            [Fact]
+            public void WillNotReturnYCenterPositionedBackgroundImagesWithNoHeight()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0px center;
+    width: 20px;
+}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(0, result.Count());
             }
 
             [Fact]
