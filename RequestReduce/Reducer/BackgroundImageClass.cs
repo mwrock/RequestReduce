@@ -35,6 +35,7 @@ namespace RequestReduce.Reducer
 
         public BackgroundImageClass(string originalClassString, string parentCssUrl)
         {
+            var offsetExplicitelySet = new bool[2];
             OriginalClassString = originalClassString;
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
@@ -97,8 +98,12 @@ namespace RequestReduce.Reducer
             if (offsetMatches.Count > 0)
             {
                 foreach (Match offsetMatch in offsetMatches)
-                    SetOffsets(offsetMatch);
+                    SetOffsets(offsetMatch, offsetExplicitelySet);
             }
+            if(XOffset.PositionMode == PositionMode.Direction && !offsetExplicitelySet[1])
+                YOffset = new Position(){PositionMode = PositionMode.Direction};
+            if (YOffset.PositionMode == PositionMode.Direction && !offsetExplicitelySet[0])
+                XOffset = new Position() { PositionMode = PositionMode.Direction };
         }
 
         private int?[] GetPadding(Match paddingMatch)
@@ -172,7 +177,7 @@ namespace RequestReduce.Reducer
             return result;
         }
 
-        private void SetOffsets(Match offsetMatch)
+        private void SetOffsets(Match offsetMatch, bool[] offsetExplicitelySet)
         {
             var offset1 = offsetMatch.Groups["offset1"].Value;
             var offset2 = offsetMatch.Groups["offset2"].Value;
@@ -189,14 +194,19 @@ namespace RequestReduce.Reducer
             {
                 if(offset2Position.PositionMode != PositionMode.Percent || offset2Position.Offset > 0) XOffset = offset2Position;
                 if(offset1Position.PositionMode != PositionMode.Percent || offset1Position.Offset > 0) YOffset = offset1Position;
+                if (offset1.Length > 0) offsetExplicitelySet[1] = true;
+                if (offset2.Length > 0) offsetExplicitelySet[0] = true;
             }
             else
             {
                 if(offset1Position.PositionMode != PositionMode.Percent || offset1Position.Offset > 0) XOffset = offset1Position;
                 if(offset2Position.PositionMode != PositionMode.Percent || offset2Position.Offset > 0) YOffset = offset2Position;
+                if (offset1.Length > 0) offsetExplicitelySet[0] = true;
+                if (offset2.Length > 0) offsetExplicitelySet[1] = true;
             }
 
             Important = offsetMatch.ToString().ToLower().Contains("!important");
+
         }
 
         private Position ParseStringOffset(string offsetString)

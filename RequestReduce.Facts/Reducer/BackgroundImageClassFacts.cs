@@ -713,6 +713,41 @@ img.icon {
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
             }
+
+            [Theory,
+            InlineData("center"),
+            InlineData("left"),
+            InlineData("right")]
+            public void WillSetYOffsetAsCenterWhenXOffsetIsDirectionAndYOffsetIsNotGiven(string xDirection)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+
+                Assert.Equal(PositionMode.Direction, testable.YOffset.PositionMode);
+                Assert.Equal(Direction.Center, testable.YOffset.Direction);
+            }
+
+            [Theory,
+            InlineData("top"),
+            InlineData("bottom")]
+            public void WillSetXOffsetAsCenterWhenYOffsetIsDirectionAndXOffsetIsNotGiven(string xDirection)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+
+                Assert.Equal(PositionMode.Direction, testable.XOffset.PositionMode);
+                Assert.Equal(Direction.Center, testable.XOffset.Direction);
+            }
         }
 
         public class BackgroundPositionOffsets
@@ -859,6 +894,43 @@ img.icon {
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
+            }
+
+            [Theory,
+            InlineData("center"),
+            InlineData("left"),
+            InlineData("right")]
+            public void WillSetYOffsetAsCenterWhenXOffsetIsDirectionAndYOffsetIsNotGiven(string xDirection)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    background-position: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+
+                Assert.Equal(PositionMode.Direction, testable.YOffset.PositionMode);
+                Assert.Equal(Direction.Center, testable.YOffset.Direction);
+            }
+
+            [Theory,
+            InlineData("top"),
+            InlineData("bottom")]
+            public void WillSetXOffsetAsCenterWhenYOffsetIsDirectionAndXOffsetIsNotGiven(string xDirection)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    background-position: {0};
+}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+
+                Assert.Equal(PositionMode.Direction, testable.XOffset.PositionMode);
+                Assert.Equal(Direction.Center, testable.XOffset.Direction);
             }
         }
     }
