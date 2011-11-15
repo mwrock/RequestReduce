@@ -20,9 +20,7 @@ namespace RequestReduce.Reducer
         public string Render()
         {
             var newClass = CssClass.OriginalClassString.ToLower().Replace(CssClass.ImageUrl.ToLower(), Url);
-            var yOffset = CssClass.YOffset.Direction.ToString();
-            if (CssClass.YOffset.PositionMode != PositionMode.Direction)
-                yOffset = "0";
+            var yOffset = "0";
             if (CssClass.YOffset.PositionMode == PositionMode.Unit && CssClass.YOffset.Offset > 0)
                 yOffset = string.Format("{0}px", CssClass.YOffset.Offset);
 
