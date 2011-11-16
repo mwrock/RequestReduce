@@ -29,17 +29,15 @@ namespace RequestReduce.Module
 
         private void HandleAuthenticatedActions(HttpContextWrapper httpContextWrapper)
         {
-            var url = httpContextWrapper.Request.RawUrl;
+            var url = EnsurePath(httpContextWrapper.Request.RawUrl);
             if (IsInRRContentDirectory(httpContextWrapper) && (
-                url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
-                || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)))
+                url.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
+                || url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)))
                 HandleRRFlush(httpContextWrapper);
 
             else if (IsInRRContentDirectory(httpContextWrapper)
-                && url.EndsWith("/dashboard", StringComparison.OrdinalIgnoreCase))
+                && url.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase))
                 WriteDashboard(httpContextWrapper);
-
-            return;
         }
 
         private void WriteDashboard(HttpContextBase httpContextWrapper)
@@ -99,10 +97,10 @@ namespace RequestReduce.Module
 
         public void HandleRRFlush(HttpContextBase httpContextWrapper)
         {
-            var url = httpContextWrapper.Request.RawUrl;
+            var url = EnsurePath(httpContextWrapper.Request.RawUrl);
             if (!IsInRRContentDirectory(httpContextWrapper) 
-                || (!url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
-                && !url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase))) return;
+                || (!url.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
+                && !url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))) return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
@@ -110,7 +108,7 @@ namespace RequestReduce.Module
             var user = httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
-                if(url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase))
+                if(url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))
                 {
                     var queue = RRContainer.Current.GetInstance<IReducingQueue>();
                     queue.ClearFailures();
@@ -120,7 +118,7 @@ namespace RequestReduce.Module
                 {
                     var store = RRContainer.Current.GetInstance<IStore>();
                     var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
-                    var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush", "-flush"));
+                    var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush/", "-flush"));
                     store.Flush(key);
                     RRTracer.Trace("{0} Flushed {1}", user, key);
                 }
@@ -134,10 +132,11 @@ namespace RequestReduce.Module
         public void HandleRRContent(HttpContextBase httpContextWrapper)
         {
             var url = httpContextWrapper.Request.RawUrl;
-            if (!IsInRRContentDirectory(httpContextWrapper) 
-                || url.EndsWith("/flush", StringComparison.OrdinalIgnoreCase)
-                || url.EndsWith("/flushfailures", StringComparison.OrdinalIgnoreCase)
-                || url.EndsWith("/dashboard", StringComparison.OrdinalIgnoreCase)) return;
+            var actionUrl = EnsurePath(url);
+            if (!IsInRRContentDirectory(httpContextWrapper)
+                || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
+                || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
+                || actionUrl.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase)) return;
             
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
@@ -170,9 +169,7 @@ namespace RequestReduce.Module
         private static bool IsInRRContentDirectory(HttpContextBase httpContextWrapper)
         {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            var rrPath = config.SpriteVirtualPath;
-            if (!rrPath.EndsWith("/"))
-                rrPath = rrPath + "/";
+            var rrPath = EnsurePath(config.SpriteVirtualPath);
             var url = httpContextWrapper.Request.RawUrl;
             if(rrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 url = httpContextWrapper.Request.Url.AbsoluteUri;
@@ -205,6 +202,13 @@ namespace RequestReduce.Module
         {
             set { Registry.CaptureErrorAction = value; }
             get { return Registry.CaptureErrorAction;  }
+        }
+
+        private static string EnsurePath(string path)
+        {
+            if (path.EndsWith("/"))
+                return path;
+            return path + "/";
         }
     }
 }

@@ -542,6 +542,33 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
+        [Fact]
+        public void WillFlushFailuresOnFlushFailureUrlWithTrailingSlashWhenAndAuthorizedUsersIsAnonymous()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/");
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(false);
+            context.Setup(x => x.User.Identity).Returns(identity.Object);
+            var queue = new Mock<IReducingQueue>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IReducingQueue>().Use(queue.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            queue.Verify(x => x.ClearFailures(), Times.Once());
+            RRContainer.Current = null;
+        }
+
         [Theory]
         [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
         [InlineData("/RRContent/flush", "00000000-0000-0000-0000-000000000000")]
@@ -608,6 +635,34 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(true);
+            identity.Setup(x => x.Name).Returns("user2");
+            context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            var store = new Mock<IStore>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            store.Verify(x => x.Flush(Guid.Empty), Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillFlushReductionsOnFlushUrlWithTrailingSlashWhenCurrentUserIsAuthorizedUser()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
