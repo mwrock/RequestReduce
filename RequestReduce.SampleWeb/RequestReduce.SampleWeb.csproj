@@ -41,6 +41,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\razor\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="StructureMap, Version=2.6.3.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
@@ -122,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo1.cs" />
+    <Compile Include="Demo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

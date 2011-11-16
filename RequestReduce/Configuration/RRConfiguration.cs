@@ -33,6 +33,7 @@ namespace RequestReduce.Configuration
         event Action PhysicalPathChange;
         string JavaScriptUrlsToIgnore { get; set; }
         bool ImageSpritingDisabled { get; set; }
+        string BaseAddress { get; set; }
     }
 
     public class RRConfiguration : IRRConfiguration
@@ -42,6 +43,7 @@ namespace RequestReduce.Configuration
         private readonly Store contentStore = Store.LocalDiskStore;
         public static readonly IEnumerable<string> Anonymous = new[] { "Anonymous" };
 
+        public string BaseAddress { get; set; }
         public bool CssProcesingDisabled { get; set; }
         public bool JavaScriptProcesingDisabled { get; set; }
         public bool ImageOptimizationDisabled { get; set; }

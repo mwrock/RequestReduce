@@ -67,7 +67,7 @@
        
     void Application_BeginRequest(object sender, EventArgs e)
     {
-        if (Request.QueryString["OutputError"] == null && Request.QueryString["OutputTrace"]==null) return;
+        if (Request.QueryString["OutputError"] == null && Request.QueryString["OutputTrace"] == null) return;
         
         if (Request.QueryString["OutputError"] != null)
         {
