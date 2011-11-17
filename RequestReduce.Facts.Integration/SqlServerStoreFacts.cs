@@ -28,9 +28,6 @@ namespace RequestReduce.Facts.Integration
 
         public SqlServerStoreFacts()
         {
-            if (ConfigurationManager.AppSettings["Environment"] == "Test")
-                Assert.True(true);
-
             var dataDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
                           "\\RequestReduce.SampleWeb\\App_Data";
             if (!Directory.Exists(dataDir))

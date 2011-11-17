@@ -23,9 +23,6 @@ namespace RequestReduce.Facts.Integration
 
         public ModuleFacts()
         {
-            if (ConfigurationManager.AppSettings["Environment"] == "Test")
-                Assert.True(true);
-
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore, Timeout.Infinite);
             uriBuilder = new UriBuilder(new Mock<IRRConfiguration>().Object);
         }
