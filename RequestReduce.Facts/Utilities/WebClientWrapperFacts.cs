@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Configuration;
 using System.Text;
 using RequestReduce.Utilities;
 using Xunit;
@@ -14,6 +14,9 @@ namespace RequestReduce.Facts.Utilities
             [Fact]
             public void WillNotIncludeUtf8PreambleInstring()
             {
+                if (ConfigurationManager.AppSettings["Environment"] == "Test")
+                    return;
+
                 var wrapper = new WebClientWrapper();
 
                 var result = wrapper.DownloadString("http://localhost:8877/styles/style1.css");
@@ -24,6 +27,9 @@ namespace RequestReduce.Facts.Utilities
             [Fact]
             public void WillThrowErrorIfNotCss()
             {
+                if (ConfigurationManager.AppSettings["Environment"] == "Test")
+                    return;
+
                 var wrapper = new WebClientWrapper();
 
                 var ex = Assert.Throws<InvalidOperationException>(() => wrapper.Download<CssResource>("http://localhost:8877/local.html"));
@@ -34,6 +40,9 @@ namespace RequestReduce.Facts.Utilities
             [Fact]
             public void WillThrowErrorIfNotJavaScript()
             {
+                if (ConfigurationManager.AppSettings["Environment"] == "Test")
+                    return;
+
                 var wrapper = new WebClientWrapper();
 
                 var ex = Assert.Throws<InvalidOperationException>(() => wrapper.Download<JavaScriptResource>("http://localhost:8877/local.html"));
