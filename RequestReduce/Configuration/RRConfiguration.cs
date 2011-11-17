@@ -66,11 +66,11 @@ namespace RequestReduce.Configuration
             StorePollInterval = val <= 0 ? Timeout.Infinite : val;
             val = config == null ? 0 : config.ImageOptimizationCompressionLevel;
             ImageOptimizationCompressionLevel = val == 0 ? 5 : val;
-            CssProcesingDisabled = config == null ? false : config.CssProcesingDisabled;
-            JavaScriptProcesingDisabled = config == null ? false : config.JavaScriptProcesingDisabled;
-            ImageOptimizationDisabled = config == null ? false : config.ImageOptimizationDisabled;
-            ImageQuantizationDisabled = config == null ? false : config.ImageQuantizationDisabled;
-            ImageSpritingDisabled = config == null ? false : config.ImageSpritingDisabled;
+            CssProcesingDisabled = config != null && config.CssProcesingDisabled;
+            JavaScriptProcesingDisabled = config != null && config.JavaScriptProcesingDisabled;
+            ImageOptimizationDisabled = config != null && config.ImageOptimizationDisabled;
+            ImageQuantizationDisabled = config != null && config.ImageQuantizationDisabled;
+            ImageSpritingDisabled = config != null && config.ImageSpritingDisabled;
             SpriteVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);
@@ -100,8 +100,7 @@ namespace RequestReduce.Configuration
         {
             if (HttpContext.Current != null)
                 return VirtualPathUtility.ToAbsolute(spriteVirtualPath);
-            else
-                return spriteVirtualPath.Replace("~", "");
+            return spriteVirtualPath.Replace("~", "");
         }
 
         public int SpriteColorLimit { get; set; }
@@ -143,7 +142,9 @@ namespace RequestReduce.Configuration
             {
                 Directory.CreateDirectory(spritePhysicalPath);
                 while (!Directory.Exists(spritePhysicalPath))
-                    Thread.Sleep(0);
+                    Thread.Sleep(5000);
+                if(!Directory.Exists(spritePhysicalPath))
+                    throw new IOException(string.Format("unable to create {0}", spritePhysicalPath));
             }
         }
 
@@ -151,8 +152,8 @@ namespace RequestReduce.Configuration
         // http://blogs.msdn.com/b/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx
         public static AspNetHostingPermissionLevel GetCurrentTrustLevel()
         {
-            foreach (AspNetHostingPermissionLevel trustLevel in
-                    new AspNetHostingPermissionLevel[] {
+            foreach (var trustLevel in
+                    new[] {
                     AspNetHostingPermissionLevel.Unrestricted,
                     AspNetHostingPermissionLevel.High,
                     AspNetHostingPermissionLevel.Medium,
@@ -183,11 +184,16 @@ namespace RequestReduce.Configuration
     {
         public static bool AllowsAnonymous(this IEnumerable<string> list)
         {
-            if(list.Count()==1 && list.Contains(RRConfiguration.Anonymous.First(), StringComparer.OrdinalIgnoreCase))
+            var isAnon = false;
+            var count = 0;
+            foreach (string s in list)
             {
-                return true;
+                if (++count > 1)
+                    return false;
+                if (s.Equals(RRConfiguration.Anonymous.First(), StringComparison.OrdinalIgnoreCase))
+                    isAnon = true;
             }
-            return false;
+            return isAnon;
         }
     }
 }
