@@ -17,7 +17,7 @@ namespace RequestReduce.SampleWeb
         {
             var url = context.Request.RawUrl.Substring(context.Request.RawUrl.IndexOf("test=") + 5);
             var response = new WebClientWrapper().DownloadString(url);
-            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var config = RequestReduce.Api.Registry.Configuration;
             config.BaseAddress = url;
             context.Response.Write(response);
         }

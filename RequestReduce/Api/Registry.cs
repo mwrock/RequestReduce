@@ -1,4 +1,5 @@
 ﻿using System;
+using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Utilities;
 
@@ -20,6 +21,11 @@ namespace RequestReduce.Api
         public static void AddFilter<T>() where T : IFilter, new()
         {
             RRContainer.Current.Configure(x => x.For<IFilter>().Singleton().Add<T>());
+        }
+
+        public static IRRConfiguration Configuration
+        {
+            get { return RRContainer.Current.GetInstance<IRRConfiguration>(); }
         }
     }
 }
