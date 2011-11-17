@@ -128,13 +128,13 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="SqlCE\sqlceme40.dll">
+    <Content Include="sqlceme40.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SqlCE\sqlceqp40.dll">
+    <Content Include="sqlceqp40.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SqlCE\sqlcese40.dll">
+    <Content Include="sqlcese40.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TestImages\delete.png">
