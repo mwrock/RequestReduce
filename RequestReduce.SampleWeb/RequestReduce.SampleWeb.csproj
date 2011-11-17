@@ -81,7 +81,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\RequestReduce.sdf" />
     <Content Include="NearFuture.html" />
     <Content Include="Global.asax" />
     <Content Include="Images\menu-sprite.png" />
@@ -125,6 +124,7 @@
     <Compile Include="Demo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

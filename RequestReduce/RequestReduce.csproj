@@ -137,7 +137,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Nuget\Tools\RequestReduceFiles.sql" />
     <Content Include="Resources\Dashboard.html" />
   </ItemGroup>
   <ItemGroup>
