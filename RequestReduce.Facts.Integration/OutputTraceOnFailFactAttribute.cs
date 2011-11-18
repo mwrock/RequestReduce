@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using RequestReduce.Utilities;
 using Xunit;
@@ -9,12 +8,6 @@ namespace RequestReduce.Facts.Integration
 {
     public class OutputTraceOnFailFactAttribute : FactAttribute
     {
-        public OutputTraceOnFailFactAttribute()
-        {
-            if (ConfigurationManager.AppSettings["Environment"] == "Test")
-                Skip = "Ignore on Appharbor";
-        }
-
         protected override System.Collections.Generic.IEnumerable<ITestCommand>  EnumerateTestCommands(IMethodInfo method)
         {
             yield return new OutputTraceOnFailCommand(method, Console.Out);

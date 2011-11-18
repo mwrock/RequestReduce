@@ -1,0 +1,46 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce", "RequestReduce\RequestReduce.csproj", "{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.Facts", "RequestReduce.Facts\RequestReduce.Facts.csproj", "{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.SampleWeb", "RequestReduce.SampleWeb\RequestReduce.SampleWeb.csproj", "{CC37498E-5083-472B-B057-A5C4187E113D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.SqlServer", "RequestReduce.SqlServer\RequestReduce.SqlServer.csproj", "{81E3A2F1-45B0-45BD-9738-6708F44284AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Build|Any CPU = Build|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}.Build|Any CPU.ActiveCfg = Release|Any CPU
+		{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}.Build|Any CPU.Build.0 = Release|Any CPU
+		{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D93C41C6-62D7-42E6-9FF0-AA0A992B72F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Build|Any CPU.ActiveCfg = Release|Any CPU
+		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Build|Any CPU.Build.0 = Release|Any CPU
+		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44D783B4-BB45-4390-BBA4-D2ED7EAABB55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Build|Any CPU.ActiveCfg = Release|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Build|Any CPU.Build.0 = Release|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC37498E-5083-472B-B057-A5C4187E113D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81E3A2F1-45B0-45BD-9738-6708F44284AC}.Build|Any CPU.ActiveCfg = Release|Any CPU
+		{81E3A2F1-45B0-45BD-9738-6708F44284AC}.Build|Any CPU.Build.0 = Release|Any CPU
+		{81E3A2F1-45B0-45BD-9738-6708F44284AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81E3A2F1-45B0-45BD-9738-6708F44284AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81E3A2F1-45B0-45BD-9738-6708F44284AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81E3A2F1-45B0-45BD-9738-6708F44284AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
