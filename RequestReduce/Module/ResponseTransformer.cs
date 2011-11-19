@@ -34,8 +34,8 @@ namespace RequestReduce.Module
 
         public string Transform(string preTransform)
         {
-            if (!config.JavaScriptProcesingDisabled) preTransform = Transform<JavaScriptResource>(preTransform);
-            if(!config.CssProcesingDisabled) preTransform = Transform<CssResource>(preTransform);
+            if (!config.JavaScriptProcessingDisabled) preTransform = Transform<JavaScriptResource>(preTransform);
+            if(!config.CssProcessingDisabled) preTransform = Transform<CssResource>(preTransform);
 
             return preTransform;
         }

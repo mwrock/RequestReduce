@@ -45,7 +45,7 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
-                testable.Mock<IRRConfiguration>().Setup(x => x.CssProcesingDisabled).Returns(true);
+                testable.Mock<IRRConfiguration>().Setup(x => x.CssProcessingDisabled).Returns(true);
 
                 var result = testable.ClassUnderTest.Transform(transform);
 
@@ -75,7 +75,7 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
-                testable.Mock<IRRConfiguration>().Setup(x => x.JavaScriptProcesingDisabled).Returns(true);
+                testable.Mock<IRRConfiguration>().Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
 
                 var result = testable.ClassUnderTest.Transform(transform);
 

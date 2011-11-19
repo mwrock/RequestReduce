@@ -22,8 +22,8 @@ namespace RequestReduce.Configuration
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
-        bool CssProcesingDisabled { get; set; }
-        bool JavaScriptProcesingDisabled { get; set; }
+        bool CssProcessingDisabled { get; set; }
+        bool JavaScriptProcessingDisabled { get; set; }
         bool ImageOptimizationDisabled { get; set; }
         int ImageOptimizationCompressionLevel { get; set; }
         bool ImageQuantizationDisabled { get; set; }
@@ -44,8 +44,8 @@ namespace RequestReduce.Configuration
         public static readonly IEnumerable<string> Anonymous = new[] { "Anonymous" };
 
         public string BaseAddress { get; set; }
-        public bool CssProcesingDisabled { get; set; }
-        public bool JavaScriptProcesingDisabled { get; set; }
+        public bool CssProcessingDisabled { get; set; }
+        public bool JavaScriptProcessingDisabled { get; set; }
         public bool ImageOptimizationDisabled { get; set; }
         public bool ImageQuantizationDisabled { get; set; }
         public bool ImageSpritingDisabled { get; set; }
@@ -66,8 +66,8 @@ namespace RequestReduce.Configuration
             StorePollInterval = val <= 0 ? Timeout.Infinite : val;
             val = config == null ? 0 : config.ImageOptimizationCompressionLevel;
             ImageOptimizationCompressionLevel = val == 0 ? 5 : val;
-            CssProcesingDisabled = config != null && config.CssProcesingDisabled;
-            JavaScriptProcesingDisabled = config != null && config.JavaScriptProcesingDisabled;
+            CssProcessingDisabled = config != null && (config.CssProcesingDisabled || config.CssProcessingDisabled);
+            JavaScriptProcessingDisabled = config != null && (config.JavaScriptProcesingDisabled || config.JavaScriptProcessingDisabled);
             ImageOptimizationDisabled = config != null && config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config != null && config.ImageQuantizationDisabled;
             ImageSpritingDisabled = config != null && config.ImageSpritingDisabled;

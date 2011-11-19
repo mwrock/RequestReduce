@@ -209,7 +209,7 @@ namespace RequestReduce.Module
             if (context.Items.Contains(CONTEXT_KEY) || 
                 context.Response.ContentType != "text/html" || 
                 (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
-                (config.CssProcesingDisabled && config.JavaScriptProcesingDisabled) ||
+                (config.CssProcessingDisabled && config.JavaScriptProcessingDisabled) ||
                 request.RawUrl == "/favicon.ico" || 
                 RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is PageFilter).FirstOrDefault(y => y.IgnoreTarget(new PageFilterContext(context.Request))) != null ||
                 IsInRRContentDirectory(context))

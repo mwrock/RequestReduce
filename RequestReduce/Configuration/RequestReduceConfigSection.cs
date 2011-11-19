@@ -100,6 +100,28 @@ namespace RequestReduce.Configuration
             }
         }
 
+        [ConfigurationProperty("cssProcessingDisabled")]
+        public bool CssProcessingDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["cssProcessingDisabled"].ToString(), out result);
+                return result;
+            }
+        }
+
+        [ConfigurationProperty("javascriptProcessingDisabled")]
+        public bool JavaScriptProcessingDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["javascriptProcessingDisabled"].ToString(), out result);
+                return result;
+            }
+        }
+
         [ConfigurationProperty("imageOptimizationDisabled")]
         public bool ImageOptimizationDisabled
         {

@@ -193,8 +193,8 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            config.Setup(x => x.CssProcesingDisabled).Returns(true);
-            config.Setup(x => x.JavaScriptProcesingDisabled).Returns(true);
+            config.Setup(x => x.CssProcessingDisabled).Returns(true);
+            config.Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
@@ -219,7 +219,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            config.Setup(x => x.JavaScriptProcesingDisabled).Returns(true);
+            config.Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
@@ -244,7 +244,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            config.Setup(x => x.CssProcesingDisabled).Returns(true);
+            config.Setup(x => x.CssProcessingDisabled).Returns(true);
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
