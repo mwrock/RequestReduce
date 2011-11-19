@@ -42,7 +42,7 @@ namespace RequestReduce.Reducer
             {
                 spritedImage = SpriteContainer.AddImage(image);
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
                 var message = string.Format("There were errors reducing {0}", image.ImageUrl);
                 var wrappedException =
