@@ -90,9 +90,9 @@
     <Content Include="Images\up.png" />
     <Content Include="Local.html" />
     <Content Include="LocalError.html" />
-    <Content Include="optipng.exe">
+    <None Include="optipng.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Scripts\nearFuture.js" />
     <Content Include="Scripts\script5.js" />
     <Content Include="Scripts\script2.js" />

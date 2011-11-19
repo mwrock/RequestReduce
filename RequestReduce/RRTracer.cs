@@ -8,7 +8,6 @@ namespace RequestReduce
 {
     public static class RRTracer
     {
-        [Conditional("DEBUG")]
         public static void Trace(string messageFormat, params object[] args)
         {
             if (RRConfiguration.GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted)

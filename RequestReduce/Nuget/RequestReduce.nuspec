@@ -13,7 +13,7 @@
       RequestReduce allows any IIS based website to automaticaly sprite background images into a single optimized PNG as well as combine and minify CSS and Javascript with absolutely no coding beyond a few config tweaks. RequestReduce excercises common best practices when serving its javascript, css and sprited images ensuring that the appropriate caching headers are sent to the browser so that browsers will not need to pull down a new http response until absolutely necessary. Chances are you will see an immediate rise in your yslow and google page speed tests.
     </description>
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
-    <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript</tags>
+    <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
       * Add API for filtering pages, css, javascript and images out of the processing pipeline as well as adding custom minifiers
       * Add Support for right positioned background images
