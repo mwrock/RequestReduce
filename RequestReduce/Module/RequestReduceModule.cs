@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web;
 using RequestReduce.Api;
@@ -56,14 +58,37 @@ namespace RequestReduce.Module
                 httpContextWrapper.ApplicationInstance.CompleteRequest();
         }
 
-        private string TransformDashboard(string dashboard)
+        private static string TransformDashboard(string dashboard)
         {
             var queue = RRContainer.Current.GetInstance<IReducingQueue>();
             var repo = RRContainer.Current.GetInstance<IReductionRepository>(); 
             var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var transformed = dashboard.Replace("<%server%>", Environment.MachineName);
             transformed = transformed.Replace("<%app%>", AppDomain.CurrentDomain.BaseDirectory);
+            transformed = transformed.Replace("<%version%>", Assembly.GetExecutingAssembly().GetName().Version.ToString());
             transformed = transformed.Replace("<%processedItem%>", queue.ItemBeingProcessed == null ? "Shhhh. I'm Sleeping" : queue.ItemBeingProcessed.Urls);
+            var configProps = config.GetType().GetProperties();
+            var configList = new StringBuilder();
+            foreach (var item in configProps)
+            {
+                configList.Append("<tr><td>");
+                configList.Append(item.Name);
+                configList.Append("</td><td>");
+                var array = item.GetValue(config, null) as IEnumerable;
+                if(array == null || item.PropertyType.IsAssignableFrom(typeof(string)))
+                    configList.Append(item.GetValue(config, null));
+                else
+                {
+                    foreach (var mem in array)
+                    {
+                        configList.Append(mem.ToString());
+                        configList.Append("<br/>");
+                    }
+                }
+                configList.Append("</td></tr>");
+            }
+            transformed = transformed.Replace("<%configs%>", configList.ToString());
             var queueArray = queue.ToArray();
             var queueList = new StringBuilder();
             foreach (var item in queueArray)
