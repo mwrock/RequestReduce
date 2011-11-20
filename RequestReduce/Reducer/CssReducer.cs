@@ -72,12 +72,13 @@ namespace RequestReduce.Reducer
 
         private string ProcessSprites(string cssContent, string parentUrl)
         {
-            imageUrls.AddRange(cssImageTransformer.ExtractImageUrls(ref cssContent, parentUrl));
-            if(!configuration.ImageSpritingDisabled)
-            {
-                foreach (var imageUrl in imageUrls)
-                    spriteManager.Add(imageUrl);
-            }
+            var newImages = cssImageTransformer.ExtractImageUrls(ref cssContent, parentUrl);
+                foreach (var imageUrl in newImages)
+                {
+                    if (!configuration.ImageSpritingDisabled)
+                        spriteManager.Add(imageUrl);
+                    imageUrls.Add(imageUrl);
+                }
             return cssContent;
         }
 
