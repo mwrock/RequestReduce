@@ -6,7 +6,7 @@ namespace RequestReduce.Utilities
     {
         public static string RemoveDashes(this Guid guid)
         {
-            return guid.ToString().Replace("-", "");
+            return guid.ToString("N");
         }
     }
 }
