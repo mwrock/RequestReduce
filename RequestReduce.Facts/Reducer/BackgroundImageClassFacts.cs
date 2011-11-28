@@ -72,18 +72,24 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Null(testable.ImageUrl);
             }
 
-            [Fact]
-            public void WillSetImageAbsoluteUrlFromBackgroundImageStyle()
+            [Theory]
+            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url(""subnav_on_technet.png"");}")]
+            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url( ""subnav_on_technet.png"" );}")]
+            public void WillSetImageAbsoluteUrlFromBackgroundImageStyle(string css)
             {
-                var css =
-    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background-image: url(""subnav_on_technet.png"");
-}";
-
                 var testable = new BackgroundImageClass(css, "http://server/content/style.css");
 
                 Assert.Equal("http://server/content/subnav_on_technet.png", testable.ImageUrl);
+            }
+
+            [Theory]
+            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url(""subnav_on_technet.png"");}")]
+            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url( ""subnav_on_technet.png"" );}")]
+            public void WillReplaceOriginalCssWithAbsoluteUrl(string css)
+            {
+                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+
+                Assert.Equal(css.Replace("subnav_on_technet.png", testable.ImageUrl), testable.OriginalClassString);
             }
 
             [Fact]

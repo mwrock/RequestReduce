@@ -40,7 +40,7 @@ namespace RequestReduce.Reducer
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
             {
-                OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "");
+                OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
                 if (OriginalImageUrl.Length > 0)
                 {
                     ImageUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, OriginalImageUrl);
