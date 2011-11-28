@@ -18,6 +18,11 @@
       * Add API for filtering pages, css, javascript and images out of the processing pipeline as well as adding custom minifiers
       * Add Support for right positioned background images
       * Big perf fix introduced in 1.4 repeatedly recompiling regex
+      * Fix Etag check so that 304s are returned when match If-None-Match header
+      * Support for all center, right and bottom background positions
+      * gracefully ignore sprite attempts of .svg files
+      * add current version and config settings to dashboard
+      * propperly handle spaces between parens and quotes of css background url
     </releaseNotes>
     <dependencies>
       <dependency id="RequestReduce" version="1.5.30" />
