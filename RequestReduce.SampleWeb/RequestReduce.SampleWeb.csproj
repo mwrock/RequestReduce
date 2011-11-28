@@ -105,12 +105,10 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="test.html" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RequestReduce.SqlServer\RequestReduce.SqlServer.csproj">

@@ -332,7 +332,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", "match" } });
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", @"""match""" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -366,7 +366,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", "notmatch" } });
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", @"""notmatch""" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);

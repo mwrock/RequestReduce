@@ -51,6 +51,26 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
+        public void WillReturn304WhenRequestigResourcewithEtag()
+        {
+            new WebClient().DownloadString("http://localhost:8877/Local.html");
+            WaitToCreateResources();
+            var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
+            var css = new CssResource().ResourceRegex.Match(response).ToString();
+            var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
+            var cssUrlurl = "http://localhost:8877" + urlPattern.Match(css).Groups["url"].Value;
+            var httpResponse = WebRequest.Create(cssUrlurl).GetResponse();
+            var etag = httpResponse.Headers["ETag"];
+            httpResponse.Close();
+            var request = WebRequest.Create(cssUrlurl);
+            request.Headers["If-None-Match"] = etag;
+
+            var ex = Record.Exception(() => request.GetResponse()) as WebException;
+
+            Assert.Equal(HttpStatusCode.NotModified, (ex.Response as HttpWebResponse).StatusCode);
+        }
+
+        [OutputTraceOnFailFact]
         public void WillIgnoreNearFutureScripts()
         {
             new WebClient().DownloadString("http://localhost:8877/NearFuture.html");
