@@ -18,6 +18,7 @@ test-results.html
 RequestReduce/Nuget/Lib/*
 RequestReduce.SqlServer/Nuget/Lib/*
 RequestReduce.SampleWeb/RRContent/*
+RequestReduce.SampleWeb/RequestReduceContent/*
 PrecompiledWeb/*
 TraceOutput.log
 *.sdf

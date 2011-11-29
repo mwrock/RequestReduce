@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,7 +7,6 @@ using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
-using nQuant;
 using Xunit;
 using RequestReduce.ResourceTypes;
 
@@ -48,7 +45,7 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal(result,
                          Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".css")).Replace(
-                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"));
+                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"), StringComparer.OrdinalIgnoreCase);
             reducer.Dispose();
         }
 
@@ -64,7 +61,7 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal(result,
                          Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".js")).Replace(
-                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"));
+                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"), StringComparer.OrdinalIgnoreCase);
             reducer.Dispose();
         }
 

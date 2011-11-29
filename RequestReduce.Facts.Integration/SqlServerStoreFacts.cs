@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
@@ -225,7 +224,7 @@ namespace RequestReduce.Facts.Integration
 
         private void WaitToCreateResources()
         {
-            const int timeout = 20000;
+            const int timeout = 50000;
             var watch = new Stopwatch();
             watch.Start();
             while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)

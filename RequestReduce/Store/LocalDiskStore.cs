@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -59,7 +60,7 @@ namespace RequestReduce.Store
             var contentSignature = uriBuilder.ParseSignature(path.Replace('\\', '/'));
             if(guid != Guid.Empty)
             {
-                var resourceType = RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => path.EndsWith(x.FileName));
+                var resourceType = RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => path.EndsWith(x.FileName, true, CultureInfo.InvariantCulture));
                 if (resourceType != null)
                 {
                     RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
@@ -143,10 +144,10 @@ namespace RequestReduce.Store
 
         protected virtual string GetFileNameFromConfig(string url)
         {
-            var fileName = url;
+            var fileName = url.ToLower();
             if (!string.IsNullOrEmpty(configuration.ContentHost))
-                fileName = url.Replace(configuration.ContentHost, "");
-            return fileName.Replace(configuration.SpriteVirtualPath, configuration.SpritePhysicalPath).Replace('/', '\\');
+                fileName = fileName.Replace(configuration.ContentHost.ToLower(), "");
+            return fileName.Replace(configuration.SpriteVirtualPath.ToLower(), configuration.SpritePhysicalPath.ToLower()).Replace('/', '\\');
         }
 
         public virtual void Dispose()

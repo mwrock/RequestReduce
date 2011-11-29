@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
@@ -11,7 +10,6 @@ using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Facts.Store
@@ -34,6 +32,11 @@ namespace RequestReduce.Facts.Store
             public IReductionRepository ReductionRepository
             {
                 set { reductionRepository = value; }
+            }
+
+            public new string GetFileNameFromConfig(string url)
+            {
+                return base.GetFileNameFromConfig(url);
             }
 
         }
@@ -328,5 +331,20 @@ namespace RequestReduce.Facts.Store
             }
         }
 
+        public class GetFileNameFromConfig
+        {
+            [Fact]
+            public void WillNormalizeCasingOfCofigsAndPasedUrl()
+            {
+                var testable = new TestableLocalDiskStore();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://Server");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RequestReduce");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\phys\\rr");
+
+                var result = testable.ClassUnderTest.GetFileNameFromConfig("http://serVer/requestreDuce/fiLe");
+
+                Assert.Equal("c:\\phys\\rr\\file", result);
+            }
+        }
     }
 }
