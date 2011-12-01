@@ -86,7 +86,7 @@ namespace RequestReduce.Facts.Integration
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
-            var id = Guid.Parse(uriBuilder.ParseSignature(url));
+            var id = Hasher.Hash(uriBuilder.ParseFileName(url));
             var createTime = repo[id].LastUpdated;
 
             repo.Context.Files.Remove(repo[id]);
@@ -113,7 +113,7 @@ namespace RequestReduce.Facts.Integration
                 var response = client.DownloadString("http://localhost:8877/Local.html");
                 var css = cssPattern.Match(response).ToString();
                 url = urlPattern.Match(css).Groups["url"].Value;
-                id = Guid.Parse(uriBuilder.ParseSignature(url));
+                id = Hasher.Hash(uriBuilder.ParseFileName(url));
             }
             repo.Detach(repo[id]);
             repo.Context.SaveChanges();

@@ -37,9 +37,8 @@ namespace RequestReduce.Facts.Store
                     <RequestReduceFile>(x => file = x);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName(url)).Returns("file.css");
                 var key = Guid.NewGuid();
-                var id = Guid.NewGuid();
+                var id = Hasher.Hash("file.css");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(url)).Returns(key);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(url)).Returns(() => id.RemoveDashes());
 
                 testable.ClassUnderTest.Save(content, url, originalUrls);
 
@@ -95,21 +94,20 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillUpdateExistingFileIfItExixtx()
+            public void WillUpdateExistingFileIfItExists()
             {
                 var testable = new TestableSqlServerStore();
                 var content = new byte[] { 1 };
                 var url = "url";
                 var originalUrls = "originalUrls";
                 var key = Guid.NewGuid();
-                var id = Guid.NewGuid();
+                var id = Hasher.Hash("file.css");
                 RequestReduceFile file = null;
                 testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { IsExpired = true }).Verifiable();
                 testable.Mock<IFileRepository>().Setup(x => x.Save(It.IsAny<RequestReduceFile>())).Callback
                     <RequestReduceFile>(x => file = x);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName(url)).Returns("file.css");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(url)).Returns(key);
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(url)).Returns(() => id.RemoveDashes());
 
                 testable.ClassUnderTest.Save(content, url, originalUrls);
 
@@ -145,8 +143,8 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
                 testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
-                var id = Guid.NewGuid();
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("url")).Returns(id.RemoveDashes());
+                var id = Hasher.Hash("file.css");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
                 var bytes = new byte[]{1};
@@ -180,8 +178,8 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
                 testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
-                var id = Guid.NewGuid();
-                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("url")).Returns(id.RemoveDashes());
+                var id = Hasher.Hash("file.css");
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
                 var bytes = new byte[] { 1 };

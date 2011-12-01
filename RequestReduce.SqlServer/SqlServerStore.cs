@@ -5,7 +5,6 @@ using System.Web;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
 namespace RequestReduce.SqlServer
@@ -55,7 +54,7 @@ namespace RequestReduce.SqlServer
             RRTracer.Trace("Saving {0} to db.", url);
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
-            var id = Guid.Parse(uriBuilder.ParseSignature(url));
+            var id = Hasher.Hash(fileName);
             var file = repository[id] ?? new RequestReduceFile();
             file.Content = content;
             file.LastUpdated = DateTime.Now;
@@ -77,7 +76,7 @@ namespace RequestReduce.SqlServer
                 return true;
 
             var key = uriBuilder.ParseKey(url);
-            var id = Guid.Parse(uriBuilder.ParseSignature(url));
+            var id = Hasher.Hash(uriBuilder.ParseFileName(url));
             var file = repository[id];
 
             if(file != null)

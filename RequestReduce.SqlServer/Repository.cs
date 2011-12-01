@@ -2,7 +2,6 @@ using System;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using RequestReduce.Configuration;
-using RequestReduce.Store;
 
 namespace RequestReduce.SqlServer
 {
