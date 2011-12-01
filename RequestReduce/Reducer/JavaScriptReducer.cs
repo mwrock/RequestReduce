@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.ResourceTypes;
@@ -56,12 +55,12 @@ namespace RequestReduce.Reducer
                     if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(6))
                         AddUrlToIgnores(url);
                 }
-                catch (FormatException) { };
+                catch (FormatException) { }
 
                 var cacheControl = response.Headers["Cache-Control"];
                 if(!string.IsNullOrEmpty(cacheControl)) 
                 {
-                    var cacheControlVals = cacheControl.ToLower().Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                    var cacheControlVals = cacheControl.ToLower().Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
                     foreach(var val in cacheControlVals)
                     {
                         try
@@ -91,7 +90,7 @@ namespace RequestReduce.Reducer
 
         private void AddUrlToIgnores(string url)
         {
-            var uriBuilder = new System.UriBuilder(url);
+            var uriBuilder = new UriBuilder(url);
             var urlToIgnore = url.Replace(uriBuilder.Query.Length == 0 ? "?" : uriBuilder.Query, "").Replace(uriBuilder.Scheme + "://", "");
             if (!config.JavaScriptUrlsToIgnore.ToLower().Contains(urlToIgnore.ToLower()))
                 config.JavaScriptUrlsToIgnore += "," + urlToIgnore;
