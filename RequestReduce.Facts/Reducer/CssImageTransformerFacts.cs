@@ -330,6 +330,22 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImagesWhenBracesInComments()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover { border: 1px solid #aaaaaa/*{borderColorContent}*/; background: #ffffff/*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png)/*{bgImgUrlContent}*/ 50%/*{bgContentXPos}*/ 50%/*{bgContentYPos}*/ repeat-x/*{bgContentRepeat}*/; color: #222222/*{fcContent}*/; }";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover { border: 1px solid #aaaaaa; background: #ffffff url(http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #222222; }";
+
+                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(expectedcss, css);
+            }
+
+            [Fact]
             public void WillNotTryToConvertUrlsOfClassesWithNoImages()
             {
                 var testable = new TestableCssImageTransformer();

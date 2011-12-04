@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata>
     <id>RequestReduce</id>
-    <version>1.5.34</version>
+    <version>1.5.38</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -23,6 +23,7 @@
       * gracefully ignore sprite attempts of .svg files
       * add current version and config settings to dashboard
       * propperly handle spaces between parens and quotes of css background url
+      * Fix relative background image paths when there are css comments containing braces
     </releaseNotes>
   </metadata>
 </package>

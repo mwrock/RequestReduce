@@ -6,10 +6,12 @@ namespace RequestReduce.Reducer
     public class CssImageTransformer : ICssImageTransformer
     {
         private readonly Regex classPattern = new Regex("\\{[^\\}]+\\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private readonly Regex cssCommentPattern = new Regex(@"/\*.+?\*/", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public IEnumerable<BackgroundImageClass> ExtractImageUrls(ref string cssContent, string cssUrl)
         {
             var urls = new List<BackgroundImageClass>();
+            cssContent = cssCommentPattern.Replace(cssContent, string.Empty);
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
                 var imageClass = new BackgroundImageClass(classMatch.ToString(), cssUrl);
