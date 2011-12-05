@@ -19,5 +19,6 @@ namespace RequestReduce.Utilities
         bool FileExists(string path);
         byte[] GetFileBytes(string path);
 		IList<DatedFileEntry> GetDatedFiles(string directoryPath, string search);
+        string GetFileString(string path);
     }
 }

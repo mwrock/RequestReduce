@@ -762,6 +762,33 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
+        [Fact]
+        public void WillDelegateContentNotInMyDirectoryFriendHandlers()
+        {
+            var module = new RequestReduceModule();
+            var handler = new DefaultHttpHandler();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/content/someresource.less");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/content/someresource.less"));
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+            Registry.HandlerMaps.Add(x => x.AbsolutePath.EndsWith(".less") ? handler : null);
+            Registry.HandlerMaps.Add(x => x.AbsolutePath.EndsWith(".les") ? new DefaultHttpHandler() : null);
+
+            module.HandleRRContent(context.Object);
+
+            context.Verify(x => x.RemapHandler(handler), Times.Once());
+            RRContainer.Current = null;
+            Registry.HandlerMaps.Clear();
+        }
+
         public void Dispose()
         {
             RRContainer.Current = null;

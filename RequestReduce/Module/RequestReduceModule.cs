@@ -8,7 +8,6 @@ using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Properties;
-using RequestReduce.ResourceTypes;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
@@ -161,8 +160,16 @@ namespace RequestReduce.Module
             if (!IsInRRContentDirectory(httpContextWrapper)
                 || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
                 || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
-                || actionUrl.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase)) return;
-            
+                || actionUrl.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (var handler in Registry.HandlerMaps.Select(map => map(httpContextWrapper.Request.Url)).Where(handler => handler!=null))
+                {
+                    httpContextWrapper.RemapHandler(handler);
+                    return;
+                }
+                return;
+            }
+
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);

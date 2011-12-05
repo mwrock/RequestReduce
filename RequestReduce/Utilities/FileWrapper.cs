@@ -67,7 +67,12 @@ namespace RequestReduce.Utilities
         {
             return File.ReadAllBytes(path);
         }
-		
+
+        public string GetFileString(string path)
+        {
+            return File.ReadAllText(path);
+        }
+
 		public IList<DatedFileEntry> GetDatedFiles(string directoryPath, string search)
 		{
 			return new DirectoryInfo(directoryPath).GetFiles(search).Select(x => new DatedFileEntry(x.FullName, x.CreationTime)).ToList();	
