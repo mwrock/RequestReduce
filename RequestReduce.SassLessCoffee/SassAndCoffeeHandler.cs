@@ -6,11 +6,11 @@ using SassAndCoffee.Core.Compilers;
 
 namespace RequestReduce.SassLessCoffee
 {
-    public class SassAndCoffeeHandler : IHttpHandler, ICompilerHost
+    public abstract class SassAndCoffeeHandler : IHttpHandler, ICompilerHost
     {
         private readonly ISimpleFileCompiler simpleFileCompiler;
 
-        public SassAndCoffeeHandler(ISimpleFileCompiler simpleFileCompiler)
+        protected SassAndCoffeeHandler(ISimpleFileCompiler simpleFileCompiler)
         {
             this.simpleFileCompiler = simpleFileCompiler;
         }

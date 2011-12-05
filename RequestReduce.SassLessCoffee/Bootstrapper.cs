@@ -12,9 +12,9 @@ namespace RequestReduce.SassLessCoffee
                                          {
                                              var path = x.AbsolutePath.ToLower();
                                              if (path.EndsWith(".sass") || path.EndsWith("scss"))
-                                                 return new SassAndCoffeeHandler(new SassFileCompiler());
+                                                 return new SassHandler();
                                              if (path.EndsWith(".coffee"))
-                                                 return new SassAndCoffeeHandler(new CoffeeScriptFileCompiler());
+                                                 return new CoffeeHandler();
                                              if (path.EndsWith(".less"))
                                                  return new LessHandler(new FileWrapper());
                                              return null;

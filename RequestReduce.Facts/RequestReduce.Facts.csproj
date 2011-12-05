@@ -37,6 +37,9 @@
     <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="SassAndCoffee.Core">
+      <HintPath>..\packages\SassAndCoffee.Core.1.1.5\lib\net40\SassAndCoffee.Core.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap, Version=2.6.3.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.2.6.3\lib\StructureMap.dll</HintPath>
@@ -99,6 +102,7 @@
     <Compile Include="Reducer\SpriteWriterFacts.cs" />
     <Compile Include="Module\RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
+    <Compile Include="SassLessCoffee\BootstraperFacts.cs" />
     <Compile Include="Store\DbDiskCacheFacts.cs" />
     <Compile Include="Store\LocalDiskStoreFacts.cs" />
     <Compile Include="Store\RepositoryFacts.cs" />
@@ -116,6 +120,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RequestReduce.SassLessCoffee\RequestReduce.SassLessCoffee.csproj">
+      <Project>{78C09D35-C434-4BEA-9EEB-2A3449DAFC8C}</Project>
+      <Name>RequestReduce.SassLessCoffee</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RequestReduce.SqlServer\RequestReduce.SqlServer.csproj">
       <Project>{81E3A2F1-45B0-45BD-9738-6708F44284AC}</Project>
       <Name>RequestReduce.SqlServer</Name>
