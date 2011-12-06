@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web;
+﻿using System.Web;
 using RequestReduce.Utilities;
 using dotless.Core;
 using dotless.Core.configuration;
@@ -17,6 +16,11 @@ namespace RequestReduce.SassLessCoffee
 
         public void ProcessRequest(HttpContext context)
         {
+            ProcessRequest(new HttpContextWrapper(context));
+        }
+
+        public void ProcessRequest(HttpContextBase context)
+        {
             var localPath = context.Request.Url.LocalPath;
             var response = context.Response;
 
@@ -24,9 +28,8 @@ namespace RequestReduce.SassLessCoffee
             {
                 var source = fileWrapper.GetFileString(localPath);
 
-                response.Cache.SetCacheability(HttpCacheability.Public);
                 response.ContentType = "text/css";
-                response.Write(new EngineFactory(new DotlessConfiguration() { CacheEnabled = false }).GetEngine().TransformToCss(source, localPath));
+                response.Write(new EngineFactory(new DotlessConfiguration { CacheEnabled = false }).GetEngine().TransformToCss(source, localPath));
             }
             catch (System.IO.FileNotFoundException ex)
             {
@@ -38,7 +41,6 @@ namespace RequestReduce.SassLessCoffee
                 response.StatusCode = 500;
                 response.Write("/* Error in less parsing: " + ex.Message + " */");
             }
-            response.End();
         }
 
         public bool IsReusable

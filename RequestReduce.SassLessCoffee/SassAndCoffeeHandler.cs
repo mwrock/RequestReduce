@@ -28,7 +28,6 @@ namespace RequestReduce.SassLessCoffee
                 response.StatusCode = (int)HttpStatusCode.NotFound;
                 return;
             }
-            response.Cache.SetCacheability(HttpCacheability.Public);
             response.ContentEncoding = Encoding.UTF8;
             response.ContentType = simpleFileCompiler.OutputMimeType;
             response.Write(result);
