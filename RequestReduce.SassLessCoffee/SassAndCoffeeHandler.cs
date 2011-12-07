@@ -1,4 +1,5 @@
-﻿using SassAndCoffee.Core;
+﻿using System;
+using SassAndCoffee.Core;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -6,7 +7,7 @@ using SassAndCoffee.Core.Compilers;
 
 namespace RequestReduce.SassLessCoffee
 {
-    public abstract class SassAndCoffeeHandler : IHttpHandler, ICompilerHost
+    public abstract class SassAndCoffeeHandler : IHttpHandler
     {
         private readonly ISimpleFileCompiler simpleFileCompiler;
 
@@ -17,20 +18,31 @@ namespace RequestReduce.SassLessCoffee
 
         public void ProcessRequest(HttpContext context)
         {
+            ProcessRequest(new HttpContextWrapper(context));
+        }
+
+        public void ProcessRequest(HttpContextBase context)
+        {
             var request = context.Request;
             var response = context.Response;
 
-            simpleFileCompiler.Init(this);
-            var result = simpleFileCompiler.ProcessFileContent(MapPath(request.Path));
-
-            if (result == null)
+            simpleFileCompiler.Init(new CompilerHost(context));
+            try
             {
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-                return;
+                var result = simpleFileCompiler.ProcessFileContent(context.Server.MapPath(request.Path));
+                response.ContentType = simpleFileCompiler.OutputMimeType;
+                response.Write(result);
             }
-            response.ContentEncoding = Encoding.UTF8;
-            response.ContentType = simpleFileCompiler.OutputMimeType;
-            response.Write(result);
+            catch (System.IO.FileNotFoundException ex)
+            {
+                response.StatusCode = 404;
+                response.Write("/* File Not Found while parsing: " + ex.Message + " */");
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 500;
+                response.Write("/* Error in compiling: " + ex.ToString() + " */");
+            }
         }
 
         public bool IsReusable
@@ -38,16 +50,23 @@ namespace RequestReduce.SassLessCoffee
             get { return false; }
         }
 
-        public string MapPath(string path)
+        class CompilerHost : ICompilerHost
         {
-            return HttpContext.Current.Server.MapPath(path);
-        }
+            private readonly HttpContextBase context;
 
-        public string ApplicationBasePath
-        {
-            get
+            public CompilerHost(HttpContextBase context)
             {
-                return HttpContext.Current.Request.PhysicalApplicationPath;
+                this.context = context;
+            }
+
+            public string MapPath(string path)
+            {
+                return context.Server.MapPath(path);
+            }
+
+            public string ApplicationBasePath
+            {
+                get { return context.Request.PhysicalApplicationPath; }
             }
         }
     }

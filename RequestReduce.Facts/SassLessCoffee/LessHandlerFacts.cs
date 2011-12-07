@@ -23,7 +23,8 @@ namespace RequestReduce.Facts.SassLessCoffee
         {
             var testable = new TestableLessHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.less"));
+            context.Setup(x => x.Request.Url)
+                .Returns(new Uri("http://localhost/RRContent/css.less"));
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.ContentType);
             context.Setup(x => x.Response).Returns(response.Object);
@@ -38,10 +39,12 @@ namespace RequestReduce.Facts.SassLessCoffee
         {
             var testable = new TestableLessHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.less"));
+            context.Setup(x => x.Request.Url)
+                .Returns(new Uri("http://localhost/RRContent/css.less"));
             var response = new Mock<HttpResponseBase>();
             context.Setup(x => x.Response).Returns(response.Object);
-            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>())).Returns("@brand_color: #4D926F;#header {color: @brand_color;}");
+            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>()))
+                .Returns("@brand_color: #4D926F;#header {color: @brand_color;}");
             var result = string.Empty;
             response.Setup(x => x.Write(It.IsAny<string>())).Callback<string>(s => result = s);
             const string expected = "#header {\n  color: #4d926f;\n}\n";
@@ -56,10 +59,12 @@ namespace RequestReduce.Facts.SassLessCoffee
         {
             var testable = new TestableLessHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.less"));
+            context.Setup(x => x.Request.Url)
+                .Returns(new Uri("http://localhost/RRContent/css.less"));
             var response = new Mock<HttpResponseBase>();
             context.Setup(x => x.Response).Returns(response.Object);
-            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>())).Throws(new FileNotFoundException());
+            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>()))
+                .Throws(new FileNotFoundException());
             response.SetupProperty(x => x.StatusCode);
 
             testable.ClassUnderTest.ProcessRequest(context.Object);
@@ -72,10 +77,12 @@ namespace RequestReduce.Facts.SassLessCoffee
         {
             var testable = new TestableLessHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.less"));
+            context.Setup(x => x.Request.Url)
+                .Returns(new Uri("http://localhost/RRContent/css.less"));
             var response = new Mock<HttpResponseBase>();
             context.Setup(x => x.Response).Returns(response.Object);
-            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>())).Throws(new IOException());
+            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>()))
+                .Throws(new IOException());
             response.SetupProperty(x => x.StatusCode);
 
             testable.ClassUnderTest.ProcessRequest(context.Object);

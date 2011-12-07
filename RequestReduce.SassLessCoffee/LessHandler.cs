@@ -29,7 +29,11 @@ namespace RequestReduce.SassLessCoffee
                 var source = fileWrapper.GetFileString(localPath);
 
                 response.ContentType = "text/css";
-                response.Write(new EngineFactory(new DotlessConfiguration { CacheEnabled = false }).GetEngine().TransformToCss(source, localPath));
+                response.Write(new EngineFactory(new DotlessConfiguration
+                                                     {
+                                                         CacheEnabled = false
+                                                     }
+                                   ).GetEngine().TransformToCss(source, localPath));
             }
             catch (System.IO.FileNotFoundException ex)
             {

@@ -34,10 +34,31 @@
     <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="IronRuby">
+      <HintPath>..\packages\IronRuby.1.1.3\Lib\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries">
+      <HintPath>..\packages\IronRuby.1.1.3\Lib\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.Yaml">
+      <HintPath>..\packages\IronRuby.1.1.3\Lib\IronRuby.Libraries.Yaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Jurassic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SassAndCoffee.Core.1.1.5\lib\net40\Jurassic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\packages\IronRuby.1.1.3\Lib\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\packages\IronRuby.1.1.3\Lib\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Metadata">
+      <HintPath>..\packages\IronRuby.1.1.3\Lib\Microsoft.Scripting.Metadata.dll</HintPath>
+    </Reference>
     <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="SassAndCoffee.Core">
+    <Reference Include="SassAndCoffee.Core, Version=1.1.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SassAndCoffee.Core.1.1.5\lib\net40\SassAndCoffee.Core.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=2.6.3.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
@@ -68,6 +89,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="V8Bridge.Interface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SassAndCoffee.Core.1.1.5\lib\net40\V8Bridge.Interface.dll</HintPath>
+    </Reference>
     <Reference Include="xunit, Version=1.8.0.1549, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\xunit.1.8.0.1549\lib\xunit.dll</HintPath>
@@ -104,6 +128,7 @@
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="SassLessCoffee\BootstraperFacts.cs" />
     <Compile Include="SassLessCoffee\LessHandlerFacts.cs" />
+    <Compile Include="SassLessCoffee\SassAndCoffeeHandlerFacts.cs" />
     <Compile Include="Store\DbDiskCacheFacts.cs" />
     <Compile Include="Store\LocalDiskStoreFacts.cs" />
     <Compile Include="Store\RepositoryFacts.cs" />
@@ -119,6 +144,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="TestScripts\test.sass">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RequestReduce.SassLessCoffee\RequestReduce.SassLessCoffee.csproj">
