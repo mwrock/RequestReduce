@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Web;
 using Moq;
 using RequestReduce.SassLessCoffee;
@@ -19,11 +18,11 @@ namespace RequestReduce.Facts.SassLessCoffee
                 MockedContext.Setup(x => x.Request.Path)
                     .Returns("~/RRContent/css.sass");
                 MockedContext.Setup(x => x.Request.PhysicalApplicationPath)
-                    .Returns(new FileInfo("TestScripts\\test.sass").DirectoryName);
+                    .Returns(string.Format("{0}\\TestScripts", AppDomain.CurrentDomain.BaseDirectory));
                 MockedResponse = new Mock<HttpResponseBase>();
                 MockedContext.Setup(x => x.Response).Returns(MockedResponse.Object);
                 MockedServer = new Mock<HttpServerUtilityBase>();
-                MockedServer.Setup(x => x.MapPath("~/RRContent/css.sass")).Returns(new FileInfo("TestScripts\\test.sass").FullName);
+                MockedServer.Setup(x => x.MapPath("~/RRContent/css.sass")).Returns(string.Format("{0}\\TestScripts\\test.sass", AppDomain.CurrentDomain.BaseDirectory));
                 MockedContext.Setup(x => x.Server).Returns(MockedServer.Object);
                 MockedResponse.Setup(x => x.Write(It.IsAny<string>())).Callback<string>(s => CompileResult = s);
             }
@@ -46,7 +45,7 @@ namespace RequestReduce.Facts.SassLessCoffee
         }
 
         [Fact]
-        public void WillWriteCompiledLess()
+        public void WillWriteCompiledSass()
         {
             var testable = new TestableSassHandler();
             const string expected = ".content-navigation {\n  border-color: #3bbfce;\n  color: #2ca2af; }\n";
@@ -61,7 +60,7 @@ namespace RequestReduce.Facts.SassLessCoffee
         {
             var testable = new TestableSassHandler();
             testable.MockedContext.Setup(x => x.Request.Path).Returns("~/badaddress/bad.sass");
-            testable.MockedServer.Setup(x => x.MapPath("~/badaddress/bad.sass")).Returns(new FileInfo("TestScripts\\test.sass").DirectoryName + "\\bad.sass");
+            testable.MockedServer.Setup(x => x.MapPath("~/badaddress/bad.sass")).Returns(string.Format("{0}\\TestScripts\\bad.sass", AppDomain.CurrentDomain.BaseDirectory));
             testable.MockedResponse.SetupProperty(x => x.StatusCode);
             
             testable.ClassUnderTest.ProcessRequest(testable.MockedContext.Object);

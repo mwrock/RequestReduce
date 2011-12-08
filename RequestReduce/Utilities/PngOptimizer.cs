@@ -3,10 +3,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection;
 using RequestReduce.Configuration;
 using nQuant;
-using System.Web;
 
 namespace RequestReduce.Utilities
 {
@@ -70,8 +68,8 @@ namespace RequestReduce.Utilities
         {
             using(var process = new Process())
             {
-                process.StartInfo = new ProcessStartInfo()
-                {
+                process.StartInfo = new ProcessStartInfo
+                                        {
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
