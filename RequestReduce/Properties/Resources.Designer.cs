@@ -67,14 +67,26 @@ namespace RequestReduce.Properties {
         ///&lt;h1&gt;RequestReduce Dashboard&lt;/h1&gt;
         ///&lt;b&gt;Server:&lt;/b&gt;&lt;%server%&gt;&lt;br/&gt;
         ///&lt;b&gt;Application:&lt;/b&gt;&lt;%app%&gt;&lt;br/&gt;
+        ///&lt;b&gt;RequestReduce Version:&lt;/b&gt;&lt;%version%&gt;&lt;br/&gt;
+        ///&lt;a href=&quot;flush&quot;&gt;Flush all content&lt;/a&gt;
+        ///&lt;p/&gt;
+        ///&lt;h2&gt;Configuration Settings&lt;/h2&gt;
+        ///&lt;table&gt;
+        ///&lt;%configs%&gt;
+        ///&lt;/table&gt;
+        ///&lt;p/&gt;
+        ///&lt;h2&gt;Item Being Processed&lt;/h2&gt;
+        ///&lt;%processedItem%&gt;
         ///&lt;p/&gt;
         ///&lt;h2&gt;Urls queued for processing&lt;/h2&gt;
         ///&lt;%queue%&gt;
         ///
         ///&lt;p/&gt;
-        ///Items in Repository
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
+        ///&lt;h2&gt;Items in Repository&lt;/h2&gt;
+        ///&lt;%repo%&gt;
+        ///
+        ///&lt;p/&gt;
+        ///&lt;h2&gt;Recorded Failures&lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Dashboard {
             get {

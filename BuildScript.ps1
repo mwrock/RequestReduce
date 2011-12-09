@@ -8,14 +8,14 @@ properties {
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
-	$version = "1.5." + (git log v1.5.. --pretty=oneline | measure-object).Count
+	$version = "1.6." + (git log v1.6.. --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
 }
 
 task Debug -depends Default
 task Default -depends Setup-40-Projects, Clean-Solution, Setup-IIS, Build-Solution, Reset, Test-Solution
 task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Output, Reset, Push-Repo, Update-Website-Download-Links, Push-Web
-task Push-Nuget-All -depends Push-Nuget-Core, Push-Nuget-SqlServer
+task Push-Nuget-All -depends Push-Nuget-Core, Push-Nuget-SqlServer, Push-Nuget-SassLessCoffee
 
 task Reset {
   Change-Framework-Version $projectFiles '4.0' $true
@@ -43,7 +43,7 @@ task echo-path {
 	write-host "dir:" $webDir
 }
 task Update-AssemblyInfoFiles {
-	$commit = git log -1 v1.5.. --pretty=format:%H
+	$commit = git log -1 v1.6.. --pretty=format:%H
 	Update-AssemblyInfoFiles $version $commit
 }
 
@@ -100,6 +100,11 @@ task Push-Nuget-SqlServer {
 	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
+task Push-Nuget-SassLessCoffee {
+	$pkg = Get-Item -path $filesDir/RequestReduce.SassLessCoffee.*.*.*.nupkg
+	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+}
+
 task Merge-35-Assembly -depends Build-35-Solution {
   clean $baseDir\RequestReduce\Nuget\Lib\net20
   create $baseDir\RequestReduce\Nuget\Lib\net20
@@ -110,8 +115,10 @@ task Merge-35-Assembly -depends Build-35-Solution {
 task Merge-40-Assembly -depends Build-Solution {
 	clean $baseDir\RequestReduce\Nuget\Lib\net40
 	clean $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
+	clean $baseDir\RequestReduce.SassLessCoffee\Nuget\Lib\net40
 	create $baseDir\RequestReduce\Nuget\Lib\net40
 	create $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
+	create $baseDir\RequestReduce.SassLessCoffee\Nuget\Lib\net40
 	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
     exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
 }
@@ -127,9 +134,14 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   $Spec.package.metadata.version = $version
   $Spec.package.metadata.dependencies.dependency[0].SetAttribute("version", $version)
   $Spec.Save("RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
+  $Spec = [xml](get-content "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec")
+  $Spec.package.metadata.version = $version
+  $Spec.package.metadata.dependencies.dependency[0].SetAttribute("version", $version)
+  $Spec.Save("RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec")
   clean $baseDir\RequestReduce\Nuget\Content\App_Readme
   create $baseDir\RequestReduce\Nuget\Content\App_Readme
   Copy-Item $baseDir\RequestReduce.SqlServer\bin\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net40\
+  Copy-Item $baseDir\RequestReduce.SassLessCoffee\bin\$configuration\RequestReduce.SassLessCoffee.* $baseDir\RequestReduce.SassLessCoffee\Nuget\lib\net40\
   Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
   Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
   create $filesDir\net35
@@ -145,11 +157,20 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   Copy-Item $baseDir\requestreduce.SqlServer\bin\$configuration\Entityframework.* $filesDir\RequestReduce.SqlServer
   Copy-Item $baseDir\requestreduce.SqlServer\nuget\lib\net40\*.* $filesDir\RequestReduce.SqlServer
   Copy-Item $baseDir\requestreduce.SqlServer\nuget\tools\*.* $filesDir\RequestReduce.SqlServer
+  create $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\dotless.core.* $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\IronRuby.* $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\Jurassic.* $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\Microsoft.* $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\SassAndCoffee.Core.* $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\V8Bridge.Interface.* $filesDir\RequestReduce.SassLessCoffee
+  Copy-Item $baseDir\requestreduce.SassLessCoffee\nuget\lib\net40\*.* $filesDir\RequestReduce.SassLessCoffee
   cd $filesDir
   exec { & $baseDir\Tools\zip.exe -9 -r RequestReduce-$version.zip . }
   cd $currentDir
   exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
   exec { .\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
+  exec { .\Tools\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir }
 }
 
 task Update-Website-Download-Links {

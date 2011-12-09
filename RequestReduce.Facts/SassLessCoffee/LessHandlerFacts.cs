@@ -56,6 +56,18 @@ namespace RequestReduce.Facts.SassLessCoffee
         }
 
         [Fact]
+        public void WillWriteLessParseErrorMessage()
+        {
+            var testable = new TestableLessHandler();
+            testable.Mock<IFileWrapper>().Setup(x => x.GetFileString(It.IsAny<string>()))
+                .Returns("@brand_color: #4D926F #header {color: @brand_color;}");
+
+            testable.ClassUnderTest.ProcessRequest(testable.MockedContext.Object);
+
+            Assert.Contains("Parse Error", testable.CompileResult);
+        }
+
+        [Fact]
         public void WillReturn404IfFileNotFound()
         {
             var testable = new TestableLessHandler();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Web;
@@ -774,6 +775,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/content/someresource.less"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.Items).Returns(new Hashtable());
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
@@ -784,7 +786,8 @@ namespace RequestReduce.Facts.Module
 
             module.HandleRRContent(context.Object);
 
-            context.Verify(x => x.RemapHandler(handler), Times.Once());
+            //context.Verify(x => x.RemapHandler(handler), Times.Once());
+            Assert.Equal(handler, context.Object.Items["remapped handler"]);
             RRContainer.Current = null;
             Registry.HandlerMaps.Clear();
         }

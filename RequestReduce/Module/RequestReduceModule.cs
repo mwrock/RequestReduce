@@ -164,7 +164,10 @@ namespace RequestReduce.Module
             {
                 foreach (var handler in Registry.HandlerMaps.Select(map => map(httpContextWrapper.Request.Url)).Where(handler => handler!=null))
                 {
-                    httpContextWrapper.RemapHandler(handler);
+                    if (HttpContext.Current != null)
+                        HttpContext.Current.RemapHandler(handler); //can't use RemapHandler on HttpContextBase due to .net3.5 compat
+                    else //unit testing
+                        httpContextWrapper.Items["remapped handler"] = handler;
                     return;
                 }
                 return;
