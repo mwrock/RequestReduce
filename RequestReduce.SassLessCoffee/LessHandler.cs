@@ -21,12 +21,13 @@ namespace RequestReduce.SassLessCoffee
 
         public void ProcessRequest(HttpContextBase context)
         {
+            var physicalPath = context.Server.MapPath(context.Request.Path);
             var localPath = context.Request.Url.LocalPath;
             var response = context.Response;
 
             try
             {
-                var source = fileWrapper.GetFileString(localPath);
+                var source = fileWrapper.GetFileString(physicalPath);
 
                 response.ContentType = "text/css";
                 response.Write(new EngineFactory(new DotlessConfiguration

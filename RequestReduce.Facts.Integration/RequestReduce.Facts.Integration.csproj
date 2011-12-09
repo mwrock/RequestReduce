@@ -87,6 +87,7 @@
     <Compile Include="PngOptimizerFacts.cs" />
     <Compile Include="ReducerFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SassLessCoffeeFacts.cs" />
     <Compile Include="SqlServerStoreFacts.cs" />
   </ItemGroup>
   <ItemGroup>

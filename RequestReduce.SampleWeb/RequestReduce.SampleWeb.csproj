@@ -106,11 +106,22 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="test.html" />
+    <None Include="Styles\Style.less" />
+    <None Include="Scripts\test.coffee">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Styles\test.sass">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RequestReduce.SassLessCoffee\RequestReduce.SassLessCoffee.csproj">
+      <Project>{78C09D35-C434-4BEA-9EEB-2A3449DAFC8C}</Project>
+      <Name>RequestReduce.SassLessCoffee</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RequestReduce.SqlServer\RequestReduce.SqlServer.csproj">
       <Project>{81E3A2F1-45B0-45BD-9738-6708F44284AC}</Project>
       <Name>RequestReduce.SqlServer</Name>
