@@ -8,7 +8,7 @@ RequestReduce Makes your website faster - sometimes much faster - with almost no
 * Runs on any ASP.NET platform
 * Can sync cntent accross [multiple web servers] (http://github.com/mwrock/RequestReduce/wiki/Will-RequestReduce-sync-css-and-sprite-image-files-accross-all-of-the-web-servers-in-my-web-farm%3F)
 * Works well with [CDNs] (http://github.com/mwrock/RequestReduce/wiki/Can-I-have-all-RequestReduce-CSS-and-sprite-resources-pulled-from-a-CDN%3F)
-* Compiles Less, Sass and Coffee script
+* Compiles [Less, Sass and Coffee script] (https://github.com/mwrock/RequestReduce/wiki/Less%2C-Sass-and-Coffee-Script-Compilation)
 
 ##Getting started
 1. If you have [Nuget] (http://docs.nuget.org/docs/start-here/installing-nuget), simply enter `Install-Package RequestReduce` in the Package Manager Console and skip steps two and three, otherwise download the latest RequestReduce version [here] (http://www.requestreduce.com/)
