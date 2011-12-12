@@ -6,7 +6,7 @@ RequestReduce Makes your website faster - sometimes much faster - with almost no
 * Minifies CSS and Javascript
 * Optimizes [caching headers and ETags] (http://github.com/mwrock/RequestReduce/wiki/Will-browsers-cache-the-css-and-image-files-that-RequestReduce-serves%3F)
 * Runs on any ASP.NET platform
-* Can sync cntent accross [multiple web servers] (http://github.com/mwrock/RequestReduce/wiki/Will-RequestReduce-sync-css-and-sprite-image-files-accross-all-of-the-web-servers-in-my-web-farm%3F)
+* Can sync content accross [multiple web servers] (http://github.com/mwrock/RequestReduce/wiki/Will-RequestReduce-sync-css-and-sprite-image-files-accross-all-of-the-web-servers-in-my-web-farm%3F)
 * Works well with [CDNs] (http://github.com/mwrock/RequestReduce/wiki/Can-I-have-all-RequestReduce-CSS-and-sprite-resources-pulled-from-a-CDN%3F)
 * Compiles [Less, Sass and Coffee script] (https://github.com/mwrock/RequestReduce/wiki/Less%2C-Sass-and-Coffee-Script-Compilation)
 
