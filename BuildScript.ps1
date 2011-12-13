@@ -183,7 +183,7 @@ task Update-Website-Download-Links {
 
 task Test-Solution {
     exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
-    exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
+    exec {.\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
 }
 
 function roboexec([scriptblock]$cmd) {

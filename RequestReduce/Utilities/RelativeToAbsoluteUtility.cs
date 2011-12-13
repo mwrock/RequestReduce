@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Web;
+using RequestReduce.Configuration;
+using RequestReduce.IOC;
 
 namespace RequestReduce.Utilities
 {
@@ -18,7 +20,19 @@ namespace RequestReduce.Utilities
 
         public static string ToAbsolute(string baseUrl, string relativeUrl)
         {
-            return IsAbsolute(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri;
+            return ReplaceContentHost(IsAbsolute(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri);
+        }
+
+        private static string ReplaceContentHost(string url)
+        {
+            var contentHost = RRContainer.Current.GetInstance<IRRConfiguration>().ContentHost;
+            if (string.IsNullOrEmpty(contentHost))
+                return url;
+            var firstPos = url.IndexOf("//");
+            if (firstPos > -1)
+                firstPos += 2;
+            var idx = url.IndexOf('/', firstPos);
+            return contentHost + url.Substring(idx);
         }
 
         private static bool IsAbsolute(string url)
