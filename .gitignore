@@ -17,6 +17,7 @@ test-results.html
 *.nupkg
 RequestReduce/Nuget/Lib/*
 RequestReduce.SqlServer/Nuget/Lib/*
+RequestReduce.SassLessCoffee/Nuget/Lib/*
 RequestReduce.SampleWeb/RRContent/*
 RequestReduce.SampleWeb/RequestReduceContent/*
 PrecompiledWeb/*

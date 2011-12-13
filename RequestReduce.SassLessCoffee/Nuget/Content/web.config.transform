@@ -1,0 +1,12 @@
+﻿<configuration>
+  <system.web>
+    <httpHandlers>
+      <remove path="*.less" verb="GET" />
+    </httpHandlers>
+  </system.web>
+  <system.webServer>
+    <handlers>
+      <remove name="dotless" />
+    </handlers>
+  </system.webServer>
+</configuration>
