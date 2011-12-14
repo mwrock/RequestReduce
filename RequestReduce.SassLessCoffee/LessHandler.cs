@@ -23,7 +23,6 @@ namespace RequestReduce.SassLessCoffee
         public void ProcessRequest(HttpContextBase context)
         {
             var physicalPath = context.Server.MapPath(context.Request.Path);
-            var localPath = context.Request.Url.LocalPath;
             var response = context.Response;
 
             try
@@ -32,11 +31,13 @@ namespace RequestReduce.SassLessCoffee
                 var engine = new EngineFactory(new DotlessConfiguration
                                                    {
                                                        CacheEnabled = false,
-                                                       Logger = typeof (LessLogger)
+                                                       Logger = typeof (LessLogger),
+                                                       Web = HttpContext.Current != null
                                                    }
                     ).GetEngine();
-                ((LessLogger)((LessEngine)((ParameterDecorator)engine).Underlying).Logger).Response = response;
-                var result = engine.TransformToCss(source, localPath);
+                var lessEngine = (LessEngine) ((ParameterDecorator) engine).Underlying;
+                ((LessLogger)lessEngine.Logger).Response = response;
+                var result = engine.TransformToCss(source, physicalPath);
                 response.ContentType = "text/css";
                 if(!string.IsNullOrEmpty(result))
                     response.Write(result);
@@ -84,4 +85,5 @@ namespace RequestReduce.SassLessCoffee
 
         public HttpResponseBase Response { get; set; }
     }
+
 }

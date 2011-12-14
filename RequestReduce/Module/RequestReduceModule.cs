@@ -155,14 +155,9 @@ namespace RequestReduce.Module
 
         public void HandleRRContent(HttpContextBase httpContextWrapper)
         {
-            var url = httpContextWrapper.Request.RawUrl;
-            var actionUrl = EnsurePath(url);
-            if (!IsInRRContentDirectory(httpContextWrapper)
-                || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
-                || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
-                || actionUrl.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase))
+            if (Registry.HandlerMaps.Count > 0)
             {
-                foreach (var handler in Registry.HandlerMaps.Select(map => map(httpContextWrapper.Request.Url)).Where(handler => handler!=null))
+                foreach (var handler in Registry.HandlerMaps.Select(map => map(httpContextWrapper.Request.Url)).Where(handler => handler != null))
                 {
                     if (HttpContext.Current != null)
                         HttpContext.Current.RemapHandler(handler); //can't use RemapHandler on HttpContextBase due to .net3.5 compat
@@ -170,6 +165,15 @@ namespace RequestReduce.Module
                         httpContextWrapper.Items["remapped handler"] = handler;
                     return;
                 }
+            }
+
+            var url = httpContextWrapper.Request.RawUrl;
+            var actionUrl = EnsurePath(url);
+            if (!IsInRRContentDirectory(httpContextWrapper)
+                || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
+                || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
+                || actionUrl.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase))
+            {
                 return;
             }
 

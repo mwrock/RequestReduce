@@ -15,7 +15,6 @@ namespace RequestReduce.Facts.SassLessCoffee
             public TestableLessHandler()
             {
                 MockedContext = new Mock<HttpContextBase>();
-                MockedContext.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRcontent/css.less"));
                 MockedContext.Setup(x => x.Request.Path)
                     .Returns("~/RRContent/css.less");
                 MockedResponse = new Mock<HttpResponseBase>();
