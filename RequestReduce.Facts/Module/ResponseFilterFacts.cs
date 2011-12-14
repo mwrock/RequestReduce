@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using Moq;
+using RequestReduce.Api;
 using RequestReduce.Module;
 using Xunit;
 
@@ -37,6 +39,23 @@ namespace RequestReduce.Facts.Module
                 testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
 
                 Assert.Equal("before<head>thead</head>after", testable.FilteredResult);
+            }
+
+            [Fact]
+            public void WillSwallowAndLogTransformerErrors()
+            {
+                var testable = new TestableResponseFilter(Encoding.UTF8);
+                var testBuffer = "before<head>head</head>after";
+                var testTransform = "<head>head</head>";
+                Exception error = null;
+                var innerError = new ApplicationException();
+                Registry.CaptureErrorAction = (x => error= x);
+                testable.Mock<IResponseTransformer>().Setup(x => x.Transform(testTransform)).Throws(innerError);
+
+                testable.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(innerError, error.InnerException);
+                Assert.Contains(testTransform, error.Message);
             }
 
             [Fact]

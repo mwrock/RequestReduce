@@ -127,9 +127,13 @@
     <Compile Include="Module\RequestReduceModuleFacts.cs" />
     <Compile Include="RRContainerFacts.cs" />
     <Compile Include="SassLessCoffee\BootstraperFacts.cs" />
-    <Compile Include="SassLessCoffee\CoffeeHandlerFacts.cs" />
+    <Compile Include="SassLessCoffee\CoffeeHandlerFacts.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SassLessCoffee\LessHandlerFacts.cs" />
-    <Compile Include="SassLessCoffee\SassHandlerFacts.cs" />
+    <Compile Include="SassLessCoffee\SassHandlerFacts.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Store\DbDiskCacheFacts.cs" />
     <Compile Include="Store\LocalDiskStoreFacts.cs" />
     <Compile Include="Store\RepositoryFacts.cs" />

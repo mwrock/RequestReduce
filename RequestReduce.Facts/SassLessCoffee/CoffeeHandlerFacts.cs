@@ -3,6 +3,7 @@ using System.IO;
 using System.Web;
 using Moq;
 using RequestReduce.SassLessCoffee;
+using SassAndCoffee.Core;
 using SassAndCoffee.Core.Compilers;
 using Xunit;
 
@@ -12,6 +13,11 @@ namespace RequestReduce.Facts.SassLessCoffee
     {
         class TestableCoffeeHandler : Testable<CoffeeHandler>
         {
+            static TestableCoffeeHandler()
+            {
+                AppDomain.CurrentDomain.ProcessExit += CurrentDomainDomainUnload;
+            }
+
             public TestableCoffeeHandler()
             {
                 Inject<ISimpleFileCompiler>(new CoffeeScriptFileCompiler());
@@ -26,6 +32,12 @@ namespace RequestReduce.Facts.SassLessCoffee
                 MockedServer.Setup(x => x.MapPath("~/RRContent/script.coffee")).Returns(string.Format("{0}\\TestScripts\\test.coffee", AppDomain.CurrentDomain.BaseDirectory));
                 MockedContext.Setup(x => x.Server).Returns(MockedServer.Object);
                 MockedResponse.Setup(x => x.Write(It.IsAny<string>())).Callback<string>(s => CompileResult = s);
+            }
+
+            private static void CurrentDomainDomainUnload(object sender, EventArgs e)
+            {
+                new CoffeeScriptCompiler().Dispose();
+                JS.Shutdown();
             }
 
             public Mock<HttpContextBase> MockedContext { get; set; }

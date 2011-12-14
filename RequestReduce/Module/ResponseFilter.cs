@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using RequestReduce.Api;
 
 namespace RequestReduce.Module
 {
@@ -218,9 +219,23 @@ namespace RequestReduce.Module
             currentStartStringsToSkip = new bool[currentStartStringsToSkip.Length];
             if ((startTransformPosition - actualOffset) >= 0)
                 BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
-            var transformed =
-                encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
-            BaseStream.Write(transformed, 0, transformed.Length);
+            try
+            {
+                var transformed =
+                    encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
+                BaseStream.Write(transformed, 0, transformed.Length);
+            }
+            catch (Exception ex)
+            {
+                var message = string.Format("There were errors transforming {0}", encoding.GetString(transformBuffer.ToArray()));
+                var wrappedException =
+                    new ApplicationException(message, ex);
+                RRTracer.Trace(message);
+                RRTracer.Trace(ex.ToString());
+                if (Registry.CaptureErrorAction != null)
+                    Registry.CaptureErrorAction(wrappedException);
+                BaseStream.Write(transformBuffer.ToArray(), 0, transformBuffer.Count);
+            }
             startTransformPosition = 0;
             transformBuffer.Clear();
         }
