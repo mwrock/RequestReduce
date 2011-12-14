@@ -46,8 +46,8 @@ namespace RequestReduce.Facts.Reducer
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
             }
 
-            public static Bitmap Image15X17 = CreateFileImage("testimages\\delete.png");
-            public static Bitmap Image18X18 = CreateFileImage("testimages\\emptyStar.png");
+            public static Bitmap Image15X17 = CreateFileImage(string.Format("{0}\\testimages\\delete.png", AppDomain.CurrentDomain.BaseDirectory));
+            public static Bitmap Image18X18 = CreateFileImage(string.Format("{0}\\testimages\\emptyStar.png", AppDomain.CurrentDomain.BaseDirectory));
 
             private static Bitmap CreateFileImage(string path)
             {

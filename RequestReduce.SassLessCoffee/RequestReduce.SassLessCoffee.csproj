@@ -82,6 +82,7 @@
     <Compile Include="SassHandler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Nuget\Content\web.config.transform" />
     <None Include="Nuget\RequestReduce.SassLessCoffee.nuspec">
       <SubType>Designer</SubType>
     </None>

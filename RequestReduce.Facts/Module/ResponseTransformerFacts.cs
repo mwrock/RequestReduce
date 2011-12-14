@@ -510,6 +510,37 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css|print,screen::http://server/Me2.css::")), Times.Once());
             }
 
+            [Fact]
+            public void WillTransformHeadWithDuplicateScripts()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head>
+<script src=""http://server/script1.js"" type=""text/javascript"" ></script>
+<script src=""http://server/script2.js"" type=""text/javascript"" ></script>
+<script src=""http://server/script3.js"" type=""text/javascript"" ></script>
+<script src=""http://server/script1.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                var transformed = @"<head>
+<script src=""http://server/script4.js"" type=""text/javascript"" ></script>
+
+<script src=""http://server/script3.js"" type=""text/javascript"" ></script>
+<script src=""http://server/script5.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::http://server/script2.js::")).Returns("http://server/script4.js");
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::")).Returns("http://server/script5.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.JavaScriptUrlsToIgnore).Returns("server/script3.js");
+                RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+                RRContainer.Current = null;
+            }
+
         }
     }
 }

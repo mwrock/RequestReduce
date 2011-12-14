@@ -100,7 +100,7 @@ namespace RequestReduce.Module
                 RRTracer.Trace("Reduction found for {0}", urls);
                 var closeHeadIdx = (preTransform.StartsWith("<head", StringComparison.OrdinalIgnoreCase) && resource is CssResource) ? preTransform.IndexOf('>') : preTransform.IndexOf(transformableMatches[0])-1;
                 preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
-                return transformableMatches.Aggregate(preTransform, (current, match) => current.Replace(match, ""));
+                return transformableMatches.Aggregate(preTransform, (current, match) => current.Remove(current.IndexOf(match), match.Length));
             }
             reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
             RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);

@@ -32,8 +32,8 @@ namespace RequestReduce.Facts.Reducer
                 Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(true);
             }
 
-            public byte[] Image15X17 = File.ReadAllBytes("testimages\\delete.png");
-            public byte[] Image18X18 = File.ReadAllBytes("testimages\\emptyStar.png");
+            public byte[] Image15X17 = File.ReadAllBytes(string.Format("{0}\\testimages\\delete.png", AppDomain.CurrentDomain.BaseDirectory));
+            public byte[] Image18X18 = File.ReadAllBytes(string.Format("{0}\\testimages\\emptyStar.png", AppDomain.CurrentDomain.BaseDirectory));
 
             public static byte[] GetFiveColorImage()
             {
