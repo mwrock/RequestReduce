@@ -238,7 +238,29 @@ namespace RequestReduce.Facts.Store
                 Assert.True(result[guid2] == "url2");
                 testable.Dispose();
             }
-			
+
+            [Fact]
+            public void WillResolveFilesInLowerCase()
+            {
+                var testable = new TestableLocalDiskStore();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                var guid1 = Guid.NewGuid();
+                var sig1 = Guid.NewGuid().RemoveDashes();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
+                var files = new List<DatedFileEntry>
+                                {
+                                    new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid1.RemoveDashes(), sig1, new CssResource().FileName.ToLower()), DateTime.Now),
+                                };
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", "*RequestReduce*")).Returns(files);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].FileName.Replace("\\", "/"))).Returns(guid1);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].FileName.Replace("\\", "/"))).Returns(sig1);
+
+                var result = testable.ClassUnderTest.GetSavedUrls();
+
+                Assert.Equal(1, result.Count);
+                testable.Dispose();
+            }
+
 			[Fact]
             public void WillPullMostRecentActiveUrlPerKey()
             {

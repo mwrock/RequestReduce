@@ -118,11 +118,19 @@ namespace RequestReduce.Store
                 return dic;
 
             var activeFiles = fileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, "*RequestReduce*");
-            return (from files in activeFiles 
-			where !files.FileName.Contains("-Expired-") 
-			group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) into filegroup 
-			join files2 in activeFiles on new { k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate) } equals new { k = uriBuilder.ParseKey(files2.FileName.Replace("\\", "/")), u = files2.CreatedDate } select files2.FileName)
-            .ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")), file => uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file.Replace("\\", "/")), uriBuilder.ParseSignature(file.Replace("\\", "/")), RRContainer.Current.GetAllInstances<IResourceType>().SingleOrDefault(x => file.EndsWith(x.FileName)).GetType()));
+            return (from files in activeFiles
+                    where !files.FileName.Contains("-Expired-")
+                    group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/"))
+                    into filegroup
+                    join files2 in activeFiles on new {k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate)} equals
+                        new {k = uriBuilder.ParseKey(files2.FileName.Replace("\\", "/")), u = files2.CreatedDate}
+                    select files2.FileName)
+                .ToDictionary(file => uriBuilder.ParseKey(file.Replace("\\", "/")),
+                              file =>
+                              uriBuilder.BuildResourceUrl(uriBuilder.ParseKey(file.Replace("\\", "/")),
+                                                          uriBuilder.ParseSignature(file.Replace("\\", "/")),
+                                                          RRContainer.Current.GetAllInstances<IResourceType>().
+                                                              SingleOrDefault(x => file.EndsWith(x.FileName, true, CultureInfo.InvariantCulture)).GetType()));
         }
 
         public void Flush(Guid keyGuid)
