@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RequestReduce.Api;
 using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -82,7 +83,20 @@ namespace RequestReduce.SqlServer
             if(file != null)
             {
                 response.BinaryWrite(file.Content);
-                fileStore.Save(file.Content, url, null);
+                try
+                {
+                    fileStore.Save(file.Content, url, null);
+                }
+                catch(Exception ex)
+                {
+                    var message = string.Format("could not save {0}", url);
+                    var wrappedException =
+                        new ApplicationException(message, ex);
+                    RRTracer.Trace(message);
+                    RRTracer.Trace(ex.ToString());
+                    if (Registry.CaptureErrorAction != null)
+                        Registry.CaptureErrorAction(wrappedException);
+                }
                 RRTracer.Trace("{0} transmitted from db.", url);
                 if (file.IsExpired)
                     reductionRepository.RemoveReduction(key);
