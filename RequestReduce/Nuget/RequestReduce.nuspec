@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata>
     <id>RequestReduce</id>
-    <version>1.6.12</version>
+    <version>1.6.19</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>

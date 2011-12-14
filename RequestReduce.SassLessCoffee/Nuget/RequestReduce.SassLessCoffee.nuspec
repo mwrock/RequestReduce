@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>RequestReduce.SassLessCoffee</id>
-    <version>1.6.12</version>
+    <version>1.6.19</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -22,7 +22,7 @@
       * Fix .less imports
     </releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.6.12" />
+      <dependency id="RequestReduce" version="1.6.19" />
       <dependency id="dotless" version="1.2.1.0" />
       <dependency id="SassAndCoffee.Core" version="1.1.5" />
     </dependencies>
