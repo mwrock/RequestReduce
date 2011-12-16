@@ -233,6 +233,8 @@ namespace RequestReduce.Module
 
             if(string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
+
+            var oldFilter = context.Response.Filter;
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
             context.Items.Add(CONTEXT_KEY, new object());
             RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);

@@ -41,7 +41,7 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
-        public void WillSetResponseFilterIfHtmlContent()
+        public void WillGetAndSetResponseFilterIfHtmlContent()
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
@@ -60,6 +60,7 @@ namespace RequestReduce.Facts.Module
 
             module.InstallFilter(context.Object);
 
+            context.VerifyGet(x => x.Response.Filter, Times.Once());
             context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
             RRContainer.Current = null;
         }
