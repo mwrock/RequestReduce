@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Web;
 using Moq;
 using RequestReduce.SassLessCoffee;
@@ -9,15 +8,12 @@ using Xunit;
 
 namespace RequestReduce.Facts.SassLessCoffee
 {
-    public class CoffeeHandlerFacts
+    public class CoffeeHandlerFacts : IDisposable
     {
+        private static int count;
+
         class TestableCoffeeHandler : Testable<CoffeeHandler>
         {
-            static TestableCoffeeHandler()
-            {
-                AppDomain.CurrentDomain.ProcessExit += CurrentDomainDomainUnload;
-            }
-
             public TestableCoffeeHandler()
             {
                 Inject<ISimpleFileCompiler>(new CoffeeScriptFileCompiler());
@@ -32,12 +28,6 @@ namespace RequestReduce.Facts.SassLessCoffee
                 MockedServer.Setup(x => x.MapPath("~/RRContent/script.coffee")).Returns(string.Format("{0}\\TestScripts\\test.coffee", AppDomain.CurrentDomain.BaseDirectory));
                 MockedContext.Setup(x => x.Server).Returns(MockedServer.Object);
                 MockedResponse.Setup(x => x.Write(It.IsAny<string>())).Callback<string>(s => CompileResult = s);
-            }
-
-            private static void CurrentDomainDomainUnload(object sender, EventArgs e)
-            {
-                new CoffeeScriptCompiler().Dispose();
-                JS.Shutdown();
             }
 
             public Mock<HttpContextBase> MockedContext { get; set; }
@@ -92,6 +82,15 @@ namespace RequestReduce.Facts.SassLessCoffee
             testable.ClassUnderTest.ProcessRequest(testable.MockedContext.Object);
 
             Assert.Equal(500, testable.MockedResponse.Object.StatusCode);
+        }
+
+        public void Dispose()
+        {
+            if(++count == 4) 
+                //we do tis because sassandcoffee javascript compiler provides no alternative
+                //without causing the xunit test runner to hang waiting for the js compiler
+                //thread to complete. It can only be called once perapp domain lifetime.
+                JS.Shutdown();
         }
     }
 }
