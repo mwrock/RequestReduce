@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata>
     <id>RequestReduce</id>
-    <version>1.6.19</version>
+    <version>1.6.23</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -15,7 +15,9 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
-      * Fix buf that surfaces when two identical scripts are in the head
+      * Fix errors thrown by setting response filter after a redirect
+      * Fix errors thrown by setting response filter without reading it (.net 3.5 bug)
+      * Fix bug that surfaces when two identical scripts are in the head
       * Gracefully swallow and log errors in transformations
       * Fix disk file cache failing to load previously cached files on app startup
     </releaseNotes>

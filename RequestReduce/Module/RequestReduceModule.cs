@@ -226,6 +226,8 @@ namespace RequestReduce.Module
                 context.Response.ContentType != "text/html" || 
                 (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
                 (config.CssProcessingDisabled && config.JavaScriptProcessingDisabled) ||
+                context.Response.StatusCode == 302 ||
+                context.Response.StatusCode == 301 ||
                 request.RawUrl == "/favicon.ico" || 
                 RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is PageFilter).FirstOrDefault(y => y.IgnoreTarget(new PageFilterContext(context.Request))) != null ||
                 IsInRRContentDirectory(context))
@@ -234,7 +236,7 @@ namespace RequestReduce.Module
             if(string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
 
-            var oldFilter = context.Response.Filter;
+            var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bug 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
             context.Items.Add(CONTEXT_KEY, new object());
             RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);

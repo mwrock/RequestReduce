@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>RequestReduce.SqlServer</id>
-    <version>1.6.19</version>
+    <version>1.6.23</version>
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -15,13 +15,15 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
-      * Fix buf that surfaces when two identical scripts are in the head
+      * Fix errors thrown by setting response filter after a redirect
+      * Fix errors thrown by setting response filter without reading it (.net 3.5 bug)
+      * Fix bug that surfaces when two identical scripts are in the head
       * Gracefully swallow and log errors in transformations
       * Fix disk file cache failing to load previously cached files on app startup
       * Gracefully swallow and Log errors on saving cached file to disk
     </releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.6.19" />
+      <dependency id="RequestReduce" version="1.6.23" />
       <dependency id="EntityFramework" version="4.1.10715.0" />
     </dependencies>
   </metadata>

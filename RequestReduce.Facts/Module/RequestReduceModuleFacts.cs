@@ -90,6 +90,34 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = null;
         }
 
+        [Theory]
+        [InlineData(301)]
+        [InlineData(302)]
+        public void WillNotSetResponseFilterIfStatusIs302Or301(int status)
+        {
+            RRContainer.Current = null;
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            context.Setup(x => x.Items.Contains(RequestReduceModule.CONTEXT_KEY)).Returns(false);
+            context.Setup(x => x.Response.ContentType).Returns("text/html");
+            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+            context.Setup(x => x.Response.StatusCode).Returns(status);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
+
+            module.InstallFilter(context.Object);
+
+            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+            RRContainer.Current = null;
+        }
+
         [Fact]
         public void WillSetPhysicalPathToMappedVirtualPath()
         {

@@ -89,7 +89,8 @@ namespace RequestReduce.Facts.SassLessCoffee
             if(++count == 4) 
                 //we do tis because sassandcoffee javascript compiler provides no alternative
                 //without causing the xunit test runner to hang waiting for the js compiler
-                //thread to complete. It can only be called once perapp domain lifetime.
+                //thread to complete. It can only be called once per app domain lifetime.
+                //when SassAndCoffee 2.0 releases, we can remove this
                 JS.Shutdown();
         }
     }
