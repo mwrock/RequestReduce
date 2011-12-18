@@ -5562,6 +5562,11 @@
             The default is 'Data Source=.\SQLEXPRESS; Integrated Security=True; MultipleActiveResultSets=True'.
             </summary>
         </member>
+        <member name="P:System.Data.Entity.Infrastructure.SqlConnectionFactory.ProviderFactory">
+            <summary>
+            Remove hard dependency on DbProviderFactories.
+            </summary>
+        </member>
         <member name="T:System.Data.Entity.Infrastructure.DbConnectionStringOrigin">
             <summary>
                 Describes the origin of the database connection string associated with a <see cref="T:System.Data.Entity.DbContext"/>.
@@ -5646,6 +5651,11 @@
         <member name="P:System.Data.Entity.Infrastructure.DbContextInfo.ConnectionStringOrigin">
             <summary>
                 The origin of the connection string used by the underlying <see cref="T:System.Data.Entity.DbContext"/> type.
+            </summary>
+        </member>
+        <member name="P:System.Data.Entity.Infrastructure.DbContextInfo.OnModelCreating">
+            <summary>
+                An action to be run on the DbModelBuilder after OnModelCreating has been run on the context.
             </summary>
         </member>
         <member name="T:System.Data.Entity.Infrastructure.DbComplexPropertyEntry">
@@ -7405,7 +7415,7 @@
             <param name="contextType">Type of the context.</param>
             <returns>The database name to use.</returns>
         </member>
-        <member name="M:System.Data.Entity.Internal.DbHelpers.CloneObjectContext(System.Data.Objects.ObjectContext,System.Boolean)">
+        <member name="M:System.Data.Entity.Internal.DbHelpers.CloneObjectContext(System.Data.Objects.ObjectContext,System.Boolean,System.String)">
             <summary>
             Creates a clone of the given <see cref="T:System.Data.Objects.ObjectContext"/> that has the same 
             loaded metadata as the original but a new connection and new, empty, state manager.
@@ -7721,7 +7731,7 @@
             Creates a cloned ObjectContext suitable for use with DDL operations. 
             </summary>
         </member>
-        <member name="M:System.Data.Entity.Internal.InternalContext.UseTempObjectContext">
+        <member name="M:System.Data.Entity.Internal.InternalContext.UseTempObjectContext(System.String)">
             <summary>
             Creates a new temporary <see cref="P:System.Data.Entity.Internal.InternalContext.ObjectContext"/> based on the same metadata and connection as the real
             <see cref="P:System.Data.Entity.Internal.InternalContext.ObjectContext"/> and sets it as the context to use DisposeTempObjectContext is called.
