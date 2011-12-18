@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Web;
-using RequestReduce.Configuration;
-using RequestReduce.IOC;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.SampleWeb
@@ -17,8 +15,10 @@ namespace RequestReduce.SampleWeb
         {
             var url = context.Request.RawUrl.Substring(context.Request.RawUrl.IndexOf("test=") + 5);
             var response = new WebClientWrapper().DownloadString(url);
-            var config = RequestReduce.Api.Registry.Configuration;
+            var config = Api.Registry.Configuration;
             config.BaseAddress = url;
+            if (response.IndexOf("<base ", StringComparison.OrdinalIgnoreCase) == -1)
+                response = response.Replace("</head>", string.Format(@"<base href=""{0}""></base></head>", url));
             context.Response.Write(response);
         }
     }
