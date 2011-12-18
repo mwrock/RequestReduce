@@ -17,7 +17,7 @@ namespace RequestReduce.Configuration
     {
         string SpriteVirtualPath { get; set; }
         string SpritePhysicalPath { get; set; }
-        string ContentHost { get; }
+        string ContentHost { get; set; }
         string ConnectionStringName { get; set; }
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
@@ -57,6 +57,7 @@ namespace RequestReduce.Configuration
         public RRConfiguration()
         {
             IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
+            ContentHost = config == null ? null : config.ContentHost;
             AuthorizedUserList = config == null || string.IsNullOrEmpty(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit = val == 0 ? 50000 : val;
@@ -121,10 +122,7 @@ namespace RequestReduce.Configuration
             }
         }
 
-        public string ContentHost
-        {
-            get { return config == null ? null : config.ContentHost; }
-        }
+        public string ContentHost { get; set; }
 
         public string ConnectionStringName  { get; set; }
 
