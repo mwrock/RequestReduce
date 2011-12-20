@@ -9,7 +9,8 @@ properties {
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
 	$filesDir = "$webDir\BuildFiles"
-	$version = "1.6." + (git log v1.6.. --pretty=oneline | measure-object).Count
+	$version = git describe --abbrev=0 --tags
+	$version = $version.substring(1) + '.' + (git log $($version + '..') --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
 	$nugetDir = ([array](dir $baseDir\packages\NuGet.CommandLine.*))[-1]
 }
@@ -34,7 +35,8 @@ task echo-path {
 }
 
 task Update-AssemblyInfoFiles {
-	$commit = git log -1 v1.6.. --pretty=format:%H
+	$v = git describe --abbrev=0 --tags
+	$commit = git log -1 $($v + '..') --pretty=format:%H
 	Update-AssemblyInfoFiles $version $commit
 }
 
