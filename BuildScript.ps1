@@ -10,6 +10,7 @@ properties {
 	$filesDir = "$webDir\BuildFiles"
 	$version = "1.6." + (git log v1.6.. --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
+	$nugetDir = ((dir $baseDir\packages\NuGet.CommandLine.*)[-1])
 }
 
 task Debug -depends Default
@@ -92,17 +93,17 @@ task Push-Repo {
 
 task Push-Nuget-Core {
 	$pkg = Get-Item -path $filesDir/RequestReduce.1.*.*.nupkg
-	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+	exec { .$nugetDir\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Push-Nuget-SqlServer {
 	$pkg = Get-Item -path $filesDir/RequestReduce.SqlServer.*.*.*.nupkg
-	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+	exec { .$nugetDir\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Push-Nuget-SassLessCoffee {
 	$pkg = Get-Item -path $filesDir/RequestReduce.SassLessCoffee.*.*.*.nupkg
-	exec { .\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+	exec { .$nugetDir\Tools\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Merge-35-Assembly -depends Build-35-Solution {
@@ -168,9 +169,9 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   cd $filesDir
   exec { & $baseDir\Tools\zip.exe -9 -r RequestReduce-$version.zip . }
   cd $currentDir
-  exec { .\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
-  exec { .\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
-  exec { .\Tools\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir }
+  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
+  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
+  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir }
 }
 
 task Update-Website-Download-Links {
