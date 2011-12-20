@@ -232,7 +232,7 @@ function Setup-IIS([string] $siteName, [string] $solutionDir, [string] $port )
 function Update-AssemblyInfoFiles ([string] $version, [string] $commit) {
     $assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
     $fileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-    $fileCommitPattern = 'AssemblyTrademarkAttribute\("[a-f0-9]{40}"\)'
+    $fileCommitPattern = 'AssemblyTrademarkAttribute\("([a-f0-9]{40})?"\)'
     $assemblyVersion = 'AssemblyVersion("' + $version + '")';
     $fileVersion = 'AssemblyFileVersion("' + $version + '")';
     $commitVersion = 'AssemblyTrademarkAttribute("' + $commit + '")';
