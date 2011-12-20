@@ -3,6 +3,7 @@ properties {
   $currentDir = resolve-path .
   $Invocation = (Get-Variable MyInvocation -Scope 1).Value
   $baseDir = Split-Path -parent $Invocation.MyCommand.Definition | split-path -parent | split-path -parent | split-path -parent
+  echo $baseDir
   $port = "8877"
   $configuration = "debug"
 	# Package Directories
@@ -10,28 +11,16 @@ properties {
 	$filesDir = "$webDir\BuildFiles"
 	$version = "1.6." + (git log v1.6.. --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
-	$nugetDir = ((dir $baseDir\packages\NuGet.CommandLine.*)[-1])
+	$nugetDir = ([array](dir $baseDir\packages\NuGet.CommandLine.*))[-1]
 }
 
 task Debug -depends Default
-task Default -depends Setup-40-Projects, Clean-Solution, Setup-IIS, Build-Solution, Reset, Test-Solution
-task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Output, Reset, Push-Repo, Update-Website-Download-Links, Push-Web
+task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
+task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Output, Push-Repo, Update-Website-Download-Links, Push-Web
 task Push-Nuget-All -depends Push-Nuget-Core, Push-Nuget-SqlServer, Push-Nuget-SassLessCoffee
-
-task Reset {
-  Change-Framework-Version $projectFiles '4.0' $true
-}
 
 task Setup-IIS {
     Setup-IIS "RequestReduce" $baseDir $port
-}
-
-task Setup-35-Projects {
-  Change-Framework-Version $projectFiles '3.5' $false
-}
-
-task Setup-40-Projects {
-  Change-Framework-Version $projectFiles '4.0' $false
 }
 
 task Clean-Solution -depends Clean-BuildFiles {
@@ -43,6 +32,7 @@ task Clean-Solution -depends Clean-BuildFiles {
 task echo-path {
 	write-host "dir:" $webDir
 }
+
 task Update-AssemblyInfoFiles {
 	$commit = git log -1 v1.6.. --pretty=format:%H
 	Update-AssemblyInfoFiles $version $commit
@@ -53,11 +43,12 @@ task create-WebProject-build-target {
 	Copy-Item $baseDir\Microsoft.WebApplication.targets $env:MSBuildExtensionsPath32\Microsoft\VisualStudio\v10.0\Microsoft.WebApplication.targets
 }
 
-task Build-35-Solution -depends Setup-35-Projects{
-  exec { msbuild 'RequestReduce\RequestReduce.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
+task Build-35-Solution {
+  $conf = $configuration+35
+  exec { msbuild 'RequestReduce\RequestReduce.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$conf }
 }
 
-task Build-Solution -depends Setup-40-Projects {
+task Build-Solution {
     exec { msbuild RequestReduce.sln /maxcpucount /t:Build /v:Minimal /p:Configuration=$configuration }
 }
 
@@ -272,42 +263,4 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $commit) {
 			% {$_ -replace $fileCommitPattern, $commitVersion }
         } | Set-Content $filename
     }
-}
-
-function Change-Framework-Version ([string[]] $projFiles, [string] $frameworkVersion, [boolean] $setDefaultPath) {
-  $nQuantRegex = [regex] '<HintPath>\.\.\\packages\\nQuant.+\\Lib\\(net\d{2})\\nQuant\.Core\.dll</HintPath>'
-  if ($frameworkVersion -eq '4.0') { $nugetVer = 'net40' } else { $nugetVer = 'net20' }
-
-	foreach ($projFile in $projFiles) {	
-		$content = [xml] (get-content $projFile)
-		$content.Project.SetAttribute("ToolsVersion", $frameworkVersion)
-		$content.Project.PropertyGroup[0].TargetFrameworkVersion = "v$frameworkVersion"
-		if ($setDefaultPath) {
-      $paths = 'bin\Debug\', 'bin\Release\'
-		} else {
-      $paths = "bin\v$frameworkVersion\Debug\", "bin\v$frameworkVersion\Release\"
-    }
-    
-    $content.Project.PropertyGroup[1].OutputPath = $paths[0]
-    $content.Project.PropertyGroup[2].OutputPath = $paths[1]
-    
-    if ($frameworkVersion -eq '4.0') {
-      $ref = $content.Project.ItemGroup[0].Reference | where-object { $_.GetAttribute('Include') -eq 'System.Web.Abstractions' }
-      if ($ref -ne $null) {
-        $content.Project.ItemGroup[0].RemoveChild($ref) | out-null
-      }
-    } else {
-      $ref = $content.CreateElement('Reference', 'http://schemas.microsoft.com/developer/msbuild/2003')
-      $ref.SetAttribute('Include', 'System.Web.Abstractions')
-      $content.Project.ItemGroup[0].AppendChild($ref) | out-null
-    }
-    
-		$content.Save($projFile)
-		
-		$content = [System.IO.File]::ReadAllText($projFile)
-		$match = $nQuantRegex.Match($content)
-		$content = $content.Remove($match.Groups[1].Index, $match.Groups[1].Length)
-		$content = $content.Insert($match.Groups[1].Index, $nugetVer)
-		set-content $projFile $content
-	}
 }
