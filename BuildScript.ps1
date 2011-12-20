@@ -116,20 +116,9 @@ task Merge-40-Assembly -depends Build-Solution {
 }
 
 task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
-	clean $filesDir
-	clean $baseDir\RequestReduce\Nuget\pngoptimization
-	create $baseDir\RequestReduce\Nuget\pngoptimization
-  $Spec = [xml](get-content "RequestReduce\Nuget\RequestReduce.nuspec")
-  $Spec.package.metadata.version = $version
-  $Spec.Save("RequestReduce\Nuget\RequestReduce.nuspec")
-  $Spec = [xml](get-content "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
-  $Spec.package.metadata.version = $version
-  $Spec.package.metadata.dependencies.dependency[0].SetAttribute("version", $version)
-  $Spec.Save("RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec")
-  $Spec = [xml](get-content "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec")
-  $Spec.package.metadata.version = $version
-  $Spec.package.metadata.dependencies.dependency[0].SetAttribute("version", $version)
-  $Spec.Save("RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec")
+  clean $filesDir
+  clean $baseDir\RequestReduce\Nuget\pngoptimization
+  create $baseDir\RequestReduce\Nuget\pngoptimization
   clean $baseDir\RequestReduce\Nuget\Content\App_Readme
   create $baseDir\RequestReduce\Nuget\Content\App_Readme
   Copy-Item $baseDir\RequestReduce.SqlServer\bin\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net40\
@@ -160,9 +149,9 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   cd $filesDir
   exec { & $baseDir\Tools\zip.exe -9 -r RequestReduce-$version.zip . }
   cd $currentDir
-  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir }
-  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir }
-  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir }
+  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir -version $version }
+  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir -version $version }
+  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir -version $version }
 }
 
 task Update-Website-Download-Links {
