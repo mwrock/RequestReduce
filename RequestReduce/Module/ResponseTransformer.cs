@@ -98,8 +98,12 @@ namespace RequestReduce.Module
             if (transform != null)
             {
                 RRTracer.Trace("Reduction found for {0}", urls);
-                var closeHeadIdx = (preTransform.StartsWith("<head", StringComparison.OrdinalIgnoreCase) && resource is CssResource) ? preTransform.IndexOf('>') : preTransform.IndexOf(transformableMatches[0])-1;
-                preTransform = preTransform.Insert(closeHeadIdx + 1, resource.TransformedMarkupTag(transform));
+                var scriptIdx = preTransform.IndexOf("<script", StringComparison.OrdinalIgnoreCase);
+                var insertionIdx = (scriptIdx > -1 && scriptIdx <
+                                    preTransform.IndexOf(transformableMatches[0]) && resource is CssResource)
+                                       ? scriptIdx - 1
+                                       : preTransform.IndexOf(transformableMatches[0]) - 1;
+                preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
                 return transformableMatches.Aggregate(preTransform, (current, match) => current.Remove(current.IndexOf(match), match.Length));
             }
             reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });

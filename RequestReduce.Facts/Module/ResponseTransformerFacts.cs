@@ -64,9 +64,9 @@ namespace RequestReduce.Facts.Module
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
-                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 
 <script src=""http://server/Me.js"" type=""text/javascript"" ></script>
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
@@ -83,7 +83,7 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
-            public void WillTransformToSingleCssAtBeginningOfHeadOnMatch()
+            public void WillTransformAtFirstStyleIfNoScripts()
             {
                 var testable = new TestableResponseTransformer();
                 var transform = @"<head id=""Head1"">
@@ -92,8 +92,60 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
+            public void WillTransformAtFirstStyleIfBeforeScripts()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<script srd=""src.js"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                var transformed = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+<script srd=""src.js"" />
+
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
+            public void WillTransformAtFirstScriptIfBeforeStyles()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script srd=""src.js"" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                var transformed = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script srd=""src.js"" />
 
 
 <title>site</title></head>
@@ -299,8 +351,8 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
                 ";
-                var transformed = @"<head id=""Head1""><link href=""http://server/Me4.css"" rel=""Stylesheet"" type=""text/css"" />
-
+                var transformed = @"<head id=""Head1"">
+<link href=""http://server/Me4.css"" rel=""Stylesheet"" type=""text/css"" />
 
 <link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
                 ";
@@ -326,9 +378,9 @@ namespace RequestReduce.Facts.Module
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
-                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 
 <script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
 
@@ -358,9 +410,9 @@ namespace RequestReduce.Facts.Module
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
-                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 
 <script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
 
@@ -387,12 +439,12 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"<head id=""Head1""><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
     <!--[if IE 6]>
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
     <![endif]-->
-
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me2.css::")).Returns("http://server/Me3.css");
@@ -439,9 +491,9 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
 <title>site</title></head>
                 ";
-                var transformed = @"<head><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+                var transformed = @"<head>
 <meta name=""description"" content="""" />
-
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
 
 <title>site</title></head>
                 ";
