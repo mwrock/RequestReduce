@@ -114,7 +114,7 @@ namespace RequestReduce.Facts.Reducer
         }
 
         [Fact]
-        public void WillMatcElementAfterPartialMatch()
+        public void WillMatchElementAfterPartialMatch()
         {
             var target = "#icons .new .ne .warnings.red.small div.cls";
             var comparable = "#icons .ne";
@@ -124,5 +124,66 @@ namespace RequestReduce.Facts.Reducer
 
             Assert.True(result);
         }
+
+        [Fact]
+        public void WillMatchMultipleClassesWhenTargetHasMoreThenCamparable()
+        {
+            var target = "#icons .new .warnings.red.small div.cls";
+            var comparable = "#icons .small.warnings";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchMultipleClassesWhenTargetHasMoreThenCamparableAndFirstMatchFailed()
+        {
+            var target = "#icons .new .small.blue.warnings .warnings.red.small div.cls";
+            var comparable = "#icons .small.red.warnings";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchMultipleClassesWhenComparableHasMoreThanTarget()
+        {
+            var target = "#icons .new .warnings.red.small div.cls";
+            var comparable = "#icons .small.warnings.blue";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillNotMatchElementsWithDifferentClasses()
+        {
+            var target = "#icons .new .warnings.red.small div.cls";
+            var comparable = "#icons div.red";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillNotMatchStandAloneClassTiedToElementInTarget()
+        {
+            var target = "#icons .new .warnings.red.small div.cls";
+            var comparable = "#icons .cls";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
     }
 }
