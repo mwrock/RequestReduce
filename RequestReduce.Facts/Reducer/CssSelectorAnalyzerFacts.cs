@@ -185,5 +185,77 @@ namespace RequestReduce.Facts.Reducer
             Assert.False(result);
         }
 
+        [Fact]
+        public void WillNotMatchElementWithMoreClassesThanElementInTarget()
+        {
+            var target = "#icons .new .warnings.red.small div.cls";
+            var comparable = "#icons div.cls.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillMatchElementWithClassesGettingMatchedByElementInTarget()
+        {
+            var target = "#icons .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchElementWithTargeElementThatHasAnId()
+        {
+            var target = "#icons h1#myit .new .warnings.red.small div.cls.clp";
+            var comparable = "h1 div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchElementWithTargeElementThatHasAMatchingId()
+        {
+            var target = "#icons h1#myit .new .warnings.red.small div.cls.clp";
+            var comparable = "h1#myit div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchElementWithTargeElementThatHasAMisMatchingId()
+        {
+            var target = "#icons h1#myid .new .warnings.red.small div.cls.clp";
+            var comparable = "h1#myit div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillNotMatchLoneIdIfTargetIsTiedToElement()
+        {
+            var target = "#icons h1#myid .new .warnings.red.small div.cls.clp";
+            var comparable = "#myid div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
     }
 }

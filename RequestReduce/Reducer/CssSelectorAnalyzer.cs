@@ -21,13 +21,13 @@ namespace RequestReduce.Reducer
 
         private int FindToken(string comparableSelector, string targetSelector, int targetOffset)
         {
-            var tokens = comparableSelector.Split(new[]{'.'}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = comparableSelector.Split(new[]{'.','#'}, StringSplitOptions.RemoveEmptyEntries);
             while (targetSelector.Length > targetOffset)
             {
                 var idx = targetSelector.IndexOf(tokens[0], targetOffset, StringComparison.OrdinalIgnoreCase);
                 if (idx == -1) return idx;
                 var endIdx = idx + tokens[0].Length;
-                if ((idx == 0 || targetSelector[idx-1] == '.' ||
+                if ((idx == 0 || targetSelector[idx - 1] == '.' || targetSelector[idx - 1] == '#' ||
                     targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx - 1, 1) == idx - 1) &&
                     (targetSelector.Length <= endIdx || targetSelector[endIdx] == '.' || targetSelector[endIdx] == '#' ||
                     targetSelector.IndexOfAny(new[] {' ', '\n', '\r', '\t'}, endIdx, 1) == endIdx))
@@ -37,7 +37,7 @@ namespace RequestReduce.Reducer
                     {
                         var endTargetdx = targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx);
                         endTargetdx = endTargetdx == -1 ? targetSelector.Length - 1 : endTargetdx - 1;
-                        var targetTokens = targetSelector.Substring(startTargetIdx, endTargetdx - startTargetIdx + 1).Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                        var targetTokens = targetSelector.Substring(startTargetIdx, endTargetdx - startTargetIdx + 1).Split(new[] { '.','#' }, StringSplitOptions.RemoveEmptyEntries);
                         if (tokens.All(x => targetTokens.Contains(x)))
                             return idx;
                     }
