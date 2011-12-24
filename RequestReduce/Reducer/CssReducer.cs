@@ -15,7 +15,6 @@ namespace RequestReduce.Reducer
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
         private readonly IRRConfiguration configuration;
-        private readonly List<BackgroundImageClass> imageUrls = new List<BackgroundImageClass>();
         private static readonly RegexCache Regex = new RegexCache();
 
         public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration) : base(webClientWrapper, store, minifier, uriBuilder)
@@ -73,12 +72,10 @@ namespace RequestReduce.Reducer
         private string ProcessSprites(string cssContent, string parentUrl)
         {
             var newImages = cssImageTransformer.ExtractImageUrls(ref cssContent, parentUrl);
-                foreach (var imageUrl in newImages)
-                {
-                    if (!configuration.ImageSpritingDisabled)
-                        spriteManager.Add(imageUrl);
-                    imageUrls.Add(imageUrl);
-                }
+            if (configuration.ImageSpritingDisabled)
+                return cssContent;
+            foreach (var imageUrl in newImages)
+                spriteManager.Add(imageUrl);
             return cssContent;
         }
 

@@ -15,6 +15,7 @@ properties {
 	$nugetDir = ([array](dir $baseDir\packages\NuGet.CommandLine.*))[-1]
 }
 
+task Test-Solution -depends Unit-Tests, Integration-Tests
 task Debug -depends Default
 task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
 task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Output, Push-Repo, Update-Website-Download-Links, Push-Web
@@ -164,8 +165,11 @@ task Update-Website-Download-Links {
      (Get-Content $filename) | % {$_ -replace $downloadButtonUrlPatern, $downloadUrl } | % {$_ -replace $downloadLinkTextPattern, ("v"+$version) } | Set-Content $filename
 }
 
-task Test-Solution {
+task Unit-Tests -depends Build-Solution {
     exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
+}
+
+task Integration-Tests -depends Build-Solution {
     exec {.\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
 }
 
