@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
     public class CssSelectorAnalyzer
     {
+        private static readonly RegexCache Regex = new RegexCache();
+
         public bool IsInScopeOfTarget(string targetSelector, string comparableSelector)
         {
             var targetOffset = 0;
@@ -21,7 +23,7 @@ namespace RequestReduce.Reducer
 
         private int FindToken(string comparableSelector, string targetSelector, int targetOffset)
         {
-            var tokens = Regex.Split(comparableSelector, @"(?=[:\.\#])");
+            var tokens = Regex.SelectorSplitPattern.Split(comparableSelector);
             while (targetSelector.Length > targetOffset)
             {
                 var tokenIdx = 0;
@@ -43,7 +45,7 @@ namespace RequestReduce.Reducer
                     var startTargetIdx = targetSelector.LastIndexOfAny(new[] {' ', '\n', '\r', '\t'}, idx) + 1;
                     var endTargetdx = targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx);
                     endTargetdx = endTargetdx == -1 ? targetSelector.Length - 1 : endTargetdx - 1;
-                    var targetTokens = Regex.Split(targetSelector.Substring(startTargetIdx, endTargetdx - startTargetIdx + 1), @"(?=[:\.\#])");
+                    var targetTokens = Regex.SelectorSplitPattern.Split(targetSelector.Substring(startTargetIdx, endTargetdx - startTargetIdx + 1));
                     if (tokens.All(x => targetTokens.Contains(x, StringComparer.OrdinalIgnoreCase) || x.Length==0 || x == "*"))
                         return idx;
                 }
