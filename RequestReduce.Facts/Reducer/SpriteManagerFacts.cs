@@ -61,7 +61,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillAddImageToSpriteContainer()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css"){ImageUrl = ""};
+                var image = new BackgroundImageClass(""){ImageUrl = ""};
 
                 testable.ClassUnderTest.Add(image);
 
@@ -75,7 +75,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteSizeLimit).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl" });
 
                 Assert.NotEqual(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
             }
@@ -87,7 +87,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.SpriteColorLimit).Returns(1);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Colors).Returns(1);
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl" });
 
                 Assert.NotEqual(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
             }
@@ -100,7 +100,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(true);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Colors).Returns(1);
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl" });
 
                 Assert.Same(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
             }
@@ -113,7 +113,7 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageQuantizationDisabled).Returns(true);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Colors).Returns(1);
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "imageUrl" });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "imageUrl" });
 
                 Assert.Same(testable.ClassUnderTest.MockSpriteContainer.Object, testable.ClassUnderTest.SpriteContainer);
             }
@@ -126,8 +126,8 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1", Width = image1Width, Height = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
-                testable.ClassUnderTest.Add(new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1", Width = image2Width, Height = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", Width = image1Width, Height = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", Width = image2Width, Height = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
 
                 testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(It.IsAny<BackgroundImageClass>()), Times.Exactly(2));
             }
@@ -136,7 +136,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillNotAddImageToSpriteContainerIfImageAlreadySprited()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
                 testable.ClassUnderTest.Add(image);
 
                 testable.ClassUnderTest.Add(image);
@@ -148,7 +148,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillNotAddImageToSpriteContainerIfTheRegistryFiltersIt()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "", Width = 110};
+                var image = new BackgroundImageClass("") { ImageUrl = "", Width = 110};
                 Registry.AddFilter(new SpriteFilter(x => x.BackgroundImage.Width > 100));
 
                 testable.ClassUnderTest.Add(image);
@@ -160,7 +160,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSwallowInvalidOperationException()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "" };
+                var image = new BackgroundImageClass("") { ImageUrl = "" };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.AddImage(image)).Throws(new InvalidOperationException());
 
                 var ex = Record.Exception(() => testable.ClassUnderTest.Add(image));
@@ -510,8 +510,8 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnAllImages()
             {
                 var testable = new TestableSpriteManager();
-                testable.ClassUnderTest.Add(new BackgroundImageClass("class1", ""){Height = 1});
-                testable.ClassUnderTest.Add(new BackgroundImageClass("class2", "") { Height = 2 });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("class1"){Height = 1});
+                testable.ClassUnderTest.Add(new BackgroundImageClass("class2") { Height = 2 });
 
                 var results = testable.ClassUnderTest.ToArray();
 

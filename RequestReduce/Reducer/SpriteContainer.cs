@@ -81,7 +81,7 @@ namespace RequestReduce.Reducer
                     }
                     catch (OutOfMemoryException)
                     {
-                        throw new InvalidOperationException(string.Format("Unable to Add {0} to Sprite.", image.OriginalImageUrl));
+                        throw new InvalidOperationException(string.Format("Unable to Add {0} to Sprite.", image.ImageUrl));
                     }
                     bitmap = writer.SpriteImage;
                     if ((originalBitmap.Width * originalBitmap.Height) > (bitmap.Width * bitmap.Height))

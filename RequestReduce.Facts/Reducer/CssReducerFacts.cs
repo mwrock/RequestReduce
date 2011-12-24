@@ -158,10 +158,10 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableCssReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns("css"); 
-                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1" };
-                var image2 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image2" };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "image1" };
+                var image2 = new BackgroundImageClass("") { ImageUrl = "image2" };
                 var css = "css";
-                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new BackgroundImageClass[] { image1, image2 });
+                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(css)).Returns(new BackgroundImageClass[] { image1, image2 });
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
@@ -172,13 +172,13 @@ namespace RequestReduce.Facts.Reducer
             public void WillInjectSpritesToCssAfterFlush()
             {
                 var testable = new TestableCssReducer();
-                var image1 = new BackgroundImageClass("", "http://server/content/style.css") {ImageUrl = "image1"};
-                var image2 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image2" };
+                var image1 = new BackgroundImageClass("") {ImageUrl = "image1"};
+                var image2 = new BackgroundImageClass("") { ImageUrl = "image2" };
                 var css = "css";
                 var mockWebResponse = new Mock<WebResponse>();
                 mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes(css)));
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<CssResource>(It.IsAny<string>())).Returns(mockWebResponse.Object);
-                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new[] { image1, image2 });
+                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(css)).Returns(new[] { image1, image2 });
                 var sprite1 = new SpritedImage(1, null, null){Position = -100};
                 var sprite2 = new SpritedImage(2, null, null) { Position = -100 };
                 var sprites = new List<SpritedImage> { sprite1, sprite2 };
@@ -236,7 +236,7 @@ namespace RequestReduce.Facts.Reducer
 
                 testable.Mock<ICssImageTransformer>().Verify(
                     x =>
-                    x.ExtractImageUrls(ref css, "http://host/style2/css2.css"), Times.Once());
+                    x.ExtractImageUrls(css), Times.Once());
             }
 
             [Fact]
@@ -245,14 +245,56 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableCssReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns("css");
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageSpritingDisabled).Returns(true);
-                var image1 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image1" };
-                var image2 = new BackgroundImageClass("", "http://server/content/style.css") { ImageUrl = "image2" };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "image1" };
+                var image2 = new BackgroundImageClass("") { ImageUrl = "image2" };
                 var css = "css";
-                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(ref css, It.IsAny<string>())).Returns(new BackgroundImageClass[] { image1, image2 });
+                testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(css)).Returns(new BackgroundImageClass[] { image1, image2 });
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
                 testable.Mock<ISpriteManager>().Verify(x => x.Add(image1), Times.Never());
+            }
+
+            [Fact]
+            public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImages()
+            {
+                var testable = new TestableCssReducer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""subnav_on_technet.png"") no-repeat;
+}";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://host/style/subnav_on_technet.png"") no-repeat;
+}";
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/style/css2.css")).Returns(css);
+
+                testable.ClassUnderTest.Process("http://host/style/css2.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>(expectedcss), Times.Once());
+            }
+
+            [Fact]
+            public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImagesWhenBracesInComments()
+            {
+                var testable = new TestableCssReducer();
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover { border: 1px solid #aaaaaa/*{borderColorContent}*/; background: #ffffff/*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png)/*{bgImgUrlContent}*/ 50%/*{bgContentXPos}*/ 50%/*{bgContentYPos}*/ repeat-x/*{bgContentRepeat}*/; color: #222222/*{fcContent}*/; }";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover { border: 1px solid #aaaaaa; background: #ffffff url(http://host/style/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #222222; }";
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/style/css2.css")).Returns(css);
+
+                testable.ClassUnderTest.Process("http://host/style/css2.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>(expectedcss), Times.Once());
             }
 
         }

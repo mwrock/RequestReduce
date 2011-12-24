@@ -4,7 +4,7 @@ namespace RequestReduce.Reducer
 {
     public interface ICssImageTransformer
     {
-        IEnumerable<BackgroundImageClass> ExtractImageUrls(ref string cssContent, string cssUrl);
+        IEnumerable<BackgroundImageClass> ExtractImageUrls(string cssContent);
         string InjectSprite(string originalCss, SpritedImage image);
     }
 }

@@ -14,5 +14,6 @@ namespace RequestReduce.Utilities
         internal readonly Regex UrlPattern = new Regex(@"(href|src)=['""]?(?<url>[^'"" ]+)['""]?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         internal readonly Regex MediaPattern = new Regex(@"media=['""]?(?<media>[^'"" ]+)['""]?[^ />]+[ />]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         internal readonly Regex SelectorSplitPattern = new Regex(@"(?=[:\.\#])", RegexOptions.Compiled);
+        internal readonly Regex CssCommentPattern = new Regex(@"/\*.+?\*/", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     }
 }

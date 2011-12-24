@@ -33,19 +33,16 @@ namespace RequestReduce.Reducer
     {
         private static readonly RegexCache Regex = new RegexCache();
 
-        public BackgroundImageClass(string originalClassString, string parentCssUrl)
+        public BackgroundImageClass(string originalClassString)
         {
             var offsetExplicitelySet = new bool[2];
             OriginalClassString = originalClassString;
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
             {
-                OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
-                if (OriginalImageUrl.Length > 0)
-                {
-                    ImageUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, OriginalImageUrl);
-                    OriginalClassString = OriginalClassString.Replace(OriginalImageUrl, ImageUrl);
-                }
+                var imageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
+                if (imageUrl.Length > 0)
+                    ImageUrl = imageUrl;
             }
             var repeatMatch = Regex.RepeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
@@ -101,9 +98,9 @@ namespace RequestReduce.Reducer
                     SetOffsets(offsetMatch, offsetExplicitelySet);
             }
             if(XOffset.PositionMode == PositionMode.Direction && !offsetExplicitelySet[1])
-                YOffset = new Position(){PositionMode = PositionMode.Direction};
+                YOffset = new Position {PositionMode = PositionMode.Direction};
             if (YOffset.PositionMode == PositionMode.Direction && !offsetExplicitelySet[0])
-                XOffset = new Position() { PositionMode = PositionMode.Direction };
+                XOffset = new Position { PositionMode = PositionMode.Direction };
         }
 
         private int?[] GetPadding(Match paddingMatch)
@@ -125,7 +122,7 @@ namespace RequestReduce.Reducer
                 padVals[2] = calcPadPixels(pad1, Height);
             else
             {
-                var groupCount = paddingMatch.Groups.Cast<Group>().Where(x => x.Length > 0).Count();
+                var groupCount = paddingMatch.Groups.Cast<Group>().Count(x => x.Length > 0);
                 switch (groupCount-1)
                 {
                     case 1:
@@ -179,15 +176,13 @@ namespace RequestReduce.Reducer
 
         private void SetOffsets(Match offsetMatch, bool[] offsetExplicitelySet)
         {
-            var offset1 = offsetMatch.Groups["offset1"].Value;
-            var offset2 = offsetMatch.Groups["offset2"].Value;
-            var flip = false;
-            if (offset1.ToLower() == "top" || offset1.ToLower() == "bottom" || offset2.ToLower() == "right" || offset2.ToLower() == "left")
-                flip = true;
-            var offset1Position = ",top,bottom,right,left,center".IndexOf(offset1.ToLower()) > 0
+            var offset1 = offsetMatch.Groups["offset1"].Value.ToLower();
+            var offset2 = offsetMatch.Groups["offset2"].Value.ToLower();
+            bool flip = offset1 == "top" || offset1 == "bottom" || offset2 == "right" || offset2 == "left";
+            var offset1Position = ",top,bottom,right,left,center".IndexOf(offset1, StringComparison.Ordinal) > 0
                                       ? ParseStringOffset(offset1)
                                       : ParseNumericOffset(offset1);
-            var offset2Position = ",top,bottom,right,left,center".IndexOf(offset2.ToLower()) > 0
+            var offset2Position = ",top,bottom,right,left,center".IndexOf(offset2, StringComparison.Ordinal) > 0
                                       ? ParseStringOffset(offset2)
                                       : ParseNumericOffset(offset2);
             if (flip)
@@ -223,7 +218,7 @@ namespace RequestReduce.Reducer
             var offset = new Position();
             if (string.IsNullOrEmpty(offsetString))
                 return offset;
-            if (offsetString.Length > 2 && "|in|cm|mm|em|ex|pt|pc".IndexOf(offsetString.Substring(offsetString.Length-2,2).ToLower()) > -1)
+            if (offsetString.Length > 2 && "|in|cm|mm|em|ex|pt|pc".IndexOf(offsetString.Substring(offsetString.Length-2,2), StringComparison.Ordinal) > -1)
                 return offset;
             var trim = 0;
             if (offsetString.EndsWith("%"))
@@ -233,7 +228,7 @@ namespace RequestReduce.Reducer
             }
             else 
                 offset.PositionMode = PositionMode.Unit;
-            if (offsetString.ToLower().EndsWith("px"))
+            if (offsetString.EndsWith("px"))
                 trim = 2;
             int units;
             Int32.TryParse(offsetString.Substring(0, offsetString.Length - trim), out units);
@@ -242,7 +237,6 @@ namespace RequestReduce.Reducer
         }
 
         public string OriginalClassString { get; set; }
-        public string OriginalImageUrl { get; set; }
         public string ImageUrl { get; set; }
         public RepeatStyle Repeat { get; set; }
         public Position XOffset { get; set; }

@@ -39,7 +39,7 @@ namespace RequestReduce.Facts.Reducer
     }
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(2, result.Count());
             }
@@ -60,7 +60,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
                 Assert.True(result.Any(x => x.ImageUrl == "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png"));
@@ -81,7 +81,7 @@ namespace RequestReduce.Facts.Reducer
 }}";
                 var formatedCss = string.Format(css, repeat);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref formatedCss, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(formatedCss);
 
                 Assert.Equal(0, result.Count());
             }
@@ -97,7 +97,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
             }
@@ -115,7 +115,7 @@ namespace RequestReduce.Facts.Reducer
     width: 5px;
 }}", y);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
             }
@@ -132,7 +132,7 @@ namespace RequestReduce.Facts.Reducer
     height:24px;
 }}";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
             }
@@ -151,7 +151,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }}", y);
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(0, result.Count());
             }
@@ -167,7 +167,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
             }
@@ -183,7 +183,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20px;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Right, result.First().XOffset.Direction);
@@ -201,7 +201,7 @@ namespace RequestReduce.Facts.Reducer
     height: 20px;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Bottom, result.First().YOffset.Direction);
@@ -218,7 +218,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20px;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(0, result.Count());
             }
@@ -234,7 +234,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20px;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Center, result.First().XOffset.Direction);
@@ -253,7 +253,7 @@ namespace RequestReduce.Facts.Reducer
     height: 20px
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Center, result.First().YOffset.Direction);
@@ -271,7 +271,7 @@ namespace RequestReduce.Facts.Reducer
     width: 20px;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(0, result.Count());
             }
@@ -289,7 +289,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: no-repeat;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(0, result.Count());
             }
@@ -304,45 +304,9 @@ namespace RequestReduce.Facts.Reducer
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
 }";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(0, result.Count());
-            }
-
-            [Fact]
-            public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImages()
-            {
-                var testable = new TestableCssImageTransformer();
-                var css =
-                    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background: url(""subnav_on_technet.png"") no-repeat;
-}";
-                var expectedcss =
-                    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background: url(""http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_on_technet.png"") no-repeat;
-}";
-
-                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
-
-                Assert.Equal(expectedcss, css);
-            }
-
-            [Fact]
-            public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImagesWhenBracesInComments()
-            {
-                var testable = new TestableCssImageTransformer();
-                var css =
-                    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover { border: 1px solid #aaaaaa/*{borderColorContent}*/; background: #ffffff/*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png)/*{bgImgUrlContent}*/ 50%/*{bgContentXPos}*/ 50%/*{bgContentYPos}*/ repeat-x/*{bgContentRepeat}*/; color: #222222/*{fcContent}*/; }";
-                var expectedcss =
-                    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover { border: 1px solid #aaaaaa; background: #ffffff url(http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #222222; }";
-
-                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
-
-                Assert.Equal(expectedcss, css);
             }
 
             [Fact]
@@ -360,7 +324,7 @@ namespace RequestReduce.Facts.Reducer
     style: val;
 }";
 
-                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(expectedcss, css);
             }
@@ -377,7 +341,7 @@ namespace RequestReduce.Facts.Reducer
     width: 50px;
 }}";
 
-                var result = testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
 
                 Assert.Equal(0, result.Count());
             }
@@ -402,7 +366,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css, "http://server/content/style.css"), null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css), null) { Url = "spriteUrl", Position = 120 };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
@@ -425,7 +389,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css, "http://server/content/style.css"), null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css), null) { Url = "spriteUrl", Position = 120 };
 
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
@@ -447,7 +411,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""newUrl"");
 ;background-position: -0px 0;}";
                 var testable = new TestableCssImageTransformer();
-                var backgroundImage = new BackgroundImageClass(css, "http://server/content/style.css");
+                var backgroundImage = new BackgroundImageClass(css);
                 var sprite = new SpritedImage(1, backgroundImage, null) { Url = "newUrl" };
 
                 var result = testable.ClassUnderTest.InjectSprite(backgroundImage.OriginalClassString, sprite);
@@ -471,7 +435,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
 ;background-position: -120px 0 !important;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css, "http://server/content/style.css") {Important = true }, null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css) {Important = true }, null) { Url = "spriteUrl", Position = 120 };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 

@@ -11,7 +11,7 @@ namespace RequestReduce.Facts.Reducer
             [Fact]
             public void WillSetOriginalClassStringToPassedString()
             {
-                var testable = new BackgroundImageClass("original string", "http://server/content/style.css");
+                var testable = new BackgroundImageClass("original string");
 
                 Assert.Equal("original string", testable.OriginalClassString);
             }
@@ -25,7 +25,7 @@ namespace RequestReduce.Facts.Reducer
     background: #fff url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") repeat;
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal("http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png", testable.ImageUrl);
             }
@@ -39,7 +39,7 @@ namespace RequestReduce.Facts.Reducer
     background: #fff url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") repeat
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal("http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png", testable.ImageUrl);
             }
@@ -53,7 +53,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal("http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png", testable.ImageUrl);
             }
@@ -67,29 +67,9 @@ namespace RequestReduce.Facts.Reducer
     background-image: url("""");
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Null(testable.ImageUrl);
-            }
-
-            [Theory]
-            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url(""subnav_on_technet.png"");}")]
-            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url( ""subnav_on_technet.png"" );}")]
-            public void WillSetImageAbsoluteUrlFromBackgroundImageStyle(string css)
-            {
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
-
-                Assert.Equal("http://server/content/subnav_on_technet.png", testable.ImageUrl);
-            }
-
-            [Theory]
-            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url(""subnav_on_technet.png"");}")]
-            [InlineData(@".LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {background-image: url( ""subnav_on_technet.png"" );}")]
-            public void WillReplaceOriginalCssWithAbsoluteUrl(string css)
-            {
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
-
-                Assert.Equal(css.Replace("subnav_on_technet.png", testable.ImageUrl), testable.OriginalClassString);
             }
 
             [Fact]
@@ -101,7 +81,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(RepeatStyle.Repeat, testable.Repeat);
             }
@@ -116,7 +96,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: repeat;
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(RepeatStyle.Repeat, testable.Repeat);
             }
@@ -131,7 +111,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: no-repeat;
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(RepeatStyle.NoRepeat, testable.Repeat);
             }
@@ -146,7 +126,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: x-repeat;
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(RepeatStyle.XRepeat, testable.Repeat);
             }
@@ -161,7 +141,7 @@ namespace RequestReduce.Facts.Reducer
     background-repeat: y-repeat;
 }";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(RepeatStyle.YRepeat, testable.Repeat);
             }
@@ -179,7 +159,7 @@ namespace RequestReduce.Facts.Reducer
     width: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedWidth));
 
                 Assert.Equal(expectedWidth, testable.Width);
             }
@@ -193,7 +173,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
     width: 50px}}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(50, testable.Width);
             }
@@ -213,7 +193,7 @@ namespace RequestReduce.Facts.Reducer
     padding-left: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedWidth));
 
                 Assert.Equal(expectedWidth, testable.Width);
             }
@@ -233,7 +213,7 @@ namespace RequestReduce.Facts.Reducer
     padding-right: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedWidth));
 
                 Assert.Equal(expectedWidth, testable.Width);
             }
@@ -253,7 +233,7 @@ namespace RequestReduce.Facts.Reducer
     padding-top: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedHeight));
 
                 Assert.Equal(expectedHeight, testable.Height);
             }
@@ -273,7 +253,7 @@ namespace RequestReduce.Facts.Reducer
     padding-bottom: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedHeight));
 
                 Assert.Equal(expectedHeight, testable.Height);
             }
@@ -295,7 +275,7 @@ namespace RequestReduce.Facts.Reducer
     padding: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedPadding), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedPadding));
 
                 Assert.Equal(expectedWidth, testable.Width);
                 Assert.Equal(expectedHeight, testable.Height);
@@ -312,7 +292,7 @@ namespace RequestReduce.Facts.Reducer
     padding-left: 10px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Null(testable.Width);
             }
@@ -327,7 +307,7 @@ namespace RequestReduce.Facts.Reducer
     padding-top: 10px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Null(testable.Height);
             }
@@ -344,7 +324,7 @@ namespace RequestReduce.Facts.Reducer
     padding: 40px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(100, testable.Width);
             }
@@ -361,7 +341,7 @@ namespace RequestReduce.Facts.Reducer
     padding-right: 10px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(70, testable.Width);
             }
@@ -378,7 +358,7 @@ namespace RequestReduce.Facts.Reducer
     padding-top: 10px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(70, testable.Height);
             }
@@ -397,7 +377,7 @@ namespace RequestReduce.Facts.Reducer
     max-width: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedWidth), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedWidth));
 
                 Assert.Equal(expectedWidth, testable.Width);
             }
@@ -416,7 +396,7 @@ namespace RequestReduce.Facts.Reducer
     height: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedHeight));
 
                 Assert.Equal(expectedHeight, testable.Height);
             }
@@ -430,7 +410,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
     height: 50}}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(50, testable.Height);
             }
@@ -449,7 +429,7 @@ namespace RequestReduce.Facts.Reducer
     max-height: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedHeight), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedHeight));
 
                 Assert.Equal(expectedHeight, testable.Height);
             }
@@ -463,7 +443,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(new Position {PositionMode = PositionMode.Percent, Offset = 0}, testable.XOffset);
             }
@@ -477,7 +457,7 @@ namespace RequestReduce.Facts.Reducer
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0 0;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.XOffset);
                 Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.YOffset);
@@ -493,7 +473,7 @@ namespace RequestReduce.Facts.Reducer
     background-position: 0 0;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.XOffset);
                 Assert.Equal(new Position { PositionMode = PositionMode.Unit, Offset = 0 }, testable.YOffset);
@@ -509,7 +489,7 @@ namespace RequestReduce.Facts.Reducer
     background-position: 10px -33px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(PositionMode.Unit, testable.XOffset.PositionMode);
                 Assert.Equal(10, testable.XOffset.Offset);
@@ -527,7 +507,7 @@ namespace RequestReduce.Facts.Reducer
     background-position: top;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.Equal(PositionMode.Unit, testable.XOffset.PositionMode);
                 Assert.Equal(50, testable.XOffset.Offset);
@@ -545,7 +525,7 @@ namespace RequestReduce.Facts.Reducer
     background-position:  50 60 !important
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.True(testable.Important);
             }
@@ -559,7 +539,7 @@ img.icon {
     background: url(""http://galchameleon.redmond.corp.microsoft.com/contentservice/d046de6b-2d8e-43ec-9b37-9f5d010e51dd/icons_windows.png"") no-repeat 0 0 !important;width: 20px;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.True(testable.Important);
             }
@@ -573,7 +553,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 50 60;
 }}";
 
-                var testable = new BackgroundImageClass(css, "http://server/content/style.css");
+                var testable = new BackgroundImageClass(css);
 
                 Assert.False(testable.Important);
             }
@@ -599,7 +579,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
@@ -622,7 +602,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat center {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
@@ -645,7 +625,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat top {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
@@ -668,7 +648,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat bottom {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
@@ -691,7 +671,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0} left;
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
@@ -714,7 +694,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0} right;
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
@@ -732,7 +712,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, xDirection));
 
                 Assert.Equal(PositionMode.Direction, testable.YOffset.PositionMode);
                 Assert.Equal(Direction.Center, testable.YOffset.Direction);
@@ -749,7 +729,7 @@ img.icon {
     background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, xDirection));
 
                 Assert.Equal(PositionMode.Direction, testable.XOffset.PositionMode);
                 Assert.Equal(Direction.Center, testable.XOffset.Direction);
@@ -776,7 +756,7 @@ img.icon {
     background-position: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
@@ -800,7 +780,7 @@ img.icon {
     background-position: center {0}
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
@@ -824,7 +804,7 @@ img.icon {
     background-position: top {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
@@ -848,7 +828,7 @@ img.icon {
     background-position: bottom {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.XOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.XOffset.Direction : testable.XOffset.Offset);
@@ -872,7 +852,7 @@ img.icon {
     background-position: {0} left;
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
@@ -896,7 +876,7 @@ img.icon {
     background-position: {0} right;
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, statedOffset), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, statedOffset));
 
                 Assert.Equal(expectedPositionMode, testable.YOffset.PositionMode);
                 Assert.Equal(expectedOffset, expectedPositionMode == PositionMode.Direction ? (int)testable.YOffset.Direction : testable.YOffset.Offset);
@@ -915,7 +895,7 @@ img.icon {
     background-position: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, xDirection));
 
                 Assert.Equal(PositionMode.Direction, testable.YOffset.PositionMode);
                 Assert.Equal(Direction.Center, testable.YOffset.Direction);
@@ -933,7 +913,7 @@ img.icon {
     background-position: {0};
 }}";
 
-                var testable = new BackgroundImageClass(string.Format(css, xDirection), "http://server/content/style.css");
+                var testable = new BackgroundImageClass(string.Format(css, xDirection));
 
                 Assert.Equal(PositionMode.Direction, testable.XOffset.PositionMode);
                 Assert.Equal(Direction.Center, testable.XOffset.Direction);
