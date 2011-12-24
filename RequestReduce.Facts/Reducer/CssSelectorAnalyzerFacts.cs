@@ -174,7 +174,7 @@ namespace RequestReduce.Facts.Reducer
         }
 
         [Fact]
-        public void WillNotMatchStandAloneClassTiedToElementInTarget()
+        public void WillMatchStandAloneClassTiedToElementInTarget()
         {
             var target = "#icons .new .warnings.red.small div.cls";
             var comparable = "#icons .cls";
@@ -182,7 +182,7 @@ namespace RequestReduce.Facts.Reducer
 
             var result = testable.IsInScopeOfTarget(target, comparable);
 
-            Assert.False(result);
+            Assert.True(result);
         }
 
         [Fact]
@@ -207,6 +207,18 @@ namespace RequestReduce.Facts.Reducer
             var result = testable.IsInScopeOfTarget(target, comparable);
 
             Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchElementWithNoClassesIfComparableHasClass()
+        {
+            var target = "#icons .new .warnings.red.small div";
+            var comparable = "#icons div.div";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
         }
 
         [Fact]
@@ -250,6 +262,90 @@ namespace RequestReduce.Facts.Reducer
         {
             var target = "#icons h1#myid .new .warnings.red.small div.cls.clp";
             var comparable = "#myid div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchLoneIdWithIdWithClass()
+        {
+            var target = "#icons.blue h1#myit .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchIdWithIdWithMatchingClass()
+        {
+            var target = "#icons.blue h1#myit .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons.blue div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchIdWithTargeIdThatHasAMisMatchingClass()
+        {
+            var target = "#icons.blue h1#myid .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons.red div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillMatchIdWithIdWithMatchingClassAnsExtraClass()
+        {
+            var target = "#icons.blue.red h1#myit .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons.blue div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchIdWithIdWithMatchingClassAndMisMachingClass()
+        {
+            var target = "#icons.blue.red h1#myit .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons.blue.green div.clp";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillMatchIdAndClassWithIdAndhMatchingClassOnAnElementWithExtraClasses()
+        {
+            var target = "#icons.blue.red h1#myit.myclass.other .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons.blue #myit.other";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchIdAndClassWithIdAndhMatchingClassOnAnElementWithExtraNonMatchingClasses()
+        {
+            var target = "#icons.blue.red h1#myit.myclass.other .new .warnings.red.small div.cls.clp";
+            var comparable = "#icons.blue #myit.other.another";
             var testable = new CssSelectorAnalyzer();
 
             var result = testable.IsInScopeOfTarget(target, comparable);
