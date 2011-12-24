@@ -25,11 +25,15 @@ namespace RequestReduce.Reducer
             while (targetSelector.Length > targetOffset)
             {
                 var tokenIdx = 0;
-                while (tokens[tokenIdx].Length == 0 && tokenIdx < tokens.Length)
+                while (tokenIdx < tokens.Length && (tokens[tokenIdx].Length == 0 || tokens[tokenIdx] == "*"))
                     ++tokenIdx;
                 if (tokenIdx >= tokens.Length)
+                {
+                    if (tokens[tokens.Length - 1] == "*")
+                        return 0;
                     return -1;
-                var idx = targetSelector.IndexOf(tokens[tokenIdx], targetOffset, StringComparison.OrdinalIgnoreCase);
+                }
+                var idx = tokens[tokenIdx] == "*" ? 0 : targetSelector.IndexOf(tokens[tokenIdx], targetOffset, StringComparison.OrdinalIgnoreCase);
                 if (idx == -1) return idx;
                 var endIdx = idx + tokens[tokenIdx].Length;
                 if ((idx == 0 || targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx-1, 1) == idx-1 || targetSelector[idx] == '.' || targetSelector[idx] == '#') &&
@@ -40,7 +44,7 @@ namespace RequestReduce.Reducer
                     var endTargetdx = targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx);
                     endTargetdx = endTargetdx == -1 ? targetSelector.Length - 1 : endTargetdx - 1;
                     var targetTokens = Regex.Split(targetSelector.Substring(startTargetIdx, endTargetdx - startTargetIdx + 1), @"(?=[\.\#])");
-                    if (tokens.All(x => targetTokens.Contains(x) || x.Length==0))
+                    if (tokens.All(x => targetTokens.Contains(x, StringComparer.OrdinalIgnoreCase) || x.Length==0 || x == "*"))
                         return idx;
                 }
                 targetOffset = endIdx;

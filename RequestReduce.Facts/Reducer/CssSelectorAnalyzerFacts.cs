@@ -353,5 +353,52 @@ namespace RequestReduce.Facts.Reducer
             Assert.False(result);
         }
 
+        [Fact]
+        public void WillMatchUniversalSelectorAsOnlySelector()
+        {
+            var target = "#icons.blue.red h1#myit.myclass.other .new .warnings.red.small div.cls.clp";
+            var comparable = "*";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchUniversalSelector()
+        {
+            var target = "#icons.blue.red h1#myit.myclass.other .new .warnings.red.small div.cls.clp";
+            var comparable = "* #icons.blue #myit.other";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchUniversalSelectorAndMatchingIDAndClass()
+        {
+            var target = "#icons.blue.red h1#myit.myclass.other .new .warnings.red.small div.cls.clp";
+            var comparable = "*#icons.blue #myit.other";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchUniversalSelectorAndNonMatchingIDAndClass()
+        {
+            var target = "#icons.blue.red h1#myit.myclass.other .new .warnings.red.small div.cls.clp";
+            var comparable = "*#icons.blue.green #myit.other";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
     }
 }
