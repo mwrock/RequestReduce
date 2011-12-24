@@ -400,5 +400,42 @@ namespace RequestReduce.Facts.Reducer
 
             Assert.False(result);
         }
+
+        [Fact]
+        public void WillMatchPseudoClasses()
+        {
+            var target = "#icons.blue.red a:link";
+            var comparable = "* #icons.blue a:link";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillMatchNonPseudoClassesToPseudoClasses()
+        {
+            var target = "#icons.blue.red a:link";
+            var comparable = "* #icons.blue a";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void WillNotMatchPseudoClassesToNonPseudoClasses()
+        {
+            var target = "#icons.blue.red a";
+            var comparable = "* #icons.blue a:link";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
     }
 }
