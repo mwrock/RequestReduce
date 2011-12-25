@@ -29,17 +29,33 @@ namespace RequestReduce.Reducer
         Bottom
     }
 
+    [Flags]
+    public enum PropertyCompletion
+    {
+        HasNothing = 0,
+        HasImage = 1,
+        HasRepeat = 2,
+        HasXOffset = 4,
+        HasYOffset = 8,
+        HasWidth = 16,
+        HasHeight = 32,
+        HasPaddingLeft = 64,
+        HasPaddingRight = 128,
+        HasPaddingTop = 256,
+        HasPaddingBottom = 512
+    }
+
     public class BackgroundImageClass
     {
         private static readonly RegexCache Regex = new RegexCache();
 
         public BackgroundImageClass(string originalClassString)
         {
-            var offsetExplicitelySet = new bool[2];
             OriginalClassString = originalClassString;
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
             {
+                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasImage;
                 var imageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
                 if (imageUrl.Length > 0)
                     ImageUrl = imageUrl;
@@ -47,47 +63,40 @@ namespace RequestReduce.Reducer
             var repeatMatch = Regex.RepeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
             {
+                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasRepeat;
                 Repeat = (RepeatStyle) Enum.Parse(typeof(RepeatStyle), repeatMatch[repeatMatch.Count-1].Value.Replace("-",""), true);
             }
             var widthMatch = Regex.WidthPattern.Matches(originalClassString);
             if (widthMatch.Count > 0)
-                Width = Int32.Parse(widthMatch[widthMatch.Count - 1].Groups["width"].Value);
+            {
+                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasWidth;
+                ExplicitWidth = Int32.Parse(widthMatch[widthMatch.Count - 1].Groups["width"].Value);
+            }
 
             var heightMatch = Regex.HeightPattern.Matches(originalClassString);
             if (heightMatch.Count > 0)
-                Height = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
-
-            if(Width != null || Height != null)
             {
-                var paddingMatches = Regex.PaddingPattern.Matches(originalClassString);
-                if (paddingMatches.Count > 0)
+                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasHeight;
+                ExplicitHeight = Int32.Parse(heightMatch[heightMatch.Count - 1].Groups["height"].Value);
+            }
+
+            var paddingMatches = Regex.PaddingPattern.Matches(originalClassString);
+            if (paddingMatches.Count > 0)
+            {
+                foreach (var pads in from Match paddingMatch in paddingMatches select GetPadding(paddingMatch))
                 {
-                    var padVals = new int[4];
-                    foreach (var pads in from Match paddingMatch in paddingMatches select GetPadding(paddingMatch))
-                    {
-                        if (pads[0] != null)
-                            padVals[0] = (int)pads[0];
-                        if (pads[1] != null)
-                            padVals[1] = (int)pads[1];
-                        if (pads[2] != null)
-                            padVals[2] = (int)pads[2];
-                        if (pads[3] != null)
-                            padVals[3] = (int)pads[3];
-                    }
-                    if(Width != null)
-                    {
-                        if (padVals[1] < 0 || padVals[3] < 0)
-                            Width = null;
-                        else
-                            Width += (padVals[1] + padVals[3]);
-                    }
-                    if (Height != null)
-                    {
-                        if (padVals[0] < 0 || padVals[2] < 0)
-                            Height = null;
-                        else
-                            Height += (padVals[0] + padVals[2]);
-                    }
+                    if (pads[0] != null)
+                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingTop;
+                        PaddingTop = pads[0];
+                    if (pads[1] != null)
+                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingLeft;
+                        PaddingLeft = pads[1];
+                    if (pads[2] != null)
+                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingBottom;
+                        PaddingBottom = pads[2];
+                    if (pads[3] != null)
+                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingRight;
+                        PaddingRight = pads[3];
                 }
             }
 
@@ -95,11 +104,11 @@ namespace RequestReduce.Reducer
             if (offsetMatches.Count > 0)
             {
                 foreach (Match offsetMatch in offsetMatches)
-                    SetOffsets(offsetMatch, offsetExplicitelySet);
+                    SetOffsets(offsetMatch);
             }
-            if(XOffset.PositionMode == PositionMode.Direction && !offsetExplicitelySet[1])
+            if (XOffset.PositionMode == PositionMode.Direction && (PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset)
                 YOffset = new Position {PositionMode = PositionMode.Direction};
-            if (YOffset.PositionMode == PositionMode.Direction && !offsetExplicitelySet[0])
+            if (YOffset.PositionMode == PositionMode.Direction && (PropertyCompletion & PropertyCompletion.HasXOffset) != PropertyCompletion.HasXOffset)
                 XOffset = new Position { PositionMode = PositionMode.Direction };
         }
 
@@ -174,7 +183,7 @@ namespace RequestReduce.Reducer
             return result;
         }
 
-        private void SetOffsets(Match offsetMatch, bool[] offsetExplicitelySet)
+        private void SetOffsets(Match offsetMatch)
         {
             var offset1 = offsetMatch.Groups["offset1"].Value.ToLower();
             var offset2 = offsetMatch.Groups["offset2"].Value.ToLower();
@@ -189,15 +198,15 @@ namespace RequestReduce.Reducer
             {
                 if(offset2Position.PositionMode != PositionMode.Percent || offset2Position.Offset > 0) XOffset = offset2Position;
                 if(offset1Position.PositionMode != PositionMode.Percent || offset1Position.Offset > 0) YOffset = offset1Position;
-                if (offset1.Length > 0) offsetExplicitelySet[1] = true;
-                if (offset2.Length > 0) offsetExplicitelySet[0] = true;
+                if (offset1.Length > 0) PropertyCompletion = PropertyCompletion | PropertyCompletion.HasYOffset;
+                if (offset2.Length > 0) PropertyCompletion = PropertyCompletion | PropertyCompletion.HasXOffset;
             }
             else
             {
                 if(offset1Position.PositionMode != PositionMode.Percent || offset1Position.Offset > 0) XOffset = offset1Position;
                 if(offset2Position.PositionMode != PositionMode.Percent || offset2Position.Offset > 0) YOffset = offset2Position;
-                if (offset1.Length > 0) offsetExplicitelySet[0] = true;
-                if (offset2.Length > 0) offsetExplicitelySet[1] = true;
+                if (offset1.Length > 0) PropertyCompletion = PropertyCompletion | PropertyCompletion.HasXOffset;
+                if (offset2.Length > 0) PropertyCompletion = PropertyCompletion | PropertyCompletion.HasYOffset;
             }
 
             Important = offsetMatch.ToString().ToLower().Contains("!important");
@@ -241,8 +250,32 @@ namespace RequestReduce.Reducer
         public RepeatStyle Repeat { get; set; }
         public Position XOffset { get; set; }
         public Position YOffset { get; set; }
-        public int? Width { get; set; }
-        public int? Height { get; set; }
+        public int? Width 
+        { 
+            get
+            {
+                if (PaddingLeft < 0 || PaddingRight < 0)
+                    return null;
+                return  ExplicitWidth += (PaddingLeft ?? 0 + PaddingRight ?? 0);
+            }
+        }
+        public int? Height 
+        {
+            get
+            {
+                if (PaddingTop < 0 || PaddingBottom < 0)
+                    return null;
+                return ExplicitHeight += (PaddingTop ?? 0 + PaddingBottom ?? 0);
+            }
+        }
+        public int ExplicitWidth { get; set; }
+        public int ExplicitHeight { get; set; }
         public bool Important { get; set; }
+        public bool HasAllProperties { get; set; }
+        public int? PaddingLeft { get; set; }
+        public int? PaddingRight { get; set; }
+        public int? PaddingTop { get; set; }
+        public int? PaddingBottom { get; set; }
+        public PropertyCompletion PropertyCompletion { get; set; }
     }
 }
