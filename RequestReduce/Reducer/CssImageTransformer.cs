@@ -18,12 +18,12 @@ namespace RequestReduce.Reducer
                 if (imageClass.PropertyCompletion == PropertyCompletion.HasNothing) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
-                    var workList = new SortedDictionary<string,BackgroundImageClass>();
+                    var workList = new SortedDictionary<string,BackgroundImageClass>(new SelectorComparer());
+                    var counter = 0;
                     for (var n = draftUrls.Count - 1; n > -1; n--)
                     {
                         var selectors = draftUrls[n].Selector.Split(new [] {','});
                         var targetSelectors = imageClass.Selector.Split(new[] { ',' });
-                        var counter = 0;
                         foreach (var selector in selectors)
                         {
                             foreach (var targetSelector in targetSelectors)
@@ -36,9 +36,10 @@ namespace RequestReduce.Reducer
                             }
                         }
                     }
-                    for (var n = workList.Count - 1; n > -1 && !IsComplete(imageClass); n--)
+                    foreach (var pair in workList)
                     {
-                        var cls = draftUrls[n];
+                        var cls = pair.Value;
+                        if (IsComplete(imageClass)) break;
                         if((imageClass.PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset && (cls.PropertyCompletion & PropertyCompletion.HasYOffset) == PropertyCompletion.HasYOffset)
                         {
                             imageClass.YOffset = cls.YOffset;
@@ -145,9 +146,14 @@ namespace RequestReduce.Reducer
 
         private bool ShouldFlatten(BackgroundImageClass imageClass)
         {
-            return (imageClass.PropertyCompletion &
-                   (PropertyCompletion.HasImage | PropertyCompletion.HasXOffset | PropertyCompletion.HasYOffset)) ==
-                   (PropertyCompletion.HasImage | PropertyCompletion.HasXOffset | PropertyCompletion.HasYOffset);
+            if ((imageClass.PropertyCompletion & PropertyCompletion.HasImage) == PropertyCompletion.HasImage)
+                return true;
+            if ((imageClass.PropertyCompletion & PropertyCompletion.HasXOffset) == PropertyCompletion.HasXOffset)
+                return true;
+            if ((imageClass.PropertyCompletion & PropertyCompletion.HasYOffset) == PropertyCompletion.HasYOffset)
+                return true;
+
+            return false;
         }
     }
 }
