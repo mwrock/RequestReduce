@@ -51,7 +51,10 @@ namespace RequestReduce.Reducer
 
         public BackgroundImageClass(string originalClassString)
         {
-            OriginalClassString = originalClassString;
+            var selectorIdx = originalClassString.IndexOf("{", StringComparison.Ordinal);
+
+            OriginalClassString = originalClassString.Substring(selectorIdx);
+            Selector = originalClassString.Substring(0, selectorIdx).Trim();
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
             {
@@ -246,6 +249,7 @@ namespace RequestReduce.Reducer
         }
 
         public string OriginalClassString { get; set; }
+        public string Selector { get; set; }
         public string ImageUrl { get; set; }
         public RepeatStyle Repeat { get; set; }
         public Position XOffset { get; set; }

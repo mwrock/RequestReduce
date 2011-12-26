@@ -126,8 +126,8 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteManager();
 
-                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", Width = image1Width, Height = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
-                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", Width = image2Width, Height = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", ExplicitWidth = image1Width, ExplicitHeight = image1Height, XOffset = new Position() { Offset = image1XOffset, PositionMode = PositionMode.Unit} });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("") { ImageUrl = "image1", ExplicitWidth = image2Width, ExplicitHeight = image2Height, XOffset = new Position() { Offset = image2XOffset, PositionMode = PositionMode.Unit } });
 
                 testable.ClassUnderTest.MockSpriteContainer.Verify(x => x.AddImage(It.IsAny<BackgroundImageClass>()), Times.Exactly(2));
             }
@@ -148,7 +148,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillNotAddImageToSpriteContainerIfTheRegistryFiltersIt()
             {
                 var testable = new TestableSpriteManager();
-                var image = new BackgroundImageClass("") { ImageUrl = "", Width = 110};
+                var image = new BackgroundImageClass("") { ImageUrl = "", ExplicitWidth = 110};
                 Registry.AddFilter(new SpriteFilter(x => x.BackgroundImage.Width > 100));
 
                 testable.ClassUnderTest.Add(image);
@@ -510,8 +510,8 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnAllImages()
             {
                 var testable = new TestableSpriteManager();
-                testable.ClassUnderTest.Add(new BackgroundImageClass("class1"){Height = 1});
-                testable.ClassUnderTest.Add(new BackgroundImageClass("class2") { Height = 2 });
+                testable.ClassUnderTest.Add(new BackgroundImageClass("class1"){ExplicitHeight = 1});
+                testable.ClassUnderTest.Add(new BackgroundImageClass("class2") { ExplicitHeight = 2 });
 
                 var results = testable.ClassUnderTest.ToArray();
 

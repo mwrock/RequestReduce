@@ -5,7 +5,7 @@ namespace RequestReduce.Reducer
 {
     public class CssImageTransformer : ICssImageTransformer
     {
-        private readonly Regex classPattern = new Regex("\\{[^\\}]+\\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private readonly Regex classPattern = new Regex(@"(?<=\}|)[^\}]+\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public IEnumerable<BackgroundImageClass> ExtractImageUrls(string cssContent)
         {
@@ -14,11 +14,29 @@ namespace RequestReduce.Reducer
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
                 var imageClass = new BackgroundImageClass(classMatch.ToString());
-
+                var analyzer = new CssSelectorAnalyzer();
                 if (imageClass.PropertyCompletion == PropertyCompletion.HasNothing) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
-                    for (var n = draftUrls.Count - 1; n > -1 && !IsComplete(imageClass); n--)
+                    var workList = new SortedDictionary<string,BackgroundImageClass>();
+                    for (var n = draftUrls.Count - 1; n > -1; n--)
+                    {
+                        var selectors = draftUrls[n].Selector.Split(new [] {','});
+                        var targetSelectors = imageClass.Selector.Split(new[] { ',' });
+                        var counter = 0;
+                        foreach (var selector in selectors)
+                        {
+                            foreach (var targetSelector in targetSelectors)
+                            {
+                                if(analyzer.IsInScopeOfTarget(targetSelector.Trim(),selector.Trim()))
+                                {
+                                    workList.Add(string.Format("{0}|{1}", selector.Trim(), counter++), draftUrls[n]);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    for (var n = workList.Count - 1; n > -1 && !IsComplete(imageClass); n--)
                     {
                         var cls = draftUrls[n];
                         if((imageClass.PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset && (cls.PropertyCompletion & PropertyCompletion.HasYOffset) == PropertyCompletion.HasYOffset)

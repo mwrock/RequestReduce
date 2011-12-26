@@ -19,15 +19,13 @@ namespace RequestReduce.Reducer
 
         public string Render()
         {
-            var newClass = CssClass.OriginalClassString.ToLower().Replace(CssClass.ImageUrl.ToLower(), Url);
             var yOffset = "0";
             if (CssClass.YOffset.PositionMode == PositionMode.Unit && CssClass.YOffset.Offset > 0)
                 yOffset = string.Format("{0}px", CssClass.YOffset.Offset);
 
-            newClass = newClass.Replace("}",
-                                        string.Format(";background-position: -{0}px {1}{2};}}",
-                                        Position, yOffset, CssClass.Important ? " !important" : string.Empty));
-            return newClass;
+            return CssClass.OriginalClassString.Replace("}",
+                                        string.Format(";background-imagr: url('{3}');background-position: -{0}px {1}{2};}}",
+                                        Position, yOffset, CssClass.Important ? " !important" : string.Empty, Url));
         }
     }
 }

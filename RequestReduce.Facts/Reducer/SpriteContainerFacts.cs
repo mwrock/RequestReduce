@@ -106,7 +106,7 @@ namespace RequestReduce.Facts.Reducer
             public void RightPositionedImagesWillBeRightAlligned()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 30, XOffset = new Position(){PositionMode = PositionMode.Direction, Direction = Direction.Right}};
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 30, XOffset = new Position(){PositionMode = PositionMode.Direction, Direction = Direction.Right}};
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image15X17);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -120,7 +120,7 @@ namespace RequestReduce.Facts.Reducer
             public void RightPositionedImagesLargerThanWidthWillBeRightAlligned()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image15X17);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -134,7 +134,7 @@ namespace RequestReduce.Facts.Reducer
             public void BottomPositionedImagesWillBeBottomAlligned()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 30, Height = 30, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Bottom } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 30, ExplicitHeight = 30, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Bottom } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image15X17);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -148,7 +148,7 @@ namespace RequestReduce.Facts.Reducer
             public void BottomPositionedImagesLargerThanHeightWillBeBottomAlligned()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 10, Height = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Bottom } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 10, ExplicitHeight = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Right }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Bottom } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image15X17);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -162,7 +162,7 @@ namespace RequestReduce.Facts.Reducer
             public void HorizontalyCenteredImagesWillBeCenteredInClonedImageSentToWriter()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 30, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 30, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -176,7 +176,7 @@ namespace RequestReduce.Facts.Reducer
             public void HorizontalyCenteredImagesLargerThanWidthWillBeCentered()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -190,7 +190,7 @@ namespace RequestReduce.Facts.Reducer
             public void VerticallyCenteredImagesWillBeCenteredInClonedImageSentToWriter()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 30, Height = 30, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 30, ExplicitHeight = 30, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -204,7 +204,7 @@ namespace RequestReduce.Facts.Reducer
             public void VerticallyCenteredImagesLargerThanWidthWillBeCentered()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 10, Height = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 10, ExplicitHeight = 10, XOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center }, YOffset = new Position() { PositionMode = PositionMode.Direction, Direction = Direction.Center } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
 
                 testable.ClassUnderTest.AddImage(image1);
@@ -238,7 +238,7 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteContainer();
                 var image1 = new BackgroundImageClass("")
-                                 {ImageUrl = "url1", Width = width};
+                                 {ImageUrl = "url1", ExplicitWidth = width};
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 
@@ -251,7 +251,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillAutoCorrectWidthIfWidthAndOffsetAreGreaterThanOriginal()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Width = 10, XOffset = new Position(){PositionMode = PositionMode.Unit, Offset = -10}};
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitWidth = 10, XOffset = new Position(){PositionMode = PositionMode.Unit, Offset = -10}};
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 
@@ -264,7 +264,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillAutoCorrectHeightIfHeightAndOffsetAreGreaterThanOriginal()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", Height = 10, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = -10 } };
+                var image1 = new BackgroundImageClass("") { ImageUrl = "url1", ExplicitHeight = 10, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = -10 } };
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 
@@ -280,7 +280,7 @@ namespace RequestReduce.Facts.Reducer
                 var image1 = new BackgroundImageClass("")
                                  {
                                      ImageUrl = "url1",
-                                     Width = 5,
+                                     ExplicitWidth = 5,
                                      XOffset = new Position() {PositionMode = PositionMode.Unit, Offset = -5}
                                  };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
@@ -300,7 +300,7 @@ namespace RequestReduce.Facts.Reducer
                 var image1 = new BackgroundImageClass("")
                                  {
                                      ImageUrl = "url1",
-                                     Width = 5,
+                                     ExplicitWidth = 5,
                                      XOffset = new Position() {PositionMode = PositionMode.Percent, Offset = 50}
                                  };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
@@ -320,7 +320,7 @@ namespace RequestReduce.Facts.Reducer
                 var image1 = new BackgroundImageClass("")
                                  {
                                      ImageUrl = "url1",
-                                     Height = 5,
+                                     ExplicitHeight = 5,
                                      YOffset = new Position() {PositionMode = PositionMode.Unit, Offset = -5}
                                  };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
@@ -340,7 +340,7 @@ namespace RequestReduce.Facts.Reducer
                 var image1 = new BackgroundImageClass("")
                                  {
                                      ImageUrl = "url1",
-                                     Height = 5,
+                                     ExplicitHeight = 5,
                                      YOffset = new Position() {PositionMode = PositionMode.Percent, Offset = 50}
                                  };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
@@ -360,7 +360,7 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableSpriteContainer();
                 var image1 = new BackgroundImageClass("")
-                                 {ImageUrl = "url1", Height = height};
+                                 {ImageUrl = "url1", ExplicitHeight = height};
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 
@@ -475,7 +475,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillThrowInvalidOperationExceptionIfCloningThrowsOutOfMemory()
             {
                 var testable = new TestableSpriteContainer();
-                var fiveColorImage = new BackgroundImageClass("image1") { ImageUrl = "url", Width = 15, XOffset = new Position() { Offset = -16, Direction = Direction.Left } };
+                var fiveColorImage = new BackgroundImageClass("image1") { ImageUrl = "url", ExplicitWidth = 15, XOffset = new Position() { Offset = -16, Direction = Direction.Left } };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(testable.Image15X17);
 
                 var ex = Record.Exception(() => testable.ClassUnderTest.AddImage(fiveColorImage)) as InvalidOperationException;
