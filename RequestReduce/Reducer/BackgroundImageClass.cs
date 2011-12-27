@@ -258,7 +258,7 @@ namespace RequestReduce.Reducer
         { 
             get
             {
-                if (PaddingLeft < 0 || PaddingRight < 0)
+                if (PaddingLeft < 0 || PaddingRight < 0 || ExplicitWidth == 0)
                     return null;
                 return  ExplicitWidth += (PaddingLeft ?? 0 + PaddingRight ?? 0);
             }
@@ -267,7 +267,7 @@ namespace RequestReduce.Reducer
         {
             get
             {
-                if (PaddingTop < 0 || PaddingBottom < 0)
+                if (PaddingTop < 0 || PaddingBottom < 0 || ExplicitHeight == 0)
                     return null;
                 return ExplicitHeight += (PaddingTop ?? 0 + PaddingBottom ?? 0);
             }

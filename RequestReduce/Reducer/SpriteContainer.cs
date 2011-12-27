@@ -24,6 +24,11 @@ namespace RequestReduce.Reducer
             this.rrConfiguration = rrConfiguration;
         }
 
+        public void AddImage (SpritedImage image)
+        {
+            images.Add(image);
+        }
+
         public SpritedImage AddImage (BackgroundImageClass image)
         {
             var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);

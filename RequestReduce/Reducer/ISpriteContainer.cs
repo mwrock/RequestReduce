@@ -7,6 +7,7 @@ namespace RequestReduce.Reducer
     public interface ISpriteContainer : IEnumerable<SpritedImage>, IDisposable
     {
         SpritedImage AddImage (BackgroundImageClass image);
+        void AddImage(SpritedImage image);
         int Size { get; }
         int Colors { get; }
         int Width { get; }

@@ -13,7 +13,14 @@ namespace RequestReduce.Reducer
 
         public SpriteWriter(int surfaceWidth, int surfaceHeight)
         {
-            SpriteImage = new Bitmap(surfaceWidth, surfaceHeight);
+            try
+            {
+                SpriteImage = new Bitmap(surfaceWidth, surfaceHeight);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
             drawingSurface = Graphics.FromImage(SpriteImage);
             drawingSurface.Clear(Color.Transparent);
         }
