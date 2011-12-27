@@ -258,18 +258,20 @@ namespace RequestReduce.Reducer
         { 
             get
             {
-                if (PaddingLeft < 0 || PaddingRight < 0 || ExplicitWidth == 0)
+                if (PaddingLeft < 0 || PaddingRight < 0)
                     return null;
-                return  ExplicitWidth += (PaddingLeft ?? 0 + PaddingRight ?? 0);
+                var computedWidth = ExplicitWidth += (PaddingLeft ?? 0 + PaddingRight ?? 0);
+                return computedWidth == 0 ? (int?) null : computedWidth;
             }
         }
         public int? Height 
         {
             get
             {
-                if (PaddingTop < 0 || PaddingBottom < 0 || ExplicitHeight == 0)
+                if (PaddingTop < 0 || PaddingBottom < 0)
                     return null;
-                return ExplicitHeight += (PaddingTop ?? 0 + PaddingBottom ?? 0);
+                var computedHeight = ExplicitHeight += (PaddingTop ?? 0 + PaddingBottom ?? 0);
+                return computedHeight == 0 ? (int?)null : computedHeight;
             }
         }
         public int ExplicitWidth { get; set; }

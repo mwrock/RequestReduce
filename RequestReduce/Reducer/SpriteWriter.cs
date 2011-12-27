@@ -33,7 +33,15 @@ namespace RequestReduce.Reducer
 
         public void WriteImage(Bitmap image, int offsetX, int offsetY)
         {
-            drawingSurface.DrawImage(image, new Rectangle(OffsetWidth + offsetX, offsetY, image.Width, image.Height));
+            try
+            {
+                drawingSurface.DrawImage(image, new Rectangle(OffsetWidth + offsetX, offsetY, image.Width, image.Height));
+            }
+            catch (Exception e)
+            {
+                
+                throw e;
+            }
             OffsetWidth += image.Width + 1;
         }
 

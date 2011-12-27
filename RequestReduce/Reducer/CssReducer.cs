@@ -30,7 +30,7 @@ namespace RequestReduce.Reducer
             var mergedCss = new StringBuilder();
             foreach (var url in urls)
                 mergedCss.Append(ProcessCss(url));
-            spriteManager.Flush();
+            spriteManager.Dispose();
             return SpriteCss(mergedCss.ToString());
         }
 

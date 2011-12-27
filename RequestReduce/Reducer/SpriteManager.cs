@@ -96,7 +96,6 @@ namespace RequestReduce.Reducer
                         image.Url = url;
                 }
             }
-            SpriteContainer.Dispose();
             SpriteContainer = new SpriteContainer(webClientWrapper, config);
         }
 
@@ -117,6 +116,12 @@ namespace RequestReduce.Reducer
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Dispose()
+        {
+            Flush();
+            SpriteList.ToList().ForEach(x => x.Value.Image.Dispose());
         }
 
         protected struct ImageMetadata

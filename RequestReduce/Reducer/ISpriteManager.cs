@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RequestReduce.Reducer
 {
-    public interface ISpriteManager : IEnumerable<SpritedImage>
+    public interface ISpriteManager : IEnumerable<SpritedImage>, IDisposable
     {
         void Add(BackgroundImageClass imageUrl);
         void Flush();

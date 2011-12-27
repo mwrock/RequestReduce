@@ -153,10 +153,5 @@ namespace RequestReduce.Reducer
         {
             return GetEnumerator();
         }
-
-        public void Dispose()
-        {
-            images.ToList().ForEach(x => x.Image.Dispose());
-        }
     }
 }

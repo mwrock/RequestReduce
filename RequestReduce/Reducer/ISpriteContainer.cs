@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace RequestReduce.Reducer
 {
-    public interface ISpriteContainer : IEnumerable<SpritedImage>, IDisposable
+    public interface ISpriteContainer : IEnumerable<SpritedImage>
     {
         SpritedImage AddImage (BackgroundImageClass image);
         void AddImage(SpritedImage image);
