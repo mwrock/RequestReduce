@@ -24,8 +24,8 @@
       * Gracefully swallow and Log errors on saving cached file to disk
     </releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.6.31" />
-      <dependency id="EntityFramework" version="4.1.10715.0" />
+      <dependency id="RequestReduce" version="$version$" />
+      <dependency id="EntityFramework" version="4.2.0.0" />
     </dependencies>
   </metadata>
 </package>

@@ -25,7 +25,7 @@
       * Fix .less imports
     </releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.6.31" />
+      <dependency id="RequestReduce" version="$version$" />
       <dependency id="dotless" version="1.2.1.0" />
       <dependency id="SassAndCoffee.Core" version="1.1.5" />
     </dependencies>
