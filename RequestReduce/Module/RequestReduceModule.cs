@@ -45,7 +45,7 @@ namespace RequestReduce.Module
         {
             var dashboardHtml = Resources.Dashboard;
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            var user = httpContextWrapper.User.Identity.Name;
+            var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
                 var transformedDashboard = TransformDashboard(dashboardHtml);
@@ -129,7 +129,7 @@ namespace RequestReduce.Module
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
-            var user = httpContextWrapper.User.Identity.Name;
+            var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
                 if(url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))
