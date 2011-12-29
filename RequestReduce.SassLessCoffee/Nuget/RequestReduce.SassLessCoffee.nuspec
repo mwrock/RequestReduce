@@ -16,6 +16,7 @@
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
       * Fix Nuget Dependency versions
+      * Fix flush and dashboard for unauthenticated users on .net 3.5
       * Fix nuget install for Web Site projects
       * Do not inject css before X-UA-Compatible meta tag.
       * Fix errors thrown by setting response filter after a redirect
