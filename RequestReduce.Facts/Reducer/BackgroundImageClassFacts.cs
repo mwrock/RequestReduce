@@ -282,7 +282,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillNotAddShortcutPaddingToWidthIfNoWidthSpecified()
+            public void WillAddShortcutPaddingToWidthIfNoWidthSpecified()
             {
                 var css =
     @"
@@ -294,7 +294,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var testable = new BackgroundImageClass(css);
 
-                Assert.Null(testable.Width);
+                Assert.Equal(10, testable.Width);
             }
 
             [Fact]

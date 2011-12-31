@@ -169,7 +169,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillInjectSpritesToCssAfterFlush()
+            public void WillInjectSpritesToCssAfterDispose()
             {
                 var testable = new TestableCssReducer();
                 var image1 = new BackgroundImageClass("") {ImageUrl = "image1"};
@@ -183,16 +183,16 @@ namespace RequestReduce.Facts.Reducer
                 var sprite2 = new SpritedImage(2, null, null) { Position = -100 };
                 var sprites = new List<SpritedImage> { sprite1, sprite2 };
                 testable.Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(sprites.GetEnumerator());
-                bool flushIsCalled = false;
-                bool flushCalled = false;
-                testable.Mock<ISpriteManager>().Setup(x => x.Flush()).Callback(() => flushIsCalled = true);
-                testable.Mock<ICssImageTransformer>().Setup(x => x.InjectSprite(It.IsAny<string>(), It.IsAny<SpritedImage>())).Callback(() => flushCalled = flushIsCalled);
+                bool disposeIsCalled = false;
+                bool disposeCalled = false;
+                testable.Mock<ISpriteManager>().Setup(x => x.Dispose()).Callback(() => disposeIsCalled = true);
+                testable.Mock<ICssImageTransformer>().Setup(x => x.InjectSprite(It.IsAny<string>(), It.IsAny<SpritedImage>())).Callback(() => disposeCalled = disposeIsCalled);
 
                 testable.ClassUnderTest.Process("http://host/css2.css");
 
                 testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), sprite1), Times.Once());
                 testable.Mock<ICssImageTransformer>().Verify(x => x.InjectSprite(It.IsAny<string>(), sprite2), Times.Once());
-                Assert.True(flushCalled);
+                Assert.True(disposeCalled);
             }
 
             [Fact]

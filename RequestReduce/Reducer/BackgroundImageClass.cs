@@ -52,7 +52,7 @@ namespace RequestReduce.Reducer
         public BackgroundImageClass(string originalClassString)
         {
             var selectorIdx = originalClassString.IndexOf("{", StringComparison.Ordinal);
-
+            if (selectorIdx == -1) selectorIdx = 0;
             OriginalClassString = originalClassString.Substring(selectorIdx);
             Selector = originalClassString.Substring(0, selectorIdx).Trim();
             var match = Regex.ImageUrlPattern.Match(originalClassString);
@@ -89,17 +89,25 @@ namespace RequestReduce.Reducer
                 foreach (var pads in from Match paddingMatch in paddingMatches select GetPadding(paddingMatch))
                 {
                     if (pads[0] != null)
+                    {
                         PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingTop;
                         PaddingTop = pads[0];
+                    }
                     if (pads[1] != null)
+                    {
                         PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingLeft;
                         PaddingLeft = pads[1];
+                    }
                     if (pads[2] != null)
+                    {
                         PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingBottom;
                         PaddingBottom = pads[2];
+                    }
                     if (pads[3] != null)
+                    {
                         PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingRight;
                         PaddingRight = pads[3];
+                    }
                 }
             }
 
@@ -125,9 +133,9 @@ namespace RequestReduce.Reducer
             var pad4 = paddingMatch.Groups["pad4"].Value;
 
             if (side == "-left")
-                padVals[3] = calcPadPixels(pad1, Width);
+                padVals[3] = calcPadPixels(pad1, ExplicitWidth);
             else if (side == "-right")
-                padVals[1] = calcPadPixels(pad1, Width);
+                padVals[1] = calcPadPixels(pad1, ExplicitWidth);
             else if (side == "-top")
                 padVals[0] = calcPadPixels(pad1, Height);
             else if (side == "-bottom")
@@ -138,28 +146,28 @@ namespace RequestReduce.Reducer
                 switch (groupCount-1)
                 {
                     case 1:
-                        padVals[0] = calcPadPixels(pad1, Height);
-                        padVals[1] = calcPadPixels(pad1, Width);
-                        padVals[2] = calcPadPixels(pad1, Height);
-                        padVals[3] = calcPadPixels(pad1, Width);
+                        padVals[0] = calcPadPixels(pad1, ExplicitHeight);
+                        padVals[1] = calcPadPixels(pad1, ExplicitWidth);
+                        padVals[2] = calcPadPixels(pad1, ExplicitHeight);
+                        padVals[3] = calcPadPixels(pad1, ExplicitWidth);
                         break;
                     case 2:
-                        padVals[0] = calcPadPixels(pad1, Height);
-                        padVals[1] = calcPadPixels(pad2, Width);
-                        padVals[2] = calcPadPixels(pad1, Height);
-                        padVals[3] = calcPadPixels(pad2, Width);
+                        padVals[0] = calcPadPixels(pad1, ExplicitHeight);
+                        padVals[1] = calcPadPixels(pad2, ExplicitWidth);
+                        padVals[2] = calcPadPixels(pad1, ExplicitHeight);
+                        padVals[3] = calcPadPixels(pad2, ExplicitWidth);
                         break;
                     case 3:
-                        padVals[0] = calcPadPixels(pad1, Height);
-                        padVals[1] = calcPadPixels(pad2, Width);
-                        padVals[2] = calcPadPixels(pad3, Height);
-                        padVals[3] = calcPadPixels(pad2, Width);
+                        padVals[0] = calcPadPixels(pad1, ExplicitHeight);
+                        padVals[1] = calcPadPixels(pad2, ExplicitWidth);
+                        padVals[2] = calcPadPixels(pad3, ExplicitHeight);
+                        padVals[3] = calcPadPixels(pad2, ExplicitWidth);
                         break;
                     case 4:
-                        padVals[0] = calcPadPixels(pad1, Height);
-                        padVals[1] = calcPadPixels(pad2, Width);
-                        padVals[2] = calcPadPixels(pad3, Height);
-                        padVals[3] = calcPadPixels(pad4, Width);
+                        padVals[0] = calcPadPixels(pad1, ExplicitHeight);
+                        padVals[1] = calcPadPixels(pad2, ExplicitWidth);
+                        padVals[2] = calcPadPixels(pad3, ExplicitHeight);
+                        padVals[3] = calcPadPixels(pad4, ExplicitWidth);
                         break;
                 }
             }
@@ -260,7 +268,7 @@ namespace RequestReduce.Reducer
             {
                 if (PaddingLeft < 0 || PaddingRight < 0)
                     return null;
-                var computedWidth = ExplicitWidth += (PaddingLeft ?? 0 + PaddingRight ?? 0);
+                var computedWidth = ExplicitWidth + (PaddingLeft ?? 0) + (PaddingRight ?? 0);
                 return computedWidth == 0 ? (int?) null : computedWidth;
             }
         }
@@ -270,7 +278,7 @@ namespace RequestReduce.Reducer
             {
                 if (PaddingTop < 0 || PaddingBottom < 0)
                     return null;
-                var computedHeight = ExplicitHeight += (PaddingTop ?? 0 + PaddingBottom ?? 0);
+                var computedHeight = ExplicitHeight + (PaddingTop ?? 0) + (PaddingBottom ?? 0);
                 return computedHeight == 0 ? (int?)null : computedHeight;
             }
         }

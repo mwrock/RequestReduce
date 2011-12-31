@@ -56,7 +56,7 @@ namespace RequestReduce.Facts.Reducer
     width: 50;
 }
 
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+.TabOn {
     background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
 }";
 
@@ -407,14 +407,14 @@ namespace RequestReduce.Facts.Reducer
 }";
                 var expectedCss =
     @"
-.localnavigation .tabon,.localnavigation .tabon:hover {
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
     background-image: url(""newUrl"");
 ;background-position: -0px 0;}";
                 var testable = new TestableCssImageTransformer();
                 var backgroundImage = new BackgroundImageClass(css);
                 var sprite = new SpritedImage(1, backgroundImage, null) { Url = "newUrl" };
 
-                var result = testable.ClassUnderTest.InjectSprite(backgroundImage.OriginalClassString, sprite);
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
                 Assert.Equal(expectedCss, result);
             }
