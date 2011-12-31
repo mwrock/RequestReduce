@@ -573,6 +573,31 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillFlushFailuresOnFlushFailureUrlWhenAndAuthorizedUsersIsAnonymousAndNull()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.User).Returns(null as IPrincipal);
+            var queue = new Mock<IReducingQueue>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IReducingQueue>().Use(queue.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            queue.Verify(x => x.ClearFailures(), Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillFlushFailuresOnFlushFailureUrlWithTrailingSlashWhenAndAuthorizedUsersIsAnonymous()
         {
             var module = new RequestReduceModule();

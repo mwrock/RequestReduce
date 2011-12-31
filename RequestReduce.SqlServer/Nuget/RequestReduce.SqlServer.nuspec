@@ -15,6 +15,9 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Fix Nuget Dependency versions
+      * Fix flush and dashboard for unauthenticated users on .net 3.5
+      * Fix nuget install for Web Site projects
       * Do not inject css before X-UA-Compatible meta tag.
       * Fix errors thrown by setting response filter after a redirect
       * Fix errors thrown by setting response filter without reading it (.net 3.5 bug)
@@ -24,8 +27,8 @@
       * Gracefully swallow and Log errors on saving cached file to disk
     </releaseNotes>
     <dependencies>
-      <dependency id="RequestReduce" version="1.6.31" />
-      <dependency id="EntityFramework" version="4.1.10715.0" />
+      <dependency id="RequestReduce" version="$version$" />
+      <dependency id="EntityFramework" version="4.2.0.0" />
     </dependencies>
   </metadata>
 </package>
