@@ -2,7 +2,7 @@
 
 . (Join-Path $toolsPath "AddPostBuildScript.ps1")
 
-if($project.Object -is [VsWebSite.VSWebSite]) {
+if($project.Type -eq "Web Site") {
 	$target = Join-Path $project.FullName "bin\\optipng.exe"
 	Remove-Item $target
 }
