@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace RequestReduce.Reducer
@@ -11,34 +12,28 @@ namespace RequestReduce.Reducer
         {
             var finalUrls = new List<BackgroundImageClass>();
             var draftUrls = new List<BackgroundImageClass>();
+            var classCounter = 0;
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
-                var imageClass = new BackgroundImageClass(classMatch.ToString());
+                var imageClass = new BackgroundImageClass(classMatch.ToString(), ++classCounter);
                 var analyzer = new CssSelectorAnalyzer();
                 if (imageClass.PropertyCompletion == PropertyCompletion.HasNothing) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
-                    var workList = new SortedDictionary<string,BackgroundImageClass>(new SelectorComparer());
-                    var counter = 0;
+                    var workList = new SortedSet<BackgroundImageClass>(new SelectorComparer());
                     for (var n = draftUrls.Count - 1; n > -1; n--)
                     {
                         var selectors = draftUrls[n].Selector.Split(new [] {','});
                         var targetSelectors = imageClass.Selector.Split(new[] { ',' });
                         foreach (var selector in selectors)
                         {
-                            foreach (var targetSelector in targetSelectors)
-                            {
-                                if(analyzer.IsInScopeOfTarget(targetSelector.Trim(),selector.Trim()))
-                                {
-                                    workList.Add(string.Format("{0}|{1}", selector.Trim(), counter++), draftUrls[n]);
-                                    break;
-                                }
-                            }
+                            if (targetSelectors
+                                .Any(targetSelector => analyzer.IsInScopeOfTarget(targetSelector.Trim(), selector.Trim())))
+                                workList.Add(draftUrls[n]);
                         }
                     }
-                    foreach (var pair in workList)
+                    foreach (var cls in workList)
                     {
-                        var cls = pair.Value;
                         if (IsComplete(imageClass)) break;
                         if((imageClass.PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset && (cls.PropertyCompletion & PropertyCompletion.HasYOffset) == PropertyCompletion.HasYOffset)
                         {

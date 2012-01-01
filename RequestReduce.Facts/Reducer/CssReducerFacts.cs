@@ -158,8 +158,8 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableCssReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns("css"); 
-                var image1 = new BackgroundImageClass("") { ImageUrl = "image1" };
-                var image2 = new BackgroundImageClass("") { ImageUrl = "image2" };
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "image1" };
+                var image2 = new BackgroundImageClass("", 0) { ImageUrl = "image2" };
                 var css = "css";
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(css)).Returns(new BackgroundImageClass[] { image1, image2 });
 
@@ -172,8 +172,8 @@ namespace RequestReduce.Facts.Reducer
             public void WillInjectSpritesToCssAfterDispose()
             {
                 var testable = new TestableCssReducer();
-                var image1 = new BackgroundImageClass("") {ImageUrl = "image1"};
-                var image2 = new BackgroundImageClass("") { ImageUrl = "image2" };
+                var image1 = new BackgroundImageClass("", 0) {ImageUrl = "image1"};
+                var image2 = new BackgroundImageClass("", 0) { ImageUrl = "image2" };
                 var css = "css";
                 var mockWebResponse = new Mock<WebResponse>();
                 mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes(css)));
@@ -245,8 +245,8 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableCssReducer();
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns("css");
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageSpritingDisabled).Returns(true);
-                var image1 = new BackgroundImageClass("") { ImageUrl = "image1" };
-                var image2 = new BackgroundImageClass("") { ImageUrl = "image2" };
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "image1" };
+                var image2 = new BackgroundImageClass("", 0) { ImageUrl = "image2" };
                 var css = "css";
                 testable.Mock<ICssImageTransformer>().Setup(x => x.ExtractImageUrls(css)).Returns(new BackgroundImageClass[] { image1, image2 });
 

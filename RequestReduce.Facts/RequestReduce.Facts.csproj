@@ -123,6 +123,7 @@
     <Compile Include="Reducer\ImageTestHelper.cs" />
     <Compile Include="Reducer\CssReducerFacts.cs" />
     <Compile Include="Module\ReducingQueueFacts.cs" />
+    <Compile Include="Reducer\SelectorComparerFacts.cs" />
     <Compile Include="Reducer\SpriteContainerFacts.cs" />
     <Compile Include="Reducer\SpriteManagerFacts.cs" />
     <Compile Include="Reducer\SpriteWriterFacts.cs" />

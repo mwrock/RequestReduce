@@ -49,8 +49,10 @@ namespace RequestReduce.Reducer
     {
         private static readonly RegexCache Regex = new RegexCache();
 
-        public BackgroundImageClass(string originalClassString)
+        public BackgroundImageClass(string originalClassString, int classOrder)
         {
+            ClassOrder = classOrder;
+            SpecificityScore = -1;
             var selectorIdx = originalClassString.IndexOf("{", StringComparison.Ordinal);
             if (selectorIdx == -1) selectorIdx = 0;
             OriginalClassString = originalClassString.Substring(selectorIdx);
@@ -256,6 +258,38 @@ namespace RequestReduce.Reducer
             return offset;
         }
 
+        internal int ScoreSpecificity()
+        {
+            var score = 0;
+            var lastChar = ' ';
+            foreach (char c in Selector)
+            {
+                switch (c)
+                {
+                    case '#':
+                        score += 100;
+                        break;
+                    case '.':
+                    case '[':
+                    case ':':
+                        score += 10;
+                        break;
+                    case '*':
+                    case '+':
+                    case '>':
+                        break;
+                    default:
+                        if (lastChar == ' ')
+                            score += 1;
+                        break;
+                }
+                lastChar = c;
+            }
+            var matches = Regex.PseudoElementPattern.Matches(Selector);
+            score -= (matches.Count * 9);
+            return score;
+        }
+
         public string OriginalClassString { get; set; }
         public string Selector { get; set; }
         public string ImageUrl { get; set; }
@@ -290,5 +324,9 @@ namespace RequestReduce.Reducer
         public int? PaddingTop { get; set; }
         public int? PaddingBottom { get; set; }
         public PropertyCompletion PropertyCompletion { get; set; }
+        public int ClassOrder { get; set; }
+
+        internal int SpecificityScore { get; set; }
+        
     }
 }

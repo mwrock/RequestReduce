@@ -66,6 +66,30 @@ namespace RequestReduce.Facts.Reducer
                 Assert.True(result.Any(x => x.ImageUrl == "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png"));
             }
 
+            [Fact]
+            public void WillPassCorrectOrderToBackgroundImage()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.LocalNavigation {    
+    background-image: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png');
+    background-repeat: no-repeat;
+    width: 50;
+}
+
+.TabOn {
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
+    background-repeat: no-repeat;
+    width: 50;
+}";
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+
+                Assert.Equal(1, result.First(x => x.Selector == ".LocalNavigation").ClassOrder);
+                Assert.Equal(2, result.First(x => x.Selector == ".TabOn").ClassOrder);
+            }
+
             [Theory,
             InlineDataAttribute("repeat"),
             InlineDataAttribute("x-repeat"),
@@ -366,7 +390,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css), null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0), null) { Url = "spriteUrl", Position = 120 };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
@@ -389,7 +413,7 @@ namespace RequestReduce.Facts.Reducer
     background-position: 0 -30px;
     width: 50;
 ;background-image: url('spriteUrl');background-position: -120px 0;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css), null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0), null) { Url = "spriteUrl", Position = 120 };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
@@ -412,7 +436,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat;
     width: 50;
 ;background-position: -120px 0;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css), null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0), null) { Url = "spriteUrl", Position = 120 };
 
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
@@ -434,7 +458,7 @@ namespace RequestReduce.Facts.Reducer
     background-image: url(""newUrl"");
 ;background-position: -0px 0;}";
                 var testable = new TestableCssImageTransformer();
-                var backgroundImage = new BackgroundImageClass(css);
+                var backgroundImage = new BackgroundImageClass(css, 0);
                 var sprite = new SpritedImage(1, backgroundImage, null) { Url = "newUrl" };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
@@ -458,7 +482,7 @@ namespace RequestReduce.Facts.Reducer
     background: url('spriteUrl') no-repeat 0 -30px;
     width: 50;
 ;background-position: -120px 0 !important;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css) {Important = true }, null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0) {Important = true }, null) { Url = "spriteUrl", Position = 120 };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 

@@ -124,7 +124,7 @@ namespace RequestReduce.Reducer
             SpriteList.ToList().ForEach(x => x.Value.Image.Dispose());
         }
 
-        protected struct ImageMetadata
+        public struct ImageMetadata
         {
             public ImageMetadata(BackgroundImageClass image) : this()
             {
