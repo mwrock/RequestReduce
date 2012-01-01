@@ -298,7 +298,7 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillNotAddShortcutPaddingToHeightIfNoHeightSpecified()
+            public void WillAddShortcutPaddingTIfNoHeightSpecified()
             {
                 var css =
     @"
@@ -309,7 +309,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var testable = new BackgroundImageClass(css);
 
-                Assert.Null(testable.Height);
+                Assert.Equal(10, testable.Height);
             }
 
             [Fact]
@@ -917,6 +917,67 @@ img.icon {
 
                 Assert.Equal(PositionMode.Direction, testable.XOffset.PositionMode);
                 Assert.Equal(Direction.Center, testable.XOffset.Direction);
+            }
+        }
+
+        public class PropertyCompletion
+        {
+            [Theory]
+            [InlineData("h1 {{float:left;}}", RequestReduce.Reducer.PropertyCompletion.HasNothing)]
+            [InlineData(@"h1 {{background-image: url(""http://i3.social.microsoft.com/contentservice/technet.png"");}}", RequestReduce.Reducer.PropertyCompletion.HasImage)]
+            [InlineData("h1 {{background-repeat: none;;}}", RequestReduce.Reducer.PropertyCompletion.HasRepeat)]
+            [InlineData("h1 {{background-position: 0;}}", RequestReduce.Reducer.PropertyCompletion.HasXOffset)]
+            [InlineData("h1 {{background-position: top;}}", RequestReduce.Reducer.PropertyCompletion.HasYOffset)]
+            [InlineData("h1 {{width:5px;}}", RequestReduce.Reducer.PropertyCompletion.HasWidth)]
+            [InlineData("h1 {{height:5px;}}", RequestReduce.Reducer.PropertyCompletion.HasHeight)]
+            [InlineData("h1 {{padding-left: 5px;}}", RequestReduce.Reducer.PropertyCompletion.HasPaddingLeft)]
+            [InlineData("h1 {{padding-right: 5px;}}", RequestReduce.Reducer.PropertyCompletion.HasPaddingRight)]
+            [InlineData("h1 {{padding-top: 5px;}}", RequestReduce.Reducer.PropertyCompletion.HasPaddingTop)]
+            [InlineData("h1 {{padding-bottom: 5px;}}", RequestReduce.Reducer.PropertyCompletion.HasPaddingBottom)]
+            public void WillIndicateIfAPropertyIsFilledIn(string css, RequestReduce.Reducer.PropertyCompletion expectedCompletion)
+            {
+                var testable = new BackgroundImageClass(css);
+
+                Assert.Equal(expectedCompletion, testable.PropertyCompletion);
+            }
+        }
+
+        public class Dimensions
+        {
+            [Fact]
+            public void WillSetDimensionalPropertiesCorrectly()
+            {
+                var css =
+    @"
+.LocalNavigation{{
+width: 5px;
+height: 10px;    
+padding: 15px 20px 25px 30px;
+}}";
+
+                var testable = new BackgroundImageClass(css);
+
+                Assert.Equal(5, testable.ExplicitWidth);
+                Assert.Equal(10, testable.ExplicitHeight);
+                Assert.Equal(15, testable.PaddingTop);
+                Assert.Equal(20, testable.PaddingRight);
+                Assert.Equal(25, testable.PaddingBottom);
+                Assert.Equal(30, testable.PaddingLeft);
+                Assert.Equal(55, testable.Width);
+                Assert.Equal(50, testable.Height);
+            }
+        }
+
+        public class Selector
+        {
+            [Fact]
+            public void WillPopulateSelectorWithSelectorPortionOfPassedCss()
+            {
+                var css = @".LocalNavigation{{width: 5px;}}";
+
+                var testable = new BackgroundImageClass(css);
+
+                Assert.Equal(".LocalNavigation", testable.Selector);
             }
         }
     }

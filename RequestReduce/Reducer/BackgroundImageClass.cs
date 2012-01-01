@@ -95,8 +95,8 @@ namespace RequestReduce.Reducer
                     }
                     if (pads[1] != null)
                     {
-                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingLeft;
-                        PaddingLeft = pads[1];
+                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingRight;
+                        PaddingRight = pads[1];
                     }
                     if (pads[2] != null)
                     {
@@ -105,8 +105,8 @@ namespace RequestReduce.Reducer
                     }
                     if (pads[3] != null)
                     {
-                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingRight;
-                        PaddingRight = pads[3];
+                        PropertyCompletion = PropertyCompletion | PropertyCompletion.HasPaddingLeft;
+                        PaddingLeft = pads[3];
                     }
                 }
             }
@@ -137,9 +137,9 @@ namespace RequestReduce.Reducer
             else if (side == "-right")
                 padVals[1] = calcPadPixels(pad1, ExplicitWidth);
             else if (side == "-top")
-                padVals[0] = calcPadPixels(pad1, Height);
+                padVals[0] = calcPadPixels(pad1, ExplicitHeight);
             else if (side == "-bottom")
-                padVals[2] = calcPadPixels(pad1, Height);
+                padVals[2] = calcPadPixels(pad1, ExplicitHeight);
             else
             {
                 var groupCount = paddingMatch.Groups.Cast<Group>().Count(x => x.Length > 0);
@@ -285,7 +285,6 @@ namespace RequestReduce.Reducer
         public int ExplicitWidth { get; set; }
         public int ExplicitHeight { get; set; }
         public bool Important { get; set; }
-        public bool HasAllProperties { get; set; }
         public int? PaddingLeft { get; set; }
         public int? PaddingRight { get; set; }
         public int? PaddingTop { get; set; }

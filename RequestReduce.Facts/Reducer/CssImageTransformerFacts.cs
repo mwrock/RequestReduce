@@ -374,6 +374,29 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillAddUrlWithSpriteUrlAndIfItIsNotInCss()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.localnavigation {    
+    background-position: 0 -30px;
+    width: 50;
+}";
+                var expected =
+    @"
+.localnavigation {    
+    background-position: 0 -30px;
+    width: 50;
+;background-image: url('spriteUrl');background-position: -120px 0;}";
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css), null) { Url = "spriteUrl", Position = 120 };
+
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
+
+                Assert.Equal(expected, result);
+            }
+
+            [Fact]
             public void WillDefaultYOffsetToZero()
             {
                 var testable = new TestableCssImageTransformer();
