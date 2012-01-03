@@ -7,6 +7,7 @@ namespace RequestReduce.Reducer
     public class CssImageTransformer : ICssImageTransformer
     {
         private readonly ICssSelectorAnalyzer cssSelectorAnalyzer;
+        private readonly IComparer<BackgroundImageClass> selectorComparer = new SelectorComparer();
         private readonly Regex classPattern = new Regex(@"(?<=\}|)[^\}]+\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public CssImageTransformer(ICssSelectorAnalyzer cssSelectorAnalyzer)
@@ -25,7 +26,7 @@ namespace RequestReduce.Reducer
                 if (imageClass.PropertyCompletion == PropertyCompletion.HasNothing) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
-                    var workList = new SortedSet<BackgroundImageClass>(new SelectorComparer());
+                    var workList = new SortedSet<BackgroundImageClass>(selectorComparer);
                     for (var n = draftUrls.Count - 1; n > -1; n--)
                     {
                         var selectors = draftUrls[n].Selector.Split(new [] {','});
