@@ -37,71 +37,8 @@ namespace RequestReduce.Reducer
                                 workList.Add(draftUrls[n]);
                         }
                     }
-                    foreach (var cls in workList)
-                    {
-                        if (IsComplete(imageClass)) break;
-                        if((imageClass.PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset && (cls.PropertyCompletion & PropertyCompletion.HasYOffset) == PropertyCompletion.HasYOffset)
-                        {
-                            imageClass.YOffset = cls.YOffset;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasYOffset;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasXOffset) != PropertyCompletion.HasXOffset && (cls.PropertyCompletion & PropertyCompletion.HasXOffset) == PropertyCompletion.HasXOffset)
-                        {
-                            imageClass.XOffset = cls.XOffset;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasXOffset;
-                        }
-     
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasRepeat) != PropertyCompletion.HasRepeat && (cls.PropertyCompletion & PropertyCompletion.HasRepeat) == PropertyCompletion.HasRepeat)
-                        {
-                            imageClass.Repeat = cls.Repeat;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasRepeat;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasImage) != PropertyCompletion.HasImage && (cls.PropertyCompletion & PropertyCompletion.HasImage) == PropertyCompletion.HasImage)
-                        {
-                            imageClass.ImageUrl = cls.ImageUrl;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasImage;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasPaddingBottom) != PropertyCompletion.HasPaddingBottom && (cls.PropertyCompletion & PropertyCompletion.HasPaddingBottom) == PropertyCompletion.HasPaddingBottom)
-                        {
-                            imageClass.PaddingBottom = cls.PaddingBottom;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasPaddingBottom;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasPaddingTop) != PropertyCompletion.HasPaddingTop && (cls.PropertyCompletion & PropertyCompletion.HasPaddingTop) == PropertyCompletion.HasPaddingTop)
-                        {
-                            imageClass.PaddingTop = cls.PaddingTop;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasPaddingTop;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasPaddingLeft) != PropertyCompletion.HasPaddingLeft && (cls.PropertyCompletion & PropertyCompletion.HasPaddingLeft) == PropertyCompletion.HasPaddingLeft)
-                        {
-                            imageClass.PaddingLeft = cls.PaddingLeft;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasPaddingLeft;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasPaddingRight) != PropertyCompletion.HasPaddingRight && (cls.PropertyCompletion & PropertyCompletion.HasPaddingRight) == PropertyCompletion.HasPaddingRight)
-                        {
-                            imageClass.PaddingRight = cls.PaddingRight;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasPaddingRight;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasWidth) != PropertyCompletion.HasWidth && (cls.PropertyCompletion & PropertyCompletion.HasWidth) == PropertyCompletion.HasWidth)
-                        {
-                            imageClass.ExplicitWidth = cls.ExplicitWidth;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasWidth;
-                        }
-                        if ((imageClass.PropertyCompletion & PropertyCompletion.HasHeight) != PropertyCompletion.HasHeight && (cls.PropertyCompletion & PropertyCompletion.HasHeight) == PropertyCompletion.HasHeight)
-                        {
-                            imageClass.ExplicitHeight = cls.ExplicitHeight;
-                            imageClass.PropertyCompletion = imageClass.PropertyCompletion |
-                                                            PropertyCompletion.HasHeight;
-                        }
-                    }
+                    foreach (var cls in workList.Where(cls => !IsComplete(imageClass)))
+                        InheritMissingProperties(cls, imageClass);
                 }
 
                 draftUrls.Add(imageClass);
@@ -109,6 +46,49 @@ namespace RequestReduce.Reducer
                     finalUrls.Add(imageClass);
             }
             return finalUrls;
+        }
+
+        private static bool DerivableHasMissingProperty(BackgroundImageClass derrivableClass, BackgroundImageClass imageClass, PropertyCompletion property)
+        {
+            if ((imageClass.PropertyCompletion & property) != property && (derrivableClass.PropertyCompletion & property) == property)
+            {
+                imageClass.PropertyCompletion = imageClass.PropertyCompletion | property;
+                return true;
+            }
+            return false;
+        }
+
+        private static void InheritMissingProperties(BackgroundImageClass derrivableClass, BackgroundImageClass imageClass)
+        {
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasYOffset))
+                imageClass.YOffset = derrivableClass.YOffset;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasXOffset))
+                imageClass.XOffset = derrivableClass.XOffset;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasRepeat))
+                imageClass.Repeat = derrivableClass.Repeat;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasImage))
+                imageClass.ImageUrl = derrivableClass.ImageUrl;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasPaddingBottom))
+                imageClass.PaddingBottom = derrivableClass.PaddingBottom;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasPaddingTop))
+                imageClass.PaddingTop = derrivableClass.PaddingTop;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasPaddingLeft))
+                imageClass.PaddingLeft = derrivableClass.PaddingLeft;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasPaddingRight))
+                imageClass.PaddingRight = derrivableClass.PaddingRight;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasWidth))
+                imageClass.ExplicitWidth = derrivableClass.ExplicitWidth;
+
+            if (DerivableHasMissingProperty(derrivableClass, imageClass, PropertyCompletion.HasHeight))
+                imageClass.ExplicitHeight = derrivableClass.ExplicitHeight;
         }
 
         public string InjectSprite(string originalCss, SpritedImage image)
