@@ -4,7 +4,7 @@ using RequestReduce.Utilities;
 
 namespace RequestReduce.Reducer
 {
-    public class CssSelectorAnalyzer
+    public class CssSelectorAnalyzer : ICssSelectorAnalyzer
     {
         private static readonly RegexCache Regex = new RegexCache();
 
@@ -21,7 +21,7 @@ namespace RequestReduce.Reducer
             return true;
         }
 
-        private int FindToken(string comparableSelector, string targetSelector, int targetOffset)
+        private static int FindToken(string comparableSelector, string targetSelector, int targetOffset)
         {
             var tokens = Regex.SelectorSplitPattern.Split(comparableSelector);
             while (targetSelector.Length > targetOffset)

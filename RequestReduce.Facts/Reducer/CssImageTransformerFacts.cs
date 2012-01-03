@@ -1,4 +1,5 @@
-﻿using RequestReduce.Reducer;
+﻿using Moq;
+using RequestReduce.Reducer;
 using System.Linq;
 using Xunit;
 using Xunit.Extensions;
@@ -370,6 +371,183 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(0, result.Count());
             }
 
+            [Fact]
+            public void WillNotAnalyzeSelectorsThatHaveNothingOfInterest()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.h1  {{color: blue;}}
+.back  {{background-position: 10px 10px;}}";
+
+                testable.ClassUnderTest.ExtractImageUrls(css);
+
+                testable.Mock<ICssSelectorAnalyzer>().Verify(x => x.IsInScopeOfTarget(It.IsAny<string>(), ".h1"), Times.Never());
+            }
+
+            [Fact]
+            public void WillNotAnalyzeSelectorsThatAreComplete()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.h1  {{width: 10px;}}
+.LocalNavigation {
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0px center;
+    width: 20px;
+    height: 20px;
+    padding: 0 0 0 0;
+}";
+
+                testable.ClassUnderTest.ExtractImageUrls(css);
+
+                testable.Mock<ICssSelectorAnalyzer>().Verify(x => x.IsInScopeOfTarget(".LocalNavigation", It.IsAny<string>()), Times.Never());
+            }
+
+            [Theory]
+            [InlineDataAttribute("width: 5px;")]
+            [InlineDataAttribute("height: 5px;")]
+            [InlineDataAttribute("background-repeat: none;")]
+            [InlineDataAttribute(@"background-image: url(""image.png"");")]
+            [InlineDataAttribute("background-position: left;")]
+            [InlineDataAttribute("background-position: top;")]
+            [InlineDataAttribute("padding-left: 5px;")]
+            [InlineDataAttribute("padding-right: 5px;")]
+            [InlineDataAttribute("padding-top: 5px;")]
+            [InlineDataAttribute("padding-bottom: 5px;")]
+            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAnImageWithAnotherSelectorThatHasSomethingOfInterest(string propertyOfInterest)
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.h1  {{{0}}}
+.LocalNavigation {{
+    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"");
+}}";
+
+                testable.ClassUnderTest.ExtractImageUrls(string.Format(css, propertyOfInterest));
+
+                testable.Mock<ICssSelectorAnalyzer>().Verify(x => x.IsInScopeOfTarget(".LocalNavigation", It.IsAny<string>()), Times.Once());
+            }
+
+            [Theory]
+            [InlineDataAttribute("width: 5px;")]
+            [InlineDataAttribute("height: 5px;")]
+            [InlineDataAttribute("background-repeat: none;")]
+            [InlineDataAttribute(@"background-image: url(""image.png"");")]
+            [InlineDataAttribute("background-position: left;")]
+            [InlineDataAttribute("background-position: top;")]
+            [InlineDataAttribute("padding-left: 5px;")]
+            [InlineDataAttribute("padding-right: 5px;")]
+            [InlineDataAttribute("padding-top: 5px;")]
+            [InlineDataAttribute("padding-bottom: 5px;")]
+            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAnXOffsetWithAnotherSelectorThatHasSomethingOfInterest(string propertyOfInterest)
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.h1  {{{0}}}
+.LocalNavigation {{
+    background-position: left;
+}}";
+
+                testable.ClassUnderTest.ExtractImageUrls(string.Format(css, propertyOfInterest));
+
+                testable.Mock<ICssSelectorAnalyzer>().Verify(x => x.IsInScopeOfTarget(".LocalNavigation", It.IsAny<string>()), Times.Once());
+            }
+
+            [Theory]
+            [InlineDataAttribute("width: 5px;")]
+            [InlineDataAttribute("height: 5px;")]
+            [InlineDataAttribute("background-repeat: none;")]
+            [InlineDataAttribute(@"background-image: url(""image.png"");")]
+            [InlineDataAttribute("background-position: left;")]
+            [InlineDataAttribute("background-position: top;")]
+            [InlineDataAttribute("padding-left: 5px;")]
+            [InlineDataAttribute("padding-right: 5px;")]
+            [InlineDataAttribute("padding-top: 5px;")]
+            [InlineDataAttribute("padding-bottom: 5px;")]
+            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAYOffsetWithAnotherSelectorThatHasSomethingOfInterest(string propertyOfInterest)
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.h1  {{{0}}}
+.LocalNavigation {{
+    background-position: top;
+}}";
+
+                testable.ClassUnderTest.ExtractImageUrls(string.Format(css, propertyOfInterest));
+
+                testable.Mock<ICssSelectorAnalyzer>().Verify(x => x.IsInScopeOfTarget(".LocalNavigation", It.IsAny<string>()), Times.Once());
+            }
+
+            [Fact]
+            public void WillAddPropertiesToIncompleteWithoutPositionClassComplete()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+h1 {{
+    background: url(""image"") no-repeat -10px -30px;
+    width: 20px;
+    height: 20px;
+    padding: 40 50 60 70;
+}}
+h1.LocalNavigation {{
+    background-image: url(""image2"");
+}}";
+                testable.Mock<ICssSelectorAnalyzer>().Setup(x => x.IsInScopeOfTarget("h1.LocalNavigation", "h1")).Returns(true);
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+
+                Assert.Equal(2, result.Count());
+                var image = result.FirstOrDefault(x => x.Selector == "h1.LocalNavigation");
+                Assert.NotNull(image);
+                Assert.Equal(image.ExplicitWidth, 20);
+                Assert.Equal(image.ExplicitHeight, 20);
+                Assert.Equal(image.Repeat, RepeatStyle.NoRepeat);
+                Assert.Equal(image.XOffset.Offset, -10);
+                Assert.Equal(image.YOffset.Offset, -30);
+                Assert.Equal(image.PaddingTop, 40);
+                Assert.Equal(image.PaddingRight, 50);
+                Assert.Equal(image.PaddingBottom, 60);
+                Assert.Equal(image.PaddingLeft, 70);
+            }
+
+            [Fact]
+            public void WillAddPropertiesToIncompleteWithoutImageClassComplete()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+h1 {{
+    background: url(""image"") no-repeat -10px -30px;
+    width: 20px;
+    height: 20px;
+    padding: 40 50 60 70;
+}}
+h1.LocalNavigation {{
+    background-position: -10px -30px;
+}}";
+                testable.Mock<ICssSelectorAnalyzer>().Setup(x => x.IsInScopeOfTarget("h1.LocalNavigation", "h1")).Returns(true);
+
+                var result = testable.ClassUnderTest.ExtractImageUrls(css);
+
+                Assert.Equal(2, result.Count());
+                var image = result.FirstOrDefault(x => x.Selector == "h1.LocalNavigation");
+                Assert.NotNull(image);
+                Assert.Equal(image.ExplicitWidth, 20);
+                Assert.Equal(image.ExplicitHeight, 20);
+                Assert.Equal(image.Repeat, RepeatStyle.NoRepeat);
+                Assert.Equal(image.XOffset.Offset, -10);
+                Assert.Equal(image.YOffset.Offset, -30);
+                Assert.Equal(image.PaddingTop, 40);
+                Assert.Equal(image.PaddingRight, 50);
+                Assert.Equal(image.PaddingBottom, 60);
+                Assert.Equal(image.PaddingLeft, 70);
+                Assert.Equal(image.ImageUrl, "image");
+            }
         }
 
         public class InjectSprite

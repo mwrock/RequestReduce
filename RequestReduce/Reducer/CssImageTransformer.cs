@@ -6,7 +6,13 @@ namespace RequestReduce.Reducer
 {
     public class CssImageTransformer : ICssImageTransformer
     {
+        private readonly ICssSelectorAnalyzer cssSelectorAnalyzer;
         private readonly Regex classPattern = new Regex(@"(?<=\}|)[^\}]+\}", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        public CssImageTransformer(ICssSelectorAnalyzer cssSelectorAnalyzer)
+        {
+            this.cssSelectorAnalyzer = cssSelectorAnalyzer;
+        }
 
         public IEnumerable<BackgroundImageClass> ExtractImageUrls(string cssContent)
         {
@@ -16,7 +22,6 @@ namespace RequestReduce.Reducer
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
                 var imageClass = new BackgroundImageClass(classMatch.ToString(), ++classCounter);
-                var analyzer = new CssSelectorAnalyzer();
                 if (imageClass.PropertyCompletion == PropertyCompletion.HasNothing) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
@@ -28,7 +33,7 @@ namespace RequestReduce.Reducer
                         foreach (var selector in selectors)
                         {
                             if (targetSelectors
-                                .Any(targetSelector => analyzer.IsInScopeOfTarget(targetSelector.Trim(), selector.Trim())))
+                                .Any(targetSelector => cssSelectorAnalyzer.IsInScopeOfTarget(targetSelector.Trim(), selector.Trim())))
                                 workList.Add(draftUrls[n]);
                         }
                     }
@@ -47,6 +52,7 @@ namespace RequestReduce.Reducer
                             imageClass.PropertyCompletion = imageClass.PropertyCompletion |
                                                             PropertyCompletion.HasXOffset;
                         }
+     
                         if ((imageClass.PropertyCompletion & PropertyCompletion.HasRepeat) != PropertyCompletion.HasRepeat && (cls.PropertyCompletion & PropertyCompletion.HasRepeat) == PropertyCompletion.HasRepeat)
                         {
                             imageClass.Repeat = cls.Repeat;

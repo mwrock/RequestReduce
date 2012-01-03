@@ -116,6 +116,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Reducer\CssSelectorAnalyzer.cs" />
+    <Compile Include="Reducer\ICssSelectorAnalyzer.cs" />
     <Compile Include="Reducer\SelectorComparer.cs" />
     <Compile Include="ResourceTypes\CssResource.cs" />
     <Compile Include="ResourceTypes\IResourceType.cs" />
