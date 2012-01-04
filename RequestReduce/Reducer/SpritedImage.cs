@@ -9,6 +9,7 @@ namespace RequestReduce.Reducer
             AverageColor = averageColor;
             CssClass = cssClass;
             Image = image;
+            Position = -1;
         }
 
         public Bitmap Image { get; set; }

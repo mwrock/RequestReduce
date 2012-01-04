@@ -74,8 +74,14 @@ namespace RequestReduce.Reducer
                     foreach (var image in SpriteContainer)
                     {
                         spriteWriter.WriteImage(image.Image);
-                        image.Position = offset;
-                        offset += image.Image.Width + 1;
+                        var dupImage = SpriteContainer.FirstOrDefault(x => x.Image == image.Image && x.Position > -1);
+                        if (dupImage != null)
+                            image.Position = dupImage.Position;
+                        else
+                        {
+                            image.Position = offset;
+                            offset += image.Image.Width + 1;
+                        }
                     }
                     var bytes = spriteWriter.GetBytes("image/png");
                     byte[] optBytes;

@@ -13,7 +13,6 @@ using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
 using UriBuilder = RequestReduce.Utilities.UriBuilder;
-using RequestReduce.Module;
 
 namespace RequestReduce.Facts.Reducer
 {
@@ -229,7 +228,7 @@ namespace RequestReduce.Facts.Reducer
                                      new SpritedImage(1, null, TestableSpriteManager.Image15X17),
                                      new SpritedImage(1, null, TestableSpriteManager.Image18X18)
                                  };
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(() => images.GetEnumerator());
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 byte[] bytes = null;
                 testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
@@ -253,7 +252,7 @@ namespace RequestReduce.Facts.Reducer
                                      new SpritedImage(1, null, TestableSpriteManager.Image15X17),
                                      new SpritedImage(1, null, TestableSpriteManager.Image18X18)
                                  };
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(() => images.GetEnumerator());
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 byte[] bytes = null;
                 testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
@@ -262,6 +261,30 @@ namespace RequestReduce.Facts.Reducer
                 testable.ClassUnderTest.Flush();
 
                 Assert.Equal(16, images[1].Position);
+            }
+
+            [Fact]
+            public void WillSetPositionToSamePositionOfPreviousDuplicate()
+            {
+                var testable = new TestableSpriteManager();
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(35);
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(18);
+                var images = new List<SpritedImage>()
+                                 {
+                                     new SpritedImage(1, null, TestableSpriteManager.Image15X17),
+                                     new SpritedImage(1, null, TestableSpriteManager.Image18X18),
+                                     new SpritedImage(1, null, TestableSpriteManager.Image15X17)
+                                 };
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(() => images.GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
+                byte[] bytes = null;
+                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
+                    <byte[], int, bool>((a, b, c) => bytes = a).Returns(() => bytes);
+
+                testable.ClassUnderTest.Flush();
+
+                Assert.Equal(0, images[0].Position);
+                Assert.Equal(0, images[2].Position);
             }
 
             [Fact]
@@ -487,7 +510,7 @@ namespace RequestReduce.Facts.Reducer
                 byte[] originalBytes = null;
                 byte[] optimizedBytes = null;
                 var images = new List<SpritedImage>() { new SpritedImage(1, null, TestableSpriteManager.Image15X17), new SpritedImage(1, null, TestableSpriteManager.Image18X18) };
-                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(images.GetEnumerator());
+                testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(() => images.GetEnumerator());
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationDisabled).Returns(false);
                 testable.Mock<IRRConfiguration>().Setup(x => x.ImageOptimizationCompressionLevel).Returns(2);
                 testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
