@@ -18,6 +18,47 @@ namespace RequestReduce.Facts.Reducer
         public class ExtractImageUrls
         {
             [Fact]
+            public void WillParseClassesWithEmptyComments()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+* html .RadInput a.riDown
+{
+	margin-top /**/:0;
+}
+
+/*label*/
+
+.RadInput .riLabel
+{
+	margin:0 4px 0 0;
+	white-space:nowrap;
+}
+";
+
+                var expected =
+    @"
+* html .RadInput a.riDown
+{
+	margin-top :0;
+}
+
+
+
+.RadInput .riLabel
+{
+	margin:0 4px 0 0;
+	white-space:nowrap;
+}
+";
+
+                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(expected, css);
+            }
+
+            [Fact]
             public void WillParseClassesInMedia()
             {
                 var testable = new TestableCssImageTransformer();
