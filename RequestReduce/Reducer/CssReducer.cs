@@ -28,23 +28,40 @@ namespace RequestReduce.Reducer
         {
             spriteManager.SpritedCssKey = key;
             var mergedCss = new StringBuilder();
+            RRTracer.Trace("beginning to merge css");
             foreach (var url in urls)
                 mergedCss.Append(ProcessCss(url));
+            RRTracer.Trace("Finished merging css");
             spriteManager.Dispose();
             return SpriteCss(mergedCss.ToString());
         }
 
         protected virtual string ProcessCss(string url)
         {
+            RRTracer.Trace("Beginning Processing {0}", url);
             var urlParts = url.Split(new[] {'|'}, 2);
             url = urlParts[0];
+            RRTracer.Trace("Beginning to Download {0}", url);
             var cssContent = webClientWrapper.DownloadString<CssResource>(url);
+            RRTracer.Trace("Finished Downloading {0}", url);
+            RRTracer.Trace("Beginning to absolutize urls in {0}", url);
             cssContent = MakeRelativeUrlsAbsoluteAndRemoveComments(cssContent, url);
+            RRTracer.Trace("finished absolutizing urls in {0}", url);
+            RRTracer.Trace("Beginning to expand imports in {0}", url);
             cssContent = ExpandImports(cssContent, url);
+            RRTracer.Trace("Finished expanding imports in {0}", url);
             if (!configuration.ImageSpritingDisabled)
+            {
+                RRTracer.Trace("Beginning to process sprites in {0}", url);
                 ProcessSprites(cssContent);
+                RRTracer.Trace("Finished processing sprites in {0}", url);
+            }
             if (urlParts.Length > 1)
+            {
+                RRTracer.Trace("Beginning to wrap media in {0}", url);
                 cssContent = WrapMedia(cssContent, urlParts[1]);
+                RRTracer.Trace("finished wraping media in {0}", url);
+            }
             return cssContent;
         }
 
@@ -75,7 +92,11 @@ namespace RequestReduce.Reducer
         {
             var newImages = cssImageTransformer.ExtractImageUrls(cssContent);
             foreach (var imageUrl in newImages)
+            {
+                RRTracer.Trace("Adding {0}", imageUrl.ImageUrl);
                 spriteManager.Add(imageUrl);
+                RRTracer.Trace("Finished adding {0}", imageUrl.ImageUrl);
+            }
         }
 
         protected virtual string SpriteCss(string css)

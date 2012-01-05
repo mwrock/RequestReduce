@@ -68,6 +68,7 @@ namespace RequestReduce.Reducer
         {
             if(SpriteContainer.Size > 0)
             {
+                RRTracer.Trace("Beginning to Flush sprite");
                 using (var spriteWriter = new SpriteWriter(SpriteContainer.Width, SpriteContainer.Height))
                 {
                     var offset = 0;
@@ -101,6 +102,7 @@ namespace RequestReduce.Reducer
                     foreach (var image in SpriteContainer)
                         image.Url = url;
                 }
+                RRTracer.Trace("Finished Flushing sprite");
             }
             SpriteContainer = new SpriteContainer(webClientWrapper, config);
         }
