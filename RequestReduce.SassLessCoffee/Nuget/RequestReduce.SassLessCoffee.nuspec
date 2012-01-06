@@ -15,6 +15,7 @@
     <summary>An add-on which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
+      * Upgraded to latest ajax minifier that fixes a bug with gradient transform color hashes
       * Fix parsing errors that surface with empty css comments
       * Fix Nuget Dependency versions
       * Fix flush and dashboard for unauthenticated users on .net 3.5
