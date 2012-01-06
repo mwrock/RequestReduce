@@ -42,6 +42,51 @@ namespace RequestReduce.Facts.Reducer
         public class Process
         {
             [Fact]
+            public void WillParseClassesWithEmptyComments()
+            {
+                var testable = new TestableCssReducer();
+                var css =
+                    @"
+* html .RadInput a.riDown
+{
+	margin-top /**/:0;
+}
+
+/*label*/
+
+.RadInput .riLabel
+{
+	margin:0 4px 0 0;
+	white-space:nowrap;
+}
+";
+
+                var expected =
+    @"
+* html .RadInput a.riDown
+{
+	margin-top :0;
+}
+
+
+
+.RadInput .riLabel
+{
+	margin:0 4px 0 0;
+	white-space:nowrap;
+}
+";
+
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/style/css2.css")).Returns(css);
+
+                testable.ClassUnderTest.Process("http://host/style/css2.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>(expected), Times.Once());
+            }
+
+            [Fact]
             public void WillReturnProcessedCssUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableCssReducer();
