@@ -294,9 +294,6 @@ namespace RequestReduce.Facts.Reducer
                                  };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(() => images.GetEnumerator());
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
-                byte[] bytes = null;
-                testable.Mock<IPngOptimizer>().Setup(x => x.OptimizePng(It.IsAny<byte[]>(), It.IsAny<int>(), false)).Callback
-                    <byte[], int, bool>((a, b, c) => bytes = a).Returns(() => bytes);
 
                 testable.ClassUnderTest.Flush();
 
