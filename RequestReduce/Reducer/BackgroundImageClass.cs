@@ -37,8 +37,8 @@ namespace RequestReduce.Reducer
         {
             var offsetExplicitelySet = new bool[2];
             OriginalClassString = originalClassString;
-            var match = Regex.ImageUrlPattern.Match(originalClassString);
-            if (match.Success)
+            var matches = Regex.ImageUrlPattern.Matches(originalClassString);
+            foreach (Match match in matches)
             {
                 OriginalImageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
                 if (OriginalImageUrl.Length > 0)

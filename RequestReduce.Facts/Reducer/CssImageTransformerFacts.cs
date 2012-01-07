@@ -371,6 +371,32 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillConvertRelativeUrlsToAbsoluteForFontFaces()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+@font-face
+{
+font-family: myFirstFont;
+src: url('Sansation_Light.ttf'),
+     url('Sansation_Light.eot');
+}";
+                var expectedcss =
+                    @"
+@font-face
+{
+font-family: myFirstFont;
+src: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/Sansation_Light.ttf'),
+     url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/Sansation_Light.eot');
+}";
+
+                testable.ClassUnderTest.ExtractImageUrls(ref css, "http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                Assert.Equal(expectedcss, css);
+            }
+
+            [Fact]
             public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImagesWhenBracesInComments()
             {
                 var testable = new TestableCssImageTransformer();

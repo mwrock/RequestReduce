@@ -4,7 +4,7 @@ namespace RequestReduce.Utilities
 {
     internal class RegexCache
     {
-        internal readonly Regex ImageUrlPattern = new Regex(@"background(-image)?:[\s\w#]*url[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)[^;}]*", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        internal readonly Regex ImageUrlPattern = new Regex(@"\burl[\s]*\([\s]*(?<url>[^\)]*)[\s]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         internal readonly Regex OffsetPattern = new Regex(@"background(?:-position)?:(?:[^;]*?)(?<offset1>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?))[\s;](?:(?<offset2>right|left|bottom|top|center|(?:\-?\d+(?:%|px|in|cm|mm|em|ex|pt|pc)?)))?[^;}]*", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         internal readonly Regex RepeatPattern = new Regex(@"\b((x-)|(y-)|(no-))?repeat\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         internal readonly Regex WidthPattern = new Regex(@"\b(max-)?width:[\s]*(?<width>[0-9]+)(px)?[\s]*[;}]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
