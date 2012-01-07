@@ -325,7 +325,7 @@ namespace RequestReduce.Reducer
         public int? PaddingBottom { get; set; }
         public PropertyCompletion PropertyCompletion { get; set; }
         public int ClassOrder { get; set; }
-
+        internal bool IsSprite { get; set; }
         internal int SpecificityScore { get; set; }
         
     }

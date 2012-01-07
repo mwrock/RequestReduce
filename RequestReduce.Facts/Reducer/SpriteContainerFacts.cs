@@ -1,7 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using Moq;
 using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using Xunit;
@@ -21,8 +23,10 @@ namespace RequestReduce.Facts.Reducer
 
             public void AddSpritedImage(SpritedImage image)
             {
-                images.Add(image);
+                Images.Add(image);
             }
+
+            public new Dictionary<string, byte[]> DownloadedImages { get { return base.DownloadedImages; } }
         }
 
         class TestableSpriteContainer : Testable<FakeSpriteContainer>
@@ -462,13 +466,41 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteContainer();
                 var halfvioletHalfGreyImage = new BackgroundImageClass("image1", 0) { ImageUrl = "url" };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(TestableSpriteContainer.GetHalfvioletHalfGreyImageImage(Color.DarkViolet));
-                var color1 = Color.DarkViolet.ToArgb();
-                var color2 = Color.DimGray.ToArgb();
                 testable.Mock<IRRConfiguration>().Setup(x => x.IsFullTrust).Returns(false);
 
                 var result = testable.ClassUnderTest.AddImage(halfvioletHalfGreyImage);
 
                 Assert.Equal(0, result.AverageColor);
+            }
+
+            [Fact]
+            public void WillNotDownloadSameUrlTwice()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("image1", 0) { ImageUrl = "url", IsSprite = true};
+                var image2 = new BackgroundImageClass("image2", 0) { ImageUrl = "url", IsSprite = true };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image2);
+
+                testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadBytes("url"), Times.Once());
+            }
+
+            [Fact]
+            public void WillNotCacheNonSprites()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("image1", 0) { ImageUrl = "url", IsSprite = true };
+                var image2 = new BackgroundImageClass("image2", 0) { ImageUrl = "url2", IsSprite = false };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url")).Returns(testable.Image15X17);
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url2")).Returns(testable.Image15X17);
+
+                testable.ClassUnderTest.AddImage(image1);
+                testable.ClassUnderTest.AddImage(image2);
+
+                Assert.True(testable.ClassUnderTest.DownloadedImages.ContainsKey("url"));
+                Assert.False(testable.ClassUnderTest.DownloadedImages.ContainsKey("url2"));
             }
 
             [Fact]

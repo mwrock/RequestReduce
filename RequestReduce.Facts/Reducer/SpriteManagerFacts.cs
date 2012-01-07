@@ -69,6 +69,23 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillMarkImageAsSpriteIfUrlIsReferencedInAnotherImage()
+            {
+                var testable = new TestableSpriteManager();
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1" };
+                var image2 = new BackgroundImageClass("", 0) { ImageUrl = "url2" };
+                var image3 = new BackgroundImageClass("", 0) { ImageUrl = "url1", XOffset = new Position(){Offset = -100}};
+
+                testable.ClassUnderTest.Add(image1);
+                testable.ClassUnderTest.Add(image2);
+                testable.ClassUnderTest.Add(image3);
+
+                Assert.True(image1.IsSprite);
+                Assert.True(image3.IsSprite);
+                Assert.False(image2.IsSprite);
+            }
+
+            [Fact]
             public void WillFlushWhenSizePassesThreshold()
             {
                 var testable = new TestableSpriteManager();

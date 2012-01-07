@@ -44,6 +44,12 @@ namespace RequestReduce.Reducer
                 return;
             }
             SpritedImage spritedImage;
+            var sprite = SpriteList.FirstOrDefault(x => x.Value.CssClass.ImageUrl == image.ImageUrl);
+            if(sprite.Value != null)
+            {
+                image.IsSprite = true;
+                sprite.Value.CssClass.IsSprite = true;
+            }
             try
             {
                 spritedImage = SpriteContainer.AddImage(image);

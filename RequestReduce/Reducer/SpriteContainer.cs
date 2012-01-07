@@ -13,10 +13,11 @@ namespace RequestReduce.Reducer
 {
     public class SpriteContainer : ISpriteContainer
     {
-        protected readonly IList<SpritedImage> images = new List<SpritedImage>();
+        protected readonly IList<SpritedImage> Images = new List<SpritedImage>();
         private readonly IWebClientWrapper webClientWrapper;
         private readonly IRRConfiguration rrConfiguration;
         private readonly HashSet<int> uniqueColors = new HashSet<int>();
+        protected readonly Dictionary<string, byte[]> DownloadedImages = new Dictionary<string, byte[]>();
 
         public SpriteContainer(IWebClientWrapper webClientWrapper, IRRConfiguration rrConfiguration)
         {
@@ -26,12 +27,20 @@ namespace RequestReduce.Reducer
 
         public void AddImage (SpritedImage image)
         {
-            images.Add(image);
+            Images.Add(image);
         }
 
         public SpritedImage AddImage (BackgroundImageClass image)
         {
-            var imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
+            byte[] imageBytes;
+            if(DownloadedImages.ContainsKey(image.ImageUrl) && image.IsSprite)
+                imageBytes = DownloadedImages[image.ImageUrl];
+            else
+            {
+                imageBytes = webClientWrapper.DownloadBytes(image.ImageUrl);
+                if(image.IsSprite)
+                    DownloadedImages.Add(image.ImageUrl, imageBytes);
+            }
             Bitmap bitmap;
 
             using (var originalBitmap = new Bitmap(new MemoryStream(imageBytes)))
@@ -97,7 +106,7 @@ namespace RequestReduce.Reducer
             }
             var avgColor = rrConfiguration.IsFullTrust ? GetColors(bitmap) : 0;
             var spritedImage = new SpritedImage(avgColor, image, bitmap);
-            images.Add(spritedImage);
+            Images.Add(spritedImage);
             Width += bitmap.Width + 1;
             if (Height < bitmap.Height) Height = bitmap.Height;
             return spritedImage;
@@ -146,7 +155,7 @@ namespace RequestReduce.Reducer
         public int Height { get; private set; }
         public IEnumerator<SpritedImage> GetEnumerator()
         {
-            return images.OrderBy(x => x.AverageColor).GetEnumerator();
+            return Images.OrderBy(x => x.AverageColor).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
