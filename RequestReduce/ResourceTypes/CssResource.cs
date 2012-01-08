@@ -7,7 +7,7 @@ namespace RequestReduce.ResourceTypes
     public class CssResource : IResourceType
     {
         private const string CssFormat = @"<link href=""{0}"" rel=""Stylesheet"" type=""text/css"" />";
-        private readonly Regex cssPattern = new Regex(@"<link[^>]+rel=""?stylesheet""?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly Regex cssPattern = new Regex(@"<link[^>]+rel=['""]?stylesheet['""]?[^>]+>(?![\s]*<!\[endif]-->)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public string FileName
         {

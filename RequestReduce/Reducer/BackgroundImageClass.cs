@@ -55,7 +55,7 @@ namespace RequestReduce.Reducer
             SpecificityScore = -1;
             var selectorIdx = originalClassString.IndexOf("{", StringComparison.Ordinal);
             if (selectorIdx == -1) selectorIdx = 0;
-            OriginalClassString = originalClassString.Substring(selectorIdx);
+            OriginalClassString = originalClassString;
             Selector = originalClassString.Substring(0, selectorIdx).Trim();
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)

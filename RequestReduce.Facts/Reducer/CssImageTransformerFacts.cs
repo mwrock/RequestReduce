@@ -576,6 +576,43 @@ h1.LocalNavigation {{
             }
 
             [Fact]
+            public void WillNotReplaceClassWithSameBodyAndDifferentSelector()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.localnavigation {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 -30px;
+    width: 50;
+}
+
+.localnavigation2 {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 -30px;
+    width: 50;
+}";
+                var imageCss = @".localnavigation {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 -30px;
+    width: 50;
+}";
+                var expected =
+    @"
+.localnavigation {    
+    background: url('spriteUrl') no-repeat 0 -30px;
+    width: 50;
+;background-position: -120px 0;}
+
+.localnavigation2 {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 -30px;
+    width: 50;
+}";
+                var sprite = new SpritedImage(1, new BackgroundImageClass(imageCss, 0), null) { Url = "spriteUrl", Position = 120 };
+
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
+
+                Assert.Equal(expected, result);
+            }
+
+            [Fact]
             public void WillAddUrlWithSpriteUrlAndIfItIsNotInCss()
             {
                 var testable = new TestableCssImageTransformer();
@@ -637,7 +674,7 @@ h1.LocalNavigation {{
 ;background-position: -0px 0;}";
                 var testable = new TestableCssImageTransformer();
                 var backgroundImage = new BackgroundImageClass(css, 0);
-                var sprite = new SpritedImage(1, backgroundImage, null) { Url = "newUrl" };
+                var sprite = new SpritedImage(1, backgroundImage, null) { Url = "newUrl", Position = 0};
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 
