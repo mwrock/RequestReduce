@@ -15,6 +15,9 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Fix @import parsing bug that only recognizes URLsinside of url()
+      * fix css link parsing bug not picking up single quoted stylesheet rel
+      * Support @font-face rule
       * Upgraded to latest ajax minifier that fixes a bug with gradient transform color hashes
       * Fix parsing errors that surface with empty css comments
       * Fix Nuget Dependency versions
