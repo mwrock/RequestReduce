@@ -45,6 +45,7 @@ namespace RequestReduce.Utilities
             try
             {
                 var client = WebRequest.Create(url);
+                client.Credentials = CredentialCache.DefaultCredentials;
                 var systemWebProxy = WebRequest.GetSystemWebProxy();
                 systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
                 client.Proxy = systemWebProxy;
