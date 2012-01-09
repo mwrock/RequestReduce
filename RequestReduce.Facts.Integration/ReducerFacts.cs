@@ -49,7 +49,6 @@ namespace RequestReduce.Facts.Integration
             reducer.Dispose();
         }
 
-
         [OutputTraceOnFailFact]
         public void WillReturnSavedJavaScript()
         {
@@ -72,7 +71,7 @@ namespace RequestReduce.Facts.Integration
             var urls = "http://localhost:8877/Styles/style1.css::http://localhost:8877/Styles/style2.css";
             var key = Hasher.Hash(urls).RemoveDashes();
 
-            var result = reducer.Process(urls);
+            reducer.Process(urls);
 
             Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath,  key + "*").Single(x => x.EndsWith(".png")));
             reducer.Dispose();

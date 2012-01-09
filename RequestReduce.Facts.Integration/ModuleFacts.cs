@@ -86,6 +86,13 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
+        public void WillProcessSecureContent()
+        {
+            new WebClient().DownloadString("http://localhost:8877/testSecure.html");
+            WaitToCreateResources(1,0,false,2000);
+        }
+
+        [OutputTraceOnFailFact]
         public void WillUseSameReductionAfterAppPoolRecycle()
         {
             var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);

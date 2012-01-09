@@ -72,6 +72,7 @@ namespace RequestReduce.Utilities
                     var systemWebProxy = WebRequest.GetSystemWebProxy();
                     systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
                     client.Proxy = systemWebProxy;
+                    client.Credentials = CredentialCache.DefaultCredentials;
                     return client.DownloadData(url);
                 }
             }
