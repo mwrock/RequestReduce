@@ -405,17 +405,10 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory]
-            [InlineDataAttribute("width: 5px;")]
-            [InlineDataAttribute("height: 5px;")]
-            [InlineDataAttribute("background-repeat: none;")]
             [InlineDataAttribute(@"background-image: url(""image.png"");")]
             [InlineDataAttribute("background-position: left;")]
             [InlineDataAttribute("background-position: top;")]
-            [InlineDataAttribute("padding-left: 5px;")]
-            [InlineDataAttribute("padding-right: 5px;")]
-            [InlineDataAttribute("padding-top: 5px;")]
-            [InlineDataAttribute("padding-bottom: 5px;")]
-            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAnImageWithAnotherSelectorThatHasSomethingOfInterest(string propertyOfInterest)
+            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAndImageWithAnotherSelectorThatHasAnImageOrOffet(string propertyOfInterest)
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
@@ -431,17 +424,10 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory]
-            [InlineDataAttribute("width: 5px;")]
-            [InlineDataAttribute("height: 5px;")]
-            [InlineDataAttribute("background-repeat: none;")]
             [InlineDataAttribute(@"background-image: url(""image.png"");")]
             [InlineDataAttribute("background-position: left;")]
             [InlineDataAttribute("background-position: top;")]
-            [InlineDataAttribute("padding-left: 5px;")]
-            [InlineDataAttribute("padding-right: 5px;")]
-            [InlineDataAttribute("padding-top: 5px;")]
-            [InlineDataAttribute("padding-bottom: 5px;")]
-            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAnXOffsetWithAnotherSelectorThatHasSomethingOfInterest(string propertyOfInterest)
+            public void WillAnalyzeSelectorsThatAreInCompleteAndHaveAnXOffsetWithAnotherSelectorThatHasImageOrOffset(string propertyOfInterest)
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
@@ -457,17 +443,10 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Theory]
-            [InlineDataAttribute("width: 5px;")]
-            [InlineDataAttribute("height: 5px;")]
-            [InlineDataAttribute("background-repeat: none;")]
             [InlineDataAttribute(@"background-image: url(""image.png"");")]
             [InlineDataAttribute("background-position: left;")]
             [InlineDataAttribute("background-position: top;")]
-            [InlineDataAttribute("padding-left: 5px;")]
-            [InlineDataAttribute("padding-right: 5px;")]
-            [InlineDataAttribute("padding-top: 5px;")]
-            [InlineDataAttribute("padding-bottom: 5px;")]
-            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAYOffsetWithAnotherSelectorThatHasSomethingOfInterest(string propertyOfInterest)
+            public void WillAnalyzeSelectorsThatAreInCompleteAnHaveAYOffsetWithAnotherSelectorThatHasAnImageOrOffset(string propertyOfInterest)
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
@@ -628,7 +607,7 @@ h1.LocalNavigation {{
     background-position: 0 -30px;
     width: 50;
 ;background-image: url('spriteUrl');background-position: -120px 0;}";
-                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0), null) { Url = "spriteUrl", Position = 120 };
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0) { ImageUrl = "nonRRsprite"}, null) { Url = "spriteUrl", Position = 120 };
 
                 var result = testable.ClassUnderTest.InjectSprite(css, sprite);
 

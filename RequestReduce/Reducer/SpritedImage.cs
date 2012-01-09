@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 
 namespace RequestReduce.Reducer
@@ -20,7 +21,7 @@ namespace RequestReduce.Reducer
 
         public string Render()
         {
-            var newClass = CssClass.ImageUrl != null
+            var newClass = CssClass.ImageUrl != null && CssClass.OriginalClassString.IndexOf(CssClass.ImageUrl, StringComparison.OrdinalIgnoreCase) > -1
                                   ? CssClass.OriginalClassString.ToLower().Replace(CssClass.ImageUrl.ToLower(), Url).Replace(CssClass.Selector.ToLower(), CssClass.Selector)
                                   : CssClass.OriginalClassString.ToLower().Replace("}",
                                                                                    string.Format(

@@ -23,7 +23,7 @@ namespace RequestReduce.Reducer
             foreach (var classMatch in classPattern.Matches(cssContent))
             {
                 var imageClass = new BackgroundImageClass(classMatch.ToString(), ++classCounter);
-                if (imageClass.PropertyCompletion == PropertyCompletion.HasNothing) continue;
+                if (!ShouldFlatten(imageClass)) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
                     var workList = new SortedSet<BackgroundImageClass>(selectorComparer);

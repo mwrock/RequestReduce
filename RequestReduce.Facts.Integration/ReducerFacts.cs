@@ -96,26 +96,6 @@ namespace RequestReduce.Facts.Integration
             }
         }
 
-        [Fact]
-        [Trait("type", "manual_adhoc")]
-        public void VsTest()
-        {
-            var reducer = GetCssReducer();
-            //var vsurls = "http://i1.qa.social.s-msft.com/contentservice/5c9312af-010f-4ea8-9114-9f3300f2c557/Msdn.css::http://i1.qa.social.s-msft.com/contentservice/271b0fc8-5324-44e5-b638-9dad00d725c4/Site.css::http://i1.qa.social.s-msft.com/contentservice/5eefc914-a55f-4d62-aabc-9f330122bf50/vstudio.css::http://i1.ppe.visualstudiogallery.msdn.s-msft.com/pageresource.css?groupname=visualstudiostyles&amp;v=2011.8.1.3571";
-            var smpurls = "http://galchameleon.redmond.corp.microsoft.com/contentservice/ccf7d578-cc04-41ed-9b27-9f2f00cc751e/Msdn.css::http://mwrock1.redmond.corp.microsoft.com/samples/PageResource.css?GroupName=samplesstyles&amp;v=2011.3.26.0";
-
-            reducer.Process(smpurls);
-
-            var css = Directory.GetFiles(config.SpritePhysicalPath, "*.png");
-            var newFile = "c:\\requestreduce\\requestreduce.sampleweb\\vstest\\vstest{0}.png";
-            int ctr = 0;
-            foreach (var file in css)
-            {
-                File.Copy(file, string.Format(newFile, ++ctr), true);
-            }
-            reducer.Dispose();
-        }
-
         public void Dispose()
         {
             try
