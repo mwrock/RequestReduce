@@ -26,7 +26,7 @@ namespace RequestReduce.Reducer
                 if (!ShouldFlatten(imageClass)) continue;
                 if (!IsComplete(imageClass) && ShouldFlatten(imageClass))
                 {
-                    var workList = new SortedSet<BackgroundImageClass>(selectorComparer);
+                    var workList = new List<BackgroundImageClass>();
                     for (var n = draftUrls.Count - 1; n > -1; n--)
                     {
                         var selectors = draftUrls[n].Selector.Split(new [] {','});
@@ -38,6 +38,7 @@ namespace RequestReduce.Reducer
                                 workList.Add(draftUrls[n]);
                         }
                     }
+                    workList.Sort(selectorComparer);
                     foreach (var cls in workList.Where(cls => !IsComplete(imageClass)))
                         InheritMissingProperties(cls, imageClass);
                 }
