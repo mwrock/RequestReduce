@@ -41,7 +41,7 @@ namespace RequestReduce.Facts.Integration
         public void WillReduceToOneCssAndScriptInHeadAndTwoScriptsInBody()
         {
             new WebClient().DownloadString("http://localhost:8877/Local.html");
-            WaitToCreateResources();
+            WaitToCreateResources(expectedJsFiles:3);
 
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 

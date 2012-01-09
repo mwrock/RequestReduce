@@ -20,16 +20,18 @@ namespace RequestReduce.Module
     {
         private readonly IReductionRepository reductionRepository;
         private readonly IRRConfiguration config;
+        private readonly IUriBuilder uriBuilder;
         private static readonly RegexCache Regex = new RegexCache();
         private readonly IReducingQueue reducingQueue;
         private readonly HttpContextBase context;
 
-        public ResponseTransformer(IReductionRepository reductionRepository, IReducingQueue reducingQueue, HttpContextBase context, IRRConfiguration config)
+        public ResponseTransformer(IReductionRepository reductionRepository, IReducingQueue reducingQueue, HttpContextBase context, IRRConfiguration config, IUriBuilder uriBuilder)
         {
             this.reductionRepository = reductionRepository;
             this.reducingQueue = reducingQueue;
             this.context = context;
             this.config = config;
+            this.uriBuilder = uriBuilder;
         }
 
         public string Transform(string preTransform)
@@ -98,13 +100,16 @@ namespace RequestReduce.Module
             if (transform != null)
             {
                 RRTracer.Trace("Reduction found for {0}", urls);
-                var scriptIdx = preTransform.IndexOf("<script", StringComparison.OrdinalIgnoreCase);
-                var insertionIdx = (scriptIdx > -1 && scriptIdx <
-                                    preTransform.IndexOf(transformableMatches[0]) && resource is CssResource)
-                                       ? scriptIdx - 1
-                                       : preTransform.IndexOf(transformableMatches[0]) - 1;
-                preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
-                return transformableMatches.Aggregate(preTransform, (current, match) => current.Remove(current.IndexOf(match), match.Length));
+                if(uriBuilder.ParseSignature(transform) != Guid.Empty.RemoveDashes())
+                {
+                    var scriptIdx = preTransform.IndexOf("<script", StringComparison.OrdinalIgnoreCase);
+                    var insertionIdx = (scriptIdx > -1 && scriptIdx <
+                                        preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) && resource is CssResource)
+                                           ? scriptIdx - 1
+                                           : preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) - 1;
+                    preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
+                }
+                return transformableMatches.Aggregate(preTransform, (current, match) => current.Remove(current.IndexOf(match, StringComparison.Ordinal), match.Length));
             }
             reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
             RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);

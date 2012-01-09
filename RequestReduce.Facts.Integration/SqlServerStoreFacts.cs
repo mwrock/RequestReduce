@@ -47,7 +47,7 @@ namespace RequestReduce.Facts.Integration
         public void WillReduceToOneCssAndScript()
         {
             new WebClient().DownloadString("http://localhost:8877/Local.html");
-            WaitToCreateResources();
+            WaitToCreateResources(expectedJsFiles:3);
 
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
@@ -222,7 +222,7 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(2, cssCount1);
         }
 
-        private void WaitToCreateResources()
+        private void WaitToCreateResources(int expectedCssFiles = 1, int expectedJsFiles = 2)
         {
             const int timeout = 50000;
             var watch = new Stopwatch();
@@ -233,9 +233,9 @@ namespace RequestReduce.Facts.Integration
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.css").Length == 0 && watch.ElapsedMilliseconds < timeout)
+            while (Directory.GetFiles(rrFolder, "*.css").Length < expectedCssFiles && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (Directory.GetFiles(rrFolder, "*.js").Length < 2 && watch.ElapsedMilliseconds < timeout)
+            while (Directory.GetFiles(rrFolder, "*.js").Length < expectedJsFiles && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             if (watch.ElapsedMilliseconds >= timeout)
                 throw new TimeoutException(timeout);

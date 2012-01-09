@@ -36,6 +36,20 @@ namespace RequestReduce.Facts.Utilities
             }
 
             [Fact]
+            public void WillCreateCssUrlWithEmptySignatureGuidWhenBytesAreEmpty()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = new byte[0];
+
+                var result = testable.ClassUnderTest.BuildResourceUrl<CssResource>(guid, content);
+
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Guid.Empty.RemoveDashes(), new CssResource().FileName), result);
+            }
+
+            [Fact]
             public void WillCreateCorrectCssUrlFromString()
             {
                 var testable = new TestableUriBuilder();
@@ -61,6 +75,20 @@ namespace RequestReduce.Facts.Utilities
                 var result = testable.ClassUnderTest.BuildResourceUrl<JavaScriptResource>(guid, content);
 
                 Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes(), new JavaScriptResource().FileName), result);
+            }
+
+            [Fact]
+            public void WillCreateJavascriptUrlWithEmtrySignatureGuidWhenContentIsEmpty()
+            {
+                var testable = new TestableUriBuilder();
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = new byte[0];
+
+                var result = testable.ClassUnderTest.BuildResourceUrl<JavaScriptResource>(guid, content);
+
+                Assert.Equal(string.Format("http://host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), Guid.Empty.RemoveDashes(), new JavaScriptResource().FileName), result);
             }
 
             [Fact]

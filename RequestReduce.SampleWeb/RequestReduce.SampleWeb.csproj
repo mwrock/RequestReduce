@@ -93,6 +93,7 @@
     <None Include="optipng.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Scripts\EmptyScript.js" />
     <Content Include="Scripts\nearFuture.js" />
     <Content Include="Scripts\script5.js" />
     <Content Include="Scripts\script2.js" />

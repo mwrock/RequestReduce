@@ -11,13 +11,13 @@ namespace RequestReduce.Module
     {
         private readonly Encoding encoding;
         private readonly IResponseTransformer responseTransformer;
-        private byte[][] StartStringUpper;
+        private byte[][] startStringUpper;
         private bool[] currentStartStringsToSkip;
-        private byte[][] StartStringLower;
-        private readonly byte[] StartCloseChar;
-        private readonly byte[] WhiteSpaceChar;
-        private byte[][] EndStringUpper;
-        private byte[][] EndStringLower;
+        private byte[][] startStringLower;
+        private readonly byte[] startCloseChar;
+        private readonly byte[] whiteSpaceChar;
+        private byte[][] endStringUpper;
+        private byte[][] endStringLower;
         private readonly byte[][] okWhenAdjacentToScriptStartUpper;
         private readonly byte[][] okWhenAdjacentToScriptStartLower;
         private readonly byte[][] okWhenAdjacentToScriptEndUpper;
@@ -56,17 +56,17 @@ namespace RequestReduce.Module
             okWhenAdjacentToScriptStartLower = new[] { encoding.GetBytes("<noscript"), encoding.GetBytes("<!--") };
             okWhenAdjacentToScriptEndUpper = new[] { encoding.GetBytes("</NOSCRIPT>"), encoding.GetBytes("-->") };
             okWhenAdjacentToScriptEndLower = new[] { encoding.GetBytes("</noscript>"), encoding.GetBytes("-->") };
-            currentStartStringsToSkip = new bool[StartStringUpper.Length];
-            StartCloseChar = encoding.GetBytes("> ");
-            WhiteSpaceChar = encoding.GetBytes("\t\n\r ");
+            currentStartStringsToSkip = new bool[startStringUpper.Length];
+            startCloseChar = encoding.GetBytes("> ");
+            whiteSpaceChar = encoding.GetBytes("\t\n\r ");
         }
 
         private void InitSearchArrays()
         {
-            StartStringUpper = new[] { encoding.GetBytes("<HEAD"), encoding.GetBytes("<SCRIPT") };
-            StartStringLower = new[] { encoding.GetBytes("<head"), encoding.GetBytes("<script") };
-            EndStringUpper = new[] { encoding.GetBytes("</HEAD>"), encoding.GetBytes("</SCRIPT>") };
-            EndStringLower = new[] { encoding.GetBytes("</head>"), encoding.GetBytes("</script>") };
+            startStringUpper = new[] { encoding.GetBytes("<HEAD"), encoding.GetBytes("<SCRIPT") };
+            startStringLower = new[] { encoding.GetBytes("<head"), encoding.GetBytes("<script") };
+            endStringUpper = new[] { encoding.GetBytes("</HEAD>"), encoding.GetBytes("</SCRIPT>") };
+            endStringLower = new[] { encoding.GetBytes("</head>"), encoding.GetBytes("</script>") };
         }
 
         protected Stream BaseStream { get; private set; }
@@ -166,7 +166,7 @@ namespace RequestReduce.Module
 
         private int HandleMatchingStartCloseMatch(int i, byte b)
         {
-            if (StartCloseChar.Contains(b) || (currentStartStringsToSkip.Length == 4 && !currentStartStringsToSkip[3]))
+            if (startCloseChar.Contains(b) || (currentStartStringsToSkip.Length == 4 && !currentStartStringsToSkip[3]))
             {
                 transformBuffer.Add(b);
                 state = SearchState.LookForStop;
@@ -187,7 +187,7 @@ namespace RequestReduce.Module
                 matchPosition++;
                 for (var idx = 0; idx < currentStartStringsToSkip.Length; idx++)
                 {
-                    if (!currentStartStringsToSkip[idx] && matchPosition == EndStringUpper[idx].Length)
+                    if (!currentStartStringsToSkip[idx] && matchPosition == endStringUpper[idx].Length)
                     {
                         endTransformPosition = ++i;
                         if (idx == 0) //head
@@ -259,7 +259,7 @@ namespace RequestReduce.Module
                 matchPosition++;
                 for (var idx = 0; idx < currentStartStringsToSkip.Length; idx++)
                 {
-                    if (!currentStartStringsToSkip[idx] && matchPosition == StartStringUpper[idx].Length)
+                    if (!currentStartStringsToSkip[idx] && matchPosition == startStringUpper[idx].Length)
                     {
                         matchPosition = 0;
                         state = SearchState.MatchingStartClose;
@@ -312,7 +312,7 @@ namespace RequestReduce.Module
                 return HandleMatchingStartMatch(b, ref i, buffer, ref endTransformPosition, ref startTransformPosition);
             }
 
-            if (!WhiteSpaceChar.Contains(b))
+            if (!whiteSpaceChar.Contains(b))
             {
                 SetAdjacent(false);
                 state = SearchState.LookForStart;
@@ -333,16 +333,16 @@ namespace RequestReduce.Module
         {
             if (value && !isAdjacent)
             {
-                StartStringUpper = StartStringUpper.Concat(okWhenAdjacentToScriptStartUpper).ToArray();
-                StartStringLower = StartStringLower.Concat(okWhenAdjacentToScriptStartLower).ToArray();
-                EndStringUpper = EndStringUpper.Concat(okWhenAdjacentToScriptEndUpper).ToArray();
-                EndStringLower = EndStringLower.Concat(okWhenAdjacentToScriptEndLower).ToArray();
+                startStringUpper = startStringUpper.Concat(okWhenAdjacentToScriptStartUpper).ToArray();
+                startStringLower = startStringLower.Concat(okWhenAdjacentToScriptStartLower).ToArray();
+                endStringUpper = endStringUpper.Concat(okWhenAdjacentToScriptEndUpper).ToArray();
+                endStringLower = endStringLower.Concat(okWhenAdjacentToScriptEndLower).ToArray();
                 currentStartStringsToSkip = currentStartStringsToSkip.Concat(okWhenAdjacentToScriptStartUpper.Select(x => false)).ToArray();
             }
             else if(!value)
             {
                 InitSearchArrays();
-                currentStartStringsToSkip = new bool[StartStringUpper.Length];
+                currentStartStringsToSkip = new bool[startStringUpper.Length];
             }
             isAdjacent = value;
             if(isAdjacent)
@@ -358,13 +358,13 @@ namespace RequestReduce.Module
             byte[][] lower;
             if(end == MatchingEnd.Start)
             {
-                upper = StartStringUpper;
-                lower = StartStringLower;
+                upper = startStringUpper;
+                lower = startStringLower;
             }
             else
             {
-                upper = EndStringUpper;
-                lower = EndStringLower;
+                upper = endStringUpper;
+                lower = endStringLower;
             }
 
             for(var i = 0; i < currentStartStringsToSkip.Length; i++)

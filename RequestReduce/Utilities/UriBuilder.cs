@@ -35,7 +35,7 @@ namespace RequestReduce.Utilities
 
         public string BuildResourceUrl<T>(Guid key, byte[] bytes) where T : IResourceType
         {
-            return BuildResourceUrl<T>(key, Hasher.Hash(bytes).RemoveDashes());
+            return BuildResourceUrl<T>(key, bytes.Length > 0 ? Hasher.Hash(bytes).RemoveDashes() : Guid.Empty.RemoveDashes());
         }
 
         public string BuildResourceUrl<T>(Guid key, string signature) where T : IResourceType

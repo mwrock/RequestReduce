@@ -3,6 +3,7 @@ using System.Web;
 using Moq;
 using RequestReduce.Api;
 using RequestReduce.Module;
+using RequestReduce.Utilities;
 using Xunit;
 using RequestReduce.ResourceTypes;
 using RequestReduce.Configuration;
@@ -244,6 +245,21 @@ namespace RequestReduce.Facts.Module
                 var transformed = @"<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
+            public void WillTransformEmptySignatureGuidToEmptyTag()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<script src=""http://server/Me.js"" type=""text/javascript"" ></script>";
+                var transformed = string.Empty;
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::")).Returns(string.Format("http://host/vpath/{0}-{1}-{2}", Guid.NewGuid().RemoveDashes(), Guid.Empty.RemoveDashes(), new JavaScriptResource().FileName));
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(It.IsAny<string>())).Returns(Guid.Empty.RemoveDashes());
 
                 var result = testable.ClassUnderTest.Transform(transform);
 
