@@ -89,7 +89,7 @@ namespace RequestReduce.Facts.Integration
         public void WillProcessSecureContent()
         {
             new WebClient().DownloadString("http://localhost:8877/testSecure.html");
-            WaitToCreateResources(1,0,false,2000);
+            WaitToCreateResources(1,0,false,3000);
         }
 
         [OutputTraceOnFailFact]

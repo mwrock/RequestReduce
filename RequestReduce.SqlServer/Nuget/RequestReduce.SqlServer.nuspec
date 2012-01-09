@@ -15,21 +15,10 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
-      * Fix @import parsing bug that only recognizes URLsinside of url()
-      * fix css link parsing bug not picking up single quoted stylesheet rel
-      * Support @font-face rule
-      * Upgraded to latest ajax minifier that fixes a bug with gradient transform color hashes
-      * Fix parsing errors that surface with empty css comments
-      * Fix Nuget Dependency versions
-      * Fix flush and dashboard for unauthenticated users on .net 3.5
-      * Fix nuget install for Web Site projects
-      * Do not inject css before X-UA-Compatible meta tag.
-      * Fix errors thrown by setting response filter after a redirect
-      * Fix errors thrown by setting response filter without reading it (.net 3.5 bug)
-      * Fix bug that surfaces when two identical scripts are in the head
-      * Gracefully swallow and log errors in transformations
-      * Fix disk file cache failing to load previously cached files on app startup
-      * Gracefully swallow and Log errors on saving cached file to disk
+      * Process Existing Sprites that have image and position in separate selectors
+      * Improve performance of Sprite Generation
+      * Support Windows authentication when processing resources
+      * Do not generate 0 byte script when processing a script solely composed of comments
     </releaseNotes>
     <dependencies>
       <dependency id="RequestReduce" version="$version$" />

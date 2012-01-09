@@ -15,19 +15,10 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
-      * Fix @import parsing bug that only recognizes URLsinside of url()
-      * fix css link parsing bug not picking up single quoted stylesheet rel
-      * Support @font-face rule
-      * Upgraded to latest ajax minifier that fixes a bug with gradient transform color hashes
-      * Fix parsing errors that surface with empty css comments
-      * Fix flush and dashboard for unauthenticated users on .net 3.5
-      * Fix nuget install for Web Site projects
-      * Do not inject css before X-UA-Compatible meta tag.
-      * Fix errors thrown by setting response filter after a redirect
-      * Fix errors thrown by setting response filter without reading it (.net 3.5 bug)
-      * Fix bug that surfaces when two identical scripts are in the head
-      * Gracefully swallow and log errors in transformations
-      * Fix disk file cache failing to load previously cached files on app startup
+      * Process Existing Sprites that have image and position in separate selectors
+      * Improve performance of Sprite Generation
+      * Support Windows authentication when processing resources
+      * Do not generate 0 byte script when processing a script solely composed of comments
     </releaseNotes>
   </metadata>
 </package>
