@@ -17,7 +17,7 @@ properties {
 
 task Test-Solution -depends Unit-Tests, Integration-Tests
 task Debug -depends Default
-task Default -depends Clean-Solution, Setup-IIS, Build-Solution, Test-Solution
+task Default -depends Clean-Solution, Setup-IIS, Build-35-Solution, Build-Solution, Test-Solution
 task Download -depends Pull-Repo, Pull-Web, Clean-Solution, Update-AssemblyInfoFiles, Build-Output, Push-Repo, Update-Website-Download-Links, Push-Web
 task Push-Nuget-All -depends Push-Nuget-Core, Push-Nuget-SqlServer, Push-Nuget-SassLessCoffee
 
