@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
-using System.Web;
 using RequestReduce.Api;
 using RequestReduce.SassLessCoffee;
-using RequestReduce.Utilities;
 using Xunit;
 using Xunit.Extensions;
 

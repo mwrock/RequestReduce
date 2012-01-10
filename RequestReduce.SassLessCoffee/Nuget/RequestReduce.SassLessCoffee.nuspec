@@ -23,7 +23,9 @@
     <dependencies>
       <dependency id="RequestReduce" version="$version$" />
       <dependency id="dotless" version="1.2.1.0" />
-      <dependency id="SassAndCoffee.Core" version="1.1.5" />
+      <dependency id="SassAndCoffee.Core" version="2.0.2.0" />
+      <dependency id="SassAndCoffee.JavaScript" version="2.0.2.0" />
+      <dependency id="SassAndCoffee.Ruby" version="2.0.2.0" />
     </dependencies>
   </metadata>
 </package>

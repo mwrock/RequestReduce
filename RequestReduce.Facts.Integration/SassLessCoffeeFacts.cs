@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Integration
         [Fact]
         public void WillGetCompilesSassAsCss()
         {
-            const string expected = ".content-navigation {\n  border-color: #3bbfce;\n  color: #2ca2af; }\n";
+            const string expected = ".content-navigation {\n  border-color: #3bbfce;\n  color: #2ca2af; }\n\r\n";
             string result;
             var client = WebRequest.Create("http://localhost:8877/styles/test.sass");
             var httpResponse = client.GetResponse();
@@ -44,7 +44,7 @@ namespace RequestReduce.Facts.Integration
         [Fact]
         public void WillGetCompilesCoffeeAsJs()
         {
-            const string expected = "var square;\nsquare = function(x) {\n  return x * x;\n};";
+            const string expected = "(function() {\n  var square;\n\n  square = function(x) {\n    return x * x;\n  };\n\n}).call(this);\n\r\n";
             string result;
             var client = WebRequest.Create("http://localhost:8877/scripts/test.coffee");
             var httpResponse = client.GetResponse();

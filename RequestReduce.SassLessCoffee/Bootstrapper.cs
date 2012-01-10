@@ -1,20 +1,22 @@
 ﻿using RequestReduce.Api;
 using RequestReduce.Utilities;
-using SassAndCoffee.Core.Compilers;
 
 namespace RequestReduce.SassLessCoffee
 {
     public static class Bootstrapper
     {
+        public static CoffeeHandler CoffeeHandler = new CoffeeHandler();
+        public static SassHandler SassHandler = new SassHandler();
+
         public static void Start()
         {
             Registry.HandlerMaps.Add(x =>
                                          {
                                              var path = x.AbsolutePath.ToLower();
                                              if (path.EndsWith(".sass") || path.EndsWith("scss"))
-                                                 return new SassHandler();
+                                                 return SassHandler;
                                              if (path.EndsWith(".coffee"))
-                                                 return new CoffeeHandler();
+                                                 return CoffeeHandler;
                                              if (path.EndsWith(".less"))
                                                  return new LessHandler(new FileWrapper());
                                              return null;

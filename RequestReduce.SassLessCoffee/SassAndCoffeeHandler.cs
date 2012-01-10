@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Net;
+using System.Text;
 using SassAndCoffee.Core;
 using System.Web;
-using SassAndCoffee.Core.Compilers;
 
 namespace RequestReduce.SassLessCoffee
 {
     public abstract class SassAndCoffeeHandler : IHttpHandler
     {
-        private readonly ISimpleFileCompiler simpleFileCompiler;
+        private readonly IContentPipeline pipeline;
 
-        protected SassAndCoffeeHandler(ISimpleFileCompiler simpleFileCompiler)
+        protected SassAndCoffeeHandler(IContentPipeline pipeline)
         {
-            this.simpleFileCompiler = simpleFileCompiler;
+            this.pipeline = pipeline;
         }
 
         public void ProcessRequest(HttpContext context)
@@ -24,48 +25,29 @@ namespace RequestReduce.SassLessCoffee
             var request = context.Request;
             var response = context.Response;
 
-            simpleFileCompiler.Init(new CompilerHost(context));
             try
             {
-                var result = simpleFileCompiler.ProcessFileContent(context.Server.MapPath(request.Path));
-                response.ContentType = simpleFileCompiler.OutputMimeType;
-                response.Write(result);
-            }
-            catch (System.IO.FileNotFoundException ex)
-            {
-                response.StatusCode = 404;
-                response.Write("/* File Not Found while parsing: " + ex.Message + " */");
+                var result = pipeline.ProcessRequest(request.PhysicalPath);
+                if (result == null)
+                {
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    return;
+                }
+                response.ContentEncoding = Encoding.UTF8;
+                response.ContentType = result.MimeType;
+                response.Write(result.Content);
             }
             catch (Exception ex)
             {
                 response.StatusCode = 500;
-                response.Write("/* Error in compiling: " + ex.ToString() + " */");
+                response.Write("/* Error in compiling: " + ex + " */");
             }
         }
 
         public bool IsReusable
         {
-            get { return false; }
+            get { return true; }
         }
 
-        class CompilerHost : ICompilerHost
-        {
-            private readonly HttpContextBase context;
-
-            public CompilerHost(HttpContextBase context)
-            {
-                this.context = context;
-            }
-
-            public string MapPath(string path)
-            {
-                return context.Server.MapPath(path);
-            }
-
-            public string ApplicationBasePath
-            {
-                get { return context.Request.PhysicalApplicationPath; }
-            }
-        }
     }
 }
