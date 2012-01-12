@@ -60,10 +60,12 @@ namespace RequestReduce.Reducer
             var match = Regex.ImageUrlPattern.Match(originalClassString);
             if (match.Success)
             {
-                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasImage;
                 var imageUrl = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
-                if (imageUrl.Length > 0)
+                if (imageUrl.Length > 0 && !imageUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                {
                     ImageUrl = imageUrl;
+                    PropertyCompletion = PropertyCompletion | PropertyCompletion.HasImage;
+                }
             }
             var repeatMatch = Regex.RepeatPattern.Matches(originalClassString);
             if(repeatMatch.Count > 0)
