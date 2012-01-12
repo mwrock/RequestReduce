@@ -111,7 +111,7 @@ namespace RequestReduce.Reducer
             foreach (Match match in matches)
             {
                 var url = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
-                if (url.Length <= 0) continue;
+                if (url.Length <= 0 || url.StartsWith("data:", StringComparison.OrdinalIgnoreCase)) continue;
                 var newUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, url);
                 originalCss = originalCss.Replace(match.Value, match.Value.Replace(url, newUrl));
             }
