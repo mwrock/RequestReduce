@@ -20,13 +20,13 @@ namespace RequestReduce.Facts.Module
         {
             public FakeReducingQueue(IReductionRepository reductionRepository, IStore store) : base(reductionRepository, store)
             {
-                isRunning = false;
+                IsRunning = false;
                 ((FakeReductionRepository) reductionRepository).HasLoadedSavedEntries = true;
             }
 
             public Queue<IQueueItem> BaseQueue
             {
-                get { return queue; }
+                get { return Queue; }
             }
 
             public new void ProcessQueuedItem()
@@ -34,7 +34,7 @@ namespace RequestReduce.Facts.Module
                 base.ProcessQueuedItem();
             }
 
-            public FakeReductionRepository ReductionRepository { get { return reductionRepository as FakeReductionRepository;  } }
+            public new FakeReductionRepository ReductionRepository { get { return ReductionRepository as FakeReductionRepository;  } }
 
             public IQueueItem LastProcessedItem { get; set; }
 
@@ -53,7 +53,7 @@ namespace RequestReduce.Facts.Module
 
             public new void Dispose()
             {
-                backgroundThread.Abort();
+                BackgroundThread.Abort();
             }
         }
 
