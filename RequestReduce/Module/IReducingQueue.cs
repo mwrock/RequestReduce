@@ -9,6 +9,6 @@ namespace RequestReduce.Module
         void ClearFailures();
         IQueueItem ItemBeingProcessed { get; }
         IQueueItem[] ToArray();
-        KeyValuePair<Guid, int>[] Failures { get; }
+        KeyValuePair<Guid, Failure>[] Failures { get; }
     }
 }

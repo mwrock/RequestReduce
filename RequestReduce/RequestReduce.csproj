@@ -105,6 +105,7 @@
     <Compile Include="IOC\RRLocalStoreRegistry.cs" />
     <Compile Include="IOC\SingletonConvention.cs" />
     <Compile Include="Module\AbstractFilter.cs" />
+    <Compile Include="Module\Failure.cs" />
     <Compile Include="Module\IQueueItem.cs" />
     <Compile Include="Module\IReductionRepository.cs" />
     <Compile Include="Module\QueueItem.cs" />

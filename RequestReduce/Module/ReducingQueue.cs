@@ -1,84 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using RequestReduce.Api;
 using RequestReduce.IOC;
 using RequestReduce.Reducer;
-using RequestReduce.Utilities;
 using RequestReduce.Store;
-using System.Linq;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
     public class ReducingQueue : IReducingQueue, IDisposable
     {
-        private readonly ReaderWriterLockSlim queueLock;
-        protected readonly IReductionRepository reductionRepository;
-        protected readonly IStore store;
-        protected Queue<IQueueItem> queue = new Queue<IQueueItem>();
-        protected Thread backgroundThread;
-        protected bool isRunning = true;
-        protected Action<Exception> CaptureErrorAction;
-        protected Dictionary<Guid,int> dictionaryOfFailure = new Dictionary<Guid, int>();
         public const int FailureThreshold = 5;
+        protected readonly IReductionRepository ReductionRepository;
+        protected readonly IStore Store;
+        private readonly ReaderWriterLockSlim _queueLock;
+        protected Thread BackgroundThread;
+        protected Action<Exception> CaptureErrorAction;
+        protected IDictionary<Guid, Failure> DictionaryOfFailures = new Dictionary<Guid, Failure>();
+        protected bool IsRunning = true;
+        protected Queue<IQueueItem> Queue = new Queue<IQueueItem>();
 
         public ReducingQueue(IReductionRepository reductionRepository, IStore store)
         {
             RRTracer.Trace("Instantiating new Reducing queue.");
-            queueLock = new ReaderWriterLockSlim();
-            this.reductionRepository = reductionRepository;
-            this.store = store;
-            backgroundThread = new Thread(ProcessQueue) { IsBackground = true };
-            backgroundThread.Start();
+            _queueLock = new ReaderWriterLockSlim();
+            ReductionRepository = reductionRepository;
+            Store = store;
+            BackgroundThread = new Thread(ProcessQueue) {IsBackground = true};
+            BackgroundThread.Start();
         }
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            IsRunning = false;
+        }
+
+        #endregion
+
+        #region IReducingQueue Members
 
         public void Enqueue(IQueueItem item)
         {
-            queueLock.EnterWriteLock();
+            _queueLock.EnterWriteLock();
 
             try
             {
-                if (!queue.Any(x => x.Urls == item.Urls) && (ItemBeingProcessed== null || ItemBeingProcessed.Urls != item.Urls))
-                    queue.Enqueue(item);
+                if (!Queue.Any(x => x.Urls == item.Urls) &&
+                    (ItemBeingProcessed == null || ItemBeingProcessed.Urls != item.Urls))
+                    Queue.Enqueue(item);
             }
             finally
             {
-                queueLock.ExitWriteLock();
+                _queueLock.ExitWriteLock();
             }
         }
 
         public void ClearFailures()
         {
-            dictionaryOfFailure.Clear();
+            DictionaryOfFailures.Clear();
         }
-        public KeyValuePair<Guid, int>[] Failures { get { return dictionaryOfFailure.ToArray(); } } 
+
+        public KeyValuePair<Guid, Failure>[] Failures
+        {
+            get { return DictionaryOfFailures.ToArray(); }
+        }
+
         public virtual IQueueItem ItemBeingProcessed { get; protected set; }
+
         public IQueueItem[] ToArray()
         {
-            return queue.ToArray();
+            return Queue.ToArray();
         }
 
         public int Count
         {
             get
             {
-                queueLock.EnterReadLock();
+                _queueLock.EnterReadLock();
 
                 try
                 {
-                    return queue.Count;
+                    return Queue.Count;
                 }
                 finally
                 {
-                    queueLock.ExitReadLock();
+                    _queueLock.ExitReadLock();
                 }
             }
         }
 
+        #endregion
+
         private void ProcessQueue()
         {
             RRTracer.Trace("Process Queue Thread Started");
-            while(isRunning)
+            while (IsRunning)
             {
                 ProcessQueuedItem();
                 Thread.Sleep(100);
@@ -89,57 +109,71 @@ namespace RequestReduce.Module
         {
             var key = Guid.Empty;
             IQueueItem itemToReduce = null;
-            if (!reductionRepository.HasLoadedSavedEntries)
+            if (!ReductionRepository.HasLoadedSavedEntries)
                 return;
             try
             {
-                queueLock.EnterWriteLock();
+                _queueLock.EnterWriteLock();
 
                 try
                 {
-                    if (queue.Count > 0)
-                        itemToReduce = queue.Dequeue();
+                    if (Queue.Count > 0)
+                        itemToReduce = Queue.Dequeue();
                 }
                 finally
                 {
-                    queueLock.ExitWriteLock();
+                    _queueLock.ExitWriteLock();
                 }
 
-                if (itemToReduce != null && reductionRepository.FindReduction(itemToReduce.Urls) == null)
+                if (itemToReduce != null &&
+                    ReductionRepository.FindReduction(itemToReduce.Urls) == null)
                 {
                     ItemBeingProcessed = itemToReduce;
                     key = Hasher.Hash(itemToReduce.Urls);
                     RRTracer.Trace("dequeued and processing {0} with key {1}.", itemToReduce.Urls, key);
-                    var url = store.GetUrlByKey(key, itemToReduce.ResourceType);
+                    string url = Store.GetUrlByKey(key, itemToReduce.ResourceType);
                     if (url != null)
                     {
                         RRTracer.Trace("found url {0} in store for key {1}", url, key);
-                        reductionRepository.AddReduction(key, url);
+                        ReductionRepository.AddReduction(key, url);
                     }
                     else
                     {
-                        if (dictionaryOfFailure.ContainsKey(key) && dictionaryOfFailure[key] >= FailureThreshold)
+                        if (DictionaryOfFailures.ContainsKey(key) &&
+                            DictionaryOfFailures[key].Count >= FailureThreshold)
                         {
-                            RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.", itemToReduce.Urls);
+                            RRTracer.Trace("{0} has exceeded its failure threshold and will not be processed.",
+                                           itemToReduce.Urls);
                             return;
                         }
-                        var reducer = RRContainer.Current.GetAllInstances<IReducer>().SingleOrDefault(x => x.SupportedResourceType == itemToReduce.ResourceType);
+
+                        IReducer reducer = RRContainer
+                            .Current
+                            .GetAllInstances<IReducer>()
+                            .SingleOrDefault(x => x.SupportedResourceType == itemToReduce.ResourceType);
+
+                        if (reducer == null)
+                        {
+                            RRTracer.Trace(string.Format("Failed to retrieve an RRContainer for {0}.",
+                                                         itemToReduce.ResourceType));
+                            return;
+                        }
+
                         reducer.Process(key, itemToReduce.Urls);
                     }
                     RRTracer.Trace("dequeued and processed {0}.", itemToReduce.Urls);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                var message = string.Format("There were errors reducing {0}", itemToReduce != null ? itemToReduce.Urls : "");
-                var wrappedException =
-                    new ApplicationException(message, e);
+                string message = string.Format("There were errors reducing {0}",
+                                               itemToReduce != null ? itemToReduce.Urls : "");
+                var wrappedException = new ApplicationException(message, e);
                 RRTracer.Trace(message);
                 RRTracer.Trace(e.ToString());
-                if(dictionaryOfFailure.ContainsKey(key))
-                    dictionaryOfFailure[key] += 1;
-                else
-                    dictionaryOfFailure.Add(key, 1);
+
+                AddFailure(key, wrappedException);
+
                 if (Registry.CaptureErrorAction != null)
                     Registry.CaptureErrorAction(wrappedException);
             }
@@ -149,9 +183,26 @@ namespace RequestReduce.Module
             }
         }
 
-        public void Dispose()
+        private void AddFailure(Guid key, Exception exception)
         {
-            isRunning = false;
+            var failure = new Failure
+                              {
+                                  Guid = key,
+                                  Exception =
+                                      exception ??
+                                      new Exception("No failure was provided (ie. Failure instances was null).")
+                              };
+
+            // Check to see we have this failure guid already.
+            if (DictionaryOfFailures.ContainsKey(failure.Guid))
+            {
+                DictionaryOfFailures[failure.Guid].Count++;
+            }
+            else
+            {
+                failure.UpdatedOn = DateTime.Now;
+                DictionaryOfFailures.Add(failure.Guid, failure);
+            }
         }
     }
 }
