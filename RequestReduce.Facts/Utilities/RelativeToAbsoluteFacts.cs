@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Policy;
 using Moq;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
@@ -54,6 +53,23 @@ namespace RequestReduce.Facts.Utilities
 
             Assert.Equal("http://contenthost.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
             RRContainer.Current = null;
+            Registry.AbsoluteUrlTransformer = null;
+        }
+
+        [Fact]
+        public void WillForwardNewUrlToListenerIfNoContentHost()
+        {
+            Registry.AbsoluteUrlTransformer = (x, y) =>
+            {
+                var newUrlHost = new Uri(y).Host;
+                return y.Replace(newUrlHost, "funny." + new Uri(x).Host);
+            };
+
+            var result =
+            RelativeToAbsoluteUtility.ToAbsolute("http://blogs.msdn.com/themes/blogs/MSDN2/css/MSDNblogs.css",
+                                                 "../../../MSDN2/Images/MSDN/contentpane.png");
+
+            Assert.Equal("http://funny.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
             Registry.AbsoluteUrlTransformer = null;
         }
 

@@ -28,14 +28,14 @@ namespace RequestReduce.Utilities
         {
             var contentHost = RRContainer.Current.GetInstance<IRRConfiguration>().ContentHost;
             if (string.IsNullOrEmpty(contentHost))
-                return url;
+                return Registry.AbsoluteUrlTransformer != null ? Registry.AbsoluteUrlTransformer(url, url) : url;
             var firstPos = url.IndexOf("//", StringComparison.Ordinal);
             if (firstPos > -1)
                 firstPos += 2;
             var idx = url.IndexOf('/', firstPos);
-            if(Registry.AbsoluteUrlTransformer != null)
-                return Registry.AbsoluteUrlTransformer(url, contentHost + url.Substring(idx));
-            return contentHost + url.Substring(idx);
+            return Registry.AbsoluteUrlTransformer != null
+                       ? Registry.AbsoluteUrlTransformer(url, contentHost + url.Substring(idx))
+                       : contentHost + url.Substring(idx);
         }
 
         private static bool IsAbsolute(string url)
