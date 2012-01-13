@@ -34,7 +34,7 @@ namespace RequestReduce.Facts.Module
                 base.ProcessQueuedItem();
             }
 
-            public new FakeReductionRepository ReductionRepository { get { return ReductionRepository as FakeReductionRepository;  } }
+            public new FakeReductionRepository ReductionRepository { get { return base.ReductionRepository as FakeReductionRepository;  } }
 
             public IQueueItem LastProcessedItem { get; set; }
 

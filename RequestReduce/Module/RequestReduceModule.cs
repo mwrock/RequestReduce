@@ -15,7 +15,7 @@ namespace RequestReduce.Module
 {
     public class RequestReduceModule : IHttpModule
     {
-        public const string CONTEXT_KEY = "HttpOnlyFilteringModuleInstalled";
+        public const string ContextKey = "HttpOnlyFilteringModuleInstalled";
         public void Dispose()
         {
         }
@@ -273,7 +273,7 @@ namespace RequestReduce.Module
             RRTracer.Trace("Entering Module");
             var request = context.Request;
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            if (context.Items.Contains(CONTEXT_KEY) || 
+            if (context.Items.Contains(ContextKey) || 
                 context.Response.ContentType != "text/html" || 
                 (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
                 (config.CssProcessingDisabled && config.JavaScriptProcessingDisabled) ||
@@ -289,7 +289,7 @@ namespace RequestReduce.Module
 
             var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bug 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
-            context.Items.Add(CONTEXT_KEY, new object());
+            context.Items.Add(ContextKey, new object());
             RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
         }
 
