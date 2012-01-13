@@ -1,30 +1,30 @@
 <html>
-<head><title>RequestReduce Dashboard</title></head>
-<body>
-<h1>RequestReduce Dashboard</h1>
-<b>Server:</b><%server%><br/>
-<b>Application:</b><%app%><br/>
-<b>RequestReduce Version:</b><%version%><br/>
-<a href="flush">Flush all content</a>
-<p/>
-<h2>Configuration Settings</h2>
-<table>
-<%configs%>
-</table>
-<p/>
-<h2>Item Being Processed</h2>
-<%processedItem%>
-<p/>
-<h2>Urls queued for processing</h2>
-<%queue%>
+    <head><title>RequestReduce Dashboard</title></head>
+    <body>
+        <h1>RequestReduce Dashboard</h1>
+        <b>Server:</b><%server%><br/>
+        <b>Application:</b><%app%><br/>
+        <b>RequestReduce Version:</b><%version%><br/>
+        <a href="flush">Flush all content</a>
+        <p/>
+        <h2>Configuration Settings</h2>
+        <table>
+            <%configs%>
+        </table>
+        <p/>
+        <h2>Item Being Processed</h2>
+        <%processedItem%>
+        <p/>
+        <h2>Urls queued for processing</h2>
+        <%queue%>
 
-<p/>
-<h2>Items in Repository</h2>
-<%repo%>
+        <p/>
+        <h2>Items in Repository</h2>
+        <%repo%>
 
-<p/>
-<h2>Recorded Failures</h2>
-<%failures%>
-<a href="flushfailures">Flush failures and retry</a>
-</body>
+        <p/>
+        <h2>Recorded Failures</h2>
+        <%failures%>
+        <a href="flushfailures">Flush failures and retry</a>
+    </body>
 </html>

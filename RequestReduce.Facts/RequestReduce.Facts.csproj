@@ -197,6 +197,7 @@
     <Content Include="TestImages\menu-sprite.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestScripts\DataUri.css" />
     <Content Include="TestScripts\not.sass" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

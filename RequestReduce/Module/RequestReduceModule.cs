@@ -66,17 +66,27 @@ namespace RequestReduce.Module
             var transformed = dashboard.Replace("<%server%>", Environment.MachineName);
             transformed = transformed.Replace("<%app%>", AppDomain.CurrentDomain.BaseDirectory);
             transformed = transformed.Replace("<%version%>", Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            transformed = transformed.Replace("<%processedItem%>", queue.ItemBeingProcessed == null ? "Shhhh. I'm Sleeping" : queue.ItemBeingProcessed.Urls);
+
+            transformed = transformed.Replace("<%processedItem%>",
+                                              queue.ItemBeingProcessed == null
+                                                  ? "Shhhh. I'm Sleeping"
+                                                  : ListUrls(queue.ItemBeingProcessed.Urls, "::"));
             var configProps = config.GetType().GetProperties();
             var configList = new StringBuilder();
             foreach (var item in configProps)
             {
-                configList.Append("<tr><td>");
-                configList.Append(item.Name);
-                configList.Append("</td><td>");
+                configList.AppendFormat("<tr><td{0}>{1}</td>",
+                    item.Name == "JavaScriptUrlsToIgnore" ? " style='vertical-align: top;'" : string.Empty,
+                    item.Name);
                 var array = item.GetValue(config, null) as IEnumerable;
-                if(array == null || item.PropertyType.IsAssignableFrom(typeof(string)))
-                    configList.Append(item.GetValue(config, null));
+                if (array == null || item.PropertyType.IsAssignableFrom(typeof(string)))
+                {
+                    string value = Convert.ToString(item.GetValue(config, null));
+                    string result = item.Name == "JavaScriptUrlsToIgnore"
+                                        ? ListUrls(value, ",")
+                                        : value;
+                    configList.AppendFormat("<td>{0}</td>", result);
+                }
                 else
                 {
                     foreach (var mem in array)
@@ -92,29 +102,70 @@ namespace RequestReduce.Module
             var queueList = new StringBuilder();
             foreach (var item in queueArray)
             {
-                queueList.Append(item.Urls);
-                queueList.Append("<br/>");
+                if (queueList.Length > 0)
+                {
+                    queueList.AppendLine("<hr/>");
+                }
+
+                queueList.AppendLine("<ul>");
+
+                var urlArray = item.Urls.Split(new[] {"::"}, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var url in urlArray)
+                {
+                    queueList.AppendFormat("<li>{0}</li>{1}", url, Environment.NewLine);
+                }
+                
+                queueList.AppendFormat("</ul>");
             }
             transformed = transformed.Replace("<%queue%>", queueList.ToString());
             var repoArray = repo.ToArray();
             var repoList = new StringBuilder();
             foreach (var item in repoArray)
             {
-                repoList.Append(item);
-                repoList.Append(string.Format(" <a href='{0}/flush'>Flush</a>", uriBuilder.ParseKey(item).RemoveDashes()));
-                repoList.Append("<br/>");
+                if (repoList.Length <= 0)
+                {
+                    repoList.AppendLine("<ul>");
+                }
+                repoList.AppendFormat("<li>{0} || <a href='{1}/flush'>Flush</a></li>{2}",
+                                      item, uriBuilder.ParseKey(item).RemoveDashes(), Environment.NewLine);
+            }
+            if (repoList.Length > 0)
+            {
+                repoList.AppendLine("</ul>");
             }
             transformed = transformed.Replace("<%repo%>", repoList.ToString());
-            var failures = queue.Failures;
             var failureList = new StringBuilder();
-            foreach (var item in failures)
+            foreach (var item in queue.Failures)
             {
-                failureList.Append("key: ");
-                failureList.Append(item.Key);
-                failureList.Append(" Number: ");
-                failureList.Append(item.Value);
-                failureList.Append("<br/>");
+                if (failureList.Length > 0)
+                {
+                    failureList.Append("<hr/>");
+                }
+
+                failureList.AppendFormat("Key: {0}<br/>", item.Key);
+                failureList.AppendFormat("&nbsp;&nbsp;&nbsp;&nbsp;First errored on: {0} {1}<br/>",
+                    item.Value.CreatedOn.ToShortDateString(), item.Value.CreatedOn.ToLongTimeString());
+                if (item.Value.Count > 1)
+                {
+                    failureList.AppendFormat("&nbsp;&nbsp;&nbsp;&nbsp;Last errored on: {0} {1}<br/>",
+                        item.Value.UpdatedOn.ToShortDateString(), item.Value.UpdatedOn.ToLongTimeString());
+                }
+                failureList.AppendFormat("&nbsp;&nbsp;&nbsp;&nbsp;Number: {0}<br/>", item.Value.Count);
+                var exception = item.Value.Exception;
+                int iterator = 0;
+                while (exception != null)
+                {
+                    failureList.AppendFormat("&nbsp;&nbsp;&nbsp;&nbsp;Exception #{0}: {1}<br/>",
+                        ++iterator, exception.Message);
+                    if (!string.IsNullOrEmpty(exception.StackTrace))
+                    {
+                        failureList.AppendFormat("&nbsp;&nbsp;&nbsp;&nbsp;Stack Trace#{0}: <pre>{1}</pre><br/>",
+                                                 iterator, exception.StackTrace);
+                    }
+                    exception = exception.InnerException;
+                }
             }
+
             transformed = transformed.Replace("<%failures%>", failureList.ToString());
             return transformed;
         }
@@ -254,6 +305,35 @@ namespace RequestReduce.Module
             if (path.EndsWith("/"))
                 return path;
             return path + "/";
+        }
+
+        private static string ListUrls(string urls, string separator)
+        {
+            if (string.IsNullOrEmpty(urls))
+            {
+                return "-No urls to process-";
+            }
+
+            // Split the urls into unique items.
+            var urlArray = urls.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+
+            StringBuilder processedItemsHtml = new StringBuilder();
+            foreach (var url in urlArray)
+            {
+                if (processedItemsHtml.Length <= 0)
+                {
+                    processedItemsHtml.AppendLine("<ul>");
+                }
+
+                processedItemsHtml.AppendFormat("<li>{0}</li>{1}", url, Environment.NewLine);
+            }
+
+            if (processedItemsHtml.Length > 0)
+            {
+                processedItemsHtml.AppendLine("</ul>");
+            }
+
+            return processedItemsHtml.ToString();
         }
     }
 }
