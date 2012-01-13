@@ -16,6 +16,9 @@ namespace RequestReduce.Api
         }
 
         public static Action<Exception> CaptureErrorAction { get; set; }
+
+        public delegate string UrlTransformFunc(string originalabsoluteUrl, string urlWithContentHost);
+        public static UrlTransformFunc AbsoluteUrlTransformer { get; set; }
         internal static IList<Func<Uri, IHttpHandler>> HandlerMaps { get; private set; }
 
         public static void RegisterMinifier<T>() where T : IMinifier, new()

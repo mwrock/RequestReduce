@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 
@@ -28,10 +29,12 @@ namespace RequestReduce.Utilities
             var contentHost = RRContainer.Current.GetInstance<IRRConfiguration>().ContentHost;
             if (string.IsNullOrEmpty(contentHost))
                 return url;
-            var firstPos = url.IndexOf("//");
+            var firstPos = url.IndexOf("//", StringComparison.Ordinal);
             if (firstPos > -1)
                 firstPos += 2;
             var idx = url.IndexOf('/', firstPos);
+            if(Registry.AbsoluteUrlTransformer != null)
+                return Registry.AbsoluteUrlTransformer(url, contentHost + url.Substring(idx));
             return contentHost + url.Substring(idx);
         }
 
