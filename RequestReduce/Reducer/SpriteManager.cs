@@ -38,8 +38,8 @@ namespace RequestReduce.Reducer
             if (SpriteList.Any(x => x.Key.Equals(imageKey)))
             {
                 var originalImage = SpriteList.First(x => x.Key.Equals(imageKey)).Value;
-                var clonedImage = new SpritedImage(originalImage.AverageColor, image, originalImage.Image);
-                SpriteContainer.AddImage(clonedImage);
+                var clonedImage = new SpritedImage(originalImage.AverageColor, image, originalImage.Image) { Position = originalImage.Position, Url = originalImage.Url, Metadata = imageKey };
+                //SpriteContainer.AddImage(clonedImage);
                 SpriteList.Add(new KeyValuePair<ImageMetadata, SpritedImage>(imageKey, clonedImage));
                 return;
             }
@@ -53,6 +53,7 @@ namespace RequestReduce.Reducer
             try
             {
                 spritedImage = SpriteContainer.AddImage(image);
+                spritedImage.Metadata = imageKey;
             }
             catch (Exception ex)
             {
@@ -80,15 +81,9 @@ namespace RequestReduce.Reducer
                     var offset = 0;
                     foreach (var image in SpriteContainer)
                     {
-                        var dupImage = SpriteContainer.FirstOrDefault(x => x.Image == image.Image && x.Position > -1);
-                        if (dupImage != null)
-                            image.Position = dupImage.Position;
-                        else
-                        {
-                            spriteWriter.WriteImage(image.Image);
-                            image.Position = offset;
-                            offset += image.Image.Width + 1;
-                        }
+                        spriteWriter.WriteImage(image.Image);
+                        image.Position = offset;
+                        offset += image.Image.Width + 1;
                     }
                     var bytes = spriteWriter.GetBytes("image/png");
                     byte[] optBytes;
@@ -106,7 +101,17 @@ namespace RequestReduce.Reducer
                     var url = GetSpriteUrl(optBytes);
                     store.Save(optBytes, url, null);
                     foreach (var image in SpriteContainer)
+                    {
                         image.Url = url;
+                        foreach (var dupImage in SpriteList)
+                        {
+                            if (dupImage.Key.Equals(image.Metadata) && dupImage.Value.Position == -1)
+                            {
+                                dupImage.Value.Position = image.Position;
+                                dupImage.Value.Url = image.Url;
+                            }
+                        }
+                    }
                 }
                 RRTracer.Trace("Finished Flushing sprite");
             }

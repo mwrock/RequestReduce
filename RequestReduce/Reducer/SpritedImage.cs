@@ -17,6 +17,7 @@ namespace RequestReduce.Reducer
         public int AverageColor { get; set; }
         public int Position { get; set; }
         public string Url { get; set; }
+        public SpriteManager.ImageMetadata Metadata { get; set; }
         public BackgroundImageClass CssClass { get; set; }
 
         public string Render()

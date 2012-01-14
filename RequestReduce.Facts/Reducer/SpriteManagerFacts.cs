@@ -286,19 +286,24 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableSpriteManager();
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Width).Returns(35);
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Height).Returns(18);
+                var metadata = new SpriteManager.ImageMetadata(new BackgroundImageClass("css1",1));
+                var metadata2 = new SpriteManager.ImageMetadata(new BackgroundImageClass("css2", 2));
+                testable.ClassUnderTest.SpriteList.Add(new KeyValuePair<SpriteManager.ImageMetadata, SpritedImage>(metadata, new SpritedImage(1, null, TestableSpriteManager.Image15X17) { Metadata = metadata }));
+                testable.ClassUnderTest.SpriteList.Add(new KeyValuePair<SpriteManager.ImageMetadata, SpritedImage>(metadata2, new SpritedImage(1, null, TestableSpriteManager.Image18X18) { Metadata = metadata }));
+                testable.ClassUnderTest.SpriteList.Add(new KeyValuePair<SpriteManager.ImageMetadata, SpritedImage>(metadata, new SpritedImage(1, null, TestableSpriteManager.Image15X17) { Metadata = metadata }));
                 var images = new List<SpritedImage>()
                                  {
-                                     new SpritedImage(1, null, TestableSpriteManager.Image15X17),
-                                     new SpritedImage(1, null, TestableSpriteManager.Image18X18),
-                                     new SpritedImage(1, null, TestableSpriteManager.Image15X17)
+                                     testable.ClassUnderTest.SpriteList[0].Value,
+                                     testable.ClassUnderTest.SpriteList[1].Value,
                                  };
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.GetEnumerator()).Returns(() => images.GetEnumerator());
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
 
                 testable.ClassUnderTest.Flush();
 
-                Assert.Equal(0, images[0].Position);
-                Assert.Equal(0, images[2].Position);
+                Assert.Equal(0, testable.ClassUnderTest.SpriteList[0].Value.Position);
+                Assert.Equal(16, testable.ClassUnderTest.SpriteList[1].Value.Position);
+                Assert.Equal(0, testable.ClassUnderTest.SpriteList[2].Value.Position);
             }
 
             [Fact]
