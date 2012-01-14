@@ -437,5 +437,29 @@ namespace RequestReduce.Facts.Reducer
             Assert.False(result);
         }
 
+        [Fact]
+        public void WillNotMatchMismatchingChildSelectors()
+        {
+            var target = "div.stats-bar>span.icon";
+            var comparable = "div.icon";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void WillMatchChildSelectors()
+        {
+            var target = "div.stats-bar > span.icon.gold";
+            var comparable = "div.stats-bar > span.icon";
+            var testable = new CssSelectorAnalyzer();
+
+            var result = testable.IsInScopeOfTarget(target, comparable);
+
+            Assert.True(result);
+        }
+
     }
 }

@@ -11,7 +11,7 @@ namespace RequestReduce.Reducer
         public bool IsInScopeOfTarget(string targetSelector, string comparableSelector)
         {
             var targetOffset = 0;
-            var tokens = comparableSelector.Split(new char[] {}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = comparableSelector.Split(new char[] {' ','>'}, StringSplitOptions.RemoveEmptyEntries);
             foreach (var token in tokens)
             {
                 targetOffset = FindToken(token, targetSelector, targetOffset);
@@ -38,12 +38,12 @@ namespace RequestReduce.Reducer
                 var idx = tokens[tokenIdx] == "*" ? 0 : targetSelector.IndexOf(tokens[tokenIdx], targetOffset, StringComparison.OrdinalIgnoreCase);
                 if (idx == -1) return idx;
                 var endIdx = idx + tokens[tokenIdx].Length;
-                if ((idx == 0 || targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx-1, 1) == idx-1 || targetSelector[idx] == '.' || targetSelector[idx] == '#') &&
+                if ((idx == 0 || targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t', '>' }, idx-1, 1) == idx-1 || targetSelector[idx] == '.' || targetSelector[idx] == '#') &&
                     (targetSelector.Length <= endIdx ||
-                    targetSelector.IndexOfAny(new[] {' ', '\n', '\r', '\t', ':', '.', '#'}, endIdx, 1) == endIdx))
+                    targetSelector.IndexOfAny(new[] {' ', '\n', '\r', '\t', ':', '.', '#', '>'}, endIdx, 1) == endIdx))
                 {
-                    var startTargetIdx = targetSelector.LastIndexOfAny(new[] {' ', '\n', '\r', '\t'}, idx) + 1;
-                    var endTargetdx = targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t' }, idx);
+                    var startTargetIdx = targetSelector.LastIndexOfAny(new[] {' ', '\n', '\r', '\t', '>'}, idx) + 1;
+                    var endTargetdx = targetSelector.IndexOfAny(new[] { ' ', '\n', '\r', '\t', '>' }, idx);
                     endTargetdx = endTargetdx == -1 ? targetSelector.Length - 1 : endTargetdx - 1;
                     var targetTokens = Regex.SelectorSplitPattern.Split(targetSelector.Substring(startTargetIdx, endTargetdx - startTargetIdx + 1));
                     if (tokens.All(x => targetTokens.Contains(x, StringComparer.OrdinalIgnoreCase) || x.Length==0 || x == "*"))
