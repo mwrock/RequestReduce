@@ -15,6 +15,7 @@
     <summary>An add-on which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
+      * upgrade to ajax minifier 4.44 to fix js error with google prettify
       * fix bug not including child selector as delimitor in css inheritance evaluation
       * fix bug that throws off sprite offsets when there are duplicate sprites
       * Add Exception information failed failed processing events in the dashboard
