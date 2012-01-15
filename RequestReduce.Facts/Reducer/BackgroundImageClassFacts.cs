@@ -459,7 +459,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var testable = new BackgroundImageClass(css, 0);
 
-                Assert.Equal(new Position {PositionMode = PositionMode.Percent, Offset = 0}, testable.XOffset);
+                Assert.Equal(new Position {PositionMode = PositionMode.Percent, Offset = 0, Direction = Direction.Center}, testable.XOffset);
             }
 
             [Fact]

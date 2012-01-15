@@ -162,25 +162,6 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(1, result.Count());
             }
 
-            [Theory,
-            InlineDataAttribute("10%"),
-            InlineDataAttribute("center"),
-            InlineDataAttribute("bottom")]
-            public void WillNotReturnYPositionedBackgroundImagesNotTopPositionedAndOfPercentOrDirectionWithoutHeight(string y)
-            {
-                var testable = new TestableCssImageTransformer();
-                var css =
-                    string.Format(@"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
-    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat -150px {0};
-    width: 20;
-}}", y);
-
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
-
-                Assert.Equal(0, result.Count());
-            }
-
             [Fact]
             public void WillReturnZeroPositionedXBackgroundImages()
             {
@@ -233,22 +214,6 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
-            public void WillNotReturnBottomPositionedBackgroundImagesWithNoHeight()
-            {
-                var testable = new TestableCssImageTransformer();
-                var css =
-                    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat right bottom;
-    width: 20px;
-}";
-
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
-
-                Assert.Equal(0, result.Count());
-            }
-
-            [Fact]
             public void WillReturnXCenterPositionedBackgroundImages()
             {
                 var testable = new TestableCssImageTransformer();
@@ -283,22 +248,6 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(1, result.Count());
                 Assert.Equal(Direction.Center, result.First().YOffset.Direction);
                 Assert.Equal(PositionMode.Direction, result.First().YOffset.PositionMode);
-            }
-
-            [Fact]
-            public void WillNotReturnYCenterPositionedBackgroundImagesWithNoHeight()
-            {
-                var testable = new TestableCssImageTransformer();
-                var css =
-                    @"
-.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
-    background: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat 0px center;
-    width: 20px;
-}";
-
-                var result = testable.ClassUnderTest.ExtractImageUrls(css);
-
-                Assert.Equal(0, result.Count());
             }
 
             [Fact]

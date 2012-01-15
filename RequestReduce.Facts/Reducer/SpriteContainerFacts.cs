@@ -324,7 +324,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillAutoCorrectHeightIfHeightAndOffsetAreGreaterThanOriginal()
             {
                 var testable = new TestableSpriteContainer();
-                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1", ExplicitHeight = 10, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = -10 } };
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1", ExplicitWidth = 15, ExplicitHeight = 10, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = -10 } };
                 testable.Mock<IWebClientWrapper>().Setup(Xunit => Xunit.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
 

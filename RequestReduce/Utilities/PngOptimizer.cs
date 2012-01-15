@@ -36,7 +36,7 @@ namespace RequestReduce.Utilities
                 {
                     using(var unQuantized = new Bitmap(new MemoryStream(bytes)))
                     {
-                        using(var quantized = wuQuantizer.QuantizeImage(unQuantized, 10, 70))
+                        using(var quantized = wuQuantizer.QuantizeImage(unQuantized, 10, 5))
                         {
                             var memStream = new MemoryStream(); 
                             quantized.Save(memStream, ImageFormat.Png);

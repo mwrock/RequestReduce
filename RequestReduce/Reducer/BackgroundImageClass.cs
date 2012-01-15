@@ -121,10 +121,6 @@ namespace RequestReduce.Reducer
                 foreach (Match offsetMatch in offsetMatches)
                     SetOffsets(offsetMatch);
             }
-            if (XOffset.PositionMode == PositionMode.Direction && (PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset)
-                YOffset = new Position {PositionMode = PositionMode.Direction};
-            if (YOffset.PositionMode == PositionMode.Direction && (PropertyCompletion & PropertyCompletion.HasXOffset) != PropertyCompletion.HasXOffset)
-                XOffset = new Position { PositionMode = PositionMode.Direction };
         }
 
         private int?[] GetPadding(Match paddingMatch)
@@ -296,8 +292,38 @@ namespace RequestReduce.Reducer
         public string Selector { get; set; }
         public string ImageUrl { get; set; }
         public RepeatStyle Repeat { get; set; }
-        public Position XOffset { get; set; }
-        public Position YOffset { get; set; }
+        private Position xOffset;
+        public Position XOffset
+        {
+            get
+            {
+                if ((PropertyCompletion & PropertyCompletion.HasXOffset) != PropertyCompletion.HasXOffset && (PropertyCompletion & PropertyCompletion.HasYOffset) == PropertyCompletion.HasYOffset)
+                    return new Position { Direction = Direction.Center, PositionMode = PositionMode.Direction };
+                return xOffset;
+            }
+            set
+            {
+                xOffset = value;
+                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasXOffset;
+            }
+        }
+
+        private Position yOffset;
+        public Position YOffset
+        {
+            get
+            {
+                if ((PropertyCompletion & PropertyCompletion.HasYOffset) != PropertyCompletion.HasYOffset && (PropertyCompletion & PropertyCompletion.HasXOffset) == PropertyCompletion.HasXOffset)
+                    return new Position { Direction = Direction.Center, PositionMode = PositionMode.Direction };
+                return yOffset;
+            }
+            set 
+            { 
+                yOffset = value;
+                PropertyCompletion = PropertyCompletion | PropertyCompletion.HasYOffset;
+            }
+        }
+
         public int? Width 
         { 
             get

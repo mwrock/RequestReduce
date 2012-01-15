@@ -50,11 +50,11 @@ namespace RequestReduce.Reducer
                     var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0; //offset on original
                     var y = image.YOffset.Offset < 0 ? Math.Abs(image.YOffset.Offset) : 0;
                     var width = image.Width ?? originalBitmap.Width; //cliped width of original image
-                    var imageWidth = image.Width ?? 0; //canvas width
+                    var imageWidth = width; //canvas width
                     if (width + x > originalBitmap.Width)   
                         width = originalBitmap.Width - x;
                     var height = image.Height ?? originalBitmap.Height;
-                    var imageHeight = image.Height ?? 0;
+                    var imageHeight = height;
                     if (height + y > originalBitmap.Height)
                         height = originalBitmap.Height - y;
                     var offsetX = 0;
