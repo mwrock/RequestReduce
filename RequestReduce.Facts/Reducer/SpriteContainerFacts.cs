@@ -219,6 +219,34 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void PercentageImagesWillBecorrectlyPositionedInClonedImageSentToWriter()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1", ExplicitWidth = 30, ExplicitHeight = 30, XOffset = new Position() { PositionMode = PositionMode.Percent, Offset = 33}, YOffset = new Position() { PositionMode = PositionMode.Percent, Offset = 33} };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                var image = testable.ClassUnderTest.First();
+                var image2 = new Bitmap(new MemoryStream(testable.Image18X18));
+                Assert.Equal(image2.GraphicsImage(), image.Image.Clone(new Rectangle(4, 4, 18, 18), image2.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
+            public void PercentagedImagesLargerThanWidthWillBeCorrectlyPositioned()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1", ExplicitWidth = 10, ExplicitHeight = 10, XOffset = new Position() { PositionMode = PositionMode.Percent, Offset = 40}, YOffset = new Position() { PositionMode = PositionMode.Percent, Offset = 40} };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                var image = testable.ClassUnderTest.First();
+                var image2 = new Bitmap(new MemoryStream(testable.Image18X18));
+                Assert.Equal(image2.Clone(new Rectangle(3, 3, 10, 10), image2.PixelFormat).GraphicsImage(), image.Image.Clone(new Rectangle(0, 0, 10, 10), image2.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
             public void WidthWillBeAggregateOfAddedImageWidthsPlusOnePixelEach()
             {
                 var testable = new TestableSpriteContainer();
@@ -305,7 +333,7 @@ namespace RequestReduce.Facts.Reducer
                                  {
                                      ImageUrl = "url1",
                                      ExplicitWidth = 5,
-                                     XOffset = new Position() {PositionMode = PositionMode.Percent, Offset = 50}
+                                     XOffset = new Position() {PositionMode = PositionMode.Percent, Offset = 0}
                                  };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
@@ -345,7 +373,7 @@ namespace RequestReduce.Facts.Reducer
                                  {
                                      ImageUrl = "url1",
                                      ExplicitHeight = 5,
-                                     YOffset = new Position() {PositionMode = PositionMode.Percent, Offset = 50}
+                                     YOffset = new Position() {PositionMode = PositionMode.Percent, Offset = 0}
                                  };
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(
                     testable.Image15X17);
