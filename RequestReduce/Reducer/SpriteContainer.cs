@@ -59,18 +59,35 @@ namespace RequestReduce.Reducer
                         height = originalBitmap.Height - y;
                     var offsetX = 0;
                     var offsetY = 0;
-                    if (image.XOffset.Direction == Direction.Center && image.XOffset.PositionMode == PositionMode.Direction)
-                        image.XOffset = new Position { PositionMode = PositionMode.Percent, Offset = 50 };
-                    if (image.YOffset.Direction == Direction.Center && image.YOffset.PositionMode == PositionMode.Direction)
-                        image.YOffset = new Position { PositionMode = PositionMode.Percent, Offset = 50 };
-                    if (image.XOffset.Direction == Direction.Right)
+                    if (image.XOffset.PositionMode == PositionMode.Direction)
                     {
-                        if (originalBitmap.Width > image.Width)
-                            x = originalBitmap.Width - width;
-                        else
-                            offsetX = (image.Width ?? 0) - originalBitmap.Width;
+                        switch (image.XOffset.Direction)
+                        {
+                            case Direction.Left:
+                                image.XOffset = new Position { PositionMode = PositionMode.Percent, Offset = 0};
+                                break;
+                            case Direction.Center:
+                                image.XOffset = new Position { PositionMode = PositionMode.Percent, Offset = 50};
+                                break;
+                            case Direction.Right:
+                                image.XOffset = new Position { PositionMode = PositionMode.Percent, Offset = 100 };
+                                break;
+                        }
                     }
-                    else if (image.XOffset.PositionMode == PositionMode.Percent)
+                    if (image.YOffset.PositionMode == PositionMode.Direction)
+                        switch (image.YOffset.Direction)
+                        {
+                            case Direction.Top:
+                                image.YOffset = new Position { PositionMode = PositionMode.Percent, Offset = 0 };
+                                break;
+                            case Direction.Center:
+                                image.YOffset = new Position { PositionMode = PositionMode.Percent, Offset = 50 };
+                                break;
+                            case Direction.Bottom:
+                                image.YOffset = new Position { PositionMode = PositionMode.Percent, Offset = 100 };
+                                break;
+                        }
+                    if (image.XOffset.PositionMode == PositionMode.Percent)
                     {
                         if (originalBitmap.Width > imageWidth)
                             x = (int)Math.Round((originalBitmap.Width - imageWidth) * (image.XOffset.Offset / 100f), 0);
@@ -84,14 +101,7 @@ namespace RequestReduce.Reducer
                             width = imageWidth - offsetX;
                     }
 
-                    if (image.YOffset.Direction == Direction.Bottom)
-                    {
-                        if (originalBitmap.Height > height)
-                            y = originalBitmap.Height - height;
-                        else
-                            offsetY = (image.Height ?? 0) - originalBitmap.Height;
-                    }
-                    else if (image.YOffset.PositionMode == PositionMode.Percent)
+                    if (image.YOffset.PositionMode == PositionMode.Percent)
                     {
                         if (originalBitmap.Height > imageHeight)
                             y = (int)Math.Round((originalBitmap.Height - height) * (image.YOffset.Offset / 100f), 0);
