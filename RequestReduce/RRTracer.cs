@@ -17,6 +17,7 @@ namespace RequestReduce
 
         private static void LogImplementation(string messageFormat, params object[] args)
         {
+            if (args.Length == 0) messageFormat = messageFormat.Replace("{", "{{").Replace("}", "}}");
             if (System.Diagnostics.Trace.Listeners.Count <= 0) return;
             var msg = string.Format(messageFormat, args);
             System.Diagnostics.Trace.TraceInformation(string.Format("TIME--{0}::THREAD--{1}/{2}::MSG--{3}",
