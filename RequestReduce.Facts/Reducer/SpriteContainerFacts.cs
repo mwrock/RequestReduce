@@ -247,6 +247,34 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void PositivelyOffsetImagesWillBecorrectlyPositionedInClonedImageSentToWriter()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1", ExplicitWidth = 30, ExplicitHeight = 30, XOffset = new Position() { PositionMode = PositionMode.Unit, Offset = 5 }, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = 10 } };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                var image = testable.ClassUnderTest.First();
+                var image2 = new Bitmap(new MemoryStream(testable.Image18X18));
+                Assert.Equal(image2.GraphicsImage(), image.Image.Clone(new Rectangle(5, 10, 18, 18), image2.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
+            public void PositivelyOffsetImagesLargerThanWidthWillBeCorrectlyPositioned()
+            {
+                var testable = new TestableSpriteContainer();
+                var image1 = new BackgroundImageClass("", 0) { ImageUrl = "url1", ExplicitWidth = 10, ExplicitHeight = 10, XOffset = new Position() { PositionMode = PositionMode.Unit, Offset = 2 }, YOffset = new Position() { PositionMode = PositionMode.Unit, Offset = 3 } };
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadBytes("url1")).Returns(testable.Image18X18);
+
+                testable.ClassUnderTest.AddImage(image1);
+
+                var image = testable.ClassUnderTest.First();
+                var image2 = new Bitmap(new MemoryStream(testable.Image18X18));
+                Assert.Equal(image2.Clone(new Rectangle(0, 0, 8, 7), image2.PixelFormat).GraphicsImage(), image.Image.Clone(new Rectangle(2, 3, 8, 7), image2.PixelFormat), new BitmapPixelComparer(true));
+            }
+
+            [Fact]
             public void WidthWillBeAggregateOfAddedImageWidthsPlusOnePixelEach()
             {
                 var testable = new TestableSpriteContainer();

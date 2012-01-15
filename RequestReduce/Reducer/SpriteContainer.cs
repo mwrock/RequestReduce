@@ -47,10 +47,10 @@ namespace RequestReduce.Reducer
             {
                 using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height))
                 {
-                    var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0;
+                    var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0; //offset on original
                     var y = image.YOffset.Offset < 0 ? Math.Abs(image.YOffset.Offset) : 0;
-                    var width = image.Width ?? originalBitmap.Width;
-                    var imageWidth = image.Width ?? 0;
+                    var width = image.Width ?? originalBitmap.Width; //cliped width of original image
+                    var imageWidth = image.Width ?? 0; //canvas width
                     if (width + x > originalBitmap.Width)   
                         width = originalBitmap.Width - x;
                     var height = image.Height ?? originalBitmap.Height;
@@ -77,6 +77,13 @@ namespace RequestReduce.Reducer
                         else
                             offsetX = (int)Math.Round((imageWidth - originalBitmap.Width) * (image.XOffset.Offset / 100f), 0);
                     }
+                    else if (image.XOffset.PositionMode == PositionMode.Unit && image.XOffset.Offset > 0)
+                    {
+                        offsetX = image.XOffset.Offset;
+                        if (originalBitmap.Width + offsetX > imageWidth)
+                            width = imageWidth - offsetX;
+                    }
+
                     if (image.YOffset.Direction == Direction.Bottom)
                     {
                         if (originalBitmap.Height > height)
@@ -90,6 +97,12 @@ namespace RequestReduce.Reducer
                             y = (int)Math.Round((originalBitmap.Height - height) * (image.YOffset.Offset / 100f), 0);
                         else
                             offsetY = (int)Math.Round((imageHeight - originalBitmap.Height) * (image.YOffset.Offset / 100f), 0);
+                    }
+                    else if (image.YOffset.PositionMode == PositionMode.Unit && image.YOffset.Offset > 0)
+                    {
+                        offsetY = image.YOffset.Offset;
+                        if (originalBitmap.Height + offsetY > imageHeight)
+                            height = imageHeight - offsetY;
                     }
 
                     try

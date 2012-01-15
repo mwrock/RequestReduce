@@ -166,7 +166,7 @@ namespace RequestReduce.Facts.Reducer
             InlineDataAttribute("10%"),
             InlineDataAttribute("center"),
             InlineDataAttribute("bottom")]
-            public void WillNotReturnYPositionedBackgroundImagesNotTopPositionedAndOfPercentOrDirection(string y)
+            public void WillNotReturnYPositionedBackgroundImagesNotTopPositionedAndOfPercentOrDirectionWithoutHeight(string y)
             {
                 var testable = new TestableCssImageTransformer();
                 var css =
