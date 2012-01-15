@@ -45,15 +45,15 @@ namespace RequestReduce.Reducer
 
             using (var originalBitmap = new Bitmap(new MemoryStream(imageBytes)))
             {
-                using (var writer = new SpriteWriter(image.Width ?? originalBitmap.Width, image.Height ?? originalBitmap.Height))
+                var width = image.Width ?? originalBitmap.Width; //cliped width of original image
+                var height = image.Height ?? originalBitmap.Height;
+                using (var writer = new SpriteWriter(width, height))
                 {
                     var x = image.XOffset.Offset < 0 ? Math.Abs(image.XOffset.Offset) : 0; //offset on original
                     var y = image.YOffset.Offset < 0 ? Math.Abs(image.YOffset.Offset) : 0;
-                    var width = image.Width ?? originalBitmap.Width; //cliped width of original image
                     var imageWidth = width; //canvas width
                     if (width + x > originalBitmap.Width)   
                         width = originalBitmap.Width - x;
-                    var height = image.Height ?? originalBitmap.Height;
                     var imageHeight = height;
                     if (height + y > originalBitmap.Height)
                         height = originalBitmap.Height - y;
@@ -97,12 +97,6 @@ namespace RequestReduce.Reducer
                             y = (int)Math.Round((originalBitmap.Height - height) * (image.YOffset.Offset / 100f), 0);
                         else
                             offsetY = (int)Math.Round((imageHeight - originalBitmap.Height) * (image.YOffset.Offset / 100f), 0);
-                    }
-                    else if (image.YOffset.PositionMode == PositionMode.Unit && image.YOffset.Offset > 0)
-                    {
-                        offsetY = image.YOffset.Offset;
-                        if (originalBitmap.Height + offsetY > imageHeight)
-                            height = imageHeight - offsetY;
                     }
 
                     try
