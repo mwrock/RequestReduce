@@ -295,6 +295,28 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(expectedHeight, testable.Height);
             }
 
+            [Theory,
+InlineData("10 20 30 40", 80, 60),
+InlineData("10px 20px 30px 40px", 80, 60),
+InlineData("10px 20px 30px", 60, 60),
+InlineData("10px 20px", 60, 40),
+InlineData("10px", 40, 40)]
+            public void WillAddPreMinimizedShortcutPaddingToWidthAndHeightWithoutSemicolon(string statedPadding, int? expectedWidth, int? expectedHeight)
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{
+    background-image: url(""http://i3.social.microsoft.com/contentservice/1f22465a-498c-46f1-83d3-9dad00d8a950/subnav_on_technet.png"") no-repeat;
+    height: 20px;
+    width: 20px;
+    padding: {0}}}";
+
+                var testable = new BackgroundImageClass(string.Format(css, statedPadding), 0);
+
+                Assert.Equal(expectedWidth, testable.Width);
+                Assert.Equal(expectedHeight, testable.Height);
+            }
+
             [Fact]
             public void WillSetWidthToNullIfNoWidthSpecified()
             {
@@ -509,6 +531,19 @@ namespace RequestReduce.Facts.Reducer
                 Assert.Equal(10, testable.XOffset.Offset);
                 Assert.Equal(PositionMode.Unit, testable.YOffset.PositionMode);
                 Assert.Equal(-33, testable.YOffset.Offset);
+            }
+
+            [Fact]
+            public void WillSetPreMinimizedSingleOffsetWithoutSemicolon()
+            {
+                var css =
+    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {{background-position:-10px}}";
+
+                var testable = new BackgroundImageClass(css, 0);
+
+                Assert.Equal(PositionMode.Unit, testable.XOffset.PositionMode);
+                Assert.Equal(-10, testable.XOffset.Offset);
             }
 
             [Fact]
