@@ -15,6 +15,7 @@
     <summary>An add-on which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
+      * fix parsing error on padding and bg position in pre minimized css not ending in a semicolon
       * support percentage and positive pixel background-positions
       * default one background position axis to centerif the other is set
       * adjust quantization settings for better and less grainy quality
