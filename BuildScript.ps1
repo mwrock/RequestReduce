@@ -135,8 +135,8 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   Copy-Item $baseDir\License.txt $filesDir
   Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.txt $filesDir
   Copy-Item $baseDir\Readme.md $filesDir\RequestReduce.readme.txt
-  Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.dll $filesDir\net35
-  Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.dll $filesDir\net40
+  Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.exe $filesDir\net35
+  Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.exe $filesDir\net40
   create $filesDir\RequestReduce.SqlServer
   Copy-Item $baseDir\requestreduce.SqlServer\bin\$configuration\Entityframework.* $filesDir\RequestReduce.SqlServer
   Copy-Item $baseDir\requestreduce.SqlServer\nuget\lib\net40\*.* $filesDir\RequestReduce.SqlServer
