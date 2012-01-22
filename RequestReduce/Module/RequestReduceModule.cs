@@ -179,7 +179,7 @@ namespace RequestReduce.Module
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = System.Web.Hosting.HostingEnvironment.MapPath(config.SpriteVirtualPath);
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
@@ -230,7 +230,7 @@ namespace RequestReduce.Module
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = System.Web.Hosting.HostingEnvironment.MapPath(config.SpriteVirtualPath);
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();
@@ -285,7 +285,7 @@ namespace RequestReduce.Module
                 return;
 
             if(string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = System.Web.Hosting.HostingEnvironment.MapPath(config.SpriteVirtualPath);
 
             var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bug 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
