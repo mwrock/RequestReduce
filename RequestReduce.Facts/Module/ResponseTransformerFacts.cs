@@ -396,6 +396,29 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillNotPlaceTransformedCssInsideConditionalScriptBlock()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<!--[if lt IE 9]><script src=""http://server/Me.js""></script><![endif]-->
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" /></head>
+                ";
+                var transformed = @"<head id=""Head1"">
+<!--[if lt IE 9]><script src=""http://server/Me.js""></script><![endif]-->
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
+</head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+                RRContainer.Current = null;
+            }
+
+            [Fact]
             public void WillNotTransformCssIgnoredByFilter()
             {
                 var testable = new TestableResponseTransformer();
