@@ -401,6 +401,36 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillStripQueryStringDromGeneratedUrls()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css?somequerystring");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css?somequerystring"));
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", @"""match""" } });
+            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            var cache = new Mock<HttpCachePolicyBase>();
+            context.Setup(x => x.Response.Cache).Returns(cache.Object);
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var store = new Mock<IStore>();
+            var builder = new Mock<IUriBuilder>();
+            builder.Setup(x => x.ParseSignature("/RRContent/key-match-css.css")).Returns("match");
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use(builder.Object);
+            });
+
+            module.HandleRRContent(context.Object);
+
+            store.Verify(x => x.SendContent("/RRContent/key-match-css.css", context.Object.Response), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillNotReturn304WhenSigDoesNotMatchIfNoneMatch()
         {
             var module = new RequestReduceModule();

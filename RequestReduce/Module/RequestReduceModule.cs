@@ -220,7 +220,11 @@ namespace RequestReduce.Module
             }
 
             var url = httpContextWrapper.Request.RawUrl;
-            var actionUrl = EnsurePath(url);
+            var index = url.IndexOf('?');
+            if (index > 0)
+                url = url.Substring(0, index);
+
+                                                                                                                                                                                                                                                                                                                                            var actionUrl = EnsurePath(url);
             if (!IsInRRContentDirectory(httpContextWrapper)
                 || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
                 || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
@@ -320,21 +324,16 @@ namespace RequestReduce.Module
             // Split the urls into unique items.
             var urlArray = urls.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
-            StringBuilder processedItemsHtml = new StringBuilder();
+            var processedItemsHtml = new StringBuilder();
             foreach (var url in urlArray)
             {
                 if (processedItemsHtml.Length <= 0)
-                {
                     processedItemsHtml.AppendLine("<ul>");
-                }
-
                 processedItemsHtml.AppendFormat("<li>{0}</li>{1}", url, Environment.NewLine);
             }
 
             if (processedItemsHtml.Length > 0)
-            {
                 processedItemsHtml.AppendLine("</ul>");
-            }
 
             return processedItemsHtml.ToString();
         }
