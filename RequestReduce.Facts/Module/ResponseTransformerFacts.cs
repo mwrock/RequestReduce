@@ -307,6 +307,7 @@ namespace RequestReduce.Facts.Module
                 var transformed = @"<script type=""text/javascript"" >src=a;</script><script src=""http://server/Me3.js"" type=""text/javascript"" ></script>";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
                 var result = testable.ClassUnderTest.Transform(transform);
 
                 Assert.Equal(transformed, result);
