@@ -155,7 +155,14 @@ namespace RequestReduce.Store
             var fileName = url.ToLower();
             if (!string.IsNullOrEmpty(configuration.ContentHost))
                 fileName = fileName.Replace(configuration.ContentHost.ToLower(), "");
-            return fileName.Replace(configuration.SpriteVirtualPath.ToLower(), configuration.SpritePhysicalPath.ToLower()).Replace('/', '\\');
+            fileName = fileName.Replace(configuration.SpriteVirtualPath.ToLower(), configuration.SpritePhysicalPath.ToLower()).Replace('/', '\\');
+             
+            //strip all query parameters 
+            var index = fileName.IndexOf('?');
+            if(index > 0)
+                fileName = fileName.Substring(0, index);
+
+            return fileName;
         }
 
         public virtual void Dispose()
