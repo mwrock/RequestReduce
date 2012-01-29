@@ -178,8 +178,9 @@ namespace RequestReduce.Module
                 && !url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))) return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
@@ -219,7 +220,11 @@ namespace RequestReduce.Module
             }
 
             var url = httpContextWrapper.Request.RawUrl;
-            var actionUrl = EnsurePath(url);
+            var index = url.IndexOf('?');
+            if (index > 0)
+                url = url.Substring(0, index);
+
+                                                                                                                                                                                                                                                                                                                                            var actionUrl = EnsurePath(url);
             if (!IsInRRContentDirectory(httpContextWrapper)
                 || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
                 || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
@@ -229,8 +234,9 @@ namespace RequestReduce.Module
             }
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = httpContextWrapper.Server.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();
@@ -284,8 +290,9 @@ namespace RequestReduce.Module
                 IsInRRContentDirectory(context))
                 return;
 
-            if(string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = context.Server.MapPath(config.SpriteVirtualPath);
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
+            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
 
             var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bug 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
@@ -317,21 +324,16 @@ namespace RequestReduce.Module
             // Split the urls into unique items.
             var urlArray = urls.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
-            StringBuilder processedItemsHtml = new StringBuilder();
+            var processedItemsHtml = new StringBuilder();
             foreach (var url in urlArray)
             {
                 if (processedItemsHtml.Length <= 0)
-                {
                     processedItemsHtml.AppendLine("<ul>");
-                }
-
                 processedItemsHtml.AppendFormat("<li>{0}</li>{1}", url, Environment.NewLine);
             }
 
             if (processedItemsHtml.Length > 0)
-            {
                 processedItemsHtml.AppendLine("</ul>");
-            }
 
             return processedItemsHtml.ToString();
         }
