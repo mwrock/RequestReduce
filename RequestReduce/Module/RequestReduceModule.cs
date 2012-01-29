@@ -178,8 +178,9 @@ namespace RequestReduce.Module
                 && !url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))) return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = System.Web.Hosting.HostingEnvironment.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
             if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
             {
@@ -229,8 +230,9 @@ namespace RequestReduce.Module
             }
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = System.Web.Hosting.HostingEnvironment.MapPath(config.SpriteVirtualPath);
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var store = RRContainer.Current.GetInstance<IStore>();
@@ -284,8 +286,9 @@ namespace RequestReduce.Module
                 IsInRRContentDirectory(context))
                 return;
 
-            if(string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = System.Web.Hosting.HostingEnvironment.MapPath(config.SpriteVirtualPath);
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
+            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
 
             var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bug 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();

@@ -55,6 +55,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
             });
 
@@ -124,16 +125,18 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
+            var hostingEnvironmentWrapper = new Mock<IHostingEnvironmentWrapper>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Server.MapPath("/Virtual")).Returns("physical");
+            hostingEnvironmentWrapper.Setup(x => x.MapPath("/Virtual")).Returns("physical");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
             RRContainer.Current = new Container(x =>
                                                     {
                                                         x.For<IRRConfiguration>().Use(config.Object);
                                                         x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                                                        x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironmentWrapper.Object);
                                                     });
 
             module.InstallFilter(context.Object);
@@ -148,8 +151,9 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
+            var hostingEnvironment = new Mock<IHostingEnvironmentWrapper>();
+            hostingEnvironment.Setup(x => x.MapPath("/Virtual")).Returns("physical");
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Server.MapPath("/Virtual")).Returns("physical");
             context.Setup(x => x.Request.RawUrl).Returns("/Virtual/blah");
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
@@ -160,6 +164,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IStore>().Use(new Mock<IStore>().Object);
                 x.For<IUriBuilder>().Use(new Mock<IUriBuilder>().Object);
+                x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironment.Object);
             });
 
             module.HandleRRContent(context.Object);
@@ -259,6 +264,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
             });
 
@@ -285,6 +291,7 @@ namespace RequestReduce.Facts.Module
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
             });
 
             module.InstallFilter(context.Object);
@@ -310,6 +317,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
             });
 
@@ -344,6 +352,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
             });
@@ -376,6 +385,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
             });
@@ -413,6 +423,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
             });
@@ -451,6 +462,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(new UriBuilder(config.Object));
             });
@@ -485,6 +497,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(new UriBuilder(config.Object));
             });
@@ -506,6 +519,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
             });
             context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
@@ -525,9 +539,10 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
+            var hostingEnvironmentWrapper = new Mock<IHostingEnvironmentWrapper>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
-            context.Setup(x => x.Server.MapPath("/RRContent")).Returns("physical");
+            hostingEnvironmentWrapper.Setup(x => x.MapPath("/RRContent")).Returns("physical");
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
@@ -537,6 +552,7 @@ namespace RequestReduce.Facts.Module
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IReducingQueue>().Use(queue.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironmentWrapper.Object);
             });
 
             module.HandleRRFlush(context.Object);
@@ -562,6 +578,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -587,6 +604,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -614,6 +632,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -643,6 +662,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -671,6 +691,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -699,6 +720,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -727,6 +749,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -758,6 +781,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -783,6 +807,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
@@ -807,6 +832,7 @@ namespace RequestReduce.Facts.Module
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
             });
