@@ -29,7 +29,7 @@ task Clean-Solution -depends Clean-BuildFiles {
     clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
     exec { msbuild RequestReduce.sln /t:Clean /v:quiet }
-}
+}	
 
 task echo-path {
 	write-host "dir:" $webDir
@@ -211,25 +211,33 @@ function Setup-IIS([string] $siteName, [string] $solutionDir, [string] $port )
 	}
 
     echo "Setting up $siteName website"
+	$siteName35 = $sitename+35
     $websitePhysicalPath = $solutionDir + "\RequestReduce.SampleWeb"
      
     # Create the site
     $id = (Get-ChildItem IIS:\Sites | foreach {$_.id} | sort -Descending | select -first 1) + 1
     New-Website -Name $siteName -Port $port -PhysicalPath $websitePhysicalPath -Id $id
-       
+    New-Website -Name $siteName35 -Port ([int]$port+1) -PhysicalPath ($websitePhysicalPath+35) -Id ($id+1)
+
     # Create app pool and have it run under network service
     $appPool = New-Item -Force IIS:\AppPools\$siteName
     $appPool.processModel.identityType = "NetworkService"
     $appPool.managedRuntimeVersion = "v4.0.30319"
     $appPool | Set-Item
-        
+      
+    $appPool = New-Item -Force IIS:\AppPools\$siteName35
+    $appPool.processModel.identityType = "NetworkService"
+    $appPool.managedRuntimeVersion = "v2.0"
+    $appPool | Set-Item
     # Set app pool
     Set-ItemProperty IIS:\Sites\$siteName -name applicationPool -value $siteName
+    Set-ItemProperty IIS:\Sites\$siteName35 -name applicationPool -value $siteName35
 
-	New-WebApplication -Name secure -Site $siteName -PhysicalPath $websitePhysicalPath\Styles\secure -ApplicationPool $siteName
+	New-WebApplication -Name styles\secure -Site $siteName -PhysicalPath $websitePhysicalPath\Styles\secure -ApplicationPool $siteName
 
     #Start Site
     Start-WebItem IIS:\Sites\$siteName
+    Start-WebItem IIS:\Sites\$siteName35
  }
  catch {
    "Error in Setup-IIS: " + $_.Exception

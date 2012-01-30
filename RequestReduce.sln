@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.SqlServer", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.SassLessCoffee", "RequestReduce.SassLessCoffee\RequestReduce.SassLessCoffee.csproj", "{78C09D35-C434-4BEA-9EEB-2A3449DAFC8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReduce.SampleWeb35", "RequestReduce.SampleWeb35\RequestReduce.SampleWeb35.csproj", "{9644C04B-D507-44B0-847C-3DADB5645222}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Build|Any CPU = Build|Any CPU
@@ -64,6 +66,12 @@ Global
 		{78C09D35-C434-4BEA-9EEB-2A3449DAFC8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78C09D35-C434-4BEA-9EEB-2A3449DAFC8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78C09D35-C434-4BEA-9EEB-2A3449DAFC8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9644C04B-D507-44B0-847C-3DADB5645222}.Build|Any CPU.ActiveCfg = Release|Any CPU
+		{9644C04B-D507-44B0-847C-3DADB5645222}.Build|Any CPU.Build.0 = Release|Any CPU
+		{9644C04B-D507-44B0-847C-3DADB5645222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9644C04B-D507-44B0-847C-3DADB5645222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9644C04B-D507-44B0-847C-3DADB5645222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9644C04B-D507-44B0-847C-3DADB5645222}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -17,7 +17,7 @@ namespace RequestReduce.Facts.Integration
 {
     public class ModuleFacts
     {
-        private readonly string rrFolder;
+        private string rrFolder;
         private readonly UriBuilder uriBuilder;
 
         public ModuleFacts()
@@ -48,6 +48,23 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
             Assert.Equal(2, new JavaScriptResource().ResourceRegex.Matches(response).Count);
             Assert.Equal(3, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillReduceToOneCssSpriteAndScriptInHeadOnNet35MediumTrust()
+        {
+            var rrFolderOld = rrFolder;
+            rrFolder = rrFolder.Replace("SampleWeb", "SampleWeb35");
+            Directory.Delete(rrFolder, true);
+            new WebClient().DownloadString("http://localhost:8878/Local.html");
+            WaitToCreateResources(1,1,false,30000);
+
+            var response = new WebClient().DownloadString("http://localhost:8878/Local.html");
+
+            Assert.Contains("RequestReduce", new CssResource().ResourceRegex.Match(response).ToString());
+            Assert.Contains("RequestReduce", new JavaScriptResource().ResourceRegex.Match(response).ToString());
+            Assert.Equal(1, Directory.GetFiles(rrFolder, "*.png").Count());
+            rrFolder = rrFolderOld;
         }
 
         [OutputTraceOnFailFact]

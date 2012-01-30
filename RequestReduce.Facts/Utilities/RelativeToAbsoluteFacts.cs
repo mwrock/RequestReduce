@@ -36,6 +36,36 @@ namespace RequestReduce.Facts.Utilities
         }
 
         [Fact]
+        public void WillNotUseContentHostIfUrlIsExternal()
+        {
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ContentHost).Returns("http://content");
+            RRContainer.Current.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
+
+            var result =
+            RelativeToAbsoluteUtility.ToAbsolute("http://blogs.msdn.com/themes/blogs/MSDN2/css/MSDNblogs.css",
+                                                 "http://gravatar.com/MSDN2/Images/MSDN/contentpane.png");
+
+            Assert.Equal("http://gravatar.com/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillUseContentHostIfUrlIsLocal()
+        {
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ContentHost).Returns("http://content");
+            RRContainer.Current.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
+
+            var result =
+            RelativeToAbsoluteUtility.ToAbsolute("http://blogs.msdn.com/themes/blogs/MSDN2/css/MSDNblogs.css",
+                                                 "http://blogs.msdn.com/MSDN2/Images/MSDN/contentpane.png");
+
+            Assert.Equal("http://content/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillForwardNewUrlToListener()
         {
             var config = new Mock<IRRConfiguration>();
