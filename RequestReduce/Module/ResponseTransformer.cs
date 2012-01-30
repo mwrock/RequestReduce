@@ -102,10 +102,11 @@ namespace RequestReduce.Module
                 RRTracer.Trace("Reduction found for {0}", urls);
                 if(uriBuilder.ParseSignature(transform) != Guid.Empty.RemoveDashes())
                 {
-                    var scriptIdx = preTransform.IndexOf("<script", StringComparison.OrdinalIgnoreCase);
-                    var insertionIdx = (scriptIdx > -1 && scriptIdx <
+                    var firstScript =
+                        RRContainer.Current.GetInstance<JavaScriptResource>().ResourceRegex.Match(preTransform);
+                    var insertionIdx = (firstScript.Success && firstScript.Index <
                                         preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) && resource is CssResource)
-                                           ? scriptIdx - 1
+                                           ? firstScript.Index - 1
                                            : preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) - 1;
                     preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
                 }
