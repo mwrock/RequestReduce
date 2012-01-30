@@ -233,7 +233,7 @@ function Setup-IIS([string] $siteName, [string] $solutionDir, [string] $port )
     Set-ItemProperty IIS:\Sites\$siteName -name applicationPool -value $siteName
     Set-ItemProperty IIS:\Sites\$siteName35 -name applicationPool -value $siteName35
 
-	New-WebApplication -Name secure -Site $siteName -PhysicalPath $websitePhysicalPath\Styles\secure -ApplicationPool $siteName
+	New-WebApplication -Name styles\secure -Site $siteName -PhysicalPath $websitePhysicalPath\Styles\secure -ApplicationPool $siteName
 
     #Start Site
     Start-WebItem IIS:\Sites\$siteName

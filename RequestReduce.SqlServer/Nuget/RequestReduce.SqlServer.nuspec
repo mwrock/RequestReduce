@@ -15,6 +15,12 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Fix Maped physical path in nested Applications
+      * Strip query string from generated urls sent from browser
+      * Ignore commented scripts
+      * do not inject generated styles into commented section of head
+      * Do not swap external host with content host
+      * fix .net 3.5 in medium trust
       * fix parsing error on padding and bg position in pre minimized css not ending in a semicolon
       * support percentage and positive pixel background-positions
       * default one background position axis to centerif the other is set
