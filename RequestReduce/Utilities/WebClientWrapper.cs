@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using RequestReduce.Configuration;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
 
@@ -46,9 +47,12 @@ namespace RequestReduce.Utilities
             {
                 var client = WebRequest.Create(url);
                 client.Credentials = CredentialCache.DefaultCredentials;
-                var systemWebProxy = WebRequest.GetSystemWebProxy();
-                systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
-                client.Proxy = systemWebProxy;
+                if(RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4)
+                {
+                    var systemWebProxy = WebRequest.GetSystemWebProxy();
+                    systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
+                    client.Proxy = systemWebProxy;
+                }
                 var response = client.GetResponse();
                 if (response.ContentLength > 0 && requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
                     throw new InvalidOperationException(string.Format(
@@ -69,9 +73,12 @@ namespace RequestReduce.Utilities
             {
                 using (var client = new WebClient())
                 {
-                    var systemWebProxy = WebRequest.GetSystemWebProxy();
-                    systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
-                    client.Proxy = systemWebProxy;
+                    if (RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4)
+                    {
+                        var systemWebProxy = WebRequest.GetSystemWebProxy();
+                        systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
+                        client.Proxy = systemWebProxy;
+                    }
                     client.Credentials = CredentialCache.DefaultCredentials;
                     return client.DownloadData(url);
                 }

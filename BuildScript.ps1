@@ -29,7 +29,7 @@ task Clean-Solution -depends Clean-BuildFiles {
     clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
     exec { msbuild RequestReduce.sln /t:Clean /v:quiet }
-}
+}	
 
 task echo-path {
 	write-host "dir:" $webDir

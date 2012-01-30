@@ -60,8 +60,8 @@ namespace RequestReduce.Facts.Integration
 
             var response = new WebClient().DownloadString("http://localhost:8878/Local.html");
 
-            Assert.Contains(new CssResource().ResourceRegex.Match(response).ToString(), "RequestReduce");
-            Assert.Contains(new JavaScriptResource().ResourceRegex.Match(response).ToString(), "RequestReduce");
+            Assert.Contains("RequestReduce", new CssResource().ResourceRegex.Match(response).ToString());
+            Assert.Contains("RequestReduce", new JavaScriptResource().ResourceRegex.Match(response).ToString());
             Assert.Equal(1, Directory.GetFiles(rrFolder, "*.png").Count());
             rrFolder = rrFolderOld;
         }

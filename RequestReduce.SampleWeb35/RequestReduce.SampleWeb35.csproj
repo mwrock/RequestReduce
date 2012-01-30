@@ -40,7 +40,8 @@
     <Reference Include="nQuant.Core">
       <HintPath>..\RequestReduce\bin\v3.5\Release\nQuant.Core.dll</HintPath>
     </Reference>
-    <Reference Include="RequestReduce">
+    <Reference Include="RequestReduce, Version=1.7.31.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RequestReduce\bin\v3.5\Release\RequestReduce.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap">
@@ -61,6 +62,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\star.png" />
+    <Content Include="images\up.png" />
     <Content Include="Local.html" />
     <Content Include="scripts\script1.js" />
     <Content Include="styles\style1.css" />

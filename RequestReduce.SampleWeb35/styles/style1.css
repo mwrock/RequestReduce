@@ -1,20 +1,13 @@
 ﻿.RatingStar
 {
-    background: url('http://localhost:8877/images/Star.png') no-repeat;
+    background: url('/images/Star.png') no-repeat;
     width: 18px;
     height: 18px;
 }
 
 .Up
 {
-    background: url('http://localhost:8877/images/up.png') no-repeat;
+    background: url('/images/up.png') no-repeat;
     width: 40px;
     height: 40px;
-}
-
-@font-face
-{
-font-family: myFirstFont;
-src: url('Sansation_Light.ttf'),
-     url('Sansation_Light.eot'); /* IE */
 }
