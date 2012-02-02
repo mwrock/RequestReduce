@@ -163,7 +163,7 @@ namespace RequestReduce.Configuration
                 {
                     new AspNetHostingPermission(trustLevel).Demand();
                 }
-                catch (System.Security.SecurityException)
+                catch (Exception)
                 {
                     continue;
                 }
