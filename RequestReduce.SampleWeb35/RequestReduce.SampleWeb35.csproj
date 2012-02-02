@@ -40,7 +40,7 @@
     <Reference Include="nQuant.Core">
       <HintPath>..\RequestReduce\bin\v3.5\Release\nQuant.Core.dll</HintPath>
     </Reference>
-    <Reference Include="RequestReduce, Version=1.7.31.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RequestReduce, Version=1.7.49.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RequestReduce\bin\v3.5\Release\RequestReduce.dll</HintPath>
     </Reference>

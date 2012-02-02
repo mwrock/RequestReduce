@@ -58,7 +58,7 @@ namespace RequestReduce.Configuration
         {
             IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
             ContentHost = config == null ? null : config.ContentHost;
-            AuthorizedUserList = config == null || string.IsNullOrEmpty(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',');
+            AuthorizedUserList = config == null || string.IsNullOrEmpty(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',').ToList();
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit = val == 0 ? 50000 : val;
             val = config == null ? 0 : config.SpriteColorLimit;
@@ -163,7 +163,7 @@ namespace RequestReduce.Configuration
                 {
                     new AspNetHostingPermission(trustLevel).Demand();
                 }
-                catch (System.Security.SecurityException)
+                catch (Exception)
                 {
                     continue;
                 }
