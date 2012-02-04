@@ -29,9 +29,9 @@ namespace RequestReduce.Facts.Store
                 return;
             }
 
-            public IReductionRepository ReductionRepository
+            public new IReductionRepository ReductionRepository
             {
-                set { reductionRepository = value; }
+                set { base.ReductionRepository = value; }
             }
 
             public new string GetFileNameFromConfig(string url)

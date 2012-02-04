@@ -14,19 +14,19 @@ namespace RequestReduce.Store
 {
     public class LocalDiskStore : IStore
     {
-        protected readonly IFileWrapper fileWrapper;
+        protected readonly IFileWrapper FileWrapper;
         private readonly IRRConfiguration configuration;
         private readonly IUriBuilder uriBuilder;
-        protected IReductionRepository reductionRepository;
+        protected IReductionRepository ReductionRepository;
         private FileSystemWatcher watcher;
 
         public LocalDiskStore(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder, IReductionRepository reductionRepository)
         {
-            this.fileWrapper = fileWrapper;
+            FileWrapper = fileWrapper;
             this.configuration = configuration;
             configuration.PhysicalPathChange += SetupWatcher;
             this.uriBuilder = uriBuilder;
-            this.reductionRepository = reductionRepository;
+            ReductionRepository = reductionRepository;
             if(configuration.IsFullTrust)
                 SetupWatcher();
         }
@@ -65,9 +65,9 @@ namespace RequestReduce.Store
                 {
                     RRTracer.Trace("New Content {0} and watched: {1}", e.ChangeType, path);
                     if (e.ChangeType == WatcherChangeTypes.Deleted)
-                        reductionRepository.RemoveReduction(guid);
+                        ReductionRepository.RemoveReduction(guid);
                     if ((e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed))
-                        reductionRepository.AddReduction(guid, uriBuilder.BuildResourceUrl(guid, contentSignature, resourceType.GetType()));
+                        ReductionRepository.AddReduction(guid, uriBuilder.BuildResourceUrl(guid, contentSignature, resourceType.GetType()));
                 }
             }
         }
@@ -77,13 +77,13 @@ namespace RequestReduce.Store
             var file = GetFileNameFromConfig(url);
             var sig = uriBuilder.ParseSignature(url);
             var guid = uriBuilder.ParseKey(url);
-            fileWrapper.Save(content, file);
-            if (!url.ToLower().EndsWith(".png") && reductionRepository != null)
-                reductionRepository.AddReduction(guid, url);
+            FileWrapper.Save(content, file);
+            if (!url.ToLower().EndsWith(".png") && ReductionRepository != null)
+                ReductionRepository.AddReduction(guid, url);
             RRTracer.Trace("{0} saved to disk.", url);
-            var expiredFile = file.Insert(file.IndexOf(sig), "Expired-");
-            if (fileWrapper.FileExists(expiredFile))
-                fileWrapper.DeleteFile(expiredFile);
+            var expiredFile = file.Insert(file.IndexOf(sig, StringComparison.Ordinal), "Expired-");
+            if (FileWrapper.FileExists(expiredFile))
+                FileWrapper.DeleteFile(expiredFile);
         }
 
         public virtual bool SendContent(string url, HttpResponseBase response)
@@ -117,7 +117,7 @@ namespace RequestReduce.Store
             if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 return dic;
 
-            var activeFiles = fileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, "*RequestReduce*");
+            var activeFiles = FileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, "*RequestReduce*");
             return (from files in activeFiles
                     where !files.FileName.Contains("-Expired-")
                     group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/"))
@@ -142,12 +142,12 @@ namespace RequestReduce.Store
                     Flush(key);
             }
 
-            reductionRepository.RemoveReduction(keyGuid); 
+            ReductionRepository.RemoveReduction(keyGuid); 
             var files =
-                fileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(
+                FileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(
                     x => x.Contains(keyGuid.RemoveDashes()) && !x.Contains("Expired"));
             foreach (var file in files)
-                fileWrapper.RenameFile(file, file.Replace(keyGuid.RemoveDashes(), keyGuid.RemoveDashes() + "-Expired"));
+                FileWrapper.RenameFile(file, file.Replace(keyGuid.RemoveDashes(), keyGuid.RemoveDashes() + "-Expired"));
         }
 
         protected virtual string GetFileNameFromConfig(string url)
