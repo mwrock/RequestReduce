@@ -22,6 +22,8 @@ namespace RequestReduce.Configuration
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
+        IEnumerable<string> IpFilterList { get; set; }
+        IEnumerable<string> ProxyList { get; set; }
         bool CssProcessingDisabled { get; set; }
         bool JavaScriptProcessingDisabled { get; set; }
         bool ImageOptimizationDisabled { get; set; }
@@ -107,6 +109,9 @@ namespace RequestReduce.Configuration
         public int SpriteColorLimit { get; set; }
 
         public IEnumerable<string> AuthorizedUserList { get; set; }
+
+        public IEnumerable<string> IpFilterList { get; set; }
+        public IEnumerable<string> ProxyList { get; set; }
 
         public string SpriteVirtualPath { get; set; }
 

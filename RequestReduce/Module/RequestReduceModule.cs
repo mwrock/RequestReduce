@@ -10,12 +10,16 @@ using RequestReduce.IOC;
 using RequestReduce.Properties;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using System.Net;
+using System.Collections.Generic;
 
 namespace RequestReduce.Module
 {
     public class RequestReduceModule : IHttpModule
     {
         public const string ContextKey = "HttpOnlyFilteringModuleInstalled";
+        private readonly string[] IpHttpHeaders = { "HTTP_X_FORWARDED_FOR", "HTTP_X_FORWARDED", "HTTP_X_CLUSTER_CLIENT_IP", "HTTP_FORWARDED_FOR", "HTTP_FORWARDED" };
+        private static readonly RegexCache Regex = new RegexCache();
         public void Dispose()
         {
         }
@@ -336,6 +340,64 @@ namespace RequestReduce.Module
                 processedItemsHtml.AppendLine("</ul>");
 
             return processedItemsHtml.ToString();
+        }
+
+        public string UserIpAddress(HttpContextBase httpContextWrapper)
+        {
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+
+            if (httpContextWrapper == null || httpContextWrapper.Request == null)
+            {
+                return null;
+            }
+
+            // Look at IP header first. Harder to fake than HTTP headers.
+            string hostAddr = httpContextWrapper.Request.UserHostAddress;
+            if (IsPublicIpAddress(hostAddr) && !IsTrustedProxy(hostAddr, config.ProxyList))
+            {
+                return hostAddr;
+            }
+
+            // Look at HTTP headers
+            foreach (string header in IpHttpHeaders)
+            {
+                if (httpContextWrapper.Request.ServerVariables[header] != null)
+                {
+                    IEnumerable<string> values = httpContextWrapper.Request.ServerVariables[header].Split(new char[] { ',' }).Select(val => val.Trim());
+
+                    // Find the last public (most reliable) IP address
+                    // http://en.wikipedia.org/wiki/X-Forwarded-For#Format
+                    string lastPublicIp = values.LastOrDefault(val => IsPublicIpAddress(val) && !IsTrustedProxy(val, config.ProxyList));
+                    if (lastPublicIp != null)
+                    {
+                        return lastPublicIp;
+                    }
+                }
+            }
+
+            // No public IP found. Use IP header.
+            return httpContextWrapper.Request.UserHostAddress;
+        }
+
+        private bool IsPublicIpAddress(string ip)
+        {
+            return IsValidIpAddress(ip) && !Regex.PrivateIpPattern.IsMatch(ip);
+        }
+
+        private bool IsTrustedProxy(string ip, IEnumerable<string> proxyList)
+        {
+            if (proxyList == null)
+            {
+                return false;
+            }
+            return IsValidIpAddress(ip) &&
+                proxyList.Select(p => p.Trim()).Where(p => IsValidIpAddress(p)).Contains(ip);
+        }
+
+        private bool IsValidIpAddress(string ip)
+        {
+            IPAddress res;
+            return IPAddress.TryParse(ip ?? "", out res);
         }
     }
 }

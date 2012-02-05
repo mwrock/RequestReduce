@@ -902,6 +902,66 @@ namespace RequestReduce.Facts.Module
             Registry.HandlerMaps.Clear();
         }
 
+        [Fact]
+        public void WillDetectPublicIP()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("123.123.123.123");
+
+            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
+        public void WillDetectPublicIPWhenBehindPrivateProxy()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("10.0.0.1");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123" } });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
+        public void WillDetectPublicIPWhenBehindTwoPrivateProxies()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("10.0.0.1");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123, 10.0.0.2" } });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
+        public void WillDetectPublicIPWhenBehindTrustedProxy()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ProxyList).Returns(new[] { "111.111.111.111" });
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("111.111.111.111");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123" } });
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+            });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
+        public void WillDetectPrivateIPWithinPrivateNetwork()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("192.168.0.1");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "192.168.0.1");
+        }
+
         public void Dispose()
         {
             RRContainer.Current = null;
