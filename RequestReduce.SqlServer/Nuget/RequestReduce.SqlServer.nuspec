@@ -15,6 +15,11 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Fixed parsing issues with comments in between scripts or css links
+      * Fixed issue where embeded scripts in inline scripts were being transformed
+      * Fixed possible duplicate key error in retrieving saved reductions from local disk
+      * eliminate extra line feeds left over from removed scripts and css links
+      * fixed issue when using google font api
       * Fix Maped physical path in nested Applications
       * Strip query string from generated urls sent from browser
       * Ignore commented scripts
