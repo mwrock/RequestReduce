@@ -610,7 +610,7 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
-            public void WillTransformEmbeddedJs()
+            public void WillNotTransformInlineJsEmbeddingJs()
             {
                 var testable = new TestableResponseTransformer();
                 var transform = @"
@@ -618,7 +618,7 @@ namespace RequestReduce.Facts.Module
     <script>window.jQuery || document.write('<script src=""http://server/script.js""><\/script>')</script>";
                 var transformed = @"
 <script src=""//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js""></script>
-    <script>window.jQuery || document.write('<script src=""http://server/script2.js""><\/script>')</script>";
+    <script>window.jQuery || document.write('<script src=""http://server/script.js""><\/script>')</script>";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script.js::")).Returns("http://server/script2.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
 

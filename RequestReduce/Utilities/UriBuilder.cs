@@ -1,8 +1,6 @@
 ﻿using System;
 using RequestReduce.Configuration;
-using RequestReduce.Reducer;
 using RequestReduce.ResourceTypes;
-using System.Security.AccessControl;
 using RequestReduce.IOC;
 
 namespace RequestReduce.Utilities
@@ -70,8 +68,8 @@ namespace RequestReduce.Utilities
                 return Guid.Empty;
 
             var idx = url.LastIndexOf('/');
-            string keyDir = idx > -1 ? url.Substring(idx + 1) : url;
-            string strKey = string.Empty;
+            var keyDir = idx > -1 ? url.Substring(idx + 1) : url;
+            var strKey = string.Empty;
             idx = keyDir.IndexOf('-');
             if (idx > -1)
                 strKey = keyDir.Substring(0, idx);
@@ -93,10 +91,9 @@ namespace RequestReduce.Utilities
 
             var idx = url.LastIndexOf('/');
             var keyDir = idx > -1 ? url.Substring(idx + 1) : url;
-            var strKey = string.Empty;
             try
             {
-                strKey = keyDir.Substring(33, 32);
+                var strKey = keyDir.Substring(33, 32);
                 return new Guid(strKey).RemoveDashes();
             }
             catch (Exception)

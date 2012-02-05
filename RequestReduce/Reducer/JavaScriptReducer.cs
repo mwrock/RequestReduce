@@ -45,7 +45,7 @@ namespace RequestReduce.Reducer
         {
             string jsContent = string.Empty;
             url = url.Replace("&amp;", "&");
-            using (var response = webClientWrapper.Download<JavaScriptResource>(url))
+            using (var response = WebClientWrapper.Download<JavaScriptResource>(url))
             {
                 if (response == null)
                     return null;
