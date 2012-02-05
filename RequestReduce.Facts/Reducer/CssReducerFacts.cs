@@ -163,7 +163,7 @@ namespace RequestReduce.Facts.Reducer
             {
                 var testable = new TestableCssReducer();
 
-                testable.ClassUnderTest.Process("http://host/css1.css|print,screen::http://host/css2.css");
+                testable.ClassUnderTest.Process("http://host/css1.css^print,screen::http://host/css2.css");
 
                 testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<CssResource>("http://host/css1.css"), Times.Once());
                 testable.Mock<IWebClientWrapper>().Verify(x => x.DownloadString<CssResource>("http://host/css2.css"), Times.Once());
@@ -193,12 +193,12 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
                 testable.Mock<IMinifier>().Setup(x => x.Minify<CssResource>("@media print,screen {css1}css2")).Returns("min");
 
-                var result = testable.ClassUnderTest.Process("http://host/css1.css|print,screen::http://host/css2.css");
+                var result = testable.ClassUnderTest.Process("http://host/css1.css^print,screen::http://host/css2.css");
 
                 testable.Mock<IStore>().Verify(
                     x =>
                     x.Save(Encoding.UTF8.GetBytes("min").MatchEnumerable(), result,
-                           "http://host/css1.css|print,screen::http://host/css2.css"), Times.Once());
+                           "http://host/css1.css^print,screen::http://host/css2.css"), Times.Once());
             }
 
             [Fact]
@@ -360,6 +360,7 @@ namespace RequestReduce.Facts.Reducer
                     x.Minify<CssResource>(expectedcss), Times.Once());
             }
 
+            [Fact]
             public void WillConvertRelativeUrlsToAbsoluteForFontFaces()
             {
                 var testable = new TestableCssReducer();
@@ -378,6 +379,55 @@ src: url('Sansation_Light.ttf'),
 font-family: myFirstFont;
 src: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/Sansation_Light.ttf'),
      url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/Sansation_Light.eot');
+}";
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css")).Returns(css);
+
+                testable.ClassUnderTest.Process("http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>(expectedcss), Times.Once());
+            }
+
+            [Fact]
+            public void WillHandleMultipleFontFacesInMedia()
+            {
+                var testable = new TestableCssReducer();
+                var css =
+                    @"
+@media screen {
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url('http://themes.googleusercontent.com/static/fonts/opensans/v6/k3k702ZOKiLJc3WVjuplzHhCUOGz7vYGh680lGh-uXM.woff') format('woff');
+}
+}
+@media screen {
+@font-face {
+  font-family: 'Ubuntu Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu Condensed'), local('UbuntuCondensed-Regular'), url('http://themes.googleusercontent.com/static/fonts/ubuntucondensed/v3/DBCt-NXN57MTAFjitYxdrFzqCfRpIA3W6ypxnPISCPA.woff') format('woff');
+}
+}";
+                var expectedcss =
+                    @"
+@media screen {
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url('http://themes.googleusercontent.com/static/fonts/opensans/v6/k3k702ZOKiLJc3WVjuplzHhCUOGz7vYGh680lGh-uXM.woff') format('woff');
+}
+}
+@media screen {
+@font-face {
+  font-family: 'Ubuntu Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Ubuntu Condensed'), local('UbuntuCondensed-Regular'), url('http://themes.googleusercontent.com/static/fonts/ubuntucondensed/v3/DBCt-NXN57MTAFjitYxdrFzqCfRpIA3W6ypxnPISCPA.woff') format('woff');
+}
 }";
                 testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/style.css")).Returns(css);
 

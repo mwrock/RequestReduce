@@ -89,7 +89,7 @@ namespace RequestReduce.Module
         {
             var mediaMatch = Regex.MediaPattern.Match(strMatch);
             if (mediaMatch.Success)
-                return "|" + mediaMatch.Groups["media"].Value;
+                return "^" + mediaMatch.Groups["media"].Value;
             return null;
         }
 

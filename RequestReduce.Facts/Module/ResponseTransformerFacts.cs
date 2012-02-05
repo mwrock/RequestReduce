@@ -689,12 +689,12 @@ namespace RequestReduce.Facts.Module
 <title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(
-                    x => x.FindReduction("http://server/Me.css|print,screen::http://server/Me2.css::"));
+                    x => x.FindReduction("http://server/Me.css^print,screen::http://server/Me2.css::"));
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
 
                 testable.ClassUnderTest.Transform(transform);
 
-                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css|print,screen::http://server/Me2.css::")), Times.Once());
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css^print,screen::http://server/Me2.css::")), Times.Once());
             }
 
             [Fact]

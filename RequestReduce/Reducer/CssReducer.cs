@@ -39,7 +39,7 @@ namespace RequestReduce.Reducer
         protected virtual string ProcessCss(string url)
         {
             RRTracer.Trace("Beginning Processing {0}", url);
-            var urlParts = url.Split(new[] {'|'}, 2);
+            var urlParts = url.Split(new[] {'^'}, 2);
             url = urlParts[0];
             RRTracer.Trace("Beginning to Download {0}", url);
             var cssContent = WebClientWrapper.DownloadString<CssResource>(url);
