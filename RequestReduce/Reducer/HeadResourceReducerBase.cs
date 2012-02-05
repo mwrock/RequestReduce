@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Text;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
-using RequestReduce.Module;
 using RequestReduce.ResourceTypes;
 
 namespace RequestReduce.Reducer
 {
     public abstract class HeadResourceReducerBase<T> : IReducer where T : IResourceType, new()
     {
-        protected readonly IWebClientWrapper webClientWrapper;
+        protected readonly IWebClientWrapper WebClientWrapper;
         private readonly IStore store;
-        private IMinifier minifier;
+        private readonly IMinifier minifier;
         private readonly IUriBuilder uriBuilder;
 
         public Type SupportedResourceType { get { return typeof(T); } }
 
-        public HeadResourceReducerBase(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder)
+        protected HeadResourceReducerBase(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, IUriBuilder uriBuilder)
         {
-            this.webClientWrapper = webClientWrapper;
+            WebClientWrapper = webClientWrapper;
             this.uriBuilder = uriBuilder;
             this.minifier = minifier;
             this.store = store;
@@ -36,7 +35,7 @@ namespace RequestReduce.Reducer
             RRTracer.Trace("beginning reducing process for {0}", urls);
             var urlList = SplitUrls(urls);
             var processedResource = ProcessResource(key, urlList);
-            string virtualfileName = string.Empty;
+            var virtualfileName = string.Empty;
             if(processedResource != null)
             {
                 var bytes = Encoding.UTF8.GetBytes(minifier.Minify<T>(processedResource));
@@ -51,7 +50,7 @@ namespace RequestReduce.Reducer
 
         protected static IEnumerable<string> SplitUrls(string urls)
         {
-            return urls.Split(new string[] { "::" }, StringSplitOptions.RemoveEmptyEntries);
+            return urls.Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public void Dispose()

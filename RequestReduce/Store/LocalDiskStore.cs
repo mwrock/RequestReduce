@@ -119,7 +119,7 @@ namespace RequestReduce.Store
 
             var activeFiles = FileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, "*RequestReduce*");
             return (from files in activeFiles
-                    where !files.FileName.Contains("-Expired-")
+                    where !files.FileName.Contains("-Expired-") && uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) != Guid.Empty
                     group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/"))
                     into filegroup
                     join files2 in activeFiles on new {k = filegroup.Key, u = filegroup.Max(m => m.CreatedDate)} equals

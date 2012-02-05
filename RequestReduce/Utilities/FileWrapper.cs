@@ -75,7 +75,7 @@ namespace RequestReduce.Utilities
 
 		public IList<DatedFileEntry> GetDatedFiles(string directoryPath, string search)
 		{
-			return new DirectoryInfo(directoryPath).GetFiles(search).Select(x => new DatedFileEntry(x.FullName, x.CreationTime)).ToList();	
+			return new DirectoryInfo(directoryPath).GetFiles(search).Select(x => new DatedFileEntry(x.FullName, x.LastWriteTime)).ToList();	
 		}
     }
 	

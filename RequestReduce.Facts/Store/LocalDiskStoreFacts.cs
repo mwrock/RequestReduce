@@ -240,6 +240,35 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
+            public void WillExcludeFilesWithNoKeys()
+            {
+                var testable = new TestableLocalDiskStore();
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                var guid1 = Guid.Empty;
+                var guid2 = Guid.NewGuid();
+                var sig1 = Guid.Empty.RemoveDashes();
+                var sig2 = Guid.NewGuid().RemoveDashes();
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
+                testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid2, sig2, typeof(CssResource))).Returns("url2");
+                var files = new List<DatedFileEntry>
+                                {
+                                    new DatedFileEntry(string.Format("dir\\somerandomname-{0}", new CssResource().FileName), DateTime.Now),
+                                    new DatedFileEntry(string.Format("dir\\{0}-{1}-{2}", guid2.RemoveDashes(), sig2, new CssResource().FileName), DateTime.Now),
+                                };
+                testable.Mock<IFileWrapper>().Setup(x => x.GetDatedFiles("dir", "*RequestReduce*")).Returns(files);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[0].FileName.Replace("\\", "/"))).Returns(Guid.Empty);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(files[1].FileName.Replace("\\", "/"))).Returns(guid2);
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[0].FileName.Replace("\\", "/"))).Returns(Guid.Empty.RemoveDashes());
+                testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(files[1].FileName.Replace("\\", "/"))).Returns(sig2);
+
+                var result = testable.ClassUnderTest.GetSavedUrls();
+
+                Assert.Equal(1, result.Count);
+                Assert.True(result[guid2] == "url2");
+                testable.Dispose();
+            }
+
+            [Fact]
             public void WillResolveFilesInLowerCase()
             {
                 var testable = new TestableLocalDiskStore();

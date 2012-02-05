@@ -42,7 +42,7 @@ namespace RequestReduce.Reducer
             var urlParts = url.Split(new[] {'|'}, 2);
             url = urlParts[0];
             RRTracer.Trace("Beginning to Download {0}", url);
-            var cssContent = webClientWrapper.DownloadString<CssResource>(url);
+            var cssContent = WebClientWrapper.DownloadString<CssResource>(url);
             RRTracer.Trace("Finished Downloading {0}", url);
             RRTracer.Trace("Beginning to absolutize urls in {0}", url);
             cssContent = MakeRelativeUrlsAbsoluteAndRemoveComments(cssContent, url);
@@ -77,7 +77,7 @@ namespace RequestReduce.Reducer
             {
                 var url = match.Groups["url"].Value;
                 var absoluteUrl = RelativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
-                var importContent = webClientWrapper.DownloadString<CssResource>(absoluteUrl);
+                var importContent = WebClientWrapper.DownloadString<CssResource>(absoluteUrl);
                 importContent = MakeRelativeUrlsAbsoluteAndRemoveComments(importContent, absoluteUrl);
                 importContent = ExpandImports(importContent, absoluteUrl);
                 var media = match.Groups["media"];
