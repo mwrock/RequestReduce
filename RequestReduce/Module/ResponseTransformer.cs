@@ -111,7 +111,19 @@ namespace RequestReduce.Module
                                            : preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) - 1;
                     preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
                 }
-                return transformableMatches.Aggregate(preTransform, (current, match) => current.Remove(current.IndexOf(match, StringComparison.Ordinal), match.Length));
+                var result = preTransform;
+                foreach (string match in transformableMatches)
+                {
+                    var idx = result.IndexOf(match, StringComparison.Ordinal);
+                    result = result.Remove(idx, match.Length);
+                    if(idx == result.Length)
+                        continue;
+                    if(result[idx] == '\r')
+                        result = result.Remove(idx, 1);
+                    if (result[idx] == '\n')
+                        result = result.Remove(idx, 1);
+                }
+                return result;
             }
             reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
             RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
