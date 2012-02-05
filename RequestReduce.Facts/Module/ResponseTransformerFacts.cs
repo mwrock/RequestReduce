@@ -39,9 +39,7 @@ namespace RequestReduce.Facts.Module
 <meta name=""description"" content="""" />
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
 <link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-
-<title>site</title></head>
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
@@ -67,9 +65,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script src=""http://server/Me.js"" type=""text/javascript"" ></script>
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
@@ -95,9 +91,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<title>site</title></head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -119,9 +113,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<title>site</title></head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -144,9 +136,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-<script srd=""src.js"" />
-
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script srd=""src.js"" />
 <title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
@@ -171,8 +161,6 @@ namespace RequestReduce.Facts.Module
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
 <link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script src=""src.js"" />
-
-
 <title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
@@ -225,9 +213,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-
-<title>site</title></head>
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -272,8 +258,7 @@ namespace RequestReduce.Facts.Module
                 var testable = new TestableResponseTransformer();
                 var transform = @"<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>";
-                var transformed = @"<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-";
+                var transformed = @"<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
 
@@ -348,9 +333,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-
-<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script><script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
 <script src=""http://server/alsoignore/Me.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
@@ -380,9 +363,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-
-<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script><script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
 <script src=""http://server/alsoignore/Me.js"" type=""text/javascript"" ></script>
 <title>site</title></head>
                 ";
@@ -409,8 +390,7 @@ namespace RequestReduce.Facts.Module
                 var transformed = @"<head id=""Head1"">
 <!--<script src=""http://server/Me.js""></script>
 <script src=""http://server/Me4.js""></script>-->
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-</head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -434,8 +414,7 @@ namespace RequestReduce.Facts.Module
                 var transformed = @"<head id=""Head1"">
 <!--[if IE 6]><script src=""http://server/Me.js""></script>
 <script src=""http://server/Me4.js""></script><![endif]-->
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-</head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -456,9 +435,7 @@ namespace RequestReduce.Facts.Module
 <link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
                 ";
                 var transformed = @"<head id=""Head1"">
-<link href=""http://server/Me4.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
+<link href=""http://server/Me4.css"" rel=""Stylesheet"" type=""text/css"" /><link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me4.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -484,11 +461,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-
-<title>site</title></head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script src=""http://server/Me3.js"" type=""text/javascript"" ></script><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
@@ -516,11 +489,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head id=""Head1"">
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-
-<title>site</title></head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><script src=""http://server/Me3.js"" type=""text/javascript"" ></script><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
@@ -548,8 +517,7 @@ namespace RequestReduce.Facts.Module
     <!--[if IE 6]>
 <link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
     <![endif]-->
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-<title>site</title></head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -572,12 +540,10 @@ namespace RequestReduce.Facts.Module
 <script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
 ";
                 var transformed = @"
-<script src=""http://server/Me4.js"" type=""text/javascript"" ></script>
-    <!--[if IE 6]>
+<script src=""http://server/Me4.js"" type=""text/javascript"" ></script>    <!--[if IE 6]>
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 <script src=""http://server/Me4.js"" type=""text/javascript"" ></script>
     <![endif]-->
-
 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me3.js::")).Returns("http://server/Me4.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -597,9 +563,7 @@ namespace RequestReduce.Facts.Module
 <script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
 ";
                 var transformed = @"
-<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
-    <!-- this is a nice comment -->
-
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>    <!-- this is a nice comment -->
 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -640,8 +604,7 @@ namespace RequestReduce.Facts.Module
 <![endif]-->
 <link href=""http://server/styles5.ie.css"" rel=""stylesheet"" type=""text/css"" />";
                 var transformed = @"
-<link href=""http://server/styles6.ie.css"" rel=""Stylesheet"" type=""text/css"" />
-<!--[if IE]>
+<link href=""http://server/styles6.ie.css"" rel=""Stylesheet"" type=""text/css"" /><!--[if IE]>
     <link href=""http://server/styles1.ie.css"" rel=""stylesheet"" type=""text/css"" />
     <link href=""http://server/styles2.ie.css"" rel=""stylesheet"" type=""text/css"" />
     <link href=""http://server/styles3.ie.css"" rel=""stylesheet"" type=""text/css"" />
@@ -667,9 +630,7 @@ namespace RequestReduce.Facts.Module
                 ";
                 var transformed = @"<head>
 <meta name=""description"" content="""" />
-<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" />
-
-<title>site</title></head>
+<link href=""http://server/Me3.css"" rel=""Stylesheet"" type=""text/css"" /><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/content/Me.css::http://server/Me2.css::")).Returns("http://server/Me3.css");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
@@ -728,12 +689,12 @@ namespace RequestReduce.Facts.Module
 <title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(
-                    x => x.FindReduction("http://server/Me.css|print,screen::http://server/Me2.css::"));
+                    x => x.FindReduction("http://server/Me.css^print,screen::http://server/Me2.css::"));
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
 
                 testable.ClassUnderTest.Transform(transform);
 
-                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css|print,screen::http://server/Me2.css::")), Times.Once());
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css^print,screen::http://server/Me2.css::")), Times.Once());
             }
 
             [Fact]
@@ -748,11 +709,8 @@ namespace RequestReduce.Facts.Module
 <title>site</title></head>
                 ";
                 var transformed = @"<head>
-<script src=""http://server/script4.js"" type=""text/javascript"" ></script>
-
-<script src=""http://server/script3.js"" type=""text/javascript"" ></script>
-<script src=""http://server/script5.js"" type=""text/javascript"" ></script>
-<title>site</title></head>
+<script src=""http://server/script4.js"" type=""text/javascript"" ></script><script src=""http://server/script3.js"" type=""text/javascript"" ></script>
+<script src=""http://server/script5.js"" type=""text/javascript"" ></script><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::http://server/script2.js::")).Returns("http://server/script4.js");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::")).Returns("http://server/script5.js");
@@ -779,11 +737,8 @@ namespace RequestReduce.Facts.Module
 <title>site</title></head>
                 ";
                 var transformed = @"<head>
-<script src=""http://server/script4.js"" type=""text/javascript"" ></script>
-
-<script type=""text/javascript"" >here is some sphisticated javascript</script>
-<script src=""http://server/script5.js"" type=""text/javascript"" ></script>
-<title>site</title></head>
+<script src=""http://server/script4.js"" type=""text/javascript"" ></script><script type=""text/javascript"" >here is some sphisticated javascript</script>
+<script src=""http://server/script5.js"" type=""text/javascript"" ></script><title>site</title></head>
                 ";
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::http://server/script2.js::")).Returns("http://server/script4.js");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::")).Returns("http://server/script5.js");
