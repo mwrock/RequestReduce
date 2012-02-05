@@ -31,7 +31,7 @@ namespace RequestReduce.SqlServer
                 RRTracer.Trace("purging old file: {0}", file);
                 try
                 {
-                    fileWrapper.DeleteFile(file);
+                    FileWrapper.DeleteFile(file);
                     DateTime date;
                     fileList.TryRemove(entry.Key, out date);
                 }

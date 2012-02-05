@@ -588,6 +588,74 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillTransformJsAdjacentToComment()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"
+<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+    <!-- this is a nice comment -->
+<script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
+";
+                var transformed = @"
+<script src=""http://server/Me3.js"" type=""text/javascript"" ></script>
+    <!-- this is a nice comment -->
+
+";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
+            public void WillTransformEmbeddedJs()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"
+<script src=""//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js""></script>
+    <script>window.jQuery || document.write('<script src=""http://server/script.js""><\/script>')</script>";
+                var transformed = @"
+<script src=""//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js""></script>
+    <script>window.jQuery || document.write('<script src=""http://server/script2.js""><\/script>')</script>";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script.js::")).Returns("http://server/script2.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
+            public void WillNotTransformMultipleCSSInConditionalComments()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"
+<link href=""http://server/styles4.ie.css"" rel=""stylesheet"" type=""text/css"" />
+<!--[if IE]>
+    <link href=""http://server/styles1.ie.css"" rel=""stylesheet"" type=""text/css"" />
+    <link href=""http://server/styles2.ie.css"" rel=""stylesheet"" type=""text/css"" />
+    <link href=""http://server/styles3.ie.css"" rel=""stylesheet"" type=""text/css"" />
+<![endif]-->
+<link href=""http://server/styles5.ie.css"" rel=""stylesheet"" type=""text/css"" />";
+                var transformed = @"
+<link href=""http://server/styles6.ie.css"" rel=""Stylesheet"" type=""text/css"" />
+<!--[if IE]>
+    <link href=""http://server/styles1.ie.css"" rel=""stylesheet"" type=""text/css"" />
+    <link href=""http://server/styles2.ie.css"" rel=""stylesheet"" type=""text/css"" />
+    <link href=""http://server/styles3.ie.css"" rel=""stylesheet"" type=""text/css"" />
+<![endif]-->
+";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/styles4.ie.css::http://server/styles5.ie.css::")).Returns("http://server/styles6.ie.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
             public void WillTransformRelativeUrlToAbsolute()
             {
                 var testable = new TestableResponseTransformer();

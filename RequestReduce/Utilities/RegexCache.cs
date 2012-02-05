@@ -16,5 +16,6 @@ namespace RequestReduce.Utilities
         internal readonly Regex SelectorSplitPattern = new Regex(@"(?=[:\.\#])", RegexOptions.Compiled);
         internal readonly Regex CssCommentPattern = new Regex(@"/\*(.*?)\*/", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         internal readonly Regex PseudoElementPattern = new Regex(@":before|:after|:first-line|:first-letter", RegexOptions.Compiled);
+        internal readonly Regex HtmlCommentPattern = new Regex(@"<!--.*?-->", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     }
 }
