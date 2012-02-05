@@ -44,8 +44,9 @@ namespace RequestReduce.Module
 
         private string Transform<T>(string preTransform) where T : IResourceType
         {
+            var noCommentTransform = Regex.HtmlCommentPattern.Replace(preTransform, string.Empty);
             var resource = RRContainer.Current.GetInstance<T>();
-            var matches = resource.ResourceRegex.Matches(preTransform);
+            var matches = resource.ResourceRegex.Matches(noCommentTransform);
             if (matches.Count > 0)
             {
                 var urls = new StringBuilder();
@@ -69,14 +70,14 @@ namespace RequestReduce.Module
                     }
                     if (!matched && transformableMatches.Count > 0)
                     {
-                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches);
+                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform);
                         urls.Length = 0;
                         transformableMatches.Clear();
                     }
                 }
                 if (transformableMatches.Count > 0)
                 {
-                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches);
+                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform);
                     urls.Length = 0;
                     transformableMatches.Clear();
                 }
@@ -92,7 +93,7 @@ namespace RequestReduce.Module
             return null;
         }
 
-        private string DoTransform<T>(string preTransform, StringBuilder urls, List<string> transformableMatches) where T : IResourceType
+        private string DoTransform<T>(string preTransform, StringBuilder urls, List<string> transformableMatches, string noCommentTransform) where T : IResourceType
         {
             var resource = RRContainer.Current.GetInstance<T>();
             RRTracer.Trace("Looking for reduction for {0}", urls);
@@ -103,7 +104,7 @@ namespace RequestReduce.Module
                 if(uriBuilder.ParseSignature(transform) != Guid.Empty.RemoveDashes())
                 {
                     var firstScript =
-                        RRContainer.Current.GetInstance<JavaScriptResource>().ResourceRegex.Match(preTransform);
+                        RRContainer.Current.GetInstance<JavaScriptResource>().ResourceRegex.Match(noCommentTransform);
                     var insertionIdx = (firstScript.Success && firstScript.Index <
                                         preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) && resource is CssResource)
                                            ? firstScript.Index - 1
