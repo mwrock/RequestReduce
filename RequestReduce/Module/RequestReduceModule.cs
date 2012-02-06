@@ -50,7 +50,8 @@ namespace RequestReduce.Module
             var dashboardHtml = Resources.Dashboard;
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
-            if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            if ((config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user)) &&
+                IsAuthorizedIpAddress(httpContextWrapper))
             {
                 var transformedDashboard = TransformDashboard(dashboardHtml);
                 httpContextWrapper.Response.Write(transformedDashboard);
@@ -186,7 +187,8 @@ namespace RequestReduce.Module
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
-            if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            if ((config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user)) &&
+                IsAuthorizedIpAddress(httpContextWrapper))
             {
                 if(url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))
                 {
@@ -340,6 +342,19 @@ namespace RequestReduce.Module
                 processedItemsHtml.AppendLine("</ul>");
 
             return processedItemsHtml.ToString();
+        }
+
+        public bool IsAuthorizedIpAddress(HttpContextBase httpContextWrapper)
+        {
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+
+            if (config.IpFilterList == null || config.IpFilterList.Count() == 0)
+            {
+                return true;
+            }
+
+            IEnumerable<string> validIpFilters = config.IpFilterList.Select(f => f.Trim()).Where(f => IsValidIpAddress(f));
+            return validIpFilters.Contains(UserIpAddress(httpContextWrapper));
         }
 
         public string UserIpAddress(HttpContextBase httpContextWrapper)
