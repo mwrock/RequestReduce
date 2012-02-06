@@ -595,6 +595,7 @@ namespace RequestReduce.Facts.Module
                 var result = testable.ClassUnderTest.Transform(transform);
 
                 Assert.Equal(transformed, result);
+                RRContainer.Current = null;
             }
 
             [Fact]
