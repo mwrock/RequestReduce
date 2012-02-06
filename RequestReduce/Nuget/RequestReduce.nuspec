@@ -15,6 +15,7 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
+      * fix issue with CSS being injected incorrectly when comments are before scripts
       * Fixed parsing issues with comments in between scripts or css links
       * Fixed issue where embeded scripts in inline scripts were being transformed
       * Fixed possible duplicate key error in retrieving saved reductions from local disk
