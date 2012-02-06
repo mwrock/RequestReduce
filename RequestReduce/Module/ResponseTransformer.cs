@@ -105,14 +105,15 @@ namespace RequestReduce.Module
                 {
                     var firstScript =
                         RRContainer.Current.GetInstance<JavaScriptResource>().ResourceRegex.Match(noCommentTransform);
-                    var insertionIdx = (firstScript.Success && firstScript.Index <
+                    var firstScriptIndex = firstScript.Success ? preTransform.IndexOf(firstScript.ToString(), System.StringComparison.Ordinal) : -1;
+                    var insertionIdx = (firstScript.Success && firstScriptIndex <
                                         preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) && resource is CssResource)
-                                           ? firstScript.Index - 1
+                                           ? firstScriptIndex - 1
                                            : preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) - 1;
                     preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
                 }
                 var result = preTransform;
-                foreach (string match in transformableMatches)
+                foreach (var match in transformableMatches)
                 {
                     var idx = result.IndexOf(match, StringComparison.Ordinal);
                     result = result.Remove(idx, match.Length);

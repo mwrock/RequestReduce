@@ -574,6 +574,30 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillInjectCssCorrectlyWhenCommentsAreBeforeScripts()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"
+<!-- this is a nice comment -->
+<script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+";
+                var transformed = @"
+<!-- this is a nice comment -->
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" /><script src=""http://server/ignore/Me.js"" type=""text/javascript"" ></script>
+";
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.JavaScriptUrlsToIgnore).Returns("server/Ignore");
+                RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.css::")).Returns("http://server/Me2.css");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
             public void WillNotTransformInlineJsEmbeddingJs()
             {
                 var testable = new TestableResponseTransformer();
