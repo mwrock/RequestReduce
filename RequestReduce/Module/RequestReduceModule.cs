@@ -94,13 +94,15 @@ namespace RequestReduce.Module
                 }
                 else
                 {
+                    configList.Append("<td>");
                     foreach (var mem in array)
                     {
                         configList.Append(mem.ToString());
                         configList.Append("<br/>");
                     }
+                    configList.Append("</td>");
                 }
-                configList.Append("</td></tr>");
+                configList.Append("</tr>");
             }
             transformed = transformed.Replace("<%configs%>", configList.ToString());
             var queueArray = queue.ToArray();
