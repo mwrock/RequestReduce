@@ -354,6 +354,11 @@ namespace RequestReduce.Module
             }
 
             IEnumerable<string> validIpFilters = config.IpFilterList.Select(f => f.Trim()).Where(f => IsValidIpAddress(f));
+            if(validIpFilters.Count() == 0)
+            {
+                return true;
+            }
+    
             return validIpFilters.Contains(UserIpAddress(httpContextWrapper));
         }
 
