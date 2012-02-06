@@ -78,6 +78,18 @@ namespace RequestReduce.Configuration
             get { return base["authorizedUserList"].ToString(); }
         }
 
+        [ConfigurationProperty("ipFilterList")]
+        public string IpFilterList
+        {
+            get { return base["ipFilterList"].ToString(); }
+        }
+
+        [ConfigurationProperty("proxyList")]
+        public string ProxyList
+        {
+            get { return base["proxyList"].ToString(); }
+        }
+
         [ConfigurationProperty("cssProcesingDisabled")]
         public bool CssProcesingDisabled
         {
