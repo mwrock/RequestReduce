@@ -913,6 +913,16 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillDetectPublicIPv6()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("3780:0:c307:0:2c45:e6a3:81c7:9273");
+
+            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
+        }
+
+        [Fact]
         public void WillDetectPublicIPWhenBehindPrivateProxy()
         {
             var module = new RequestReduceModule();
@@ -924,6 +934,17 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillDetectPublicIPv6WhenBehindPrivateProxy()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("fde4:8263:a63b:2838:0000:0000:0000:0000");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
+        }
+
+        [Fact]
         public void WillDetectPublicIPWhenBehindTwoPrivateProxies()
         {
             var module = new RequestReduceModule();
@@ -932,6 +953,17 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123, 10.0.0.2" } });
 
             Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
+        public void WillDetectPublicIPv6WhenBehindTwoPrivateProxies()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("fde4:8263:a63b:2838:0000:0000:0000:0000");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273,fd00:1234:5678:2838:0000:0000:0000:0000" } });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
         }
 
         [Fact]
@@ -952,6 +984,23 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillDetectPublicIPv6WhenBehindTrustedProxy()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ProxyList).Returns(new[] { "4488:0:5522:0:2c45:e6a3:81c7:9273" });
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("4488:0:5522:0:2c45:e6a3:81c7:9273");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+            });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
+        }
+
+        [Fact]
         public void WillDetectPrivateIPWithinPrivateNetwork()
         {
             var module = new RequestReduceModule();
@@ -960,6 +1009,17 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { });
 
             Assert.Equal(module.UserIpAddress(context.Object), "192.168.0.1");
+        }
+
+        [Fact]
+        public void WillDetectPrivateIPv6WithinPrivateNetwork()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("fde4:8263:a63b:2838:0000:0000:0000:0000");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "fde4:8263:a63b:2838:0000:0000:0000:0000");
         }
 
         public void Dispose()
