@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
@@ -110,6 +112,44 @@ namespace RequestReduce.Facts
             var r1 = resources1.First(x => x is JavaScriptResource);
             var r2 = resources2.First(x => x is JavaScriptResource);
             Assert.Equal(r1,r2);
+        }
+
+        [Fact]
+        public void DbDiskCacheIsSingleton()
+        {
+            var container = RRContainer.Current;
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(c => c.ContentStore).Returns(Configuration.Store.SqlServerStore);
+            config.Setup(x => x.ConnectionStringName).Returns("RRConnection");
+            container.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
+            RRContainer.LoadAppropriateStoreRegistry(container);
+            SqlServerStore store1 = null;
+            SqlServerStore store2 = null;
+            var thread1 = new Thread(TestThreadStart){IsBackground = true};
+            var thread2 = new Thread(TestThreadStart) { IsBackground = true };
+            var array1 = new ArrayList { container, store1 };
+            var array2 = new ArrayList { container, store2 };
+
+            lock (container)
+            {
+                thread1.Start(array1);
+                Monitor.Wait(container, 10000);
+                thread2.Start(array2);
+                Monitor.Wait(container, 10000);
+            }
+
+            Assert.NotSame(array1[1], array2[1]);
+            Assert.Same((array1[1] as SqlServerStore).FileStore, (array2[1] as SqlServerStore).FileStore);
+            RRContainer.Current = null;
+        }
+
+        private void TestThreadStart(object containerAndStore)
+        {
+            var container = (containerAndStore as ArrayList)[0] as Container;
+            lock (container)
+            {
+                (containerAndStore as ArrayList)[1] = container.GetInstance<IStore>() as SqlServerStore;
+            }
         }
 
         public void Dispose()

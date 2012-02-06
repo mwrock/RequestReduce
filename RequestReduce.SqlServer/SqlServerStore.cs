@@ -14,7 +14,7 @@ namespace RequestReduce.SqlServer
     {
         private readonly IUriBuilder uriBuilder;
         private readonly IFileRepository repository;
-        private readonly IStore fileStore;
+        internal readonly IStore FileStore;
         private readonly IReductionRepository reductionRepository;
 
         public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore, IReductionRepository reductionRepository)
@@ -22,7 +22,7 @@ namespace RequestReduce.SqlServer
             RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;
             this.repository = repository;
-            this.fileStore = fileStore;
+            FileStore = fileStore;
             this.reductionRepository = reductionRepository;
         }
 
@@ -46,7 +46,7 @@ namespace RequestReduce.SqlServer
 
         public void Dispose()
         {
-            fileStore.Dispose();
+            FileStore.Dispose();
             RRTracer.Trace("Sql Server Store Disposed.");
         }
 
@@ -64,7 +64,7 @@ namespace RequestReduce.SqlServer
             file.RequestReduceFileId = id;
             file.OriginalName = originalUrls;
             file.IsExpired = false;
-            fileStore.Save(content, url, originalUrls);
+            FileStore.Save(content, url, originalUrls);
             repository.Save(file);
             if (!url.ToLower().EndsWith(".png"))
                 reductionRepository.AddReduction(key, url);
@@ -73,7 +73,7 @@ namespace RequestReduce.SqlServer
 
         public bool SendContent(string url, HttpResponseBase response)
         {
-            if (fileStore.SendContent(url, response))
+            if (FileStore.SendContent(url, response))
                 return true;
 
             var key = uriBuilder.ParseKey(url);
@@ -85,7 +85,7 @@ namespace RequestReduce.SqlServer
                 response.BinaryWrite(file.Content);
                 try
                 {
-                    fileStore.Save(file.Content, url, null);
+                    FileStore.Save(file.Content, url, null);
                 }
                 catch(Exception ex)
                 {
