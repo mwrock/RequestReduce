@@ -95,14 +95,16 @@ namespace RequestReduce.IOC
                                                     .Use(
                                                         sqlAssembly.GetType(
                                                             "RequestReduce.SqlServer.FileRepository"));
-                                                x.For(sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache"))
-                                                    .Singleton();
                                                 var diskStore =
                                                     new ConfiguredInstance(
                                                         sqlAssembly.GetType("RequestReduce.SqlServer.SqlServerStore"));
-                                                diskStore.CtorDependency<IStore>("fileStore").Is(
+                                                var diskCache =
                                                     new ConfiguredInstance(
-                                                        sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache")));
+                                                        sqlAssembly.GetType("RequestReduce.SqlServer.DbDiskCache"));
+                                                x.For<LocalDiskStore>().Singleton()
+                                                    .Use(diskCache);
+                                                diskStore.CtorDependency<LocalDiskStore>("fileStore").Is(
+                                                    initContainer.GetInstance<LocalDiskStore>());
                                                 diskStore.CtorDependency<IUriBuilder>("uriBuilder").Is(
                                                     initContainer.GetInstance<IUriBuilder>());
                                                 diskStore.CtorDependency<IReductionRepository>("reductionRepository").Is(

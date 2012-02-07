@@ -17,7 +17,7 @@ namespace RequestReduce.SqlServer
         internal readonly IStore FileStore;
         private readonly IReductionRepository reductionRepository;
 
-        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, IStore fileStore, IReductionRepository reductionRepository)
+        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, LocalDiskStore fileStore, IReductionRepository reductionRepository)
         {
             RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;

@@ -21,6 +21,7 @@ namespace RequestReduce.Facts.Store
             {
                 Mock<IUriBuilder>().Setup(x => x.ParseSignature(It.IsAny<string>())).Returns(
                     Guid.NewGuid().RemoveDashes());
+                Inject<LocalDiskStore>(new Mock<LocalDiskStore>().Object);
             }
         }
 
@@ -91,7 +92,7 @@ namespace RequestReduce.Facts.Store
 
                 testable.ClassUnderTest.Save(content, expectedUrl, originalUrls);
 
-                testable.Mock<IStore>().Verify(x => x.Save(content, expectedUrl, originalUrls), Times.Once());
+                testable.Mock<LocalDiskStore>().Verify(x => x.Save(content, expectedUrl, originalUrls), Times.Once());
             }
 
             [Fact]
@@ -130,7 +131,7 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
-                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(true);
+                testable.Mock<LocalDiskStore>().Setup(x => x.SendContent("url", response.Object)).Returns(true);
 
                 var result = testable.ClassUnderTest.SendContent("url", response.Object);
 
@@ -143,7 +144,7 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
-                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                testable.Mock<LocalDiskStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
                 var id = Hasher.Hash("file.css");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
                 var key = Guid.NewGuid();
@@ -155,7 +156,7 @@ namespace RequestReduce.Facts.Store
 
                 Assert.True(result);
                 response.Verify(x => x.BinaryWrite(bytes), Times.Once());
-                testable.Mock<IStore>().Verify(x => x.Save(bytes, "url", null), Times.Once());
+                testable.Mock<LocalDiskStore>().Verify(x => x.Save(bytes, "url", null), Times.Once());
             }
 
             [Fact]
@@ -163,7 +164,7 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
-                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                testable.Mock<LocalDiskStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
                 var id = Hasher.Hash("file.css");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
                 var key = Guid.NewGuid();
@@ -173,7 +174,7 @@ namespace RequestReduce.Facts.Store
                 Exception error = null;
                 var innerError = new ApplicationException();
                 Registry.CaptureErrorAction = (x => error = x);
-                testable.Mock<IStore>().Setup(x => x.Save(bytes, "url", null)).Throws(innerError);
+                testable.Mock<LocalDiskStore>().Setup(x => x.Save(bytes, "url", null)).Throws(innerError);
 
                 testable.ClassUnderTest.SendContent("url", response.Object);
 
@@ -186,7 +187,7 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
-                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                testable.Mock<LocalDiskStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
 
@@ -201,7 +202,7 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableSqlServerStore();
                 var response = new Mock<HttpResponseBase>();
-                testable.Mock<IStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
+                testable.Mock<LocalDiskStore>().Setup(x => x.SendContent("url", response.Object)).Returns(false);
                 var id = Hasher.Hash("file.css");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName("url")).Returns("file.css");
                 var key = Guid.NewGuid();

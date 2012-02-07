@@ -139,7 +139,7 @@ namespace RequestReduce.Facts
             }
 
             Assert.NotSame(array1[1], array2[1]);
-            Assert.Same((array1[1] as SqlServerStore).FileStore, (array2[1] as SqlServerStore).FileStore);
+            Assert.Same((array1[1] as SqlServerStore).FileStore as DbDiskCache, (array2[1] as SqlServerStore).FileStore as DbDiskCache);
             RRContainer.Current = null;
         }
 
