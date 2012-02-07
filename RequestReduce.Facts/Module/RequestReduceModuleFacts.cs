@@ -887,6 +887,68 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillFlushReductionsOnFlushUrlWhenCurrentUserIsAuthorizedUserAndEquivalentIpIsInIpFilter()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.IpFilterList).Returns(new[] { "001.002.003.004" });
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(true);
+            identity.Setup(x => x.Name).Returns("user2");
+            context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.Request.UserHostAddress).Returns("1.2.3.4");
+            var store = new Mock<IStore>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            store.Verify(x => x.Flush(Guid.Empty), Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillFlushReductionsOnFlushUrlWhenCurrentUserIsAuthorizedUserAndEquivalentIpv6IsInIpFilter()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.IpFilterList).Returns(new[] { "3780:0:c307:0:2c45:0:81c7:9273" });
+            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            var identity = new Mock<IIdentity>();
+            identity.Setup(x => x.IsAuthenticated).Returns(true);
+            identity.Setup(x => x.Name).Returns("user2");
+            context.Setup(x => x.User.Identity).Returns(identity.Object);
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            context.Setup(x => x.Request.UserHostAddress).Returns("3780:0000:c307:0000:2c45:0000:81c7:9273");
+            var store = new Mock<IStore>();
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                x.For<IStore>().Use(store.Object);
+                x.For<IUriBuilder>().Use<UriBuilder>();
+            });
+
+            module.HandleRRFlush(context.Object);
+
+            store.Verify(x => x.Flush(Guid.Empty), Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillFlushReductionsOnFlushUrlWithTrailingSlashWhenCurrentUserIsAuthorizedUser()
         {
             var module = new RequestReduceModule();
@@ -1103,8 +1165,20 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.UserHostAddress).Returns("123.123.123.123");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "9.9.9.9" } });
 
             Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
+        public void WillDetectAnotherPublicIP()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("103.103.103.103");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "9.9.9.9" } });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "103.103.103.103");
         }
 
         [Fact]
@@ -1179,6 +1253,23 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillDetectPublicIPWhenBehindTrustedProxyWithEquivalentIP()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ProxyList).Returns(new[] { "111.000.000.111" });
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("111.0.0.111");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123" } });
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+            });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
+        }
+
+        [Fact]
         public void WillDetectPublicIPv6WhenBehindTrustedProxy()
         {
             var module = new RequestReduceModule();
@@ -1186,6 +1277,23 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.ProxyList).Returns(new[] { "4488:0:5522:0:2c45:e6a3:81c7:9273" });
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.UserHostAddress).Returns("4488:0:5522:0:2c45:e6a3:81c7:9273");
+            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+            });
+
+            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
+        }
+
+        [Fact]
+        public void WillDetectPublicIPv6WhenBehindTrustedProxyWithEquivalentIP()
+        {
+            var module = new RequestReduceModule();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ProxyList).Returns(new[] { "4488:0:5522:0:2c45:e6a3:81c7:9273" });
+            var context = new Mock<HttpContextBase>();
+            context.Setup(x => x.Request.UserHostAddress).Returns("4488:0000:5522:0000:2c45:e6a3:81c7:9273");
             context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
             RRContainer.Current = new Container(x =>
             {

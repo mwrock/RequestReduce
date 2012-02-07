@@ -360,8 +360,14 @@ namespace RequestReduce.Module
             {
                 return true;
             }
+
+            string userIpAddress = UserIpAddress(httpContextWrapper);
+            if (!IsValidIpAddress(userIpAddress))
+            {
+                return false;
+            }
     
-            return validIpFilters.Contains(UserIpAddress(httpContextWrapper));
+            return validIpFilters.Select(f => IPAddress.Parse(f)).Any(f => f.Equals(IPAddress.Parse(userIpAddress)));
         }
 
         public string UserIpAddress(HttpContextBase httpContextWrapper)
@@ -413,7 +419,8 @@ namespace RequestReduce.Module
                 return false;
             }
             return IsValidIpAddress(ip) &&
-                proxyList.Select(p => p.Trim()).Where(p => IsValidIpAddress(p)).Contains(ip);
+                proxyList.Select(p => p.Trim()).Where(p => IsValidIpAddress(p))
+                         .Select(p => IPAddress.Parse(p)).Any(p => p.Equals(IPAddress.Parse(ip)));
         }
 
         private bool IsValidIpAddress(string ip)
