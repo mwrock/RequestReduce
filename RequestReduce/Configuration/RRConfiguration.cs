@@ -22,6 +22,8 @@ namespace RequestReduce.Configuration
         Store ContentStore { get; }
         int SpriteSizeLimit { get; set; }
         IEnumerable<string> AuthorizedUserList { get; set; }
+        IEnumerable<string> IpFilterList { get; set; }
+        IEnumerable<string> ProxyList { get; set; }
         bool CssProcessingDisabled { get; set; }
         bool JavaScriptProcessingDisabled { get; set; }
         bool ImageOptimizationDisabled { get; set; }
@@ -59,6 +61,8 @@ namespace RequestReduce.Configuration
             IsFullTrust = GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted;
             ContentHost = config == null ? null : config.ContentHost;
             AuthorizedUserList = config == null || string.IsNullOrEmpty(config.AuthorizedUserList) ? Anonymous : config.AuthorizedUserList.Split(',').Length == 0 ? Anonymous : config.AuthorizedUserList.Split(',').ToList();
+            IpFilterList = config == null || string.IsNullOrEmpty(config.IpFilterList) ? new List<string> { } : config.IpFilterList.Split(',').Length == 0 ? new List<string> { } : config.IpFilterList.Split(',').ToList();
+            ProxyList = config == null || string.IsNullOrEmpty(config.ProxyList) ? new List<string> { } : config.ProxyList.Split(',').Length == 0 ? new List<string> { } : config.ProxyList.Split(',').ToList();
             var val = config == null ? 0 : config.SpriteSizeLimit;
             SpriteSizeLimit = val == 0 ? 50000 : val;
             val = config == null ? 0 : config.SpriteColorLimit;
@@ -107,6 +111,9 @@ namespace RequestReduce.Configuration
         public int SpriteColorLimit { get; set; }
 
         public IEnumerable<string> AuthorizedUserList { get; set; }
+
+        public IEnumerable<string> IpFilterList { get; set; }
+        public IEnumerable<string> ProxyList { get; set; }
 
         public string SpriteVirtualPath { get; set; }
 

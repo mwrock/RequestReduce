@@ -45,8 +45,10 @@ namespace RequestReduce.Module
         {
             var dashboardHtml = Resources.Dashboard;
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            var ipfilter = RRContainer.Current.GetInstance<IIpFilter>();
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
-            if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            if ((config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user)) &&
+                ipfilter.IsAuthorizedIpAddress(httpContextWrapper))
             {
                 var transformedDashboard = TransformDashboard(dashboardHtml);
                 httpContextWrapper.Response.Write(transformedDashboard);
@@ -89,13 +91,15 @@ namespace RequestReduce.Module
                 }
                 else
                 {
+                    configList.Append("<td>");
                     foreach (var mem in array)
                     {
                         configList.Append(mem.ToString());
                         configList.Append("<br/>");
                     }
+                    configList.Append("</td>");
                 }
-                configList.Append("</td></tr>");
+                configList.Append("</tr>");
             }
             transformed = transformed.Replace("<%configs%>", configList.ToString());
             var queueArray = queue.ToArray();
@@ -179,10 +183,12 @@ namespace RequestReduce.Module
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
+            var ipfilter = RRContainer.Current.GetInstance<IIpFilter>();
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
-            if (config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user))
+            if ((config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user)) &&
+                ipfilter.IsAuthorizedIpAddress(httpContextWrapper))
             {
                 if(url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))
                 {
