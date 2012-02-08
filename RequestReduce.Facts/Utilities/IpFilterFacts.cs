@@ -155,6 +155,56 @@ namespace RequestReduce.Facts.Utilities
             Assert.Equal(testable.ClassUnderTest.UserIpAddress(testable.Mock<HttpContextBase>().Object), "fde4:8263:a63b:2838:0000:0000:0000:0000");
         }
 
+        [Fact]
+        public void WillAllowAccessForPublicIP()
+        {
+            var testable = new TestableIpFilter();
+            testable.Mock<HttpContextBase>().Setup(x => x.Request.UserHostAddress).Returns("111.111.111.111");
+            testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "111.111.111.111" });
+
+            Assert.True(testable.ClassUnderTest.IsAuthorizedIpAddress(testable.Mock<HttpContextBase>().Object));
+        }
+
+        [Fact]
+        public void WillAllowAccessForPublicIPv6()
+        {
+            var testable = new TestableIpFilter();
+            testable.Mock<HttpContextBase>().Setup(x => x.Request.UserHostAddress).Returns("4488:0:5522:0:2c45:e6a3:81c7:9273");
+            testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "4488:0:5522:0:2c45:e6a3:81c7:9273" });
+
+            Assert.True(testable.ClassUnderTest.IsAuthorizedIpAddress(testable.Mock<HttpContextBase>().Object));
+        }
+
+        [Fact]
+        public void WillDenyAccessForPublicIP()
+        {
+            var testable = new TestableIpFilter();
+            testable.Mock<HttpContextBase>().Setup(x => x.Request.UserHostAddress).Returns("111.111.111.111");
+            testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "222.222.222.222" });
+
+            Assert.False(testable.ClassUnderTest.IsAuthorizedIpAddress(testable.Mock<HttpContextBase>().Object));
+        }
+
+        [Fact]
+        public void WillDenyAccessForPublicIPv6()
+        {
+            var testable = new TestableIpFilter();
+            testable.Mock<HttpContextBase>().Setup(x => x.Request.UserHostAddress).Returns("4488:0:5522:0:2c45:e6a3:81c7:9273");
+            testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "2222:0:1111:0:3333:8537:9a52:53e4" });
+
+            Assert.False(testable.ClassUnderTest.IsAuthorizedIpAddress(testable.Mock<HttpContextBase>().Object));
+        }
+
+        [Fact]
+        public void WillAllowAccessWithEmptyIpFilterList()
+        {
+            var testable = new TestableIpFilter();
+            testable.Mock<HttpContextBase>().Setup(x => x.Request.UserHostAddress).Returns("111.111.111.111");
+            testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new string[] { });
+
+            Assert.True(testable.ClassUnderTest.IsAuthorizedIpAddress(testable.Mock<HttpContextBase>().Object));
+        }
+
         public void Dispose()
         {
             RRContainer.Current = null;
