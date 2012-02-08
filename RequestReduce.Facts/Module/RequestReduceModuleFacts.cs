@@ -583,6 +583,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironmentWrapper.Object);
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -611,6 +612,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -637,6 +639,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -665,6 +668,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IReducingQueue>().Use(queue.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -695,6 +699,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
             var keyGuid = Guid.Parse(key);
 
@@ -727,6 +732,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
             var keyGuid = Guid.Parse(key);
 
@@ -759,6 +765,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
             var keyGuid = Guid.Parse(key);
 
@@ -817,6 +824,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -847,6 +855,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -878,6 +887,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -909,6 +919,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -940,6 +951,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -969,6 +981,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -1001,6 +1014,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -1036,6 +1050,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -1071,6 +1086,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IIpFilter>().Use<IpFilter>();
             });
 
             module.HandleRRFlush(context.Object);
@@ -1157,172 +1173,6 @@ namespace RequestReduce.Facts.Module
             Assert.Equal(handler, context.Object.Items["remapped handler"]);
             RRContainer.Current = null;
             Registry.HandlerMaps.Clear();
-        }
-
-        [Fact]
-        public void WillDetectPublicIP()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("123.123.123.123");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "9.9.9.9" } });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
-        }
-
-        [Fact]
-        public void WillDetectAnotherPublicIP()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("103.103.103.103");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "9.9.9.9" } });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "103.103.103.103");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPv6()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("3780:0:c307:0:2c45:e6a3:81c7:9273");
-
-            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPWhenBehindPrivateProxy()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("10.0.0.1");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123" } });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPv6WhenBehindPrivateProxy()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("fde4:8263:a63b:2838:0000:0000:0000:0000");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPWhenBehindTwoPrivateProxies()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("10.0.0.1");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123, 10.0.0.2" } });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPv6WhenBehindTwoPrivateProxies()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("fde4:8263:a63b:2838:0000:0000:0000:0000");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273,fd00:1234:5678:2838:0000:0000:0000:0000" } });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPWhenBehindTrustedProxy()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.ProxyList).Returns(new[] { "111.111.111.111" });
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("111.111.111.111");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123" } });
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-            });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPWhenBehindTrustedProxyWithEquivalentIP()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.ProxyList).Returns(new[] { "111.000.000.111" });
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("111.0.0.111");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "123.123.123.123" } });
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-            });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "123.123.123.123");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPv6WhenBehindTrustedProxy()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.ProxyList).Returns(new[] { "4488:0:5522:0:2c45:e6a3:81c7:9273" });
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("4488:0:5522:0:2c45:e6a3:81c7:9273");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-            });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
-        }
-
-        [Fact]
-        public void WillDetectPublicIPv6WhenBehindTrustedProxyWithEquivalentIP()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.ProxyList).Returns(new[] { "4488:0:5522:0:2c45:e6a3:81c7:9273" });
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("4488:0000:5522:0000:2c45:e6a3:81c7:9273");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { { "HTTP_X_FORWARDED_FOR", "3780:0:c307:0:2c45:e6a3:81c7:9273" } });
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-            });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "3780:0:c307:0:2c45:e6a3:81c7:9273");
-        }
-
-        [Fact]
-        public void WillDetectPrivateIPWithinPrivateNetwork()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("192.168.0.1");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "192.168.0.1");
-        }
-
-        [Fact]
-        public void WillDetectPrivateIPv6WithinPrivateNetwork()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.UserHostAddress).Returns("fde4:8263:a63b:2838:0000:0000:0000:0000");
-            context.Setup(x => x.Request.ServerVariables).Returns(new NameValueCollection { });
-
-            Assert.Equal(module.UserIpAddress(context.Object), "fde4:8263:a63b:2838:0000:0000:0000:0000");
         }
 
         public void Dispose()
