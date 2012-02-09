@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
@@ -84,9 +85,19 @@ namespace RequestReduce.Module
                 if (array == null || item.PropertyType.IsAssignableFrom(typeof(string)))
                 {
                     string value = Convert.ToString(item.GetValue(config, null));
-                    string result = item.Name == "JavaScriptUrlsToIgnore"
-                                        ? ListUrls(value, ",")
-                                        : value;
+                    string result;
+                    switch (item.Name)
+                    {
+                        case "JavaScriptUrlsToIgnore":
+                            result = ListUrls(value, ",");
+                            break;
+                        case "ConnectionStringName":
+                            result = Regex.Replace(value, @";(PWD|PASSWORD)=\S+(;|$)", ";PASSWORD HIDDEN;", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                            break;
+                        default:
+                            result = value;
+                            break;
+                    }
                     configList.AppendFormat("<td>{0}</td>", result);
                 }
                 else
