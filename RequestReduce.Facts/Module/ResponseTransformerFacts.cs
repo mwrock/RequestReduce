@@ -778,6 +778,36 @@ namespace RequestReduce.Facts.Module
                 RRContainer.Current = null;
             }
 
+
+            [Fact]
+            public void WillBundleAsyncAndDeferScriptsSeparately()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
+<script async src=""http://server/Me3.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me4.js"" async type=""text/javascript"" ></script>
+<script src=""http://server/Me5.js"" type=""text/javascript"" defer ></script>
+<script defer src=""http://server/Me6.js"" type=""text/javascript"" ></script>
+<title>site</title></head>
+                ";
+                var transformed = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me7.js"" type=""text/javascript"" ></script><script async src=""http://server/Me8.js"" type=""text/javascript"" ></script><script defer src=""http://server/Me9.js"" type=""text/javascript"" ></script><title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me7.js");
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me3.js::http://server/Me4.js::")).Returns("http://server/Me8.js");
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me5.js::http://server/Me6.js::")).Returns("http://server/Me9.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+
         }
     }
 }

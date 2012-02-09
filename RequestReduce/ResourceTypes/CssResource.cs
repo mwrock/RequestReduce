@@ -19,7 +19,12 @@ namespace RequestReduce.ResourceTypes
             get { return new[] { "text/css" }; }
         }
 
-        public string TransformedMarkupTag(string url)
+        public int Bundle(string resource)
+        {
+            return 0;
+        }
+
+        public string TransformedMarkupTag(string url, int bundle)
         {
             return string.Format(CssFormat, url);
         }

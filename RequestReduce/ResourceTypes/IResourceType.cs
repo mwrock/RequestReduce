@@ -8,7 +8,8 @@ namespace RequestReduce.ResourceTypes
     {
         string FileName { get; }
         IEnumerable<string> SupportedMimeTypes { get; }
-        string TransformedMarkupTag(string url);
+        int Bundle(string resource);
+        string TransformedMarkupTag(string url, int bundle);
         Regex ResourceRegex { get; }
         Func<string, string, bool> TagValidator { get; set; }
     }

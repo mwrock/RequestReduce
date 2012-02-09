@@ -29,7 +29,12 @@ namespace RequestReduce.Facts
                 get { throw new System.NotImplementedException(); }
             }
 
-            public string TransformedMarkupTag(string url)
+            public int Bundle(string resource)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public string TransformedMarkupTag(string url, int bundle)
             {
                 throw new System.NotImplementedException();
             }

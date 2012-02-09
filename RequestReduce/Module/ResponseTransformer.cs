@@ -51,8 +51,10 @@ namespace RequestReduce.Module
             {
                 var urls = new StringBuilder();
                 var transformableMatches = new List<string>();
-                foreach (var match in matches)
+                int bundle = 0;
+                for (int cursor = 0; cursor < matches.Count; cursor++)
                 {
+                    var match = matches[cursor];
                     var strMatch = match.ToString();
                     var urlMatch = Regex.UrlPattern.Match(strMatch);
                     bool matched = false;
@@ -61,23 +63,31 @@ namespace RequestReduce.Module
                         var url = RelativeToAbsoluteUtility.ToAbsolute(config.BaseAddress == null ? context.Request.Url : new Uri(config.BaseAddress), urlMatch.Groups["url"].Value);
                         if ((resource.TagValidator == null || resource.TagValidator(strMatch, url)) && (RRContainer.Current.GetAllInstances<IFilter>().Where(x => (x is CssFilter && typeof(T) == typeof(CssResource)) || (x is JavascriptFilter && typeof(T) == typeof(JavaScriptResource))).FirstOrDefault(y => y.IgnoreTarget(new CssJsFilterContext(context.Request, url, strMatch))) == null))
                         {
-                            matched = true;
-                            urls.Append(url);
-                            urls.Append(GetMedia(strMatch));
-                            urls.Append("::");
-                            transformableMatches.Add(strMatch);
+                            if ((transformableMatches.Count == 0) || (resource.Bundle(strMatch) == bundle))
+                            {
+                                matched = true;
+                                bundle = resource.Bundle(strMatch);
+                                urls.Append(url);
+                                urls.Append(GetMedia(strMatch));
+                                urls.Append("::");
+                                transformableMatches.Add(strMatch);
+                            }
+                            else
+                            {
+                                cursor--; // This resource into next bundle
+                            }
                         }
                     }
                     if (!matched && transformableMatches.Count > 0)
                     {
-                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform);
+                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform, bundle);
                         urls.Length = 0;
                         transformableMatches.Clear();
                     }
                 }
                 if (transformableMatches.Count > 0)
                 {
-                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform);
+                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform, bundle);
                     urls.Length = 0;
                     transformableMatches.Clear();
                 }
@@ -93,7 +103,7 @@ namespace RequestReduce.Module
             return null;
         }
 
-        private string DoTransform<T>(string preTransform, StringBuilder urls, List<string> transformableMatches, string noCommentTransform) where T : IResourceType
+        private string DoTransform<T>(string preTransform, StringBuilder urls, List<string> transformableMatches, string noCommentTransform, int bundle) where T : IResourceType
         {
             var resource = RRContainer.Current.GetInstance<T>();
             RRTracer.Trace("Looking for reduction for {0}", urls);
@@ -110,7 +120,7 @@ namespace RequestReduce.Module
                                         preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) && resource is CssResource)
                                            ? firstScriptIndex - 1
                                            : preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) - 1;
-                    preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform));
+                    preTransform = preTransform.Insert(insertionIdx + 1, resource.TransformedMarkupTag(transform, bundle));
                 }
                 var result = preTransform;
                 foreach (var match in transformableMatches)

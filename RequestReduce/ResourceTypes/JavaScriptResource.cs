@@ -9,9 +9,26 @@ namespace RequestReduce.ResourceTypes
 {
     public class JavaScriptResource : IResourceType
     {
-        private const string ScriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
+        private enum ScriptBundle
+        {
+            Default = 0,
+            Async = 1,
+            Defer = 2,
+            AsyncDefer = 3
+        }
+
+        private readonly string[] ScriptFormats = new string[Enum.GetValues(typeof(ScriptBundle)).Length];
         private readonly Regex scriptPattern = new Regex(@"<script(.*?)(/>|</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex ScriptFilterPattern = new Regex(@"^<script[^>]+src=[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        public JavaScriptResource()
+        {
+            ScriptFormats[(int)ScriptBundle.Default] = @"<script src=""{0}"" type=""text/javascript"" ></script>";
+            ScriptFormats[(int)ScriptBundle.Async] = @"<script async src=""{0}"" type=""text/javascript"" ></script>";
+            ScriptFormats[(int)ScriptBundle.Defer] = @"<script defer src=""{0}"" type=""text/javascript"" ></script>";
+            ScriptFormats[(int)ScriptBundle.AsyncDefer] = @"<script async defer src=""{0}"" type=""text/javascript"" ></script>";
+        }
+        
         private Func<string, string, bool> tagValidator = ((tag, url) => 
                 {
                     var match = ScriptFilterPattern.Match(tag);
@@ -31,9 +48,32 @@ namespace RequestReduce.ResourceTypes
             get { return new[] { "text/javascript", "application/javascript", "application/x-javascript" }; }
         }
 
-        public string TransformedMarkupTag(string url)
+        public int Bundle(string resource)
         {
-            return string.Format(ScriptFormat, url);
+            // Some real Regex needed here !!!
+            // Some real Regex needed here !!!
+
+            if(resource.Contains("async") && resource.Contains("defer"))
+            {
+                return (int)ScriptBundle.AsyncDefer;
+            }
+
+            if (resource.Contains("async") && !resource.Contains("defer"))
+            {
+                return (int)ScriptBundle.Async;
+            }
+
+            if (resource.Contains("defer") && !resource.Contains("async"))
+            {
+                return (int)ScriptBundle.Defer;
+            }
+            
+            return (int)ScriptBundle.Default;
+        }
+
+        public string TransformedMarkupTag(string url, int bundle)
+        {
+            return string.Format(ScriptFormats[bundle], url);
         }
 
         public Regex ResourceRegex
