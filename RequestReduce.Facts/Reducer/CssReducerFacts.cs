@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Moq;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
-using RequestReduce.Module;
 using RequestReduce.Reducer;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -269,6 +269,22 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IMinifier>().Verify(
                     x =>
                     x.Minify<CssResource>("css2"), Times.Once());
+            }
+
+            [Fact]
+            public void WillIgnoreFilteredImportedCss()
+            {
+                var testable = new TestableCssReducer();
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css1.css")).Returns("@import url('css2.css');");
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/css2.css")).Returns("css2");
+                Registry.AddFilter(new CssFilter(x => x.FilteredUrl.Contains("2")));
+
+                testable.ClassUnderTest.Process("http://host/css1.css");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>("@import url('http://host/css2.css');"), Times.Once());
+                RRContainer.Current = null;
             }
 
             [Fact]
