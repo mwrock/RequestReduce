@@ -602,13 +602,13 @@ h1.LocalNavigation {{
                 var testable = new TestableCssImageTransformer();
                 var css =
                     @"
-.localnavigation {    
+.Localnavigation {    
     background-position: 0 -30px;
     width: 50;
 }";
                 var expected =
     @"
-.localnavigation {    
+.Localnavigation {    
     background-position: 0 -30px;
     width: 50;
 ;background-image: url('spriteUrl');background-position: -120px 0;}";
