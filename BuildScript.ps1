@@ -8,7 +8,7 @@ properties {
   $configuration = "debug"
 	# Package Directories
 	$webDir = (get-childitem (split-path c:\requestreduce) -filter mwrock.github.com).fullname
-	$filesDir = "$webDir\BuildFiles"
+	$filesDir = "$baseDir\BuildFiles"
 	$version = git describe --abbrev=0 --tags
 	$version = $version.substring(1) + '.' + (git log $($version + '..') --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
@@ -158,8 +158,9 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
 }
 
 task Update-Website-Download-Links {
-	 $downloadUrl="BuildFiles/RequestReduce-" + $version + ".zip"
-	 $downloadButtonUrlPatern="BuildFiles/RequestReduce-[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
+	 Copy-Item $filesDir\RequestReduce-$version.zip $webDir
+	 $downloadUrl="RequestReduce-" + $version + ".zip"
+	 $downloadButtonUrlPatern="RequestReduce-[0-9]+(\.([0-9]+|\*)){1,3}\.zip"
 	 $downloadLinkTextPattern="V[0-9]+(\.([0-9]+|\*)){1,3}"
 	 $filename = "$webDir\index.html"
      (Get-Content $filename) | % {$_ -replace $downloadButtonUrlPatern, $downloadUrl } | % {$_ -replace $downloadLinkTextPattern, ("v"+$version) } | Set-Content $filename
