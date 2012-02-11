@@ -57,7 +57,8 @@ namespace RequestReduce.Utilities
             {
                 var client = WebRequest.Create(url);
                 client.Credentials = CredentialCache.DefaultCredentials;
-                client.Proxy = proxy;
+                if (RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4) 
+                    client.Proxy = proxy;
                 var response = client.GetResponse();
                 var hasMimeRestrictions = false;
                 var meetsMimeRestrictions = false;
@@ -93,7 +94,8 @@ namespace RequestReduce.Utilities
             {
                 using (var client = new WebClient())
                 {
-                    client.Proxy = proxy;
+                    if (RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4)
+                        client.Proxy = proxy;
                     client.Credentials = CredentialCache.DefaultCredentials;
                     return client.DownloadData(url);
                 }
