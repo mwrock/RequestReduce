@@ -11,7 +11,7 @@ namespace RequestReduce.ResourceTypes
     {
         private const string ScriptFormat = @"<script src=""{0}"" type=""text/javascript"" ></script>";
         private readonly Regex scriptPattern = new Regex(@"<script(.*?)(/>|</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly Regex ScriptFilterPattern = new Regex(@"^<script[^>]+src=[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex ScriptFilterPattern = new Regex(@"^<script[^>]+src=(.*?)(/>|>(\s*?)</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private Func<string, string, bool> tagValidator = ((tag, url) => 
                 {
                     var match = ScriptFilterPattern.Match(tag);

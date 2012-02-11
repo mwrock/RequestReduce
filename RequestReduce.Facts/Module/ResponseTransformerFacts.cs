@@ -299,6 +299,20 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillIgnoreExternalScriptsWithInlineScript()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<script type=""text/javascript"" src=""http://server/Me4.js"">var x=1;</script><script src=""http://server/Me.js"" type=""text/javascript"" ></script><script src=""http://server/Me2.js"" type=""text/javascript"" ></script>";
+                var transformed = @"<script type=""text/javascript"" src=""http://server/Me4.js"">var x=1;</script><script src=""http://server/Me3.js"" type=""text/javascript"" ></script>";
+                testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me3.js");
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                var result = testable.ClassUnderTest.Transform(transform);
+
+                Assert.Equal(transformed, result);
+            }
+
+            [Fact]
             public void WillNotMergeScriptsIntermingledWitIgnoredScriptsInorderToMaintainScriptOrder()
             {
                 var testable = new TestableResponseTransformer();

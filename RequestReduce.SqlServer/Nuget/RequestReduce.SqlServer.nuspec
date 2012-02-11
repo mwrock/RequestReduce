@@ -17,6 +17,7 @@
     <releaseNotes>
       * Fixed potentially major perf bug where dbdisjcache was not a singleton resulting in (LOTS of timers under load)
       * upgraded EF version to 4.3
+      * ignore external scripts containing inline script
       * fix casing edge case injecting sprite in preexisting 2 class sprite with mixed case selectors
       * fix nuget install/uninstall for web site projects with http endpoints
       * dramatically improve processing perf in some environments where call to getsystemproxy incurs high latency
