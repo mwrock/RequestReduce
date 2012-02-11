@@ -3,7 +3,7 @@
 . (Join-Path $toolsPath "AddPostBuildScript.ps1")
 
 if($project.Type -eq "Web Site") {
-	$target = Join-Path $project.FullName "bin"
+	$target = Join-Path $project.Properties.Item("FullPath").Value "bin"
 	$dest = Join-Path $toolsPath  "..\\pngoptimization\\*.exe"
 	Copy-Item $dest $target
 }
