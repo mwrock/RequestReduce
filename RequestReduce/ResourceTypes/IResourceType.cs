@@ -8,7 +8,7 @@ namespace RequestReduce.ResourceTypes
     {
         string FileName { get; }
         IEnumerable<string> SupportedMimeTypes { get; }
-        int Bundle(string resource);
+        int BundleId(string resource);
         bool IsLoadDeferred(int bundle);
         bool IsDynamicLoad(int bundle);
         string TransformedMarkupTag(string url, int bundle);

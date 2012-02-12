@@ -29,7 +29,7 @@ namespace RequestReduce.Facts
                 get { throw new System.NotImplementedException(); }
             }
 
-            public int Bundle(string resource)
+            public int BundleId(string resource)
             {
                 throw new System.NotImplementedException();
             }

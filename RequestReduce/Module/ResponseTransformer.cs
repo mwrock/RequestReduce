@@ -65,13 +65,13 @@ namespace RequestReduce.Module
                         var url = RelativeToAbsoluteUtility.ToAbsolute(config.BaseAddress == null ? context.Request.Url : new Uri(config.BaseAddress), urlMatch.Groups["url"].Value);
                         if ((resource.TagValidator == null || resource.TagValidator(strMatch, url)) && (RRContainer.Current.GetAllInstances<IFilter>().Where(x => (x is CssFilter && typeof(T) == typeof(CssResource)) || (x is JavascriptFilter && typeof(T) == typeof(JavaScriptResource))).FirstOrDefault(y => y.IgnoreTarget(new CssJsFilterContext(context.Request, url, strMatch))) == null))
                         {
-                            int matchBundle = resource.Bundle(strMatch);
+                            int matchBundle = resource.BundleId(strMatch);
                             if(!resource.IsLoadDeferred(matchBundle))
                             {
                                 if ((transformableMatches.Count == 0) || (matchBundle == currentBundle))
                                 {
                                     matched = true;
-                                    currentBundle = resource.Bundle(strMatch);
+                                    currentBundle = resource.BundleId(strMatch);
                                     urls.Append(url);
                                     urls.Append(GetMedia(strMatch));
                                     urls.Append("::");
@@ -180,41 +180,49 @@ namespace RequestReduce.Module
             if (deferredResources.ContainsKey(resource))
             {
                 var bundles = deferredResources[resource];
-                foreach (int bundle in bundles.Keys)
+                if (bundles != null)
                 {
-                    if (bundles.ContainsKey(bundle))
+                    foreach (int bundleId in bundles.Keys)
                     {
-                        var urls = new StringBuilder();
-                        var transformableMatches = new List<string>();
-                        StringBuilder transformBuilder = new StringBuilder();
-
-                        var matches = bundles[bundle];
-                        foreach (var match in matches)
+                        if (bundles[bundleId] != null)
                         {
-                            string url = match.Key;
-                            string strMatch = match.Value;
-                            urls.Append(url);
-                            urls.Append(GetMedia(strMatch));
-                            urls.Append("::");
-                            transformableMatches.Add(strMatch);
-                            transformBuilder.Append(strMatch);
-                        }
+                            var urls = new StringBuilder();
+                            var transformableMatches = new List<string>();
+                            StringBuilder transformBuilder = new StringBuilder();
 
-                        string transform = transformBuilder.ToString();
-                        var noCommentTransform = Regex.HtmlCommentPattern.Replace(transform, string.Empty);
-                        transform = DoTransform<T>(transform, urls, transformableMatches, noCommentTransform, bundle);
+                            var matches = bundles[bundleId];
+                            if (matches.Count > 0)
+                            {
+                                foreach (var match in matches)
+                                {
+                                    string url = match.Key;
+                                    string strMatch = match.Value;
+                                    urls.Append(url);
+                                    urls.Append(GetMedia(strMatch));
+                                    urls.Append("::");
+                                    transformableMatches.Add(strMatch);
+                                    transformBuilder.Append(strMatch);
+                                }
+                                bundles[bundleId].Clear();
 
-                        if (resource.IsDynamicLoad(bundle))
-                        {
-                            completeTransform.Insert(0, transform);
+                                string transform = transformBuilder.ToString();
+                                var noCommentTransform = Regex.HtmlCommentPattern.Replace(transform, string.Empty);
+                                transform = DoTransform<T>(transform, urls, transformableMatches, noCommentTransform, bundleId);
+
+                                if (resource.IsDynamicLoad(bundleId))
+                                {
+                                    completeTransform.Insert(0, transform);
+                                }
+                                else
+                                {
+                                    completeTransform.Append(transform);
+                                }
+                            }
                         }
-                        else
-                        {
-                            completeTransform.Append(transform);
-                        }
-                    } 
+                    }
                 }
             }
+
             return completeTransform.ToString();
         }
         

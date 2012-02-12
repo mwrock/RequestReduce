@@ -19,7 +19,7 @@ namespace RequestReduce.ResourceTypes
             get { return new[] { "text/css" }; }
         }
 
-        public int Bundle(string resource)
+        public int BundleId(string resource)
         {
             return 0;
         }

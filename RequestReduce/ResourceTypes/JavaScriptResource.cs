@@ -49,7 +49,7 @@ var t = d.getElementsByTagName(s)[0]; t.parentNode.insertBefore(b,t);
             get { return new[] { "text/javascript", "application/javascript", "application/x-javascript" }; }
         }
 
-        public int Bundle(string resource)
+        public int BundleId(string resource)
         {
             // Some real Regex needed here !!!
             // Some real Regex needed here !!!
