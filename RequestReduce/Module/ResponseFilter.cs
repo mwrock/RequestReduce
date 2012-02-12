@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using RequestReduce.Api;
+using System.Web;
 
 namespace RequestReduce.Module
 {
@@ -89,6 +90,7 @@ namespace RequestReduce.Module
 
         public override void Close()
         {
+            WriteDeferredBundles();
             Closed = true;
             BaseStream.Close();
         }
@@ -102,6 +104,7 @@ namespace RequestReduce.Module
                 BaseStream.Write(transformed, 0, transformed.Length);
                 transformBuffer.Clear();
             }
+
             BaseStream.Flush();
             RRTracer.Trace("Flushing Filter");
         }
@@ -414,6 +417,14 @@ namespace RequestReduce.Module
             {
                 throw new NotSupportedException();
             }
+        }
+
+
+        private void WriteDeferredBundles()
+        {
+            string deferred = responseTransformer.EmptyDeferredBundles();
+            byte[] buffer = encoding.GetBytes(deferred);
+            BaseStream.Write(buffer, 0, buffer.Length);
         }
     }
 }

@@ -13,8 +13,7 @@ namespace RequestReduce.ResourceTypes
         {
             Default = 0,
             Async = 1,
-            Defer = 2,
-            AsyncDefer = 3
+            Defer = 2
         }
 
         private readonly string[] ScriptFormats = new string[Enum.GetValues(typeof(ScriptBundle)).Length];
@@ -26,7 +25,6 @@ namespace RequestReduce.ResourceTypes
             ScriptFormats[(int)ScriptBundle.Default] = @"<script src=""{0}"" type=""text/javascript"" ></script>";
             ScriptFormats[(int)ScriptBundle.Async] = @"<script async src=""{0}"" type=""text/javascript"" ></script>";
             ScriptFormats[(int)ScriptBundle.Defer] = @"<script defer src=""{0}"" type=""text/javascript"" ></script>";
-            ScriptFormats[(int)ScriptBundle.AsyncDefer] = @"<script async defer src=""{0}"" type=""text/javascript"" ></script>";
         }
         
         private Func<string, string, bool> tagValidator = ((tag, url) => 
@@ -53,17 +51,12 @@ namespace RequestReduce.ResourceTypes
             // Some real Regex needed here !!!
             // Some real Regex needed here !!!
 
-            if(resource.Contains("async") && resource.Contains("defer"))
-            {
-                return (int)ScriptBundle.AsyncDefer;
-            }
-
-            if (resource.Contains("async") && !resource.Contains("defer"))
+            if (resource.Contains("async"))
             {
                 return (int)ScriptBundle.Async;
             }
 
-            if (resource.Contains("defer") && !resource.Contains("async"))
+            if (resource.Contains("defer"))
             {
                 return (int)ScriptBundle.Defer;
             }
@@ -92,6 +85,15 @@ namespace RequestReduce.ResourceTypes
             {
                 tagValidator = value;
             }
+        }
+
+        public bool IsDeferred(int bundle)
+        {
+            if(bundle == (int)ScriptBundle.Async || bundle == (int)ScriptBundle.Defer)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
