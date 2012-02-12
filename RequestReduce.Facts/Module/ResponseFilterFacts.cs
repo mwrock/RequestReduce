@@ -5,6 +5,7 @@ using Moq;
 using RequestReduce.Api;
 using RequestReduce.Module;
 using Xunit;
+using System.Web;
 
 namespace RequestReduce.Facts.Module
 {
@@ -368,6 +369,44 @@ namespace RequestReduce.Facts.Module
                 Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""ghi""></script>end", testable.FilteredResult);
             }
 
+            [Fact]
+            public void WillBundleAsyncAndDeferScriptsBeforeBodyEnd()
+            {
+                var testableFilter = new TestableResponseFilter(Encoding.UTF8);
+
+                var testBuffer = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me2.js"" type=""text/javascript"" ></script>
+<script async src=""http://server/Me3.js"" type=""text/javascript"" ></script>
+<script src=""http://server/Me4.js"" async type=""text/javascript"" ></script>
+<script src=""http://server/Me5.js"" type=""text/javascript"" defer ></script>
+<script defer src=""http://server/Me6.js"" type=""text/javascript"" ></script>
+<title>site</title></head><body></body>
+                ";
+                var expected = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me7.js"" type=""text/javascript"" ></script>
+
+
+
+<title>site</title></head><body><script type=""text/javascript"">(function (d,s) {
+var b = d.createElement(s); b.type = ""text/javascript""; b.async = true; b.src = ""http://server/Me8.js"";
+var t = d.getElementsByTagName(s)[0]; t.parentNode.insertBefore(b,t);
+}(document,'script'));</script><script defer src=""http://server/Me9.js"" type=""text/javascript"" ></script></body>
+                ";
+
+                var testableTransformer = new RequestReduce.Facts.Module.ResponseTransformerFacts.TestableResponseTransformer();
+                testableTransformer.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me.js::http://server/Me2.js::")).Returns("http://server/Me7.js");
+                testableTransformer.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me3.js::http://server/Me4.js::")).Returns("http://server/Me8.js");
+                testableTransformer.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/Me5.js::http://server/Me6.js::")).Returns("http://server/Me9.js");
+                testableTransformer.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                testableFilter.Inject<IResponseTransformer>(testableTransformer.ClassUnderTest);
+                testableFilter.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(expected, testableFilter.FilteredResult);
+            }
         }
     }
 }
