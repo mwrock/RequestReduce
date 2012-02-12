@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Utilities;
 
@@ -10,6 +13,7 @@ namespace RequestReduce.Module
 {
     public class ResponseFilter : AbstractFilter
     {
+        private readonly HttpContextBase context;
         private readonly Encoding encoding;
         private readonly IResponseTransformer responseTransformer;
         private static readonly RegexCache Regex = new RegexCache();
@@ -31,6 +35,7 @@ namespace RequestReduce.Module
         private int actualLength;
         private bool isAdjacent;
         private int originalOffset;
+        private readonly Stopwatch watch = new Stopwatch();
 
         private enum SearchState
         {
@@ -48,8 +53,9 @@ namespace RequestReduce.Module
             End
         }
 
-        public ResponseFilter(Stream baseStream, Encoding encoding, IResponseTransformer responseTransformer)
+        public ResponseFilter(HttpContextBase context, Stream baseStream, Encoding encoding, IResponseTransformer responseTransformer)
         {
+            this.context = context;
             this.encoding = encoding;
             this.responseTransformer = responseTransformer;
             BaseStream = baseStream;
@@ -98,6 +104,7 @@ namespace RequestReduce.Module
 
         public override void Flush()
         {
+            watch.Start();
             if (isAdjacent)
             {
                 var transformed =
@@ -108,11 +115,16 @@ namespace RequestReduce.Module
 
             BaseStream.Flush();
             RRTracer.Trace("Flushing Filter");
+            var filterQs = context != null && context.Request != null ? context.Request.QueryString["rrfilter"] : null;
+            watch.Stop();
+            if (filterQs == "time") context.Response.Headers["X-RequestReduce-Time"] = watch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-        RRTracer.Trace("Beginning Filter Write");
+            watch.Start();
+
+            RRTracer.Trace("Beginning Filter Write");
             if (Closed) throw new ObjectDisposedException("ResponseFilter");
             originalOffset = actualOffset = offset;
             actualLength = count;
@@ -145,6 +157,7 @@ namespace RequestReduce.Module
                     break;
             }
             RRTracer.Trace("Ending Filter Write");
+            watch.Stop();
         }
 
         private int HandleMatch(ref int i, byte b, byte[] buffer, ref int startTransformPosition, ref int endTransformPosition)

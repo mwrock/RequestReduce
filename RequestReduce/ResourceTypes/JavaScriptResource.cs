@@ -18,7 +18,7 @@ namespace RequestReduce.ResourceTypes
 
         private readonly string[] ScriptFormats = new string[Enum.GetValues(typeof(ScriptBundle)).Length];
         private readonly Regex scriptPattern = new Regex(@"<script(.*?)(/>|</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly Regex ScriptFilterPattern = new Regex(@"^<script[^>]+src=[^>]+>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex ScriptFilterPattern = new Regex(@"^<script[^>]+src=(.*?)(/>|>(\s*?)</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         public JavaScriptResource()
         {

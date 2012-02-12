@@ -23,11 +23,11 @@ namespace RequestReduce.Reducer
         public string Render()
         {
             var newClass = CssClass.ImageUrl != null && CssClass.OriginalClassString.IndexOf(CssClass.ImageUrl, StringComparison.OrdinalIgnoreCase) > -1
-                                  ? CssClass.OriginalClassString.ToLower().Replace(CssClass.ImageUrl.ToLower(), Url).Replace(CssClass.Selector.ToLower(), CssClass.Selector)
+                                  ? CssClass.OriginalClassString.ToLower().Replace(CssClass.ImageUrl.ToLower(), Url)
                                   : CssClass.OriginalClassString.ToLower().Replace("}",
                                                                                    string.Format(
                                                                                        ";background-image: url('{0}')}}", Url));
-
+            newClass = newClass.Replace(CssClass.Selector.ToLower(), CssClass.Selector);
             var yOffset = "0";
             if (CssClass.YOffset.PositionMode == PositionMode.Unit && CssClass.YOffset.Offset > 0)
                 yOffset = string.Format("{0}px", CssClass.YOffset.Offset);

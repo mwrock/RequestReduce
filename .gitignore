@@ -34,3 +34,4 @@ RequestReduce/Nuget/pngoptimization
 *.log
 vstest
 App_Readme
+BuildFiles

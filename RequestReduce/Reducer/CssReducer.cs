@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using RequestReduce.ResourceTypes;
@@ -15,12 +18,15 @@ namespace RequestReduce.Reducer
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
         private readonly IRRConfiguration configuration;
+        private readonly HttpContextBase context;
         private static readonly RegexCache Regex = new RegexCache();
 
-        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration) : base(webClientWrapper, store, minifier, uriBuilder)
+        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration, HttpContextBase context)
+            : base(webClientWrapper, store, minifier, uriBuilder)
         {
             this.cssImageTransformer = cssImageTransformer;
             this.configuration = configuration;
+            this.context = context;
             this.spriteManager = spriteManager;
         }
 
@@ -73,9 +79,12 @@ namespace RequestReduce.Reducer
         private string ExpandImports(string cssContent, string parentUrl)
         {
             var imports = Regex.CssImportPattern.Matches(cssContent);
+            var filter = RRContainer.Current.GetAllInstances<IFilter>().FirstOrDefault(x => (x is CssFilter));
             foreach (Match match in imports)
             {
                 var url = match.Groups["url"].Value;
+                if(filter != null && filter.IgnoreTarget(new CssJsFilterContext(context.Request, url, match.ToString())))
+                    continue;
                 var absoluteUrl = RelativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
                 var importContent = WebClientWrapper.DownloadString<CssResource>(absoluteUrl);
                 importContent = MakeRelativeUrlsAbsoluteAndRemoveComments(importContent, absoluteUrl);

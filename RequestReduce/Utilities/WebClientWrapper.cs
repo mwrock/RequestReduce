@@ -20,6 +20,16 @@ namespace RequestReduce.Utilities
 
     public class WebClientWrapper : IWebClientWrapper
     {
+        private readonly IWebProxy proxy;
+
+        public WebClientWrapper()
+        {
+            if (!RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust && Environment.Version.Major < 4)
+                return;
+            proxy = WebRequest.GetSystemWebProxy();
+            proxy.Credentials = CredentialCache.DefaultCredentials;
+        }
+
         public WebResponse Download<T>(string url) where T : IResourceType
         {
             return Download(url, RRContainer.Current.GetInstance<T>().SupportedMimeTypes);
@@ -47,16 +57,27 @@ namespace RequestReduce.Utilities
             {
                 var client = WebRequest.Create(url);
                 client.Credentials = CredentialCache.DefaultCredentials;
-                if(RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4)
-                {
-                    var systemWebProxy = WebRequest.GetSystemWebProxy();
-                    systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
-                    client.Proxy = systemWebProxy;
-                }
+                if (RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4) 
+                    client.Proxy = proxy;
                 var response = client.GetResponse();
-                if (response.ContentLength > 0 && requiredMimeTypes.Any() && !requiredMimeTypes.Any(x => response.ContentType.ToLowerInvariant().Contains(x.ToLowerInvariant())))
+                var hasMimeRestrictions = false;
+                var meetsMimeRestrictions = false;
+                var mimeRestrictionString = new StringBuilder();
+                foreach (var requiredMimeType in requiredMimeTypes)
+                {
+                    hasMimeRestrictions = true;
+                    if (response.ContentType.ToLowerInvariant().Contains(requiredMimeType.ToLowerInvariant()))
+                    {
+                        meetsMimeRestrictions = true;
+                        break;
+                    }
+                    if (mimeRestrictionString.Length > 0)
+                        mimeRestrictionString.Append(" or ");
+                    mimeRestrictionString.Append(requiredMimeType);
+                }
+                if (response.ContentLength > 0 && hasMimeRestrictions && !meetsMimeRestrictions)
                     throw new InvalidOperationException(string.Format(
-                        "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, string.Join(" or ", requiredMimeTypes.ToArray())));
+                        "RequestReduce expected url '{0}' to have a mime type of '{1}'.", url, mimeRestrictionString));
                 return response;
             }
             catch (Exception ex)
@@ -74,11 +95,7 @@ namespace RequestReduce.Utilities
                 using (var client = new WebClient())
                 {
                     if (RRContainer.Current.GetInstance<RRConfiguration>().IsFullTrust || Environment.Version.Major >= 4)
-                    {
-                        var systemWebProxy = WebRequest.GetSystemWebProxy();
-                        systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
-                        client.Proxy = systemWebProxy;
-                    }
+                        client.Proxy = proxy;
                     client.Credentials = CredentialCache.DefaultCredentials;
                     return client.DownloadData(url);
                 }
