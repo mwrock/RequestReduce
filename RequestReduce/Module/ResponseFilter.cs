@@ -51,12 +51,12 @@ namespace RequestReduce.Module
             End
         }
 
-        public ResponseFilter(HttpContextBase context, Encoding encoding, IResponseTransformer responseTransformer)
+        public ResponseFilter(HttpContextBase context, Stream baseStream, Encoding encoding, IResponseTransformer responseTransformer)
         {
             this.context = context;
             this.encoding = encoding;
             this.responseTransformer = responseTransformer;
-            BaseStream = context != null ? context.Response.Filter : null;
+            BaseStream = baseStream;
             InitSearchArrays();
             okWhenAdjacentToScriptStartUpper = new[] { encoding.GetBytes("<NOSCRIPT"), encoding.GetBytes("<!--") };
             okWhenAdjacentToScriptStartLower = new[] { encoding.GetBytes("<noscript"), encoding.GetBytes("<!--") };
@@ -111,7 +111,7 @@ namespace RequestReduce.Module
             }
             BaseStream.Flush();
             RRTracer.Trace("Flushing Filter");
-            var filterQs = context != null ? context.Request.QueryString["rrfilter"] : null;
+            var filterQs = context != null && context.Request != null ? context.Request.QueryString["rrfilter"] : null;
             watch.Stop();
             if (filterQs == "time") context.Response.Headers["X-RequestReduce-Time"] = watch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture);
         }

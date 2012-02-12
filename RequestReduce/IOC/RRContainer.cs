@@ -44,8 +44,8 @@ namespace RequestReduce.IOC
                                                     : new HttpContextWrapper(HttpContext.Current));
 
                 x.For<AbstractFilter>().Use(y => HttpContext.Current == null
-                                                    ? new ResponseFilter(null, Encoding.UTF8, y.GetInstance<IResponseTransformer>())
-                                                    : new ResponseFilter(y.GetInstance<HttpContextBase>(), HttpContext.Current.Response.ContentEncoding, y.GetInstance<IResponseTransformer>()));
+                                                    ? new ResponseFilter(null, null, Encoding.UTF8, y.GetInstance<IResponseTransformer>())
+                                                    : new ResponseFilter(y.GetInstance<HttpContextBase>(), HttpContext.Current.Response.Filter, HttpContext.Current.Response.ContentEncoding, y.GetInstance<IResponseTransformer>()));
             });
 
             LoadAllReducers(initContainer);
