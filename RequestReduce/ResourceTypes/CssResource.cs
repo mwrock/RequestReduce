@@ -38,7 +38,12 @@ namespace RequestReduce.ResourceTypes
         public Func<string, string, bool> TagValidator { get; set; }
 
 
-        public bool IsDeferred(int bundle)
+        public bool IsLoadDeferred(int bundle)
+        {
+            return false;
+        }
+
+        public bool IsDynamicLoad(int bundle)
         {
             return false;
         }

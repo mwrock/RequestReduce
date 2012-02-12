@@ -53,7 +53,7 @@ namespace RequestReduce.Module
             {
                 var urls = new StringBuilder();
                 var transformableMatches = new List<string>();
-                int bundle = 0;
+                int currentBundle = 0;
                 for (int cursor = 0; cursor < matches.Count; cursor++)
                 {
                     var match = matches[cursor];
@@ -66,12 +66,12 @@ namespace RequestReduce.Module
                         if ((resource.TagValidator == null || resource.TagValidator(strMatch, url)) && (RRContainer.Current.GetAllInstances<IFilter>().Where(x => (x is CssFilter && typeof(T) == typeof(CssResource)) || (x is JavascriptFilter && typeof(T) == typeof(JavaScriptResource))).FirstOrDefault(y => y.IgnoreTarget(new CssJsFilterContext(context.Request, url, strMatch))) == null))
                         {
                             int matchBundle = resource.Bundle(strMatch);
-                            if(!resource.IsDeferred(matchBundle))
+                            if(!resource.IsLoadDeferred(matchBundle))
                             {
-                                if ((transformableMatches.Count == 0) || (matchBundle == bundle))
+                                if ((transformableMatches.Count == 0) || (matchBundle == currentBundle))
                                 {
                                     matched = true;
-                                    bundle = resource.Bundle(strMatch);
+                                    currentBundle = resource.Bundle(strMatch);
                                     urls.Append(url);
                                     urls.Append(GetMedia(strMatch));
                                     urls.Append("::");
@@ -84,11 +84,11 @@ namespace RequestReduce.Module
                             }
                             else
                             {
-                                // Removed deferred resource
+                                // This resource into deferred bundle
+
                                 var idx = preTransform.IndexOf(strMatch, StringComparison.Ordinal);
                                 preTransform = preTransform.Remove(idx, strMatch.Length);
 
-                                // Add to deferred resource bundle
                                 if(!deferredResources.ContainsKey(resource))
                                 {
                                     deferredResources[resource] = new Dictionary<int, IList<KeyValuePair<string, string>>>();
@@ -105,14 +105,14 @@ namespace RequestReduce.Module
                     }
                     if (!matched && transformableMatches.Count > 0)
                     {
-                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform, bundle);
+                        preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform, currentBundle);
                         urls.Length = 0;
                         transformableMatches.Clear();
                     }
                 }
                 if (transformableMatches.Count > 0)
                 {
-                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform, bundle);
+                    preTransform = DoTransform<T>(preTransform, urls, transformableMatches, noCommentTransform, currentBundle);
                     urls.Length = 0;
                     transformableMatches.Clear();
                 }
@@ -203,7 +203,15 @@ namespace RequestReduce.Module
                         string transform = transformBuilder.ToString();
                         var noCommentTransform = Regex.HtmlCommentPattern.Replace(transform, string.Empty);
                         transform = DoTransform<T>(transform, urls, transformableMatches, noCommentTransform, bundle);
-                        completeTransform.Append(transform);
+
+                        if (resource.IsDynamicLoad(bundle))
+                        {
+                            completeTransform.Insert(0, transform);
+                        }
+                        else
+                        {
+                            completeTransform.Append(transform);
+                        }
                     } 
                 }
             }

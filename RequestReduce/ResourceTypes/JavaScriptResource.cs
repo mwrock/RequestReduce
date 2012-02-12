@@ -23,8 +23,11 @@ namespace RequestReduce.ResourceTypes
         public JavaScriptResource()
         {
             ScriptFormats[(int)ScriptBundle.Default] = @"<script src=""{0}"" type=""text/javascript"" ></script>";
-            ScriptFormats[(int)ScriptBundle.Async] = @"<script async src=""{0}"" type=""text/javascript"" ></script>";
             ScriptFormats[(int)ScriptBundle.Defer] = @"<script defer src=""{0}"" type=""text/javascript"" ></script>";
+            ScriptFormats[(int)ScriptBundle.Async] = @"<script type=""text/javascript"">(function (d,s) {{
+var b = d.createElement(s); b.type = ""text/javascript""; b.async = true; b.src = ""{0}"";
+var t = d.getElementsByTagName(s)[0]; t.parentNode.insertBefore(b,t);
+}}(document,'script'));</script>";
         }
         
         private Func<string, string, bool> tagValidator = ((tag, url) => 
@@ -87,13 +90,22 @@ namespace RequestReduce.ResourceTypes
             }
         }
 
-        public bool IsDeferred(int bundle)
+        public bool IsLoadDeferred(int bundle)
         {
-            if(bundle == (int)ScriptBundle.Async || bundle == (int)ScriptBundle.Defer)
+            if (bundle == (int)ScriptBundle.Defer)
+            {
+                return true;
+            }
+            if(bundle == (int)ScriptBundle.Async)
             {
                 return true;
             }
             return false;
+        }
+
+        public bool IsDynamicLoad(int bundle)
+        {
+            return (bundle == (int)ScriptBundle.Async);
         }
     }
 }

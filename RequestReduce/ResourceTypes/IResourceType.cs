@@ -9,7 +9,8 @@ namespace RequestReduce.ResourceTypes
         string FileName { get; }
         IEnumerable<string> SupportedMimeTypes { get; }
         int Bundle(string resource);
-        bool IsDeferred(int bundle);
+        bool IsLoadDeferred(int bundle);
+        bool IsDynamicLoad(int bundle);
         string TransformedMarkupTag(string url, int bundle);
         Regex ResourceRegex { get; }
         Func<string, string, bool> TagValidator { get; set; }
