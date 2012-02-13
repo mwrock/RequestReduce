@@ -18,15 +18,13 @@ namespace RequestReduce.Reducer
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
         private readonly IRRConfiguration configuration;
-        private readonly HttpContextBase context;
         private static readonly RegexCache Regex = new RegexCache();
 
-        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration, HttpContextBase context)
+        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration)
             : base(webClientWrapper, store, minifier, uriBuilder)
         {
             this.cssImageTransformer = cssImageTransformer;
             this.configuration = configuration;
-            this.context = context;
             this.spriteManager = spriteManager;
         }
 
@@ -83,7 +81,7 @@ namespace RequestReduce.Reducer
             foreach (Match match in imports)
             {
                 var url = match.Groups["url"].Value;
-                if(filter != null && filter.IgnoreTarget(new CssJsFilterContext(context.Request, url, match.ToString())))
+                if(filter != null && filter.IgnoreTarget(new CssJsFilterContext(null, url, match.ToString())))
                     continue;
                 var absoluteUrl = RelativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
                 var importContent = WebClientWrapper.DownloadString<CssResource>(absoluteUrl);
