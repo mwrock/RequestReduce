@@ -681,6 +681,57 @@ var t = d.getElementsByTagName(s)[0]; t.parentNode.insertBefore(b,t);
 
                 Assert.Equal(expected, testableFilter.FilteredResult);
             }
+
+            [Fact]
+            public void WillIgnoreExternalScriptWithAsyncAndDeferInlinedContents()
+            {
+                var testableFilter = new TestableResponseFilter(Encoding.UTF8);
+
+                var testBuffer = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me.js"" type=""text/javascript"" > async = defer </script>
+<title>site</title></head><body></body>
+                ";
+                var expected = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script src=""http://server/Me.js"" type=""text/javascript"" > async = defer </script>
+<title>site</title></head><body></body>
+                ";
+
+                var testableTransformer = new RequestReduce.Facts.Module.ResponseTransformerFacts.TestableResponseTransformer();
+
+                testableFilter.Inject<IResponseTransformer>(testableTransformer.ClassUnderTest);
+                testableFilter.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(expected, testableFilter.FilteredResult);
+            }
+
+            [Fact]
+            public void WillIgnoreInlineScriptWithAsyncAndDeferAttributes()
+            {
+                var testableFilter = new TestableResponseFilter(Encoding.UTF8);
+
+                var testBuffer = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script async type=""text/javascript"" >x=1;</script>
+<script defer type=""text/javascript"" >x=1;</script>
+<title>site</title></head><body></body>
+                ";
+                var expected = @"<head id=""Head1"">
+<meta name=""description"" content="""" />
+<script async type=""text/javascript"" >x=1;</script>
+<script defer type=""text/javascript"" >x=1;</script>
+<title>site</title></head><body></body>
+                ";
+
+                var testableTransformer = new RequestReduce.Facts.Module.ResponseTransformerFacts.TestableResponseTransformer();
+
+                testableFilter.Inject<IResponseTransformer>(testableTransformer.ClassUnderTest);
+                testableFilter.ClassUnderTest.Write(Encoding.UTF8.GetBytes(testBuffer), 0, testBuffer.Length);
+
+                Assert.Equal(expected, testableFilter.FilteredResult);
+            }
+
         }
     }
 }
