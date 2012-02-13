@@ -206,8 +206,7 @@ namespace RequestReduce.Module
                                 bundles[bundleId].Clear();
 
                                 string transform = transformBuilder.ToString();
-                                var noCommentTransform = Regex.HtmlCommentPattern.Replace(transform, string.Empty);
-                                transform = DoTransform<T>(transform, urls, transformableMatches, noCommentTransform, bundleId);
+                                transform = DoTransform<T>(transform, urls, transformableMatches, transform, bundleId);
 
                                 if (resource.IsDynamicLoad(bundleId))
                                 {

@@ -19,6 +19,7 @@ namespace RequestReduce.ResourceTypes
         private readonly string[] ScriptFormats = new string[Enum.GetValues(typeof(ScriptBundle)).Length];
         private readonly Regex scriptPattern = new Regex(@"<script(.*?)(/>|</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex ScriptFilterPattern = new Regex(@"^<script[^>]+src=(.*?)(/>|>(\s*?)</script>)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex TagPattern = new System.Web.RegularExpressions.TagRegex();
 
         public JavaScriptResource()
         {
@@ -51,17 +52,35 @@ var t = d.getElementsByTagName(s)[0]; t.parentNode.insertBefore(b,t);
 
         public int BundleId(string resource)
         {
-            // Some real Regex needed here !!!
-            // Some real Regex needed here !!!
+            var tagMatch = TagPattern.Match(resource);
 
-            if (resource.Contains("async"))
+            if (tagMatch.Success)
             {
-                return (int)ScriptBundle.Async;
-            }
+                if (TagPattern.GetGroupNames().Contains("attrname"))
+                {
+                    Group attrNames = tagMatch.Groups["attrname"];
+                    if (attrNames != null)
+                    {
+                        if (attrNames.Captures != null)
+                        {
+                            foreach (Capture attr in attrNames.Captures)
+                            {
+                                if (String.Compare(attr.Value, "async", StringComparison.InvariantCultureIgnoreCase) == 0)
+                                {
+                                    return (int)ScriptBundle.Async;
+                                }
+                            }
 
-            if (resource.Contains("defer"))
-            {
-                return (int)ScriptBundle.Defer;
+                            foreach (Capture attr in attrNames.Captures)
+                            {
+                                if (String.Compare(attr.Value, "defer", StringComparison.InvariantCultureIgnoreCase) == 0)
+                                {
+                                    return (int)ScriptBundle.Defer;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             
             return (int)ScriptBundle.Default;
