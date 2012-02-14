@@ -15,6 +15,8 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Correct nuget dependency version for EF
+      * Fix some casing scenarios to be turkish friendly
       * fix import expansion when using CSSFilters
       * Fixed potentially major perf bug where dbdisjcache was not a singleton resulting in (LOTS of timers under load)
       * upgraded EF version to 4.3

@@ -18,7 +18,7 @@ namespace RequestReduce.ResourceTypes
                     if (!match.Success)
                         return false;
                     var urlsToIgnore = RRContainer.Current.GetInstance<IRRConfiguration>().JavaScriptUrlsToIgnore;
-                    return urlsToIgnore.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).All(ignoredUrl => !url.ToLower().Contains(ignoredUrl.ToLower().Trim()));
+                    return urlsToIgnore.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).All(ignoredUrl => url.IndexOf(ignoredUrl.Trim(), StringComparison.OrdinalIgnoreCase) == -1);
                 });
 
         public string FileName

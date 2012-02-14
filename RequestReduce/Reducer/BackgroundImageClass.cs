@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using RequestReduce.Utilities;
@@ -126,7 +127,7 @@ namespace RequestReduce.Reducer
         private int?[] GetPadding(Match paddingMatch)
         {
             var padVals = new int?[4];
-            var side = paddingMatch.Groups["side"].Value.ToLower();
+            var side = paddingMatch.Groups["side"].Value.ToLower(CultureInfo.InvariantCulture);
             var pad1 = paddingMatch.Groups["pad1"].Value;
             var pad2 = paddingMatch.Groups["pad2"].Value;
             var pad3 = paddingMatch.Groups["pad3"].Value;
@@ -196,8 +197,8 @@ namespace RequestReduce.Reducer
 
         private void SetOffsets(Match offsetMatch)
         {
-            var offset1 = offsetMatch.Groups["offset1"].Value.ToLower();
-            var offset2 = offsetMatch.Groups["offset2"].Value.ToLower();
+            var offset1 = offsetMatch.Groups["offset1"].Value.ToLower(CultureInfo.InvariantCulture);
+            var offset2 = offsetMatch.Groups["offset2"].Value.ToLower(CultureInfo.InvariantCulture);
             bool flip = offset1 == "top" || offset1 == "bottom" || offset2 == "right" || offset2 == "left";
             var offset1Position = ",top,bottom,right,left,center".IndexOf(offset1, StringComparison.Ordinal) > 0
                                       ? ParseStringOffset(offset1)
@@ -220,7 +221,7 @@ namespace RequestReduce.Reducer
                 if (offset2.Length > 0) PropertyCompletion = PropertyCompletion | PropertyCompletion.HasYOffset;
             }
 
-            Important = offsetMatch.ToString().ToLower().Contains("!important");
+            Important = offsetMatch.ToString().ToLower(CultureInfo.InvariantCulture).Contains("!important");
 
         }
 

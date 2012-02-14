@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.IO.Compression;
 
 namespace RequestReduce.Utilities
@@ -15,7 +16,7 @@ namespace RequestReduce.Utilities
             if (encoding == null)
                 return encodedStream;
 
-            encoding = encoding.ToLower();
+            encoding = encoding.ToLower(CultureInfo.InvariantCulture);
             if(encoding.Contains("gzip"))
                 return new GZipStream(encodedStream, CompressionMode.Decompress);
             if (encoding.Contains("deflate"))
