@@ -737,6 +737,25 @@ namespace RequestReduce.Facts.Module
             }
 
             [Fact]
+            public void WillNotQueueCssUrlsAppendingMediaIfAllIsOnlyMedia()
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head>
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" media=""all""/>
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(
+                    x => x.FindReduction("http://server/Me.css::http://server/Me2.css::"));
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+
+                testable.ClassUnderTest.Transform(transform);
+
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css::http://server/Me2.css::")), Times.Once());
+            }
+
+            [Fact]
             public void WillTransformHeadWithDuplicateScripts()
             {
                 var testable = new TestableResponseTransformer();

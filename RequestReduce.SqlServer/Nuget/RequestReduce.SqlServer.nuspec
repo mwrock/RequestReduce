@@ -16,6 +16,7 @@
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
       * Correct nuget dependency version for EF
+      * dont wrap css in media rule if media attribute is All
       * Fix some casing scenarios to be turkish friendly
       * fix import expansion when using CSSFilters
       * Fixed potentially major perf bug where dbdisjcache was not a singleton resulting in (LOTS of timers under load)

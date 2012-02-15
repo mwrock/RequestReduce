@@ -16,6 +16,7 @@
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
       * corect nuget dependency version for dot less
+      * dont wrap css in media rule if media attribute is All
       * Fix some casing scenarios to be turkish friendly
       * dont reqire SassAndCoffee binaries and its dependencies if only using LESS
       * fix import expansion when using CSSFilters
