@@ -1,4 +1,5 @@
 ﻿using System;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.ResourceTypes;
 using RequestReduce.IOC;
@@ -46,12 +47,18 @@ namespace RequestReduce.Utilities
             var resource = RRContainer.Current.GetInstance(resourceType) as IResourceType;
             if (resource == null)
                 throw new ArgumentException("resourceType must derrive from IResourceType", "resourceType");
-            return string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, resource.FileName);
+            var url = string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, resource.FileName);
+            return Registry.UrlTransformer != null
+                                   ? Registry.UrlTransformer(null, url)
+                                   : url;
         }
 
         public string BuildSpriteUrl(Guid key, byte[] bytes)
         {
-            return string.Format("{0}{1}/{2}-{3}.png", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), Hasher.Hash(bytes).RemoveDashes());
+            var url =  string.Format("{0}{1}/{2}-{3}.png", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), Hasher.Hash(bytes).RemoveDashes());
+            return Registry.UrlTransformer != null
+                                   ? Registry.UrlTransformer(null, url)
+                                   : url;
         }
 
         public string ParseFileName(string url)

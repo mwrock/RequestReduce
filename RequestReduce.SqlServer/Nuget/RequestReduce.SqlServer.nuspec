@@ -15,6 +15,7 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Replace AbsoluteUrlTransformer with UrlTransformer to trnsform any url and not just ones embedded in css
       * Correct nuget dependency version for EF
       * dont wrap css in media rule if media attribute is All
       * Fix some casing scenarios to be turkish friendly

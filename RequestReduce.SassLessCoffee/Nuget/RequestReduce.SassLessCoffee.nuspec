@@ -15,7 +15,8 @@
     <summary>An add-on which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
-      * corect nuget dependency version for dot less
+      * Replace AbsoluteUrlTransformer with UrlTransformer to trnsform any url and not just ones embedded in css
+      * correct nuget dependency version for dot less
       * dont wrap css in media rule if media attribute is All
       * Fix some casing scenarios to be turkish friendly
       * dont reqire SassAndCoffee binaries and its dependencies if only using LESS

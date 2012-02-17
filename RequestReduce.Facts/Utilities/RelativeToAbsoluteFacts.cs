@@ -66,7 +66,7 @@ namespace RequestReduce.Facts.Utilities
         }
 
         [Fact]
-        public void WillForwardNewUrlToListener()
+        public void WillForwardNewUrlToListener_obsolete()
         {
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.ContentHost).Returns("http://contenthost");
@@ -87,7 +87,7 @@ namespace RequestReduce.Facts.Utilities
         }
 
         [Fact]
-        public void WillForwardNewUrlToListenerIfNoContentHost()
+        public void WillForwardNewUrlToListenerIfNoContentHost_obsolete()
         {
             Registry.AbsoluteUrlTransformer = (x, y) =>
             {
@@ -101,6 +101,44 @@ namespace RequestReduce.Facts.Utilities
 
             Assert.Equal("http://funny.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
             Registry.AbsoluteUrlTransformer = null;
+        }
+
+        [Fact]
+        public void WillForwardNewUrlToListener()
+        {
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ContentHost).Returns("http://contenthost");
+            RRContainer.Current.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
+            Registry.UrlTransformer = (x, y) =>
+            {
+                var newUrlHost = new Uri(y).Host;
+                return y.Replace(newUrlHost, newUrlHost + "." + new Uri(x).Host);
+            };
+
+            var result =
+            RelativeToAbsoluteUtility.ToAbsolute("http://blogs.msdn.com/themes/blogs/MSDN2/css/MSDNblogs.css",
+                                                 "../../../MSDN2/Images/MSDN/contentpane.png");
+
+            Assert.Equal("http://contenthost.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
+            RRContainer.Current = null;
+            Registry.UrlTransformer = null;
+        }
+
+        [Fact]
+        public void WillForwardNewUrlToListenerIfNoContentHost()
+        {
+            Registry.UrlTransformer = (x, y) =>
+            {
+                var newUrlHost = new Uri(y).Host;
+                return y.Replace(newUrlHost, "funny." + new Uri(x).Host);
+            };
+
+            var result =
+            RelativeToAbsoluteUtility.ToAbsolute("http://blogs.msdn.com/themes/blogs/MSDN2/css/MSDNblogs.css",
+                                                 "../../../MSDN2/Images/MSDN/contentpane.png");
+
+            Assert.Equal("http://funny.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
+            Registry.UrlTransformer = null;
         }
 
     }

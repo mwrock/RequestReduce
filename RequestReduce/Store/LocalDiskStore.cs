@@ -153,9 +153,12 @@ namespace RequestReduce.Store
         protected virtual string GetFileNameFromConfig(string url)
         {
             var fileName = url.ToLower(CultureInfo.InvariantCulture);
-            if (!string.IsNullOrEmpty(configuration.ContentHost))
-                fileName = fileName.Replace(configuration.ContentHost.ToLower(CultureInfo.InvariantCulture), "");
-            return fileName.Replace(configuration.SpriteVirtualPath.ToLower(CultureInfo.InvariantCulture), configuration.SpritePhysicalPath.ToLower(CultureInfo.InvariantCulture)).Replace('/', '\\');
+            var idx = fileName.IndexOf(configuration.SpriteVirtualPath.ToLower(CultureInfo.InvariantCulture));
+            return idx > -1
+                       ? fileName.Replace(configuration.SpriteVirtualPath.ToLower(CultureInfo.InvariantCulture),
+                                          configuration.SpritePhysicalPath.ToLower(CultureInfo.InvariantCulture)).
+                             Substring(idx).Replace('/', '\\')
+                       : url;
         }
 
         public virtual void Dispose()

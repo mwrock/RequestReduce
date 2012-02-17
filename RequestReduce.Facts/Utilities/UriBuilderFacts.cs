@@ -1,4 +1,5 @@
 ﻿using System;
+using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.Utilities;
 using Xunit;
@@ -118,6 +119,26 @@ namespace RequestReduce.Facts.Utilities
 
                 Assert.NotNull(result);
             }
+
+            [Fact]
+            public void WillTransformUrlIfTransformerExists()
+            {
+                var testable = new TestableUriBuilder();
+                Registry.UrlTransformer = (x, y) =>
+                {
+                    var newUrlHost = new Uri(y).Host;
+                    return y.Replace(newUrlHost, "funny." + newUrlHost);
+                };
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = "abc";
+
+                var result = testable.ClassUnderTest.BuildResourceUrl<CssResource>(guid, content);
+
+                Assert.Equal(string.Format("http://funny.host/vpath/{0}-{1}-{2}", guid.RemoveDashes(), content, new CssResource().FileName), result);
+                Registry.UrlTransformer = null;
+            }
         }
 
         public class BuildSpriteUrl
@@ -134,6 +155,26 @@ namespace RequestReduce.Facts.Utilities
                 var result = testable.ClassUnderTest.BuildSpriteUrl(guid, content);
 
                 Assert.Equal(result, string.Format("http://host/vpath/{0}-{1}.png", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes()));
+            }
+
+            [Fact]
+            public void WillTransformUrlIfTransformerExists()
+            {
+                var testable = new TestableUriBuilder();
+                Registry.UrlTransformer = (x, y) =>
+                {
+                    var newUrlHost = new Uri(y).Host;
+                    return y.Replace(newUrlHost, "funny." + newUrlHost);
+                };
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
+                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                var guid = Guid.NewGuid();
+                var content = new byte[] { 1 };
+
+                var result = testable.ClassUnderTest.BuildSpriteUrl(guid, content);
+
+                Assert.Equal(result, string.Format("http://funny.host/vpath/{0}-{1}.png", guid.RemoveDashes(), Hasher.Hash(content).RemoveDashes()));
+                Registry.UrlTransformer = null;
             }
         }
 
