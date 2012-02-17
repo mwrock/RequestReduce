@@ -1,5 +1,5 @@
 using System.Reflection;
 
-[assembly: AssemblyVersion("1.7.105")]
-[assembly: AssemblyFileVersion("1.7.105")]
-[assembly: AssemblyTrademarkAttribute("87a72c7aa7074cf83ea89a442ba5160b6edc8158")]
+[assembly: AssemblyVersion("1.7.107")]
+[assembly: AssemblyFileVersion("1.7.107")]
+[assembly: AssemblyTrademarkAttribute("9cad5a8fd12af074ccd1254ade75f912546d1c8e")]
