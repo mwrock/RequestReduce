@@ -57,13 +57,13 @@
     </Compile>
     <Compile Include="DbDiskCache.cs" />
     <Compile Include="FileRepository.cs" />
-    <Compile Include="PetaPoco.cs" />
+    <Compile Include="ORM\PetaPoco.cs" />
+    <Compile Include="ORM\RequestReduceDB.cs" />
     <Compile Include="PetaPocoFileRepository.cs" />
     <Compile Include="PetaPocoRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="RequestReduceContext.cs" />
-    <Compile Include="RequestReduceDB.cs" />
     <Compile Include="RequestReduceFile.cs" />
     <Compile Include="SqlServerStore.cs" />
   </ItemGroup>
