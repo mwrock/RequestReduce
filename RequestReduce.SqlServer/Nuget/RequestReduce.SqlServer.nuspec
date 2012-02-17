@@ -59,7 +59,6 @@
     </releaseNotes>
     <dependencies>
       <dependency id="RequestReduce" version="$version$" />
-      <dependency id="EntityFramework" version="4.3.0.0" />
     </dependencies>
   </metadata>
 </package>
