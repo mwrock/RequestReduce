@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.ResourceTypes;
@@ -49,7 +50,7 @@ namespace RequestReduce.Utilities
                 throw new ArgumentException("resourceType must derrive from IResourceType", "resourceType");
             var url = string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, resource.FileName);
             return Registry.UrlTransformer != null
-                                   ? Registry.UrlTransformer(null, url)
+                                   ? Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), null, url)
                                    : url;
         }
 
@@ -57,7 +58,7 @@ namespace RequestReduce.Utilities
         {
             var url =  string.Format("{0}{1}/{2}-{3}.png", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), Hasher.Hash(bytes).RemoveDashes());
             return Registry.UrlTransformer != null
-                                   ? Registry.UrlTransformer(null, url)
+                                   ? Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), null, url)
                                    : url;
         }
 

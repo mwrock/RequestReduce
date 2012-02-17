@@ -124,7 +124,7 @@ namespace RequestReduce.Facts.Utilities
             public void WillTransformUrlIfTransformerExists()
             {
                 var testable = new TestableUriBuilder();
-                Registry.UrlTransformer = (x, y) =>
+                Registry.UrlTransformer = (c, x, y) =>
                 {
                     var newUrlHost = new Uri(y).Host;
                     return y.Replace(newUrlHost, "funny." + newUrlHost);
@@ -161,7 +161,7 @@ namespace RequestReduce.Facts.Utilities
             public void WillTransformUrlIfTransformerExists()
             {
                 var testable = new TestableUriBuilder();
-                Registry.UrlTransformer = (x, y) =>
+                Registry.UrlTransformer = (c, x, y) =>
                 {
                     var newUrlHost = new Uri(y).Host;
                     return y.Replace(newUrlHost, "funny." + newUrlHost);

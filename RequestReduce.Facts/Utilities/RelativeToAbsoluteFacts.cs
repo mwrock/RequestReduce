@@ -109,7 +109,7 @@ namespace RequestReduce.Facts.Utilities
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.ContentHost).Returns("http://contenthost");
             RRContainer.Current.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
-            Registry.UrlTransformer = (x, y) =>
+            Registry.UrlTransformer = (c, x, y) =>
             {
                 var newUrlHost = new Uri(y).Host;
                 return y.Replace(newUrlHost, newUrlHost + "." + new Uri(x).Host);
@@ -127,7 +127,7 @@ namespace RequestReduce.Facts.Utilities
         [Fact]
         public void WillForwardNewUrlToListenerIfNoContentHost()
         {
-            Registry.UrlTransformer = (x, y) =>
+            Registry.UrlTransformer = (c, x, y) =>
             {
                 var newUrlHost = new Uri(y).Host;
                 return y.Replace(newUrlHost, "funny." + new Uri(x).Host);

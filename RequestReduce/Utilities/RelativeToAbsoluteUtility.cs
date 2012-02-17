@@ -27,16 +27,19 @@ namespace RequestReduce.Utilities
         private static string ReplaceContentHost(string url, string baseUrl)
         {
             var contentHost = RRContainer.Current.GetInstance<IRRConfiguration>().ContentHost;
-            var transformer = Registry.UrlTransformer ?? Registry.AbsoluteUrlTransformer;
+            if (string.IsNullOrEmpty(contentHost) && Registry.UrlTransformer != null)
+                return Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(),url, url);
             if (string.IsNullOrEmpty(contentHost))
-                return transformer != null ? transformer(url, url) : url;
+                return Registry.AbsoluteUrlTransformer != null ? Registry.AbsoluteUrlTransformer(url, url) : url;
             var urlHost = GetHost(url);
             var baseHost = GetHost(baseUrl);
             var transformedUrl = contentHost + url.Substring(urlHost.Length);
             if (!baseHost.Equals(urlHost, StringComparison.OrdinalIgnoreCase))
                 transformedUrl = url;
-            return transformer != null
-                       ? transformer(url, transformedUrl)
+            if (Registry.UrlTransformer != null)
+                return Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), url, transformedUrl);
+            return Registry.AbsoluteUrlTransformer != null
+                       ? Registry.AbsoluteUrlTransformer(url, transformedUrl)
                        : transformedUrl;
         }
 
