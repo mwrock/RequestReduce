@@ -58,6 +58,7 @@
     <Compile Include="DbDiskCache.cs" />
     <Compile Include="FileRepository.cs" />
     <Compile Include="PetaPoco.cs" />
+    <Compile Include="PetaPocoFileRepository.cs" />
     <Compile Include="PetaPocoRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
