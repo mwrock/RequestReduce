@@ -9,7 +9,7 @@ namespace RequestReduce.SqlServer
     public partial class RequestReduceDB : Database
     {
         public RequestReduceDB()
-            : base("RequestReduce")
+            : base("")
         {
             CommonConstruct();
         }

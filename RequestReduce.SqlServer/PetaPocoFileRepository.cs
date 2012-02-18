@@ -33,7 +33,10 @@ namespace RequestReduce.SqlServer
                         select files2.FileName).ToList();
         }
 
-
+        public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
+        {
+            return AsQueryable<RequestReduceFile>().Where(x => x.Key == key).ToArray();
+        }
 
         public int Update(RequestReduceFile entity)
         {
@@ -43,48 +46,34 @@ namespace RequestReduce.SqlServer
             }
             catch (Exception dbe)
             {
-                bool shouldUpdate;
-                var exception = BuildFailedUpdateException(dbe, entity, out shouldUpdate);
-                if (shouldUpdate)
+                var exception = BuildFailedUpdateException(dbe, entity);
+
+                var existingFile = Single<RequestReduceFile>(entity.RequestReduceFileId);
+                if (existingFile == null)
                 {
-                    var existingFile = Single<RequestReduceFile>(entity.RequestReduceFileId);
-                    if (existingFile == null)
-                        throw exception;
-                    exception = null;
-                    existingFile.Content = entity.Content;
-                    existingFile.LastUpdated = entity.LastUpdated = DateTime.Now;
-                    existingFile.IsExpired = entity.IsExpired;
-                    try
-                    {
-                        return base.Update(existingFile);
-                    }
-                    catch (Exception dbe2)
-                    {
-                        bool shouldFail;
-                        exception = BuildFailedUpdateException(dbe2, existingFile, out shouldFail);
-                        if (shouldFail)
-                            throw exception;
-                    }
-                }
-                if (Registry.CaptureErrorAction != null && exception != null)
-                {    
-                    Registry.CaptureErrorAction(exception);
+                    throw exception;
                 }
 
-                return 0;
+                exception = null;
+                existingFile.Content = entity.Content;
+                existingFile.LastUpdated = entity.LastUpdated = DateTime.Now;
+                existingFile.IsExpired = entity.IsExpired;
+                try
+                {
+                    return base.Update(existingFile);
+                }
+                catch (Exception dbe2)
+                {
+                    exception = BuildFailedUpdateException(dbe2, existingFile);
+                    throw exception;
+                }
             }
         }
 
-        private InvalidOperationException BuildFailedUpdateException(Exception e, RequestReduceFile attemptedEntity, out bool failedForThisEntity)
+        private InvalidOperationException BuildFailedUpdateException(Exception e, RequestReduceFile attemptedEntity)
         {
-            failedForThisEntity = true;
             var message = new StringBuilder(string.Format("You were saving {0}. Context failed to save.", attemptedEntity.RequestReduceFileId));
             return new InvalidOperationException(message.ToString(), e);
-        }
-
-        public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
-        {
-            return AsQueryable<RequestReduceFile>().Where(x => x.Key == key).ToArray();
         }
 
         public string GetActiveUrlByKey(Guid key, Type resourceType)
