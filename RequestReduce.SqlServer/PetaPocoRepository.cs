@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using PetaPoco;
+using RequestReduce.Configuration;
+using System.Linq;
 
 namespace RequestReduce.SqlServer
 {
@@ -9,19 +11,30 @@ namespace RequestReduce.SqlServer
         T Single<T>(object primaryKey);
 
         IEnumerable<T> Query<T>();
+        IQueryable<T> AsQueryable<T>();
         List<T> Fetch<T>();
         Page<T> PagedQuery<T>(long pageNumber, long itemsPerPage, string sql, params object[] args);
         int Insert(object itemToAdd);
         int Update(object itemToUpdate, object primaryKeyValue);
         int Delete<T>(object primaryKeyValue);
+        RequestReduceDB Context { get; }
     }
     public class PetaPocoRepository : IPetaPocoRepository
     {
-        private Database db;
-        public PetaPocoRepository()
+        private readonly IRRConfiguration config;
+        private RequestReduceDB db;
+
+        public PetaPocoRepository(IRRConfiguration config)
         {
-            db = new Database("ConnectionString");
+            this.config = config;
+            db = new RequestReduceDB(config.ConnectionStringName);
         }
+
+        public RequestReduceDB Context
+        {
+            get { return db ?? (db = new RequestReduceDB(config.ConnectionStringName)); }
+        }
+
         public TPassType Single<TPassType>(object primaryKey)
         {
             return db.Single<TPassType>(primaryKey);
@@ -35,6 +48,10 @@ namespace RequestReduce.SqlServer
         public IEnumerable<TPassType> Query<TPassType>(string sql, params object[] args)
         {
             return db.Query<TPassType>(sql, args);
+        }
+        public IQueryable<TPassType> AsQueryable<TPassType>()
+        {
+            return Query<TPassType>().AsQueryable<TPassType>();
         }
         public List<TPassType> Fetch<TPassType>()
         {
