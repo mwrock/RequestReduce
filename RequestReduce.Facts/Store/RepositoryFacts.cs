@@ -31,6 +31,12 @@ namespace RequestReduce.Facts.Store
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns("RRConnection");
             }
 
+            public TestableRepository(string connectionString)
+            {
+                Database.DefaultConnectionFactory = new System.Data.Entity.Infrastructure.SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
+                Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns(connectionString);
+            }
+
             public void Dispose()
             {
                 RRContainer.Current.Dispose();
@@ -54,6 +60,33 @@ namespace RequestReduce.Facts.Store
                                    OriginalName = "originalName",
                                    RequestReduceFileId = id
                                };
+
+                testable.ClassUnderTest.Save(file);
+
+                var savedFile = testable.ClassUnderTest[id];
+                Assert.Equal(file.Content.Length, savedFile.Content.Length);
+                Assert.Equal(file.Content[0], savedFile.Content[0]);
+                Assert.Equal(file.FileName, savedFile.FileName);
+                Assert.Equal(file.Key, savedFile.Key);
+                Assert.Equal(file.OriginalName, savedFile.OriginalName);
+                Assert.Equal(file.RequestReduceFileId, savedFile.RequestReduceFileId);
+                Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
+            }
+
+            [Fact]
+            public void WillSaveToDatabaseUsingConnectionString()
+            {
+                var testable = new TestableRepository("data source=zRequestReduce.sdf");
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "fileName",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
 
                 testable.ClassUnderTest.Save(file);
 
@@ -99,7 +132,7 @@ namespace RequestReduce.Facts.Store
             }
 
             [Fact]
-            public void WillThrowExceptionIfFilenameIsTooLong()
+            public void WillThrowIfFilenameIsTooLong()
             {
                 var testable = new TestableRepository();
                 var id = Guid.NewGuid();
@@ -113,11 +146,13 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                Assert.Throws<DbEntityValidationException>(() => testable.ClassUnderTest.Save(file));
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
+
+                Assert.NotNull(ex);
             }
 
             [Fact]
-            public void WillThrowExceptionIfFilenameIsNull()
+            public void WillThrowIfFilenameIsNull()
             {
                 var testable = new TestableRepository();
                 var id = Guid.NewGuid();
@@ -131,11 +166,13 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                Assert.Throws<DbEntityValidationException>(() => testable.ClassUnderTest.Save(file));
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
+
+                Assert.NotNull(ex);
             }
 
             [Fact]
-            public void WillThrowExceptionIfContentIsNull()
+            public void WillThrowIfContentIsNull()
             {
                 var testable = new TestableRepository();
                 var id = Guid.NewGuid();
@@ -149,7 +186,9 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                Assert.Throws<DbEntityValidationException>(() => testable.ClassUnderTest.Save(file));
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
+
+                Assert.NotNull(ex);
             }
 
         }
