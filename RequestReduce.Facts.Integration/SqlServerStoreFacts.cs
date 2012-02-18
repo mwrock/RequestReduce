@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,7 +19,7 @@ namespace RequestReduce.Facts.Integration
     public class SqlServerStoreFacts : IDisposable
     {
         private readonly IRRConfiguration config;
-        private readonly IFileRepository repo;
+        private readonly IPetaPocoFileRepository repo;
         private readonly UriBuilder uriBuilder;
         private readonly string rrFolder;
 
@@ -31,14 +29,16 @@ namespace RequestReduce.Facts.Integration
                           "\\RequestReduce.SampleWeb\\App_Data";
             if (!Directory.Exists(dataDir))
                 Directory.CreateDirectory(dataDir);
-            Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
+
+            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
+            //Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
             var mockConfig = new Mock<IRRConfiguration>();
             mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
             config = mockConfig.Object;
-            repo = new FileRepository(config);
+            repo = new PetaPocoFileRepository(config);
             IntegrationFactHelper.RecyclePool();
-            repo.Context.Database.Delete();
-            repo.Context.Database.Create();
+            //repo.Context.Database.Delete();
+            //repo.Context.Database.Create();
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore, 3000);
             uriBuilder = new UriBuilder(config);
         }
@@ -87,16 +87,16 @@ namespace RequestReduce.Facts.Integration
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
             var id = Hasher.Hash(uriBuilder.ParseFileName(url));
-            var createTime = repo[id].LastUpdated;
+            var createTime = repo.SingleOrDefault<RequestReduceFile>(id).LastUpdated;
 
-            repo.Context.Files.Remove(repo[id]);
-            repo.Context.SaveChanges();
+            //repo.Context.Files.Remove(repo.Single<RequestReduceFile>(id));
+            //repo.Context.SaveChanges();
             IntegrationFactHelper.RecyclePool();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
 
-            Assert.True(createTime < repo[id].LastUpdated);
+            Assert.True(createTime < repo.SingleOrDefault<RequestReduceFile>(id).LastUpdated);
         }
 
         [OutputTraceOnFailFact]
@@ -115,8 +115,9 @@ namespace RequestReduce.Facts.Integration
                 url = urlPattern.Match(css).Groups["url"].Value;
                 id = Hasher.Hash(uriBuilder.ParseFileName(url));
             }
-            repo.Detach(repo[id]);
-            repo.Context.SaveChanges();
+            repo.Delete<RequestReduceFile>(id);
+            //repo.Detach(repo.Single<RequestReduceFile>(id));
+            //repo.Context.SaveChanges();
 
             var req = HttpWebRequest.Create("http://localhost:8877" + url);
             var response2 = req.GetResponse() as HttpWebResponse;
@@ -182,11 +183,11 @@ namespace RequestReduce.Facts.Integration
             WaitToCreateResources();
             new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
             DateTime fileDate = DateTime.MinValue;
-            var files = repo.AsQueryable().Where(x => x.FileName.Contains(".css"));
+            var files = repo.AsQueryable<RequestReduceFile>().Where(x => x.FileName.Contains(".css"));
             foreach (var file in files)
             {
                 file.IsExpired = false;
-                repo.Save(file);
+                repo.Update(file);
                 fileDate = file.LastUpdated;
             }
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
@@ -196,7 +197,7 @@ namespace RequestReduce.Facts.Integration
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             var cssCount2 = cssPattern.Matches(response).Count;
-            var file2 = repo.AsQueryable().First(x => x.FileName.Contains(".css"));
+            var file2 = repo.AsQueryable<RequestReduceFile>().First(x => x.FileName.Contains(".css"));
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
             Assert.Equal(fileDate, file2.LastUpdated);
@@ -208,11 +209,11 @@ namespace RequestReduce.Facts.Integration
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
-            var files = repo.AsQueryable().Where(x => x.FileName.Contains(".css"));
+            var files = repo.AsQueryable<RequestReduceFile>().Where(x => x.FileName.Contains(".css"));
             foreach (var file in files)
             {
                 file.IsExpired = true;
-                repo.Save(file);
+                repo.Update(file);
             }
             Thread.Sleep(4000);
 
@@ -227,9 +228,9 @@ namespace RequestReduce.Facts.Integration
             const int timeout = 50000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);

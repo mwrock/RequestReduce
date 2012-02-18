@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using PetaPoco;
 using RequestReduce.Configuration;
 using System.Linq;
+using System.Configuration;
 
 namespace RequestReduce.SqlServer
 {
     public interface IPetaPocoRepository
     {
         T Single<T>(object primaryKey);
+        T SingleOrDefault<T>(object primaryKey);
 
         IEnumerable<T> Query<T>();
         IQueryable<T> AsQueryable<T>();
@@ -27,17 +29,53 @@ namespace RequestReduce.SqlServer
         public PetaPocoRepository(IRRConfiguration config)
         {
             this.config = config;
-            db = new RequestReduceDB(config.ConnectionStringName);
+            if (IsConnectionStringName(config.ConnectionStringName))
+            {
+                db = new RequestReduceDB(config.ConnectionStringName);
+            }
+            else
+            {
+                db = new RequestReduceDB(config.ConnectionStringName, RequestReduceDB.DefaultProviderName);
+            }
         }
 
         public RequestReduceDB Context
         {
-            get { return db ?? (db = new RequestReduceDB(config.ConnectionStringName)); }
+            get
+            {
+                if (db != null)
+                {
+                    return db;
+                }
+                if (IsConnectionStringName(config.ConnectionStringName))
+                {
+                    db = new RequestReduceDB(config.ConnectionStringName);
+                }
+                else
+                {
+                    db = new RequestReduceDB(config.ConnectionStringName, RequestReduceDB.DefaultProviderName);
+                }
+                return db;
+            }
+        }
+
+        private bool IsConnectionStringName(string connectionStringName)
+        {
+            if(ConfigurationManager.ConnectionStrings == null)
+            {
+                return false;
+            }
+
+            return (ConfigurationManager.ConnectionStrings[connectionStringName] != null);
         }
 
         public TPassType Single<TPassType>(object primaryKey)
         {
             return db.Single<TPassType>(primaryKey);
+        }
+        public TPassType SingleOrDefault<TPassType>(object primaryKey)
+        {
+            return db.SingleOrDefault<TPassType>(primaryKey);
         }
         public IEnumerable<TPassType> Query<TPassType>()
         {
@@ -83,9 +121,9 @@ namespace RequestReduce.SqlServer
         {
             return Convert.ToInt32(db.Insert(tableName, primaryKeyName, poco));
         }
-        public int Update(object poco)
+        public void Update(object poco)
         {
-            return db.Update(poco);
+            db.Save(poco);
         }
         public int Update(object poco, object primaryKeyValue)
         {

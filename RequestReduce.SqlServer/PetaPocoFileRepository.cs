@@ -13,6 +13,7 @@ namespace RequestReduce.SqlServer
         IEnumerable<string> GetActiveFiles();
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
         string GetActiveUrlByKey(Guid key, Type resourceType);
+        void Update(RequestReduceFile entity);
     }
 
     public class PetaPocoFileRepository : PetaPocoRepository, IPetaPocoFileRepository
@@ -38,17 +39,18 @@ namespace RequestReduce.SqlServer
             return AsQueryable<RequestReduceFile>().Where(x => x.Key == key).ToArray();
         }
 
-        public int Update(RequestReduceFile entity)
+        public void Update(RequestReduceFile entity)
         {
             try
             {
-                return base.Update(entity);
+                ValidateEntity(entity);
+                base.Update(entity);
             }
             catch (Exception dbe)
             {
                 var exception = BuildFailedUpdateException(dbe, entity);
 
-                var existingFile = Single<RequestReduceFile>(entity.RequestReduceFileId);
+                var existingFile = SingleOrDefault<RequestReduceFile>(entity.RequestReduceFileId);
                 if (existingFile == null)
                 {
                     throw exception;
@@ -60,13 +62,33 @@ namespace RequestReduce.SqlServer
                 existingFile.IsExpired = entity.IsExpired;
                 try
                 {
-                    return base.Update(existingFile);
+                    base.Update(existingFile);
                 }
                 catch (Exception dbe2)
                 {
                     exception = BuildFailedUpdateException(dbe2, existingFile);
                     throw exception;
                 }
+            }
+        }
+
+        private void ValidateEntity(RequestReduceFile entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("RequestReduceFile");
+            }
+            if (entity.Content == null)
+            {
+                throw new ArgumentNullException("RequestReduceFile.Content");
+            }
+            if (entity.FileName == null)
+            {
+                throw new ArgumentNullException("RequestReduceFile.FileName");
+            }
+            if (entity.FileName.Length > 150)
+            {
+                throw new ArgumentOutOfRangeException("RequestReduceFile.FileName");
             }
         }
 

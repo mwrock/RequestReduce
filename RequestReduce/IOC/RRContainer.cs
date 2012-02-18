@@ -91,10 +91,10 @@ namespace RequestReduce.IOC
                 var sqlAssembly = Assembly.Load("RequestReduce.SqlServer");
                 initContainer.Configure(x => 
                                             {
-                                                x.For(sqlAssembly.GetType("RequestReduce.SqlServer.IFileRepository"))
+                                                x.For(sqlAssembly.GetType("RequestReduce.SqlServer.IPetaPocoFileRepository"))
                                                     .Use(
                                                         sqlAssembly.GetType(
-                                                            "RequestReduce.SqlServer.FileRepository"));
+                                                            "RequestReduce.SqlServer.PetaPocoFileRepository"));
                                                 var diskStore =
                                                     new ConfiguredInstance(
                                                         sqlAssembly.GetType("RequestReduce.SqlServer.SqlServerStore"));

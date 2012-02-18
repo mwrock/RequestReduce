@@ -35,7 +35,7 @@ namespace RequestReduce.Facts.Store
                 var url = "url";
                 var originalUrls = "originalUrls";
                 RequestReduceFile file = null;
-                testable.Mock<IFileRepository>().Setup(x => x.Save(It.IsAny<RequestReduceFile>())).Callback
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.Update(It.IsAny<RequestReduceFile>())).Callback
                     <RequestReduceFile>(x => file = x);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName(url)).Returns("file.css");
                 var key = Guid.NewGuid();
@@ -105,15 +105,15 @@ namespace RequestReduce.Facts.Store
                 var key = Guid.NewGuid();
                 var id = Hasher.Hash("file.css");
                 RequestReduceFile file = null;
-                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { IsExpired = true }).Verifiable();
-                testable.Mock<IFileRepository>().Setup(x => x.Save(It.IsAny<RequestReduceFile>())).Callback
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.SingleOrDefault<RequestReduceFile>(id)).Returns(new RequestReduceFile() { IsExpired = true }).Verifiable();
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.Update(It.IsAny<RequestReduceFile>())).Callback
                     <RequestReduceFile>(x => file = x);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseFileName(url)).Returns("file.css");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(url)).Returns(key);
 
                 testable.ClassUnderTest.Save(content, url, originalUrls);
 
-                testable.Mock<IFileRepository>().VerifyAll();
+                testable.Mock<IPetaPocoFileRepository>().VerifyAll();
                 Assert.Equal(content, file.Content);
                 Assert.Equal("file.css", file.FileName);
                 Assert.Equal(key, file.Key);
@@ -136,7 +136,7 @@ namespace RequestReduce.Facts.Store
                 var result = testable.ClassUnderTest.SendContent("url", response.Object);
 
                 Assert.True(result);
-                testable.Mock<IFileRepository>().Verify(x => x[It.IsAny<Guid>()], Times.Never());
+                testable.Mock<IPetaPocoFileRepository>().Verify(x => x.SingleOrDefault<RequestReduceFile>(It.IsAny<Guid>()), Times.Never());
             }
 
             [Fact]
@@ -150,7 +150,7 @@ namespace RequestReduce.Facts.Store
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
                 var bytes = new byte[]{1};
-                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile(){Content = bytes});
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.SingleOrDefault<RequestReduceFile>(id)).Returns(new RequestReduceFile() { Content = bytes });
 
                 var result = testable.ClassUnderTest.SendContent("url", response.Object);
 
@@ -170,7 +170,7 @@ namespace RequestReduce.Facts.Store
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
                 var bytes = new byte[] { 1 };
-                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { Content = bytes });
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.SingleOrDefault<RequestReduceFile>(id)).Returns(new RequestReduceFile() { Content = bytes });
                 Exception error = null;
                 var innerError = new ApplicationException();
                 Registry.CaptureErrorAction = (x => error = x);
@@ -208,7 +208,7 @@ namespace RequestReduce.Facts.Store
                 var key = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("url")).Returns(key);
                 var bytes = new byte[] { 1 };
-                testable.Mock<IFileRepository>().Setup(x => x[id]).Returns(new RequestReduceFile() { Content = bytes, IsExpired = true });
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.SingleOrDefault<RequestReduceFile>(id)).Returns(new RequestReduceFile() { Content = bytes, IsExpired = true });
 
                 var result = testable.ClassUnderTest.SendContent("url", response.Object);
 
@@ -236,7 +236,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(fileName2)).Returns(guid2);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName1)).Returns(sig1);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName2)).Returns(sig2);
-                testable.Mock<IFileRepository>().Setup(x => x.GetActiveFiles()).Returns(new List<string>()
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.GetActiveFiles()).Returns(new List<string>()
                                                         {
                                                             fileName1,
                                                             fileName2
@@ -260,12 +260,12 @@ namespace RequestReduce.Facts.Store
                 var key = Guid.NewGuid();
                 var file1 = new RequestReduceFile() {IsExpired = false, RequestReduceFileId = Guid.NewGuid()};
                 var file2 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = Guid.NewGuid() };
-                testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(key)).Returns(new RequestReduceFile[] {file1, file2});
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.GetFilesFromKey(key)).Returns(new RequestReduceFile[] { file1, file2 });
                 bool expire1 = false;
                 bool expire2 = false;
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file1)).Callback<RequestReduceFile>(
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.Update(file1)).Callback<RequestReduceFile>(
                     y => expire1 = y.IsExpired);
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file2)).Callback<RequestReduceFile>(
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.Update(file2)).Callback<RequestReduceFile>(
                     y => expire2 = y.IsExpired);
 
                 testable.ClassUnderTest.Flush(key);
@@ -301,20 +301,20 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey(fileName2)).Returns(guid2);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName1)).Returns(sig1);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature(fileName2)).Returns(sig2);
-                testable.Mock<IFileRepository>().Setup(x => x.GetActiveFiles()).Returns(new List<string>()
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.GetActiveFiles()).Returns(new List<string>()
                                                         {
                                                             fileName1,
                                                             fileName2
                                                         });
                 var file1 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = guid1 };
                 var file2 = new RequestReduceFile() { IsExpired = false, RequestReduceFileId = guid2 };
-                testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(guid1)).Returns(new RequestReduceFile[] { file1 });
-                testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(guid2)).Returns(new RequestReduceFile[] { file2 });
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.GetFilesFromKey(guid1)).Returns(new RequestReduceFile[] { file1 });
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.GetFilesFromKey(guid2)).Returns(new RequestReduceFile[] { file2 });
                 bool expire1 = false;
                 bool expire2 = false;
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file1)).Callback<RequestReduceFile>(
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.Update(file1)).Callback<RequestReduceFile>(
                     y => expire1 = y.IsExpired);
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file2)).Callback<RequestReduceFile>(
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.Update(file2)).Callback<RequestReduceFile>(
                     y => expire2 = y.IsExpired);
 
                 testable.ClassUnderTest.Flush(Guid.Empty);
@@ -336,7 +336,7 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("file1")).Returns(guid1);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("file1")).Returns(sig1);
-                testable.Mock<IFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1, typeof(CssResource))).Returns("file1");
+                testable.Mock<IPetaPocoFileRepository>().Setup(x => x.GetActiveUrlByKey(guid1, typeof(CssResource))).Returns("file1");
 
                 var result = testable.ClassUnderTest.GetUrlByKey(guid1, typeof(CssResource));
 

@@ -13,11 +13,11 @@ namespace RequestReduce.SqlServer
     public class SqlServerStore : IStore
     {
         private readonly IUriBuilder uriBuilder;
-        private readonly IFileRepository repository;
+        private readonly IPetaPocoFileRepository repository;
         internal readonly IStore FileStore;
         private readonly IReductionRepository reductionRepository;
 
-        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, LocalDiskStore fileStore, IReductionRepository reductionRepository)
+        public SqlServerStore(IUriBuilder uriBuilder, IPetaPocoFileRepository repository, LocalDiskStore fileStore, IReductionRepository reductionRepository)
         {
             RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;
@@ -39,7 +39,7 @@ namespace RequestReduce.SqlServer
             foreach (var file in files)
             {
                 file.IsExpired = true;
-                repository.Save(file);
+                repository.Update(file);
             }
             reductionRepository.RemoveReduction(keyGuid);
         }
@@ -56,7 +56,7 @@ namespace RequestReduce.SqlServer
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
             var id = Hasher.Hash(fileName);
-            var file = repository[id] ?? new RequestReduceFile();
+            var file = repository.SingleOrDefault<RequestReduceFile>(id) ?? new RequestReduceFile();
             file.Content = content;
             file.LastUpdated = DateTime.Now;
             file.FileName = fileName;
@@ -65,7 +65,7 @@ namespace RequestReduce.SqlServer
             file.OriginalName = originalUrls;
             file.IsExpired = false;
             FileStore.Save(content, url, originalUrls);
-            repository.Save(file);
+            repository.Update(file);
             if (!url.ToLower().EndsWith(".png"))
                 reductionRepository.AddReduction(key, url);
             RRTracer.Trace("{0} saved to db.", url);
@@ -78,7 +78,7 @@ namespace RequestReduce.SqlServer
 
             var key = uriBuilder.ParseKey(url);
             var id = Hasher.Hash(uriBuilder.ParseFileName(url));
-            var file = repository[id];
+            var file = repository.SingleOrDefault<RequestReduceFile>(id);
 
             if(file != null)
             {

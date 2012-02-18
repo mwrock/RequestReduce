@@ -9,7 +9,7 @@ namespace RequestReduce.SqlServer
     public partial class RequestReduceDB : Database
     {
         public RequestReduceDB()
-            : base("")
+            : base("RequestReduceDB")
         {
             CommonConstruct();
         }
@@ -19,6 +19,14 @@ namespace RequestReduce.SqlServer
         {
             CommonConstruct();
         }
+
+        public RequestReduceDB(string connectionString, string providerName)
+            : base(connectionString, providerName)
+        {
+            CommonConstruct();
+        }
+
+        public static string DefaultProviderName = "System.Data.SqlClient";
 
         partial void CommonConstruct();
 
