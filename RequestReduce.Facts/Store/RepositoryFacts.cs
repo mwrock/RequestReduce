@@ -4,10 +4,10 @@ using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.SqlServer;
-using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using RequestReduce.ResourceTypes;
+using System.Data.Entity.Validation;
 
 namespace RequestReduce.Facts.Store
 {
@@ -96,6 +96,60 @@ namespace RequestReduce.Facts.Store
                 var savedFile = testable.ClassUnderTest[id];
                 Assert.Equal(2, savedFile.Content[0]);
                 Assert.True(savedFile.LastUpdated > new DateTime(2011, 1, 1));
+            }
+
+            [Fact]
+            public void WillThrowExceptionIfFilenameIsTooLong()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-1",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                Assert.Throws<DbEntityValidationException>(() => testable.ClassUnderTest.Save(file));
+            }
+
+            [Fact]
+            public void WillThrowExceptionIfFilenameIsNull()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = null,
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                Assert.Throws<DbEntityValidationException>(() => testable.ClassUnderTest.Save(file));
+            }
+
+            [Fact]
+            public void WillThrowExceptionIfContentIsNull()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = null,
+                    FileName = "filename",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                Assert.Throws<DbEntityValidationException>(() => testable.ClassUnderTest.Save(file));
             }
 
         }
