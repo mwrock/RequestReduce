@@ -187,7 +187,7 @@ namespace RequestReduce.Facts.Integration
             foreach (var file in files)
             {
                 file.IsExpired = false;
-                repo.Update(file);
+                repo.Save(file);
                 fileDate = file.LastUpdated;
             }
             var response = new WebClient().DownloadString("http://localhost:8877/Local.html");
@@ -213,7 +213,7 @@ namespace RequestReduce.Facts.Integration
             foreach (var file in files)
             {
                 file.IsExpired = true;
-                repo.Update(file);
+                repo.Save(file);
             }
             Thread.Sleep(4000);
 

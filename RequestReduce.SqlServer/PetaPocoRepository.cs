@@ -121,9 +121,9 @@ namespace RequestReduce.SqlServer
         {
             return Convert.ToInt32(db.Insert(tableName, primaryKeyName, poco));
         }
-        public void Update(object poco)
+        public int Update(object poco)
         {
-            db.Save(poco);
+            return db.Update(poco);
         }
         public int Update(object poco, object primaryKeyValue)
         {

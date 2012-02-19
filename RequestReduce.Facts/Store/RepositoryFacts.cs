@@ -34,7 +34,6 @@ namespace RequestReduce.Facts.Store
             public TestableRepository(string connectionString)
             {
                 RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
-                //Database.DefaultConnectionFactory = new System.Data.Entity.Infrastructure.SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns(connectionString);
             }
 
@@ -62,7 +61,7 @@ namespace RequestReduce.Facts.Store
                                    RequestReduceFileId = id
                                };
 
-                testable.ClassUnderTest.Update(file);
+                testable.ClassUnderTest.Save(file);
 
                 var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
                 Assert.Equal(file.Content.Length, savedFile.Content.Length);
@@ -89,7 +88,7 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                testable.ClassUnderTest.Update(file);
+                testable.ClassUnderTest.Save(file);
 
                 var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
                 Assert.Equal(file.Content.Length, savedFile.Content.Length);
@@ -115,7 +114,7 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName",
                     RequestReduceFileId = id
                 };
-                testable.ClassUnderTest.Update(file);
+                testable.ClassUnderTest.Save(file);
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 2 },
@@ -125,7 +124,7 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                testable.ClassUnderTest.Update(file2);
+                testable.ClassUnderTest.Save(file2);
 
                 var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
                 Assert.Equal(2, savedFile.Content[0]);
@@ -147,7 +146,7 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                var ex = Record.Exception(() => testable.ClassUnderTest.Update(file));
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
 
                 Assert.NotNull(ex);
             }
@@ -167,7 +166,7 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                var ex = Record.Exception(() => testable.ClassUnderTest.Update(file));
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
 
                 Assert.NotNull(ex);
             }
@@ -187,7 +186,7 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = id
                 };
 
-                var ex = Record.Exception(() => testable.ClassUnderTest.Update(file));
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
 
                 Assert.NotNull(ex);
             }
@@ -230,9 +229,9 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 3 })
                 };
-                testable.ClassUnderTest.Update(file);
-                testable.ClassUnderTest.Update(file2);
-                testable.ClassUnderTest.Update(file3);
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+                testable.ClassUnderTest.Save(file3);
 
                 var result = testable.ClassUnderTest.GetActiveFiles();
 
@@ -267,8 +266,8 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 2 })
                 };
-                testable.ClassUnderTest.Update(file);
-                testable.ClassUnderTest.Update(file2);
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
 
                 var result = testable.ClassUnderTest.GetActiveFiles();
 
@@ -330,11 +329,11 @@ namespace RequestReduce.Facts.Store
                     RequestReduceFileId = Hasher.Hash(new byte[] { 5 })
                 };
 
-                testable.ClassUnderTest.Update(file);
-                testable.ClassUnderTest.Update(file2);
-                testable.ClassUnderTest.Update(file3);
-                testable.ClassUnderTest.Update(file4);
-                testable.ClassUnderTest.Update(file5);
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+                testable.ClassUnderTest.Save(file3);
+                testable.ClassUnderTest.Save(file4);
+                testable.ClassUnderTest.Save(file5);
 
                 var result = testable.ClassUnderTest.GetActiveFiles();
 
@@ -379,9 +378,9 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Guid.NewGuid()
                 };
-                testable.ClassUnderTest.Update(file);
-                testable.ClassUnderTest.Update(file2);
-                testable.ClassUnderTest.Update(file3);
+                testable.ClassUnderTest.Save(file);
+                testable.ClassUnderTest.Save(file2);
+                testable.ClassUnderTest.Save(file3);
 
                 var result = testable.ClassUnderTest.GetFilesFromKey(id);
 
@@ -408,7 +407,7 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName",
                     RequestReduceFileId = Guid.NewGuid()
                 };
-                testable.ClassUnderTest.Update(file);
+                testable.ClassUnderTest.Save(file);
                 var file2 = new RequestReduceFile()
                 {
                     Content = new byte[] { 2 },
@@ -418,7 +417,7 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName",
                     RequestReduceFileId = Guid.NewGuid()
                 };
-                testable.ClassUnderTest.Update(file2);
+                testable.ClassUnderTest.Save(file2);
 
                 var result = testable.ClassUnderTest.GetActiveUrlByKey(id, typeof(CssResource));
 
@@ -442,7 +441,7 @@ namespace RequestReduce.Facts.Store
                 RequestReduceFileId = id,
                 IsExpired = true
             };
-            testable.ClassUnderTest.Update(file);
+            testable.ClassUnderTest.Save(file);
             var file2 = new RequestReduceFile()
             {
                 Content = new byte[] { 2 },
@@ -452,7 +451,7 @@ namespace RequestReduce.Facts.Store
                 OriginalName = "originalName",
                 RequestReduceFileId = Guid.NewGuid()
             };
-            testable.ClassUnderTest.Update(file2);
+            testable.ClassUnderTest.Save(file2);
 
             var result = testable.ClassUnderTest.GetActiveUrlByKey(id, typeof(CssResource));
 

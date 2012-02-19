@@ -13,7 +13,7 @@ namespace RequestReduce.SqlServer
         IEnumerable<string> GetActiveFiles();
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
         string GetActiveUrlByKey(Guid key, Type resourceType);
-        void Update(RequestReduceFile entity);
+        void Save(RequestReduceFile entity);
     }
 
     public class PetaPocoFileRepository : PetaPocoRepository, IPetaPocoFileRepository
@@ -39,12 +39,12 @@ namespace RequestReduce.SqlServer
             return AsQueryable<RequestReduceFile>().Where(x => x.Key == key).ToArray();
         }
 
-        public void Update(RequestReduceFile entity)
+        public void Save(RequestReduceFile entity)
         {
             try
             {
                 ValidateEntity(entity);
-                base.Update(entity);
+                base.Insert(entity);
             }
             catch (Exception dbe)
             {

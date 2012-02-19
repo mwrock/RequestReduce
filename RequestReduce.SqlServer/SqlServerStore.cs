@@ -39,7 +39,7 @@ namespace RequestReduce.SqlServer
             foreach (var file in files)
             {
                 file.IsExpired = true;
-                repository.Update(file);
+                repository.Save(file);
             }
             reductionRepository.RemoveReduction(keyGuid);
         }
@@ -65,7 +65,7 @@ namespace RequestReduce.SqlServer
             file.OriginalName = originalUrls;
             file.IsExpired = false;
             FileStore.Save(content, url, originalUrls);
-            repository.Update(file);
+            repository.Save(file);
             if (!url.ToLower().EndsWith(".png"))
                 reductionRepository.AddReduction(key, url);
             RRTracer.Trace("{0} saved to db.", url);
