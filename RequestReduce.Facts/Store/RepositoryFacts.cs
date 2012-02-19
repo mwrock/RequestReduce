@@ -19,8 +19,6 @@ namespace RequestReduce.Facts.Store
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
             {
-                //Database.SetInitializer(new DropCreateDatabaseAlways<RequestReduceContext>());
-                //Context.Database.Initialize(true);
             }
         }
 
