@@ -31,14 +31,15 @@ namespace RequestReduce.Facts.Integration
                 Directory.CreateDirectory(dataDir);
 
             RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
-            //Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
             var mockConfig = new Mock<IRRConfiguration>();
             mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
             config = mockConfig.Object;
             repo = new PetaPocoFileRepository(config);
             IntegrationFactHelper.RecyclePool();
-            //repo.Context.Database.Delete();
-            //repo.Context.Database.Create();
+            foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
+            {
+                repo.Delete<RequestReduceFile>(file);
+            }
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore, 3000);
             uriBuilder = new UriBuilder(config);
         }
@@ -88,9 +89,7 @@ namespace RequestReduce.Facts.Integration
             var url = urlPattern.Match(css).Groups["url"].Value;
             var id = Hasher.Hash(uriBuilder.ParseFileName(url));
             var createTime = repo.SingleOrDefault<RequestReduceFile>(id).LastUpdated;
-
-            //repo.Context.Files.Remove(repo.Single<RequestReduceFile>(id));
-            //repo.Context.SaveChanges();
+            repo.Delete<RequestReduceFile>(id);
             IntegrationFactHelper.RecyclePool();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
@@ -116,8 +115,6 @@ namespace RequestReduce.Facts.Integration
                 id = Hasher.Hash(uriBuilder.ParseFileName(url));
             }
             repo.Delete<RequestReduceFile>(id);
-            //repo.Detach(repo.Single<RequestReduceFile>(id));
-            //repo.Context.SaveChanges();
 
             var req = HttpWebRequest.Create("http://localhost:8877" + url);
             var response2 = req.GetResponse() as HttpWebResponse;
@@ -200,7 +197,7 @@ namespace RequestReduce.Facts.Integration
             var file2 = repo.AsQueryable<RequestReduceFile>().First(x => x.FileName.Contains(".css"));
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
-            Assert.Equal(fileDate, file2.LastUpdated);
+            Assert.True(fileDate - file2.LastUpdated <= TimeSpan.FromMilliseconds(4));
         }
 
         [OutputTraceOnFailFact]

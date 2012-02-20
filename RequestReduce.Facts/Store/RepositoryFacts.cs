@@ -1,5 +1,4 @@
 ﻿using System;
-//using System.Data.Entity;
 using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
@@ -7,7 +6,6 @@ using RequestReduce.SqlServer;
 using RequestReduce.Utilities;
 using Xunit;
 using RequestReduce.ResourceTypes;
-//using System.Data.Entity.Validation;
 
 namespace RequestReduce.Facts.Store
 {
@@ -19,6 +17,10 @@ namespace RequestReduce.Facts.Store
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
             {
+                foreach (RequestReduceFile file in Fetch<RequestReduceFile>())
+                {
+                    Delete<RequestReduceFile>(file);
+                }
             }
         }
 
@@ -68,7 +70,7 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(file.Key, savedFile.Key);
                 Assert.Equal(file.OriginalName, savedFile.OriginalName);
                 Assert.Equal(file.RequestReduceFileId, savedFile.RequestReduceFileId);
-                Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
+                Assert.True((file.LastUpdated - savedFile.LastUpdated) <= TimeSpan.FromMilliseconds(4));
             }
 
             [Fact]
@@ -95,7 +97,7 @@ namespace RequestReduce.Facts.Store
                 Assert.Equal(file.Key, savedFile.Key);
                 Assert.Equal(file.OriginalName, savedFile.OriginalName);
                 Assert.Equal(file.RequestReduceFileId, savedFile.RequestReduceFileId);
-                Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
+                Assert.True((file.LastUpdated - savedFile.LastUpdated) <= TimeSpan.FromMilliseconds(4));
             }
 
             [Fact]
@@ -227,6 +229,7 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 3 })
                 };
+
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
@@ -270,6 +273,7 @@ namespace RequestReduce.Facts.Store
                 var result = testable.ClassUnderTest.GetActiveFiles();
 
                 Assert.Equal(1, result.Count());
+                Assert.Equal(file2.FileName, result.First());
                 Assert.True(result.Contains(file2.FileName));
             }
 
@@ -326,7 +330,6 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 5 })
                 };
-
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
@@ -384,8 +387,9 @@ namespace RequestReduce.Facts.Store
 
                 Assert.Equal(2, result.Count());
                 Assert.True(result.All(x => x.Key == id));
-                Assert.True(result.Contains(file));
-                Assert.True(result.Contains(file2));
+
+                Assert.NotNull(result.Single(f => f.RequestReduceFileId == file.RequestReduceFileId));
+                Assert.NotNull(result.Single(f => f.RequestReduceFileId == file2.RequestReduceFileId));
             }
         }
 
