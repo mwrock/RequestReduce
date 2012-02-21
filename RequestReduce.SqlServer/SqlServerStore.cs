@@ -13,11 +13,11 @@ namespace RequestReduce.SqlServer
     public class SqlServerStore : IStore
     {
         private readonly IUriBuilder uriBuilder;
-        private readonly IPetaPocoFileRepository repository;
+        private readonly IFileRepository repository;
         internal readonly IStore FileStore;
         private readonly IReductionRepository reductionRepository;
 
-        public SqlServerStore(IUriBuilder uriBuilder, IPetaPocoFileRepository repository, LocalDiskStore fileStore, IReductionRepository reductionRepository)
+        public SqlServerStore(IUriBuilder uriBuilder, IFileRepository repository, LocalDiskStore fileStore, IReductionRepository reductionRepository)
         {
             RRTracer.Trace("Sql Server Store Created.");
             this.uriBuilder = uriBuilder;

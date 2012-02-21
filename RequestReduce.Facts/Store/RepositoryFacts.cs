@@ -12,7 +12,7 @@ namespace RequestReduce.Facts.Store
     public class RepositoryFacts
     {
 
-        class FakeFileRepository : PetaPocoFileRepository
+        class FakeFileRepository : FileRepository
         {
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)

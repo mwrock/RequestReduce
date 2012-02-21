@@ -19,7 +19,7 @@ namespace RequestReduce.Facts.Integration
     public class SqlServerStoreFacts : IDisposable
     {
         private readonly IRRConfiguration config;
-        private readonly IPetaPocoFileRepository repo;
+        private readonly IFileRepository repo;
         private readonly UriBuilder uriBuilder;
         private readonly string rrFolder;
 
@@ -34,7 +34,7 @@ namespace RequestReduce.Facts.Integration
             var mockConfig = new Mock<IRRConfiguration>();
             mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
             config = mockConfig.Object;
-            repo = new PetaPocoFileRepository(config);
+            repo = new FileRepository(config);
             IntegrationFactHelper.RecyclePool();
             foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
             {

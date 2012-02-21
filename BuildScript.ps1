@@ -49,6 +49,7 @@ task create-WebProject-build-target {
 task Build-35-Solution {
   $conf = $configuration+35
   exec { msbuild 'RequestReduce\RequestReduce.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$conf }
+  exec { msbuild 'RequestReduce.SqlServer\RequestReduce.SqlServer.csproj' /maxcpucount /t:Build /v:Minimal /p:Configuration=$conf }
 }
 
 task Build-Solution {

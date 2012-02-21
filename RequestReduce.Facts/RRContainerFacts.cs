@@ -92,7 +92,7 @@ namespace RequestReduce.Facts
             container.Configure(x =>
             {
                 x.For<IUriBuilder>().Use(Mock.Of<IUriBuilder>());
-                x.For<IPetaPocoFileRepository>().Use(Mock.Of<IPetaPocoFileRepository>());
+                x.For<IFileRepository>().Use(Mock.Of<IFileRepository>());
                 x.For<IReductionRepository>().Use(Mock.Of<IReductionRepository>());
                 x.For<IFileWrapper>().Use(Mock.Of<IFileWrapper>());
             });
