@@ -21,7 +21,7 @@ namespace RequestReduce.Facts.Integration
         private readonly IRRConfiguration config;
         private readonly IFileRepository repo;
         private readonly UriBuilder uriBuilder;
-        private readonly string rrFolder;
+        private string rrFolder;
 
         public SqlServerStoreFacts()
         {
@@ -54,6 +54,25 @@ namespace RequestReduce.Facts.Integration
 
             Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
             Assert.Equal(2, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillReduceToOneCssAndScripOnNet35MediumTrust()
+        {
+            var rrFolderOld = rrFolder;
+            rrFolder = rrFolder.Replace("SampleWeb", "SampleWeb35");
+            if (Directory.Exists(rrFolder))
+                Directory.Delete(rrFolder, true);
+            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.3.5";
+
+            new WebClient().DownloadString("http://localhost:8878/Local.html");
+            WaitToCreateResources(expectedJsFiles:1);
+
+            var response = new WebClient().DownloadString("http://localhost:8878/Local.html");
+
+            Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(1, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            rrFolder = rrFolderOld;
         }
 
         [OutputTraceOnFailFact]

@@ -103,7 +103,9 @@ task Push-Nuget-SassLessCoffee {
 
 task Merge-35-Assembly -depends Build-35-Solution {
   clean $baseDir\RequestReduce\Nuget\Lib\net20
+  clean $baseDir\RequestReduce.SqlServer\Nuget\Lib\net20
   create $baseDir\RequestReduce\Nuget\Lib\net20
+  create $baseDir\RequestReduce.SqlServer\Nuget\Lib\net20
   if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
   exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v2,$env:windir\Microsoft.NET\Framework$bitness\v2.0.50727" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net20\RequestReduce.dll "$baseDir\RequestReduce\bin\v3.5\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v3.5\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v3.5\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v3.5\$configuration\nquant.core.dll" }
 }
