@@ -32,7 +32,7 @@ namespace RequestReduce.Facts.Integration
 
             RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
             var mockConfig = new Mock<IRRConfiguration>();
-            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce40.sdf");
             config = mockConfig.Object;
             repo = new FileRepository(config);
             IntegrationFactHelper.RecyclePool();

@@ -76,7 +76,7 @@ namespace RequestReduce.Facts.Store
             [Fact]
             public void WillSaveToDatabaseUsingConnectionString()
             {
-                var testable = new TestableRepository("data source=RequestReduce.sdf");
+                var testable = new TestableRepository("data source=RequestReduce40.sdf");
                 var id = Guid.NewGuid();
                 var file = new RequestReduceFile()
                 {
