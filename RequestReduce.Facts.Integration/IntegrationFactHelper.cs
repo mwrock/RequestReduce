@@ -49,22 +49,48 @@ namespace RequestReduce.Facts.Integration
             return rrFolder;
         }
 
-        public static void RecyclePool()
+        public static void SetSampleWeb35StoreAndTrust(Configuration.Store store, int pollInterval, string trust)
+        {
+            XDocument doc = null;
+            using (var stream = File.OpenText(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                              "\\RequestReduce.SampleWeb35\\web.config"))
+            {
+                doc = XDocument.Load(stream);
+            }
+            doc.Element("configuration").Element("RequestReduce").SetAttributeValue("contentStore", store.ToString());
+            doc.Element("configuration").Element("RequestReduce").SetAttributeValue("storePollInterval", pollInterval.ToString());
+            doc.Element("configuration").Element("system.web").Element("trust").SetAttributeValue("level", trust);
+            Recycle35Pool();
+            doc.Save(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                              "\\RequestReduce.SampleWeb35\\web.config");
+        }
+
+        public static void RecycleNamedPool(string poolName)
         {
             using (var manager = new ServerManager())
             {
-                var pool = manager.ApplicationPools["RequestReduce"];
+                var pool = manager.ApplicationPools[poolName];
                 Process process = null;
-                if(pool.WorkerProcesses.Count > 0)
+                if (pool.WorkerProcesses.Count > 0)
                     process = Process.GetProcessById(pool.WorkerProcesses[0].ProcessId);
                 pool.Recycle();
-                if(process != null)
+                if (process != null)
                 {
                     while (!process.HasExited)
                         Thread.Sleep(0);
                     process.Dispose();
                 }
             }
+        }
+
+        public static void RecyclePool()
+        {
+            RecycleNamedPool("RequestReduce");
+        }
+
+        public static void Recycle35Pool()
+        {
+            RecycleNamedPool("RequestReduce35");
         }
 
     }

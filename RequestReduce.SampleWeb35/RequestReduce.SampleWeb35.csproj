@@ -73,6 +73,7 @@
     <Content Include="Local.html" />
     <Content Include="scripts\script1.js" />
     <Content Include="scripts\script2.js" />
+    <Content Include="sqlcehosting.aspx" />
     <Content Include="styles\style1.css" />
     <Content Include="styles\style2.css" />
     <Content Include="Web.config">

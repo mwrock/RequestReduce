@@ -57,25 +57,6 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
-        public void WillReduceToOneCssAndScripOnNet35MediumTrust()
-        {
-            var rrFolderOld = rrFolder;
-            rrFolder = rrFolder.Replace("SampleWeb", "SampleWeb35");
-            if (Directory.Exists(rrFolder))
-                Directory.Delete(rrFolder, true);
-            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.3.5";
-
-            new WebClient().DownloadString("http://localhost:8878/Local.html");
-            WaitToCreateResources(expectedJsFiles:1);
-
-            var response = new WebClient().DownloadString("http://localhost:8878/Local.html");
-
-            Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
-            Assert.Equal(1, new JavaScriptResource().ResourceRegex.Matches(response).Count);
-            rrFolder = rrFolderOld;
-        }
-
-        [OutputTraceOnFailFact]
         public void WillUseSameReductionAfterAppPoolRecycle()
         {
             var urlPattern = new Regex(@"(href|src)=""?(?<url>[^"" ]+)""?[^ />]+[ />]", RegexOptions.IgnoreCase);
@@ -263,5 +244,73 @@ namespace RequestReduce.Facts.Integration
         {
             IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore, Timeout.Infinite);
         }
+    }
+
+
+    public class SqlServerStoreFacts35
+    {
+        private readonly IRRConfiguration config;
+        private readonly IFileRepository repo;
+        private string rrFolder;
+
+        public SqlServerStoreFacts35()
+        {
+            var dataDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                          "\\RequestReduce.SampleWeb35\\App_Data";
+            if (!Directory.Exists(dataDir))
+                Directory.CreateDirectory(dataDir);
+
+            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.3.5";
+            var mockConfig = new Mock<IRRConfiguration>();
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce35.sdf");
+            config = mockConfig.Object;
+            repo = new FileRepository(config);
+            IntegrationFactHelper.Recycle35Pool();
+            foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
+            {
+                repo.Delete<RequestReduceFile>(file);
+            }
+            rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb35\\RRContent";
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillReduceToOneCssAndScripOnNet35FullTrust()
+        {
+            if (Directory.Exists(rrFolder))
+                Directory.Delete(rrFolder, true);
+            
+            IntegrationFactHelper.SetSampleWeb35StoreAndTrust(Configuration.Store.SqlServerStore, 3000, "Full");
+
+            new WebClient().DownloadString("http://localhost:8878/sqlcehosting.aspx");
+
+            new WebClient().DownloadString("http://localhost:8878/Local.html");
+            WaitToCreateResources(expectedJsFiles: 1);
+
+            var response = new WebClient().DownloadString("http://localhost:8878/Local.html");
+
+            Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(1, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+        }
+
+        private void WaitToCreateResources(int expectedCssFiles = 1, int expectedJsFiles = 2)
+        {
+            const int timeout = 50000;
+            var watch = new Stopwatch();
+            watch.Start();
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (Directory.GetFiles(rrFolder, "*.css").Length < expectedCssFiles && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (Directory.GetFiles(rrFolder, "*.js").Length < expectedJsFiles && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            if (watch.ElapsedMilliseconds >= timeout)
+                throw new TimeoutException(timeout);
+            Thread.Sleep(200);
+        }
+
     }
 }
