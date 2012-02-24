@@ -57,6 +57,8 @@ namespace RequestReduce.Facts.Integration
             rrFolder = rrFolder.Replace("SampleWeb", "SampleWeb35");
             if (Directory.Exists(rrFolder))
                 Directory.Delete(rrFolder, true);
+            IntegrationFactHelper.SetSampleWeb35StoreAndTrust(Configuration.Store.LocalDiskStore, Timeout.Infinite, "Medium");
+
             new WebClient().DownloadString("http://localhost:8878/Local.html");
             WaitToCreateResources(1,1,false,30000);
 

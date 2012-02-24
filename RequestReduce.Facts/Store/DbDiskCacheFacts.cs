@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.SqlServer;
-using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
+using System.Collections.Generic;
 
 namespace RequestReduce.Facts.Store
 {
@@ -29,7 +28,7 @@ namespace RequestReduce.Facts.Store
             {
                 return url;
             }
-            public ConcurrentDictionary<string, DateTime> FileList { get { return fileList; } }
+            public Dictionary<string, DateTime> FileList { get { return fileList; } }
         }
 
         class TestableDbDiskCache : Testable<FakeDbDiskCache>

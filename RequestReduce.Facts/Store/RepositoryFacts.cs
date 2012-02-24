@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.SqlServer;
-using RequestReduce.Store;
 using RequestReduce.Utilities;
 using Xunit;
 using RequestReduce.ResourceTypes;
@@ -19,8 +17,10 @@ namespace RequestReduce.Facts.Store
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
             {
-                Database.SetInitializer(new DropCreateDatabaseAlways<RequestReduceContext>());
-                Context.Database.Initialize(true);
+                foreach (RequestReduceFile file in Fetch<RequestReduceFile>())
+                {
+                    Delete<RequestReduceFile>(file);
+                }
             }
         }
 
@@ -29,6 +29,12 @@ namespace RequestReduce.Facts.Store
             public TestableRepository()
             {
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns("RRConnection");
+            }
+
+            public TestableRepository(string connectionString)
+            {
+                RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
+                Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns(connectionString);
             }
 
             public void Dispose()
@@ -57,14 +63,41 @@ namespace RequestReduce.Facts.Store
 
                 testable.ClassUnderTest.Save(file);
 
-                var savedFile = testable.ClassUnderTest[id];
+                var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
                 Assert.Equal(file.Content.Length, savedFile.Content.Length);
                 Assert.Equal(file.Content[0], savedFile.Content[0]);
                 Assert.Equal(file.FileName, savedFile.FileName);
                 Assert.Equal(file.Key, savedFile.Key);
                 Assert.Equal(file.OriginalName, savedFile.OriginalName);
                 Assert.Equal(file.RequestReduceFileId, savedFile.RequestReduceFileId);
-                Assert.Equal(file.LastUpdated, savedFile.LastUpdated);
+                Assert.True((file.LastUpdated - savedFile.LastUpdated) <= TimeSpan.FromMilliseconds(4));
+            }
+
+            [Fact]
+            public void WillSaveToDatabaseUsingConnectionString()
+            {
+                var testable = new TestableRepository("data source=RequestReduce40.sdf");
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "fileName",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                testable.ClassUnderTest.Save(file);
+
+                var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
+                Assert.Equal(file.Content.Length, savedFile.Content.Length);
+                Assert.Equal(file.Content[0], savedFile.Content[0]);
+                Assert.Equal(file.FileName, savedFile.FileName);
+                Assert.Equal(file.Key, savedFile.Key);
+                Assert.Equal(file.OriginalName, savedFile.OriginalName);
+                Assert.Equal(file.RequestReduceFileId, savedFile.RequestReduceFileId);
+                Assert.True((file.LastUpdated - savedFile.LastUpdated) <= TimeSpan.FromMilliseconds(4));
             }
 
             [Fact]
@@ -93,9 +126,69 @@ namespace RequestReduce.Facts.Store
 
                 testable.ClassUnderTest.Save(file2);
 
-                var savedFile = testable.ClassUnderTest[id];
+                var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
                 Assert.Equal(2, savedFile.Content[0]);
                 Assert.True(savedFile.LastUpdated > new DateTime(2011, 1, 1));
+            }
+
+            [Fact]
+            public void WillThrowIfFilenameIsTooLong()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-1",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
+
+                Assert.NotNull(ex);
+            }
+
+            [Fact]
+            public void WillThrowIfFilenameIsNull()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = null,
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
+
+                Assert.NotNull(ex);
+            }
+
+            [Fact]
+            public void WillThrowIfContentIsNull()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = null,
+                    FileName = "filename",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = DateTime.Now,
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+
+                var ex = Record.Exception(() => testable.ClassUnderTest.Save(file));
+
+                Assert.NotNull(ex);
             }
 
         }
@@ -136,6 +229,7 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 3 })
                 };
+
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
@@ -179,6 +273,7 @@ namespace RequestReduce.Facts.Store
                 var result = testable.ClassUnderTest.GetActiveFiles();
 
                 Assert.Equal(1, result.Count());
+                Assert.Equal(file2.FileName, result.First());
                 Assert.True(result.Contains(file2.FileName));
             }
 
@@ -235,7 +330,6 @@ namespace RequestReduce.Facts.Store
                     OriginalName = "originalName2",
                     RequestReduceFileId = Hasher.Hash(new byte[] { 5 })
                 };
-
                 testable.ClassUnderTest.Save(file);
                 testable.ClassUnderTest.Save(file2);
                 testable.ClassUnderTest.Save(file3);
@@ -293,8 +387,9 @@ namespace RequestReduce.Facts.Store
 
                 Assert.Equal(2, result.Count());
                 Assert.True(result.All(x => x.Key == id));
-                Assert.True(result.Contains(file));
-                Assert.True(result.Contains(file2));
+
+                Assert.NotNull(result.Single(f => f.RequestReduceFileId == file.RequestReduceFileId));
+                Assert.NotNull(result.Single(f => f.RequestReduceFileId == file2.RequestReduceFileId));
             }
         }
 
