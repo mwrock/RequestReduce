@@ -127,7 +127,8 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   create $baseDir\RequestReduce\Nuget\pngoptimization
   clean $baseDir\RequestReduce\Nuget\Content\App_Readme
   create $baseDir\RequestReduce\Nuget\Content\App_Readme
-  Copy-Item $baseDir\RequestReduce.SqlServer\bin\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net40\
+  Copy-Item $baseDir\RequestReduce.SqlServer\bin\v4.0\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net40\
+  Copy-Item $baseDir\RequestReduce.SqlServer\bin\v3.5\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net20\
   Copy-Item $baseDir\RequestReduce.SassLessCoffee\bin\$configuration\RequestReduce.SassLessCoffee.* $baseDir\RequestReduce.SassLessCoffee\Nuget\lib\net40\
   Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
   Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
@@ -141,7 +142,6 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.exe $filesDir\net35
   Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.exe $filesDir\net40
   create $filesDir\RequestReduce.SqlServer
-  Copy-Item $baseDir\requestreduce.SqlServer\bin\$configuration\Entityframework.* $filesDir\RequestReduce.SqlServer
   Copy-Item $baseDir\requestreduce.SqlServer\nuget\lib\net40\*.* $filesDir\RequestReduce.SqlServer
   Copy-Item $baseDir\requestreduce.SqlServer\nuget\tools\*.* $filesDir\RequestReduce.SqlServer
   create $filesDir\RequestReduce.SassLessCoffee
