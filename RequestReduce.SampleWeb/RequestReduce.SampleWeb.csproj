@@ -107,6 +107,7 @@
     </Content>
     <Content Include="test.html" />
     <None Include="Styles\import.less" />
+    <Content Include="Styles\Parameters.less" />
     <None Include="Styles\Style.less" />
     <None Include="Scripts\test.coffee">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
