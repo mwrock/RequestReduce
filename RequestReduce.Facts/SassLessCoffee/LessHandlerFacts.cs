@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Web;
 using Moq;
@@ -17,6 +18,8 @@ namespace RequestReduce.Facts.SassLessCoffee
                 MockedContext = new Mock<HttpContextBase>();
                 MockedContext.Setup(x => x.Request.Path)
                     .Returns("~/RRContent/css.less");
+                MockedContext.Setup(x => x.Request.QueryString)
+                    .Returns(new NameValueCollection());
                 MockedResponse = new Mock<HttpResponseBase>();
                 MockedContext.Setup(x => x.Response).Returns(MockedResponse.Object);
                 MockedServer = new Mock<HttpServerUtilityBase>();
