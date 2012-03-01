@@ -14,9 +14,9 @@ namespace RequestReduce.Utilities
             if (typeof(T) == typeof(CssResource))
                 return minifier.MinifyStyleSheet(unMinifiedContent);
             if (typeof(T) == typeof(JavaScriptResource))
-                return minifier.MinifyJavaScript(unMinifiedContent, settings);
+                return  minifier.MinifyJavaScript(unMinifiedContent, settings);
 
-            throw new ArgumentException("Cannot Minify Resources of unknown type", "unMinifiedContent");
+            throw new ArgumentException("Cannot Minify ResourceStrings of unknown type", "unMinifiedContent");
         }
 
     }

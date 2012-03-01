@@ -38,7 +38,11 @@ namespace RequestReduce.Reducer
             var virtualfileName = string.Empty;
             if(processedResource != null)
             {
-                var bytes = Encoding.UTF8.GetBytes(minifier.Minify<T>(processedResource));
+                RRTracer.Trace("beginning minify for {0} with {1} length", urls, processedResource.Length);
+                var minified = minifier.Minify<T>(processedResource);
+                RRTracer.Trace("{0} minified to {1} bytes", urls, minified.Length);
+                var bytes = Encoding.UTF8.GetBytes(minified);
+                RRTracer.Trace("{0} encoded to {1} bytes", urls, bytes.Length);
                 virtualfileName = uriBuilder.BuildResourceUrl<T>(key, bytes);
                 store.Save(bytes, virtualfileName, urls);
             }

@@ -114,8 +114,22 @@ task Merge-40-Assembly -depends Build-Solution {
 	create $baseDir\RequestReduce\Nuget\Lib\net40
 	create $baseDir\RequestReduce.SqlServer\Nuget\Lib\net40
 	create $baseDir\RequestReduce.SassLessCoffee\Nuget\Lib\net40
-	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {$bitness = "64"}
-    exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework$bitness\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
+	if ($env:PROCESSOR_ARCHITECTURE -eq "x64") {
+		if( Test-Path "${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" ) {
+			exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,${env:ProgramFiles(x86)}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
+		}
+		else {
+			exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework64\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
+		}
+	}
+	else {
+		if( Test-Path "$env:ProgramFiles\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" ) {
+			exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:ProgramFiles\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
+		}
+		else {
+			exec { .\Tools\ilmerge.exe /t:library /internalize /targetplatform:"v4,$env:windir\Microsoft.NET\Framework\v4.0.30319" /wildcards /out:$baseDir\RequestReduce\Nuget\Lib\net40\RequestReduce.dll "$baseDir\RequestReduce\bin\v4.0\$configuration\RequestReduce.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\AjaxMin.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\StructureMap.dll" "$baseDir\RequestReduce\bin\v4.0\$configuration\nquant.core.dll" }
+		}
+	}
 }
 
 task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {

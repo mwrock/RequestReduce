@@ -79,6 +79,7 @@ namespace RequestReduce.IOC
                 y.Assembly("RequestReduce");
                 y.IncludeNamespace("RequestReduce.Utilities");
                 y.IncludeNamespace("RequestReduce.Configuration");
+                y.IgnoreStructureMapAttributes();
                 y.With(new SingletonConvention());
             }));
         }

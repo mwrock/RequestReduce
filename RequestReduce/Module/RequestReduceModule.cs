@@ -8,7 +8,6 @@ using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
-using RequestReduce.Properties;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 
@@ -44,7 +43,7 @@ namespace RequestReduce.Module
 
         private void WriteDashboard(HttpContextBase httpContextWrapper)
         {
-            var dashboardHtml = Resources.Dashboard;
+            var dashboardHtml = Resources.ResourceStrings.Dashboard;
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var ipfilter = RRContainer.Current.GetInstance<IIpFilter>();
             var user = httpContextWrapper.User == null ? string.Empty : httpContextWrapper.User.Identity.Name;
@@ -311,7 +310,7 @@ namespace RequestReduce.Module
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
 
-            var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bug 
+            var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bugg 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
             context.Items.Add(ContextKey, new object());
             RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);

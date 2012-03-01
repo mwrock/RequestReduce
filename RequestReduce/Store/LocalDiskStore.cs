@@ -152,12 +152,11 @@ namespace RequestReduce.Store
 
         protected virtual string GetFileNameFromConfig(string url)
         {
-            var fileName = url.ToLower(CultureInfo.InvariantCulture);
-            var idx = fileName.IndexOf(configuration.SpriteVirtualPath.ToLower(CultureInfo.InvariantCulture));
+            if (url.EndsWith("/")) return url;
+            var idx = url.LastIndexOf('/');
             return idx > -1
-                       ? fileName.Replace(configuration.SpriteVirtualPath.ToLower(CultureInfo.InvariantCulture),
-                                          configuration.SpritePhysicalPath.ToLower(CultureInfo.InvariantCulture)).
-                             Substring(idx).Replace('/', '\\')
+                       ? string.Format("{0}\\{1}", configuration.SpritePhysicalPath, url.Substring(idx + 1)).
+                             ToLower(CultureInfo.InvariantCulture)
                        : url;
         }
 
