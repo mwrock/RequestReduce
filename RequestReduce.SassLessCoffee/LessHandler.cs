@@ -23,6 +23,7 @@ namespace RequestReduce.SassLessCoffee
         public void ProcessRequest(HttpContextBase context)
         {
             var physicalPath = context.Server.MapPath(context.Request.Path);
+            var querystring = context.Request.QueryString.ToString();
             var response = context.Response;
 
             try
@@ -37,7 +38,7 @@ namespace RequestReduce.SassLessCoffee
                     ).GetEngine();
                 var lessEngine = (LessEngine) ((ParameterDecorator) engine).Underlying;
                 ((LessLogger)lessEngine.Logger).Response = response;
-                var result = engine.TransformToCss(source, physicalPath);
+                var result = engine.TransformToCss(source, physicalPath + (string.IsNullOrWhiteSpace(querystring) ? string.Empty : "?" + querystring));
                 response.ContentType = "text/css";
                 if(!string.IsNullOrEmpty(result))
                     response.Write(result);

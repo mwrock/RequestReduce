@@ -25,6 +25,23 @@ namespace RequestReduce.Facts.Integration
         }
 
         [Fact]
+        public void WillGetCompilesLessAsCssWithParameters()
+        {
+            const string expected = "#header {\n  color: #4d926f;\n}\n";
+            string result;
+            var client = WebRequest.Create("http://localhost:8877/styles/Parameters.less?brand_color=%234d926f");
+            var httpResponse = client.GetResponse();
+
+            using (var streameader = new StreamReader(httpResponse.GetResponseStream(), Encoding.UTF8))
+            {
+                result = streameader.ReadToEnd();
+            }
+
+            Assert.Equal(expected, result);
+            Assert.Contains("text/css", httpResponse.ContentType);
+        }
+
+        [Fact]
         public void WillGetCompilesSassAsCss()
         {
             const string expected = ".content-navigation {\n  border-color: #3bbfce;\n  color: #2ca2af; }\n\r\n";
