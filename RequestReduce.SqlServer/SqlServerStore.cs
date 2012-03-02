@@ -56,7 +56,7 @@ namespace RequestReduce.SqlServer
             var fileName = uriBuilder.ParseFileName(url);
             var key = uriBuilder.ParseKey(url);
             var id = Hasher.Hash(fileName);
-            var file = repository[id] ?? new RequestReduceFile();
+            var file = repository.SingleOrDefault<RequestReduceFile>(id) ?? new RequestReduceFile();
             file.Content = content;
             file.LastUpdated = DateTime.Now;
             file.FileName = fileName;
@@ -78,7 +78,7 @@ namespace RequestReduce.SqlServer
 
             var key = uriBuilder.ParseKey(url);
             var id = Hasher.Hash(uriBuilder.ParseFileName(url));
-            var file = repository[id];
+            var file = repository.SingleOrDefault<RequestReduceFile>(id);
 
             if(file != null)
             {

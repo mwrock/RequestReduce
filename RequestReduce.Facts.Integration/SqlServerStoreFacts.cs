@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,7 +21,7 @@ namespace RequestReduce.Facts.Integration
         private readonly IRRConfiguration config;
         private readonly IFileRepository repo;
         private readonly UriBuilder uriBuilder;
-        private readonly string rrFolder;
+        private string rrFolder;
 
         public SqlServerStoreFacts()
         {
@@ -31,14 +29,17 @@ namespace RequestReduce.Facts.Integration
                           "\\RequestReduce.SampleWeb\\App_Data";
             if (!Directory.Exists(dataDir))
                 Directory.CreateDirectory(dataDir);
-            Database.DefaultConnectionFactory = new SqlCeConnectionFactory("System.Data.SqlServerCe.4.0");
+
+            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
             var mockConfig = new Mock<IRRConfiguration>();
-            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf");
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce40.sdf");
             config = mockConfig.Object;
             repo = new FileRepository(config);
             IntegrationFactHelper.RecyclePool();
-            repo.Context.Database.Delete();
-            repo.Context.Database.Create();
+            foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
+            {
+                repo.Delete<RequestReduceFile>(file);
+            }
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore, 3000);
             uriBuilder = new UriBuilder(config);
         }
@@ -87,16 +88,14 @@ namespace RequestReduce.Facts.Integration
             var css = cssPattern.Match(response).ToString();
             var url = urlPattern.Match(css).Groups["url"].Value;
             var id = Hasher.Hash(uriBuilder.ParseFileName(url));
-            var createTime = repo[id].LastUpdated;
-
-            repo.Context.Files.Remove(repo[id]);
-            repo.Context.SaveChanges();
+            var createTime = repo.SingleOrDefault<RequestReduceFile>(id).LastUpdated;
+            repo.Delete<RequestReduceFile>(id);
             IntegrationFactHelper.RecyclePool();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
             new WebClient().DownloadString("http://localhost:8877/Local.html");
 
-            Assert.True(createTime < repo[id].LastUpdated);
+            Assert.True(createTime < repo.SingleOrDefault<RequestReduceFile>(id).LastUpdated);
         }
 
         [OutputTraceOnFailFact]
@@ -115,8 +114,7 @@ namespace RequestReduce.Facts.Integration
                 url = urlPattern.Match(css).Groups["url"].Value;
                 id = Hasher.Hash(uriBuilder.ParseFileName(url));
             }
-            repo.Detach(repo[id]);
-            repo.Context.SaveChanges();
+            repo.Delete<RequestReduceFile>(id);
 
             var req = HttpWebRequest.Create("http://localhost:8877" + url);
             var response2 = req.GetResponse() as HttpWebResponse;
@@ -182,7 +180,7 @@ namespace RequestReduce.Facts.Integration
             WaitToCreateResources();
             new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
             DateTime fileDate = DateTime.MinValue;
-            var files = repo.AsQueryable().Where(x => x.FileName.Contains(".css"));
+            var files = repo.AsQueryable<RequestReduceFile>().Where(x => x.FileName.Contains(".css"));
             foreach (var file in files)
             {
                 file.IsExpired = false;
@@ -196,10 +194,10 @@ namespace RequestReduce.Facts.Integration
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             var cssCount2 = cssPattern.Matches(response).Count;
-            var file2 = repo.AsQueryable().First(x => x.FileName.Contains(".css"));
+            var file2 = repo.AsQueryable<RequestReduceFile>().First(x => x.FileName.Contains(".css"));
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
-            Assert.Equal(fileDate, file2.LastUpdated);
+            Assert.True(fileDate - file2.LastUpdated <= TimeSpan.FromMilliseconds(4));
         }
 
         [OutputTraceOnFailFact]
@@ -208,7 +206,7 @@ namespace RequestReduce.Facts.Integration
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
-            var files = repo.AsQueryable().Where(x => x.FileName.Contains(".css"));
+            var files = repo.AsQueryable<RequestReduceFile>().Where(x => x.FileName.Contains(".css"));
             foreach (var file in files)
             {
                 file.IsExpired = true;
@@ -227,9 +225,9 @@ namespace RequestReduce.Facts.Integration
             const int timeout = 50000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (repo.AsQueryable().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
@@ -246,5 +244,74 @@ namespace RequestReduce.Facts.Integration
         {
             IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore, Timeout.Infinite);
         }
+    }
+
+
+    public class SqlServerStoreFacts35
+    {
+        private readonly IRRConfiguration config;
+        private readonly IFileRepository repo;
+        private string rrFolder;
+
+        public SqlServerStoreFacts35()
+        {
+            var dataDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
+                          "\\RequestReduce.SampleWeb35\\App_Data";
+            if (!Directory.Exists(dataDir))
+                Directory.CreateDirectory(dataDir);
+
+            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.3.5";
+            var mockConfig = new Mock<IRRConfiguration>();
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce35.sdf");
+            config = mockConfig.Object;
+            repo = new FileRepository(config);
+            IntegrationFactHelper.Recycle35Pool();
+            foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
+            {
+                repo.Delete<RequestReduceFile>(file);
+            }
+            rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb35\\RRContent";
+        }
+
+        [OutputTraceOnFailFact]
+        public void WillReduceToOneCssAndScripOnNet35FullTrust()
+        {
+            if (Directory.Exists(rrFolder))
+                Directory.Delete(rrFolder, true);
+            
+            IntegrationFactHelper.SetSampleWeb35StoreAndTrust(Configuration.Store.SqlServerStore, 3000, "Medium");
+
+            new WebClient().DownloadString("http://localhost:8878/sqlcehosting.aspx");
+
+            new WebClient().DownloadString("http://localhost:8878/Local.html");
+            WaitToCreateResources(expectedJsFiles: 1);
+
+            var response = new WebClient().DownloadString("http://localhost:8878/Local.html");
+
+            Assert.Equal(1, new CssResource().ResourceRegex.Matches(response).Count);
+            Assert.Equal(1, new JavaScriptResource().ResourceRegex.Matches(response).Count);
+            IntegrationFactHelper.SetSampleWeb35StoreAndTrust(Configuration.Store.LocalDiskStore, Timeout.Infinite, "Medium");
+        }
+
+        private void WaitToCreateResources(int expectedCssFiles = 1, int expectedJsFiles = 2)
+        {
+            const int timeout = 50000;
+            var watch = new Stopwatch();
+            watch.Start();
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (Directory.GetFiles(rrFolder, "*.css").Length < expectedCssFiles && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            while (Directory.GetFiles(rrFolder, "*.js").Length < expectedJsFiles && watch.ElapsedMilliseconds < timeout)
+                Thread.Sleep(0);
+            if (watch.ElapsedMilliseconds >= timeout)
+                throw new TimeoutException(timeout);
+            Thread.Sleep(200);
+        }
+
     }
 }

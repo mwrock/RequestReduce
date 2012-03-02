@@ -22,7 +22,6 @@ RRContent
 RequestReduce.SampleWeb/RequestReduceContent/*
 PrecompiledWeb/*
 TraceOutput.log
-*.sdf
 *.zip
 *.dgml
 RequestReduce/Nuget/Content/App_Readme/RequestReduce.readme.txt

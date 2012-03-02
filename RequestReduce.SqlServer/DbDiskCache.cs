@@ -1,44 +1,63 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using System.Collections.Concurrent;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
-using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+using System.Collections.Generic;
 
 namespace RequestReduce.SqlServer
 {
     public class DbDiskCache : LocalDiskStore
     {
         protected Timer timer = null;
-        protected ConcurrentDictionary<string, DateTime> fileList = new ConcurrentDictionary<string, DateTime>();
-
+        protected Dictionary<string, DateTime> fileList = new Dictionary<string, DateTime>();
+        private readonly ReaderWriterLockSlim _cacheLock;
+        
         public DbDiskCache(IFileWrapper fileWrapper, IRRConfiguration configuration, IUriBuilder uriBuilder) : base(fileWrapper, configuration, uriBuilder, null)
         {
             RRTracer.Trace("Creating db disk cache");
             const int interval = 1000*60*5;
             timer = new Timer(PurgeOldFiles, null, 0, interval);
+            _cacheLock = new ReaderWriterLockSlim();
         }
 
         protected virtual void PurgeOldFiles(object state)
         {
-            var oldEntries = fileList.Where(x => DateTime.Now.Subtract(x.Value).TotalMinutes > 5);
+            var oldEntries = new List<KeyValuePair<string, DateTime>>();
+
+            _cacheLock.EnterReadLock();
+
+            try
+            {
+                oldEntries = fileList.Where(x => DateTime.Now.Subtract(x.Value).TotalMinutes > 5).ToList();
+            }
+            finally
+            {
+                _cacheLock.ExitReadLock();
+            }
+
             foreach (var entry in oldEntries)
             {
                 var file = GetFileNameFromConfig(entry.Key);
                 RRTracer.Trace("purging old file: {0}", file);
+
+                _cacheLock.EnterWriteLock();
+                
                 try
                 {
                     FileWrapper.DeleteFile(file);
-                    DateTime date;
-                    fileList.TryRemove(entry.Key, out date);
+                    fileList.Remove(entry.Key);
                 }
                 catch (Exception ex)
                 {
                     if (Registry.CaptureErrorAction != null)
                         Registry.CaptureErrorAction(ex);
+                }
+                finally
+                {
+                    _cacheLock.ExitWriteLock();
                 }
             }
         }
@@ -46,15 +65,34 @@ namespace RequestReduce.SqlServer
         public override void Save(byte[] content, string url, string originalUrls)
         {
             base.Save(content, url, originalUrls);
-            fileList.TryAdd(url, DateTime.Now);
+
+            _cacheLock.EnterWriteLock();
+
+            try
+            {    
+                fileList.Add(url, DateTime.Now);
+            }
+            finally
+            {
+                _cacheLock.ExitWriteLock();
+            }
         }
 
         public override bool SendContent(string url, System.Web.HttpResponseBase response)
         {
-            if(fileList.ContainsKey(url))
+            _cacheLock.EnterWriteLock();
+
+            try
             {
-                fileList[url] = DateTime.Now;
-                return base.SendContent(url, response);
+                if(fileList.ContainsKey(url))
+                {
+                    fileList[url] = DateTime.Now;
+                    return base.SendContent(url, response);
+                }
+            }
+            finally
+            {
+                _cacheLock.ExitWriteLock();
             }
 
             return false;

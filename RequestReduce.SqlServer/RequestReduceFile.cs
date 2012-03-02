@@ -1,7 +1,10 @@
 ﻿using System;
+using PetaPoco;
 
 namespace RequestReduce.SqlServer
 {
+    [TableName("RequestReduceFiles")]
+    [PrimaryKey("RequestReduceFileId", autoIncrement = false)]
     public class RequestReduceFile
     {
         public Guid RequestReduceFileId { get; set; }
