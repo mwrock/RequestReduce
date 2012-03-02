@@ -279,7 +279,7 @@ namespace RequestReduce.Facts.Integration
             if (Directory.Exists(rrFolder))
                 Directory.Delete(rrFolder, true);
             
-            IntegrationFactHelper.SetSampleWeb35StoreAndTrust(Configuration.Store.SqlServerStore, 3000, "Medium");
+            IntegrationFactHelper.SetSampleWeb35StoreAndTrust(Configuration.Store.SqlServerStore, 3000, "Full");
 
             new WebClient().DownloadString("http://localhost:8878/sqlcehosting.aspx");
 
