@@ -66,7 +66,7 @@ namespace RequestReduce.Facts.SassLessCoffee
 
             testable.ClassUnderTest.ProcessRequest(testable.MockedContext.Object);
 
-            Assert.Contains("Parse Error", testable.CompileResult);
+            Assert.Contains("LESS Error: ", testable.CompileResult);
         }
 
         [Fact]

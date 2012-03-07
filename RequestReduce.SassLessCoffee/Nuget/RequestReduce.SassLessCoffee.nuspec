@@ -15,6 +15,7 @@
     <summary>An add-on which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
+      * upgrade to dotless 1.2.3.0
       * Replace AbsoluteUrlTransformer with UrlTransformer to trnsform any url and not just ones embedded in css
       * correct nuget dependency version for dot less
       * dont wrap css in media rule if media attribute is All
@@ -60,7 +61,7 @@
     </releaseNotes>
     <dependencies>
       <dependency id="RequestReduce" version="$version$" />
-      <dependency id="dotless" version="1.2.2.0" />
+      <dependency id="dotless" version="1.2.3.0" />
       <dependency id="SassAndCoffee.Core" version="2.0.2.0" />
       <dependency id="SassAndCoffee.JavaScript" version="2.0.2.0" />
       <dependency id="SassAndCoffee.Ruby" version="2.0.2.0" />

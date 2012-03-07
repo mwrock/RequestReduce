@@ -81,7 +81,7 @@ namespace RequestReduce.SassLessCoffee
 
         public void Error(string message)
         {
-            Response.Write(message);
+            Response.Write("LESS Error: <br/>" + message);
         }
 
         public HttpResponseBase Response { get; set; }
