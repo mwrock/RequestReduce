@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.SqlServer;
+using RequestReduce.SqlServer.ORM;
 using RequestReduce.Utilities;
 using Xunit;
 using RequestReduce.ResourceTypes;
@@ -14,26 +16,35 @@ namespace RequestReduce.Facts.Store
 
         class FakeFileRepository : FileRepository
         {
+            static string sql = GetSqlLightSafeSql(File.ReadAllText("..\\..\\..\\RequestReduce.SqlServer\\Nuget\\Tools\\RequestReduceFiles.Sql"));
+
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
             {
-                foreach (RequestReduceFile file in Fetch<RequestReduceFile>())
-                {
-                    Delete<RequestReduceFile>(file);
-                }
+                RequestReduceDB.DefaultProviderName = "System.Data.SQLite";
+                var db = GetDatabase();
+                db.Execute(GetSqlLightSafeSql(sql));
+            }
+
+            private static string GetSqlLightSafeSql(string sql)
+            {
+                var result = sql.Replace("[dbo].", string.Empty);
+                result = result.Replace("(max)", "(1000)");
+                result = result.Replace("CLUSTERED", string.Empty);
+                result = result.Replace("GO", string.Empty);
+                return result;
             }
         }
 
         class TestableRepository : Testable<FakeFileRepository>, IDisposable
         {
             public TestableRepository()
+                : this("RRConnection")
             {
-                Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns("RRConnection");
             }
 
             public TestableRepository(string connectionString)
             {
-                RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
                 Mock<IRRConfiguration>().Setup(x => x.ConnectionStringName).Returns(connectionString);
             }
 
@@ -76,7 +87,7 @@ namespace RequestReduce.Facts.Store
             [Fact]
             public void WillSaveToDatabaseUsingConnectionString()
             {
-                var testable = new TestableRepository("data source=RequestReduce40.sdf");
+                var testable = new TestableRepository("Data Source=:memory:;Version=3;New=True");
                 var id = Guid.NewGuid();
                 var file = new RequestReduceFile()
                 {

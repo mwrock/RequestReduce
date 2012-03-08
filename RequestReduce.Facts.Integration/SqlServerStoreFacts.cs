@@ -8,6 +8,7 @@ using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.SqlServer;
+using RequestReduce.SqlServer.ORM;
 using RequestReduce.Utilities;
 using Xunit;
 using TimeoutException = Xunit.Sdk.TimeoutException;

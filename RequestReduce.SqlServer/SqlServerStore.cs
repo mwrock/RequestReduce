@@ -47,6 +47,7 @@ namespace RequestReduce.SqlServer
         public void Dispose()
         {
             FileStore.Dispose();
+            repository.Dispose();
             RRTracer.Trace("Sql Server Store Disposed.");
         }
 

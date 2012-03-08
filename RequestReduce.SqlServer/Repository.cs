@@ -4,10 +4,11 @@ using PetaPoco;
 using RequestReduce.Configuration;
 using System.Linq;
 using System.Configuration;
+using RequestReduce.SqlServer.ORM;
 
 namespace RequestReduce.SqlServer
 {
-    public interface IRepository
+    public interface IRepository : IDisposable
     {
         T SingleOrDefault<T>(object primaryKey);
         IEnumerable<T> Query<T>();
@@ -18,30 +19,19 @@ namespace RequestReduce.SqlServer
     }
     public class Repository : IRepository
     {
-        private readonly IRRConfiguration config;
-        private RequestReduceDB db;
+        private readonly RequestReduceDB db;
 
         public Repository(IRRConfiguration config)
         {
-            this.config = config;
             db = IsConnectionStringName(config.ConnectionStringName)
                      ? new RequestReduceDB(config.ConnectionStringName)
                      : new RequestReduceDB(config.ConnectionStringName, RequestReduceDB.DefaultProviderName);
+            db.OpenSharedConnection();
         }
 
-        public RequestReduceDB Context
+        public RequestReduceDB GetDatabase()
         {
-            get
-            {
-                if (db != null)
-                {
-                    return db;
-                }
-                db = IsConnectionStringName(config.ConnectionStringName)
-                         ? new RequestReduceDB(config.ConnectionStringName)
-                         : new RequestReduceDB(config.ConnectionStringName, RequestReduceDB.DefaultProviderName);
-                return db;
-            }
+            return db;
         }
 
         private bool IsConnectionStringName(string connectionStringName)
@@ -85,6 +75,11 @@ namespace RequestReduce.SqlServer
         public int Delete<TPassType>(object pocoOrPrimaryKey)
         {
             return db.Delete<TPassType>(pocoOrPrimaryKey);
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }
