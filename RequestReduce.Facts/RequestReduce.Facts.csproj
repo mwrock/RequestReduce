@@ -13,6 +13,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -93,11 +95,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\xunit.extensions.1.9.0.1566\lib\xunit.extensions.dll</HintPath>
     </Reference>
-    <Reference Include="xunit.runner.tdnet, Version=1.8.0.1545, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.runner.tdnet.dll</HintPath>
+    <Reference Include="xunit.runner.tdnet">
+      <HintPath>..\packages\xunit.1.9.0.1566\lib\xunit.runner.tdnet.dll</HintPath>
     </Reference>
-    <Reference Include="xunit.runner.utility, Version=1.8.0.1545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.runner.utility.dll</HintPath>
+    <Reference Include="xunit.runner.utility">
+      <HintPath>..\packages\xunit.1.9.0.1566\lib\xunit.runner.utility.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +205,7 @@ if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
 start /MIN xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"
 start /MIN xcopy /s /y "$(SolutionDir)packages\pngoptimization\*.exe" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

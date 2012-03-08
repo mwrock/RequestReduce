@@ -12,7 +12,7 @@ properties {
 	$version = git describe --abbrev=0 --tags
 	$version = $version.substring(1) + '.' + (git log $($version + '..') --pretty=oneline | measure-object).Count
 	$projectFiles = "$baseDir\RequestReduce\RequestReduce.csproj"
-	$nugetDir = ([array](dir $baseDir\packages\NuGet.CommandLine.*))[-1]
+	$nugetDir = "$baseDir\.NuGet"
 }
 
 task Test-Solution -depends Unit-Tests, Integration-Tests
@@ -88,17 +88,17 @@ task Push-Repo {
 
 task Push-Nuget-Core {
 	$pkg = Get-Item -path $filesDir/RequestReduce.1.*.*.nupkg
-	exec { .$nugetDir\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+	exec { .$nugetDir\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Push-Nuget-SqlServer {
 	$pkg = Get-Item -path $filesDir/RequestReduce.SqlServer.*.*.*.nupkg
-	exec { .$nugetDir\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+	exec { .$nugetDir\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Push-Nuget-SassLessCoffee {
 	$pkg = Get-Item -path $filesDir/RequestReduce.SassLessCoffee.*.*.*.nupkg
-	exec { .$nugetDir\Tools\nuget.exe push $filesDir\$($pkg.Name) }
+	exec { .$nugetDir\nuget.exe push $filesDir\$($pkg.Name) }
 }
 
 task Merge-35-Assembly -depends Build-35-Solution {
@@ -145,7 +145,7 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   Copy-Item $baseDir\RequestReduce.SqlServer\bin\v3.5\$configuration\RequestReduce.SqlServer.* $baseDir\RequestReduce.SqlServer\Nuget\lib\net20\
   Copy-Item $baseDir\RequestReduce.SassLessCoffee\bin\$configuration\RequestReduce.SassLessCoffee.* $baseDir\RequestReduce.SassLessCoffee\Nuget\lib\net40\
   Copy-Item $baseDir\Readme.md $baseDir\RequestReduce\Nuget\Content\App_Readme\RequestReduce.readme.txt
-  Copy-Item $baseDir\packages\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
+  Copy-Item $baseDir\ExternalBinaries\pngoptimization\*.* $baseDir\RequestReduce\Nuget\pngoptimization\
   create $filesDir\net35
   create $filesDir\net40
   Copy-Item $baseDir\requestreduce\nuget\lib\net20\*.* $filesDir\net35
@@ -169,9 +169,9 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   cd $filesDir
   exec { & $baseDir\Tools\zip.exe -9 -r RequestReduce-$version.zip . }
   cd $currentDir
-  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir -version $version }
-  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir -version $version }
-  exec { .$nugetDir\Tools\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir -version $version }
+  exec { .$nugetDir\nuget.exe pack "RequestReduce\Nuget\RequestReduce.nuspec" -o $filesDir -version $version }
+  exec { .$nugetDir\nuget.exe pack "RequestReduce.SqlServer\Nuget\RequestReduce.SqlServer.nuspec" -o $filesDir -version $version }
+  exec { .$nugetDir\nuget.exe pack "RequestReduce.SassLessCoffee\Nuget\RequestReduce.SassLessCoffee.nuspec" -o $filesDir -version $version }
 }
 
 task Update-Website-Download-Links {
@@ -184,11 +184,11 @@ task Update-Website-Download-Links {
 }
 
 task Unit-Tests -depends Build-Solution {
-    exec { .\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
+    exec { .\ExternalBinaries\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
 }
 
 task Integration-Tests -depends Build-Solution {
-    exec {.\packages\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
+    exec {.\ExternalBinaries\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
 }
 
 function roboexec([scriptblock]$cmd) {

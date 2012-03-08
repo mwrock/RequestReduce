@@ -12,6 +12,8 @@
     <AssemblyName>RequestReduce.Facts.Integration</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,7 +35,8 @@
   <ItemGroup>
     <Reference Include="Microsoft.Web.Administration, Version=7.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Web.Administration\Microsoft.Web.Administration.dll</HintPath>
+      <HintPath>..\ExternalBinaries\Web.Administration\Microsoft.Web.Administration.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
@@ -71,10 +74,10 @@
       <HintPath>..\packages\xunit.extensions.1.9.0.1566\lib\xunit.extensions.dll</HintPath>
     </Reference>
     <Reference Include="xunit.runner.tdnet">
-      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.runner.tdnet.dll</HintPath>
+      <HintPath>..\packages\xunit.1.9.0.1566\lib\xunit.runner.tdnet.dll</HintPath>
     </Reference>
     <Reference Include="xunit.runner.utility">
-      <HintPath>..\packages\xunit.tdnet.1.8.0.1545\lib\xunit.runner.utility.dll</HintPath>
+      <HintPath>..\packages\xunit.1.9.0.1566\lib\xunit.runner.utility.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +124,7 @@ start /MIN xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\Nativ
 
 start /MIN xcopy /s /y "$(SolutionDir)packages\pngoptimization\*.exe" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
