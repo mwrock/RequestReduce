@@ -16,7 +16,7 @@ namespace RequestReduce.Facts.Store
 
         class FakeFileRepository : FileRepository
         {
-            static string sql = GetSqlLightSafeSql(File.ReadAllText("..\\..\\..\\RequestReduce.SqlServer\\Nuget\\Tools\\RequestReduceFiles.Sql"));
+            static string sql = GetSqlLightSafeSql(File.ReadAllText((AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory) + "..\\..\\..\\..\\RequestReduce.SqlServer\\Nuget\\Tools\\RequestReduceFiles.Sql"));
 
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
