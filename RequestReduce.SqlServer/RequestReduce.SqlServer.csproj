@@ -87,7 +87,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="Nuget\Content\web.config.transform">
       <SubType>Designer</SubType>
     </None>

@@ -156,7 +156,10 @@ task Build-Output -depends Merge-35-Assembly, Merge-40-Assembly {
   Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.exe $filesDir\net35
   Copy-Item $baseDir\RequestReduce\Nuget\pngoptimization\*.exe $filesDir\net40
   create $filesDir\RequestReduce.SqlServer
-  Copy-Item $baseDir\requestreduce.SqlServer\nuget\lib\net40\*.* $filesDir\RequestReduce.SqlServer
+  create $filesDir\RequestReduce.SqlServer\net35
+  create $filesDir\RequestReduce.SqlServer\net40
+  Copy-Item $baseDir\requestreduce.SqlServer\nuget\lib\net20\*.* $filesDir\RequestReduce.SqlServer\net35
+  Copy-Item $baseDir\requestreduce.SqlServer\nuget\lib\net40\*.* $filesDir\RequestReduce.SqlServer\net40
   Copy-Item $baseDir\requestreduce.SqlServer\nuget\tools\*.* $filesDir\RequestReduce.SqlServer
   create $filesDir\RequestReduce.SassLessCoffee
   Copy-Item $baseDir\requestreduce.SassLessCoffee\bin\$configuration\dotless.core.* $filesDir\RequestReduce.SassLessCoffee
