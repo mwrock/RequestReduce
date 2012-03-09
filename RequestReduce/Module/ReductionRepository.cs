@@ -103,6 +103,9 @@ namespace RequestReduce.Module
         public void Dispose()
         {
             refresher.Dispose();
+            var store = RRContainer.Current.TryGetInstance<IStore>();
+            if(store != null)
+                store.Dispose();
         }
     }
 }

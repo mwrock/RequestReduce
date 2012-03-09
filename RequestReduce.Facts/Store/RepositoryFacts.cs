@@ -16,14 +16,12 @@ namespace RequestReduce.Facts.Store
 
         class FakeFileRepository : FileRepository
         {
-            static string sql = GetSqlLightSafeSql(File.ReadAllText((AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory) + "..\\..\\..\\..\\RequestReduce.SqlServer\\Nuget\\Tools\\RequestReduceFiles.Sql"));
-
             public FakeFileRepository(IRRConfiguration config)
                 : base(config)
             {
                 RequestReduceDB.DefaultProviderName = "System.Data.SQLite";
                 var db = GetDatabase();
-                db.Execute(GetSqlLightSafeSql(sql));
+                db.Execute(SqliteHelper.GetSqlLightSafeSql());
             }
 
             private static string GetSqlLightSafeSql(string sql)

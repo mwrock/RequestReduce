@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Moq;
 using RequestReduce.Configuration;
+using RequestReduce.Facts.Store;
 using RequestReduce.SqlServer;
 using RequestReduce.SqlServer.ORM;
 using RequestReduce.Utilities;
@@ -20,7 +21,7 @@ namespace RequestReduce.Facts.Integration
     public class SqlServerStoreFacts : IDisposable
     {
         private readonly IRRConfiguration config;
-        private readonly IFileRepository repo;
+        private readonly FileRepository repo;
         private readonly UriBuilder uriBuilder;
         private string rrFolder;
 
@@ -28,19 +29,18 @@ namespace RequestReduce.Facts.Integration
         {
             var dataDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
                           "\\RequestReduce.SampleWeb\\App_Data";
-            if (!Directory.Exists(dataDir))
+            if (Directory.Exists(dataDir))
+                File.Delete(dataDir + "\\RequestReduce.sdf");
+            else
                 Directory.CreateDirectory(dataDir);
 
-            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.4.0";
+            RequestReduceDB.DefaultProviderName = "System.Data.SQLite";
             var mockConfig = new Mock<IRRConfiguration>();
-            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce40.sdf");
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf;Version=3;");
             config = mockConfig.Object;
             repo = new FileRepository(config);
             IntegrationFactHelper.RecyclePool();
-            foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
-            {
-                repo.Delete<RequestReduceFile>(file);
-            }
+            repo.GetDatabase().Execute(SqliteHelper.GetSqlLightSafeSql());
             rrFolder = IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.SqlServerStore, 3000);
             uriBuilder = new UriBuilder(config);
         }
@@ -244,33 +244,33 @@ namespace RequestReduce.Facts.Integration
         public void Dispose()
         {
             IntegrationFactHelper.ResetPhysicalContentDirectoryAndConfigureStore(Configuration.Store.LocalDiskStore, Timeout.Infinite);
+            repo.Dispose();
         }
     }
 
 
-    public class SqlServerStoreFacts35
+    public class SqlServerStoreFacts35 : IDisposable
     {
         private readonly IRRConfiguration config;
-        private readonly IFileRepository repo;
+        private readonly FileRepository repo;
         private string rrFolder;
 
         public SqlServerStoreFacts35()
         {
             var dataDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName +
                           "\\RequestReduce.SampleWeb35\\App_Data";
-            if (!Directory.Exists(dataDir))
+            if (Directory.Exists(dataDir))
+                File.Delete(dataDir + "\\RequestReduce.sdf");
+            else
                 Directory.CreateDirectory(dataDir);
 
-            RequestReduceDB.DefaultProviderName = "System.Data.SqlServerCe.3.5";
+            RequestReduceDB.DefaultProviderName = "System.Data.SQLite";
             var mockConfig = new Mock<IRRConfiguration>();
-            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce35.sdf");
+            mockConfig.Setup(x => x.ConnectionStringName).Returns("data source=" + dataDir + "\\RequestReduce.sdf;Version=3;");
             config = mockConfig.Object;
             repo = new FileRepository(config);
             IntegrationFactHelper.Recycle35Pool();
-            foreach (RequestReduceFile file in repo.Fetch<RequestReduceFile>())
-            {
-                repo.Delete<RequestReduceFile>(file);
-            }
+            repo.GetDatabase().Execute(SqliteHelper.GetSqlLightSafeSql());
             rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb35\\RRContent";
         }
 
@@ -314,5 +314,9 @@ namespace RequestReduce.Facts.Integration
             Thread.Sleep(200);
         }
 
+        public void Dispose()
+        {
+            repo.Dispose();
+        }
     }
 }

@@ -138,6 +138,7 @@
     <Compile Include="Store\DbDiskCacheFacts.cs" />
     <Compile Include="Store\LocalDiskStoreFacts.cs" />
     <Compile Include="Store\RepositoryFacts.cs" />
+    <Compile Include="Store\SqliteHelper.cs" />
     <Compile Include="Store\SqlServerStoreFacts.cs" />
     <Compile Include="Testable.cs" />
     <Compile Include="Utilities\HasherFacts.cs" />
@@ -180,15 +181,6 @@
     <Content Include="RequestReduce40.sdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="sqlceme40.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="sqlceqp40.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="sqlcese40.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="TestImages\delete.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -202,7 +194,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if NOT "%25PROGRAMFILES%25"=="%25SYSTEMDRIVE%25\Program Files" xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>if NOT "%25PROGRAMFILES%25"=="%25SYSTEMDRIVE%25\Program Files" xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"
+if %25PROCESSOR_ARCHITECTURE%25==AMD64 xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
