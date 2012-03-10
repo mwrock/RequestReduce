@@ -42,7 +42,7 @@ namespace RequestReduce.SqlServer
 
         public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
         {
-            return Fetch<RequestReduceFile>("select * from RequestReduceFiles where key=@0", key);
+            return Fetch<RequestReduceFile>("select * from RequestReduceFiles where [key]=@0", key);
         }
 
         public void Save(RequestReduceFile requestReduceFile)
@@ -106,7 +106,7 @@ namespace RequestReduce.SqlServer
         {
             var fileName = RRContainer.GetAllResourceTypes().Single(x => x.GetType() == resourceType).FileName;
             return SingleOrDefault<string>(@"SELECT FileName from RequestReduceFiles
-                    where Key = @0 and IsExpired=0 and FileName like @1", key, string.Format("{0}{1}", '%', fileName));
+                    where [Key] = @0 and IsExpired=0 and FileName like @1", key, string.Format("{0}{1}", '%', fileName));
         }
     }
 }
