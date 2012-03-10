@@ -201,6 +201,32 @@ namespace RequestReduce.Facts.Store
 
         }
 
+        public class Update
+        {
+            [Fact]
+            public void WillUpdateContentAndLastUpdatedTime()
+            {
+                var testable = new TestableRepository();
+                var id = Guid.NewGuid();
+                var file = new RequestReduceFile()
+                {
+                    Content = new byte[] { 1 },
+                    FileName = "fileName",
+                    Key = Guid.NewGuid(),
+                    LastUpdated = new DateTime(2010, 1, 1),
+                    OriginalName = "originalName",
+                    RequestReduceFileId = id
+                };
+                testable.ClassUnderTest.Save(file);
+                file.Content = new byte[] {2};
+
+                testable.ClassUnderTest.Update(file);
+
+                var savedFile = testable.ClassUnderTest.SingleOrDefault<RequestReduceFile>(id);
+                Assert.Equal(2, savedFile.Content[0]);
+                Assert.True(savedFile.LastUpdated > new DateTime(2011, 1, 1));
+            }
+        }
 
         public class GetActiveFiles
         {

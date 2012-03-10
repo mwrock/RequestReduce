@@ -39,7 +39,7 @@ namespace RequestReduce.SqlServer
             foreach (var file in files)
             {
                 file.IsExpired = true;
-                repository.Save(file);
+                repository.Update(file);
             }
             reductionRepository.RemoveReduction(keyGuid);
         }

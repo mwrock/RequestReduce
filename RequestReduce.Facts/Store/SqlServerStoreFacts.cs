@@ -263,9 +263,9 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(key)).Returns(new RequestReduceFile[] { file1, file2 });
                 bool expire1 = false;
                 bool expire2 = false;
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file1)).Callback<RequestReduceFile>(
+                testable.Mock<IFileRepository>().Setup(x => x.Update(file1)).Callback<RequestReduceFile>(
                     y => expire1 = y.IsExpired);
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file2)).Callback<RequestReduceFile>(
+                testable.Mock<IFileRepository>().Setup(x => x.Update(file2)).Callback<RequestReduceFile>(
                     y => expire2 = y.IsExpired);
 
                 testable.ClassUnderTest.Flush(key);
@@ -312,9 +312,9 @@ namespace RequestReduce.Facts.Store
                 testable.Mock<IFileRepository>().Setup(x => x.GetFilesFromKey(guid2)).Returns(new RequestReduceFile[] { file2 });
                 bool expire1 = false;
                 bool expire2 = false;
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file1)).Callback<RequestReduceFile>(
+                testable.Mock<IFileRepository>().Setup(x => x.Update(file1)).Callback<RequestReduceFile>(
                     y => expire1 = y.IsExpired);
-                testable.Mock<IFileRepository>().Setup(x => x.Save(file2)).Callback<RequestReduceFile>(
+                testable.Mock<IFileRepository>().Setup(x => x.Update(file2)).Callback<RequestReduceFile>(
                     y => expire2 = y.IsExpired);
 
                 testable.ClassUnderTest.Flush(Guid.Empty);

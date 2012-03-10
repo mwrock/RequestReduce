@@ -13,6 +13,7 @@ namespace RequestReduce.SqlServer
         IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key);
         string GetActiveUrlByKey(Guid key, Type resourceType);
         void Save(RequestReduceFile requestReduceFile);
+        void Update(RequestReduceFile requestReduceFile);
     }
 
     public class FileRepository : Repository, IFileRepository
@@ -45,6 +46,12 @@ namespace RequestReduce.SqlServer
             return Fetch<RequestReduceFile>("select * from RequestReduceFiles where [key]=@0", key);
         }
 
+        public void Update(RequestReduceFile requestReduceFile)
+        {
+            requestReduceFile.LastUpdated = requestReduceFile.LastUpdated = DateTime.Now;
+            base.Update(requestReduceFile);
+        }
+
         public void Save(RequestReduceFile requestReduceFile)
         {
             try
@@ -63,7 +70,6 @@ namespace RequestReduce.SqlServer
                 }
 
                 existingFile.Content = requestReduceFile.Content;
-                existingFile.LastUpdated = requestReduceFile.LastUpdated = DateTime.Now;
                 existingFile.IsExpired = requestReduceFile.IsExpired;
                 try
                 {

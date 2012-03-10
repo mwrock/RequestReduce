@@ -12,6 +12,7 @@ namespace RequestReduce.SqlServer
         T SingleOrDefault<T>(string sql, params object[] args);
         List<T> Fetch<T>(string sql, params object[] args);
         int Insert(object itemToAdd);
+        int Update(object itemToUpdate);
         int Delete<T>(object primaryKeyValue);
     }
     public class Repository : IRepository

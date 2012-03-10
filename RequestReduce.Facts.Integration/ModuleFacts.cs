@@ -50,7 +50,8 @@ namespace RequestReduce.Facts.Integration
             Assert.Equal(3, response.Split(new string[] { new JavaScriptResource().FileName }, StringSplitOptions.None).Length);
         }
 
-        [OutputTraceOnFailFact]
+        [Fact]
+        [Trait("type", "medium")]
         public void WillReduceToOneCssSpriteAndScriptInHeadOnNet35MediumTrust()
         {
             var rrFolderOld = rrFolder;
