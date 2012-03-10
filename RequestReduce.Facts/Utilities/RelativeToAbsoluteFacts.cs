@@ -71,7 +71,9 @@ namespace RequestReduce.Facts.Utilities
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.ContentHost).Returns("http://contenthost");
             RRContainer.Current.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
+#pragma warning disable 618
             Registry.AbsoluteUrlTransformer  = (x, y) =>
+#pragma warning restore 618
                                                    {
                                                        var newUrlHost = new Uri(y).Host;
                                                        return y.Replace(newUrlHost, newUrlHost + "." + new Uri(x).Host);
@@ -83,13 +85,17 @@ namespace RequestReduce.Facts.Utilities
 
             Assert.Equal("http://contenthost.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
             RRContainer.Current = null;
+#pragma warning disable 618
             Registry.AbsoluteUrlTransformer = null;
+#pragma warning restore 618
         }
 
         [Fact]
         public void WillForwardNewUrlToListenerIfNoContentHost_obsolete()
         {
+#pragma warning disable 618
             Registry.AbsoluteUrlTransformer = (x, y) =>
+#pragma warning restore 618
             {
                 var newUrlHost = new Uri(y).Host;
                 return y.Replace(newUrlHost, "funny." + new Uri(x).Host);
@@ -100,7 +106,9 @@ namespace RequestReduce.Facts.Utilities
                                                  "../../../MSDN2/Images/MSDN/contentpane.png");
 
             Assert.Equal("http://funny.blogs.msdn.com/themes/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
+#pragma warning disable 618
             Registry.AbsoluteUrlTransformer = null;
+#pragma warning restore 618
         }
 
         [Fact]

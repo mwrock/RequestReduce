@@ -30,7 +30,9 @@ namespace RequestReduce.Utilities
             if (string.IsNullOrEmpty(contentHost) && Registry.UrlTransformer != null)
                 return Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(),url, url);
             if (string.IsNullOrEmpty(contentHost))
+#pragma warning disable 618
                 return Registry.AbsoluteUrlTransformer != null ? Registry.AbsoluteUrlTransformer(url, url) : url;
+#pragma warning restore 618
             var urlHost = GetHost(url);
             var baseHost = GetHost(baseUrl);
             var transformedUrl = contentHost + url.Substring(urlHost.Length);
@@ -38,9 +40,11 @@ namespace RequestReduce.Utilities
                 transformedUrl = url;
             if (Registry.UrlTransformer != null)
                 return Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), url, transformedUrl);
+#pragma warning disable 618
             return Registry.AbsoluteUrlTransformer != null
                        ? Registry.AbsoluteUrlTransformer(url, transformedUrl)
                        : transformedUrl;
+#pragma warning restore 618
         }
 
         private static string GetHost(string url)
