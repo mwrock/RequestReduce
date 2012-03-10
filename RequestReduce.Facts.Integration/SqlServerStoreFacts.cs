@@ -181,7 +181,7 @@ namespace RequestReduce.Facts.Integration
             WaitToCreateResources();
             new WebClient().DownloadData("http://localhost:8877/RRContent/flush");
             DateTime fileDate = DateTime.MinValue;
-            var files = repo.AsQueryable<RequestReduceFile>().Where(x => x.FileName.Contains(".css"));
+            var files = repo.Fetch<RequestReduceFile>("select * from requestreducefiles where filename like '%.css'");
             foreach (var file in files)
             {
                 file.IsExpired = false;
@@ -195,7 +195,7 @@ namespace RequestReduce.Facts.Integration
             response = new WebClient().DownloadString("http://localhost:8877/Local.html");
 
             var cssCount2 = cssPattern.Matches(response).Count;
-            var file2 = repo.AsQueryable<RequestReduceFile>().First(x => x.FileName.Contains(".css"));
+            var file2 = repo.SingleOrDefault<RequestReduceFile>("select * from requestreducefiles where FileName like '%.css'");
             Assert.Equal(2, cssCount1);
             Assert.Equal(1, cssCount2);
             Assert.True(fileDate - file2.LastUpdated <= TimeSpan.FromMilliseconds(4));
@@ -207,7 +207,7 @@ namespace RequestReduce.Facts.Integration
             var cssPattern = new Regex(@"<link[^>]+type=""?text/css""?[^>]+>", RegexOptions.IgnoreCase);
             new WebClient().DownloadString("http://localhost:8877/Local.html");
             WaitToCreateResources();
-            var files = repo.AsQueryable<RequestReduceFile>().Where(x => x.FileName.Contains(".css"));
+            var files = repo.Fetch<RequestReduceFile>("select * from requestreducefiles where filename like '%.css'");
             foreach (var file in files)
             {
                 file.IsExpired = true;
@@ -226,9 +226,9 @@ namespace RequestReduce.Facts.Integration
             const int timeout = 50000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.Fetch<RequestReduceFile>("select * from requestreducefiles where FileName like '%.css' and IsExpired=0").Count == 0 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.Fetch<RequestReduceFile>("select * from requestreducefiles where FileName like '%.js' and IsExpired=0").Count == 0 && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
@@ -299,9 +299,9 @@ namespace RequestReduce.Facts.Integration
             const int timeout = 50000;
             var watch = new Stopwatch();
             watch.Start();
-            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".css") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.SingleOrDefault<RequestReduceFile>("select * from requestreducefiles where FileName like '%.css' and IsExpired=0") == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
-            while (repo.AsQueryable<RequestReduceFile>().FirstOrDefault(x => x.FileName.Contains(".js") && !x.IsExpired) == null && watch.ElapsedMilliseconds < timeout)
+            while (repo.SingleOrDefault<RequestReduceFile>("select * from requestreducefiles where FileName like '%.js' and IsExpired=0") == null && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);
             while (!Directory.Exists(rrFolder) && watch.ElapsedMilliseconds < timeout)
                 Thread.Sleep(0);

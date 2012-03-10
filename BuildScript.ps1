@@ -26,9 +26,12 @@ task Setup-IIS {
 }
 
 task Clean-Solution -depends Clean-BuildFiles {
+	$conf = $configuration+35
     clean $baseDir\RequestReduce\Nuget\Lib
 	create $baseDir\RequestReduce\Nuget\Lib
     exec { msbuild RequestReduce.sln /t:Clean /v:quiet }
+	exec { msbuild 'RequestReduce\RequestReduce.csproj' /t:Clean /v:quiet /p:Configuration=$conf }
+	exec { msbuild 'RequestReduce.SqlServer\RequestReduce.SqlServer.csproj' /t:Clean /v:quiet /p:Configuration=$conf }
 }	
 
 task echo-path {

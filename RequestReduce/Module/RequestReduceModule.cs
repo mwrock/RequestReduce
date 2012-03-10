@@ -210,8 +210,8 @@ namespace RequestReduce.Module
                 {
                     var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
                     var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush/", "-flush"));
-                    using(var store = RRContainer.Current.GetInstance<IStore>())
-                        store.Flush(key);
+                    var store = RRContainer.Current.GetInstance<IStore>();
+                    store.Flush(key);
                     RRTracer.Trace("{0} Flushed {1}", user, key);
                 }
                 if(HttpContext.Current != null)
@@ -260,24 +260,22 @@ namespace RequestReduce.Module
                 return;
             var etag = httpContextWrapper.Request.Headers["If-None-Match"];
             etag = etag == null ? string.Empty : etag.Replace("\"", "");
-            using(var store = RRContainer.Current.GetInstance<IStore>())
+            var store = RRContainer.Current.GetInstance<IStore>();
+            if (sig == etag || store.SendContent(url, httpContextWrapper.Response))
             {
-                if (sig == etag || store.SendContent(url, httpContextWrapper.Response))
-                {
-                    httpContextWrapper.Response.Cache.SetETag(string.Format(@"""{0}""", sig));
-                    httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
-                    httpContextWrapper.Response.Expires = 60 * 24 * 360; //LITTLE under A YEAR
-                    if (sig == etag)
-                        httpContextWrapper.Response.StatusCode = 304;
-                    else if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
-                        httpContextWrapper.Response.ContentType = "text/css";
-                    else if (url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
-                        httpContextWrapper.Response.ContentType = "application/x-javascript";
-                    else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                        httpContextWrapper.Response.ContentType = "image/png";
-                    if (httpContextWrapper.ApplicationInstance != null)
-                        httpContextWrapper.ApplicationInstance.CompleteRequest();
-                }
+                httpContextWrapper.Response.Cache.SetETag(string.Format(@"""{0}""", sig));
+                httpContextWrapper.Response.Cache.SetCacheability(HttpCacheability.Public);
+                httpContextWrapper.Response.Expires = 60 * 24 * 360; //LITTLE under A YEAR
+                if (sig == etag)
+                    httpContextWrapper.Response.StatusCode = 304;
+                else if (url.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
+                    httpContextWrapper.Response.ContentType = "text/css";
+                else if (url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+                    httpContextWrapper.Response.ContentType = "application/x-javascript";
+                else if (url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    httpContextWrapper.Response.ContentType = "image/png";
+                if (httpContextWrapper.ApplicationInstance != null)
+                    httpContextWrapper.ApplicationInstance.CompleteRequest();
             }
             RRTracer.Trace("Finished serving {0}", url);
         }

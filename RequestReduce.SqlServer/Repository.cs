@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using PetaPoco;
 using RequestReduce.Configuration;
-using System.Linq;
 using System.Configuration;
 using RequestReduce.SqlServer.ORM;
 
@@ -11,9 +9,8 @@ namespace RequestReduce.SqlServer
     public interface IRepository : IDisposable
     {
         T SingleOrDefault<T>(object primaryKey);
-        IEnumerable<T> Query<T>();
-        IQueryable<T> AsQueryable<T>();
-        List<T> Fetch<T>();
+        T SingleOrDefault<T>(string sql, params object[] args);
+        List<T> Fetch<T>(string sql, params object[] args);
         int Insert(object itemToAdd);
         int Delete<T>(object primaryKeyValue);
     }
@@ -48,21 +45,13 @@ namespace RequestReduce.SqlServer
         {
             return db.SingleOrDefault<TPassType>(primaryKey);
         }
-        public IEnumerable<TPassType> Query<TPassType>()
+        public TPassType SingleOrDefault<TPassType>(string sql, params object[] args)
         {
-            var pd = Database.PocoData.ForType(typeof(TPassType));
-            var sql = "SELECT * FROM " + pd.TableInfo.TableName;
-            return db.Query<TPassType>(sql);
+            return db.SingleOrDefault<TPassType>(sql, args);
         }
-        public IQueryable<TPassType> AsQueryable<TPassType>()
+        public List<TPassType> Fetch<TPassType>(string sql, params object[] args)
         {
-            return Query<TPassType>().AsQueryable<TPassType>();
-        }
-        public List<TPassType> Fetch<TPassType>()
-        {
-            var pd = Database.PocoData.ForType(typeof(TPassType));
-            var sql = "SELECT * FROM " + pd.TableInfo.TableName;
-            return db.Fetch<TPassType>(sql);
+            return db.Fetch<TPassType>(sql, args);
         }
         public int Insert(object poco)
         {

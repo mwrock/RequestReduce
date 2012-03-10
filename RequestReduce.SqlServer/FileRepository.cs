@@ -24,19 +24,25 @@ namespace RequestReduce.SqlServer
 
         public IEnumerable<string> GetActiveFiles()
         {
-            return (from files in AsQueryable<RequestReduceFile>()
-                    where !files.IsExpired && files.FileName.Contains("RequestReduce")
-                    group files by files.Key
-                        into filegroup
-                        join files2 in AsQueryable<RequestReduceFile>() on new { k = filegroup.Key, u = filegroup.Max(m => m.LastUpdated) }
-                            equals new { k = files2.Key, u = files2.LastUpdated }
-                        where files2.FileName.Contains("RequestReduce")
-                        select files2.FileName).ToList();
+            return Fetch<string>(@"
+                SELECT f2.FileName
+                FROM RequestReduceFiles f2
+                INNER JOIN (
+	                SELECT f.[key]
+		                ,max(f.Lastupdated) AS maxUpdated
+	                FROM requestreducefiles f
+	                WHERE f.isexpired = 0
+		                AND filename LIKE '%RequestReduce%'
+	                GROUP BY f.[key]
+	                ) AS innerF ON innerF.[key] = f2.[key]
+	                AND innerF.maxUpdated = f2.lastupdated
+                WHERE filename LIKE '%RequestReduce%'
+               ");
         }
 
         public IEnumerable<RequestReduceFile> GetFilesFromKey(Guid key)
         {
-            return AsQueryable<RequestReduceFile>().Where(x => x.Key == key).ToArray();
+            return Fetch<RequestReduceFile>("select * from RequestReduceFiles where key=@0", key);
         }
 
         public void Save(RequestReduceFile requestReduceFile)
@@ -99,9 +105,8 @@ namespace RequestReduce.SqlServer
         public string GetActiveUrlByKey(Guid key, Type resourceType)
         {
             var fileName = RRContainer.GetAllResourceTypes().Single(x => x.GetType() == resourceType).FileName;
-            return (from files in AsQueryable<RequestReduceFile>()
-                    where files.Key == key && !files.IsExpired && files.FileName.Contains(fileName)
-                    select files.FileName).FirstOrDefault();
+            return SingleOrDefault<string>(@"SELECT FileName from RequestReduceFiles
+                    where Key = @0 and IsExpired=0 and FileName like @1", key, string.Format("{0}{1}", '%', fileName));
         }
     }
 }
