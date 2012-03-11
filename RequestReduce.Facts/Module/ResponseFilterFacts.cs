@@ -1,10 +1,18 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
+using System.Web;
 using Moq;
 using RequestReduce.Api;
+using RequestReduce.Configuration;
+using RequestReduce.IOC;
 using RequestReduce.Module;
+using RequestReduce.Store;
+using RequestReduce.Utilities;
+using StructureMap;
 using Xunit;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Module
 {
@@ -367,7 +375,251 @@ namespace RequestReduce.Facts.Module
 
                 Assert.Equal(@"<head id=""Head1"">thead</head>after<script src=""ghi""></script>end", testable.FilteredResult);
             }
+        }
 
+        public class InstallFilter
+        {
+            public void WillSetResponseFilterOnce()
+            {
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(true);
+                RRContainer.Current = new Container(x =>
+                                                        {
+                                                            x.For<IRRConfiguration>().Use(config.Object);
+                                                            x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                                                        });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet((x => x.Response.Filter = It.IsAny<Stream>()), Times.Never());
+                RRContainer.Current = null;
+            }
+
+            [Theory]
+            [InlineData(301)]
+            [InlineData(302)]
+            public void WillNotSetResponseFilterIfStatusIs302Or301(int status)
+            {
+                RRContainer.Current = null;
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+                context.Setup(x => x.Response.StatusCode).Returns(status);
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillSetPhysicalPathToMappedVirtualPath()
+            {
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                var hostingEnvironmentWrapper = new Mock<IHostingEnvironmentWrapper>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                hostingEnvironmentWrapper.Setup(x => x.MapPath("/Virtual")).Returns("physical");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                    x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironmentWrapper.Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                config.VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotSetResponseFilterIfRRFilterQSIsDisabled()
+            {
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection() { { "RRFilter", "disabled" } });
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotSetResponseFilterIfPageFilterIgnoresTarget()
+            {
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+                Registry.AddFilter(new PageFilter(x => x.HttpRequest.RawUrl.Contains("blah")));
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotSetResponseFilterIfCssAndJsProcessingIsDisabledFromConfig()
+            {
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                config.Setup(x => x.CssProcessingDisabled).Returns(true);
+                config.Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
+                var context = new Mock<HttpContextBase>();
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillSetResponseFilterIfJustJsProcessingIsDisabledFromConfig()
+            {
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                config.Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
+                var context = new Mock<HttpContextBase>();
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillSetResponseFilterIfJustCssProcessingIsDisabledFromConfig()
+            {
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                config.Setup(x => x.CssProcessingDisabled).Returns(true);
+                var context = new Mock<HttpContextBase>();
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                    x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillSetContextKeyIfNotSetBefore()
+            {
+                RRContainer.Current = null;
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("type");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                context.Verify(x => x.Items.Add(ResponseFilter.ContextKey, It.IsAny<Object>()), Times.Once());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotSetPhysicalPathToMappedPathOfVirtualPathIfPhysicalPathIsNotEmpty()
+            {
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.SpritePhysicalPath).Returns("physicalPath");
+                config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                config.VerifySet(x => x.SpritePhysicalPath = It.IsAny<string>(), Times.Never());
+                RRContainer.Current = null;
+            }
         }
     }
 }

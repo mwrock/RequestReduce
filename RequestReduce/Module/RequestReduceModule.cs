@@ -15,7 +15,6 @@ namespace RequestReduce.Module
 {
     public class RequestReduceModule : IHttpModule
     {
-        public const string ContextKey = "HttpOnlyFilteringModuleInstalled";
         public void Dispose()
         {
         }
@@ -294,26 +293,12 @@ namespace RequestReduce.Module
         {
             RRTracer.Trace("Entering Module");
             var request = context.Request;
-            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            if (context.Items.Contains(ContextKey) || 
-                context.Response.ContentType != "text/html" || 
-                (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) || 
-                (config.CssProcessingDisabled && config.JavaScriptProcessingDisabled) ||
-                context.Response.StatusCode == 302 ||
-                context.Response.StatusCode == 301 ||
+            if (context.Response.ContentType != "text/html" || 
                 request.RawUrl == "/favicon.ico" || 
-                RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is PageFilter).FirstOrDefault(y => y.IgnoreTarget(new PageFilterContext(context.Request))) != null ||
                 IsInRRContentDirectory(context))
                 return;
 
-            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
-            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
-
-            var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bugg 
-            context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
-            context.Items.Add(ContextKey, new object());
-            RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
+            ResponseFilter.InstallFilter(context);
         }
 
         [Obsolete("Use RequestReduce.Api.Registry.CaptureErrorAction")]

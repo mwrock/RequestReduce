@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using RequestReduce.Api;
+using RequestReduce.Configuration;
+using RequestReduce.IOC;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
@@ -34,6 +37,7 @@ namespace RequestReduce.Module
         private bool isAdjacent;
         private int originalOffset;
         private readonly Stopwatch watch = new Stopwatch();
+        public const string ContextKey = "HttpOnlyFilteringModuleInstalled";
 
         private enum SearchState
         {
@@ -427,6 +431,28 @@ namespace RequestReduce.Module
             {
                 throw new NotSupportedException();
             }
+        }
+
+        public static void InstallFilter(HttpContextBase context)
+        {
+            var request = context.Request;
+            var config = RRContainer.Current.GetInstance<IRRConfiguration>();
+            if (context.Items.Contains(ContextKey) ||
+                (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) ||
+                (config.CssProcessingDisabled && config.JavaScriptProcessingDisabled) ||
+                context.Response.StatusCode == 302 ||
+                context.Response.StatusCode == 301 ||
+                RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is PageFilter).FirstOrDefault(y => y.IgnoreTarget(new PageFilterContext(context.Request))) != null)
+                return;
+
+            var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
+            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
+                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
+
+            var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bugg 
+            context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();
+            context.Items.Add(ContextKey, new object());
+            RRTracer.Trace("Attaching Filter to {0}", request.RawUrl);
         }
     }
 }

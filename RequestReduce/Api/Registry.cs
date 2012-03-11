@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
+using RequestReduce.Module;
 using RequestReduce.Utilities;
 
 namespace RequestReduce.Api
@@ -42,6 +43,11 @@ namespace RequestReduce.Api
         public static IRRConfiguration Configuration
         {
             get { return RRContainer.Current.GetInstance<IRRConfiguration>(); }
+        }
+
+        public static void InstallResponseFilter(HttpContextBase context)
+        {
+            ResponseFilter.InstallFilter(context);
         }
     }
 }

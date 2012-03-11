@@ -21,33 +21,13 @@ namespace RequestReduce.Facts.Module
     public class RequestReduceModuleFacts : IDisposable
     {
         [Fact]
-        public void WillSetResponseFilterOnce()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(true);
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet((x => x.Response.Filter = It.IsAny<Stream>()), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
         public void WillGetAndSetResponseFilterIfHtmlContent()
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
+            context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
             context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
@@ -74,7 +54,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
+            context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -88,242 +68,6 @@ namespace RequestReduce.Facts.Module
             module.InstallFilter(context.Object);
 
             context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Theory]
-        [InlineData(301)]
-        [InlineData(302)]
-        public void WillNotSetResponseFilterIfStatusIs302Or301(int status)
-        {
-            RRContainer.Current = null;
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
-            context.Setup(x => x.Response.StatusCode).Returns(status);
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillSetPhysicalPathToMappedVirtualPath()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            var hostingEnvironmentWrapper = new Mock<IHostingEnvironmentWrapper>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            hostingEnvironmentWrapper.Setup(x => x.MapPath("/Virtual")).Returns("physical");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
-            RRContainer.Current = new Container(x =>
-                                                    {
-                                                        x.For<IRRConfiguration>().Use(config.Object);
-                                                        x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-                                                        x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironmentWrapper.Object);
-                                                    });
-
-            module.InstallFilter(context.Object);
-
-            config.VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillSetPhysicalPathToMappedVirtualPathWhenHandlingContent()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            var hostingEnvironment = new Mock<IHostingEnvironmentWrapper>();
-            hostingEnvironment.Setup(x => x.MapPath("/Virtual")).Returns("physical");
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Request.RawUrl).Returns("/Virtual/blah");
-            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
-            var cache = new Mock<HttpCachePolicyBase>();
-            context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<IStore>().Use(new Mock<IStore>().Object);
-                x.For<IUriBuilder>().Use(new Mock<IUriBuilder>().Object);
-                x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironment.Object);
-            });
-
-            module.HandleRRContent(context.Object);
-
-            config.VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotSetResponseFilterIfRRFilterQSIsDisabled()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection() {{"RRFilter", "disabled"}});
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotSetResponseFilterIfPageFilterIgnoresTarget()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-            Registry.AddFilter(new PageFilter(x => x.HttpRequest.RawUrl.Contains("blah")));
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotSetResponseFilterIfCssAndJsProcessingIsDisabledFromConfig()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            config.Setup(x => x.CssProcessingDisabled).Returns(true);
-            config.Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillSetResponseFilterIfJustJsProcessingIsDisabledFromConfig()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            config.Setup(x => x.JavaScriptProcessingDisabled).Returns(true);
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillSetResponseFilterIfJustCssProcessingIsDisabledFromConfig()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            config.Setup(x => x.CssProcessingDisabled).Returns(true);
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillSetContextKeyIfNotSetBefore()
-        {
-            RRContainer.Current = null;
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Response.ContentType).Returns("type");
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-
-            module.InstallFilter(context.Object);
-
-            context.Verify(x => x.Items.Add(RequestReduceModule.ContextKey, It.IsAny<Object>()), Times.Once());
             RRContainer.Current = null;
         }
 
@@ -427,6 +171,34 @@ namespace RequestReduce.Facts.Module
             module.HandleRRContent(context.Object);
 
             store.Verify(x => x.SendContent("/RRContent/key-match-css.css", context.Object.Response), Times.Never());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
+        public void WillSetPhysicalPathToMappedVirtualPathWhenHandlingContent()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            var hostingEnvironment = new Mock<IHostingEnvironmentWrapper>();
+            hostingEnvironment.Setup(x => x.MapPath("/Virtual")).Returns("physical");
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            context.Setup(x => x.Request.RawUrl).Returns("/Virtual/blah");
+            context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
+            var cache = new Mock<HttpCachePolicyBase>();
+            context.Setup(x => x.Response.Cache).Returns(cache.Object);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IStore>().Use(new Mock<IStore>().Object);
+                x.For<IUriBuilder>().Use(new Mock<IUriBuilder>().Object);
+                x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironment.Object);
+            });
+
+            module.HandleRRContent(context.Object);
+
+            config.VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
             RRContainer.Current = null;
         }
 
@@ -535,31 +307,6 @@ namespace RequestReduce.Facts.Module
             module.HandleRRContent(context.Object);
 
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotSetPhysicalPathToMappedPathOfVirtualPathIfPhysicalPathIsNotEmpty()
-        {
-            var module = new RequestReduceModule();
-            var context = new Mock<HttpContextBase>();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpritePhysicalPath).Returns("physicalPath");
-            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
-                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
-            });
-            context.Setup(x => x.Items.Contains(RequestReduceModule.ContextKey)).Returns(false);
-            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
-            context.Setup(x => x.Response.ContentType).Returns("text/html");
-            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
-
-            module.InstallFilter(context.Object);
-
-            config.VerifySet(x => x.SpritePhysicalPath = It.IsAny<string>(), Times.Never());
             RRContainer.Current = null;
         }
 
