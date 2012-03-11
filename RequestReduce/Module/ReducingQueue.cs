@@ -15,7 +15,7 @@ namespace RequestReduce.Module
         public const int FailureThreshold = 5;
         protected readonly IReductionRepository ReductionRepository;
         protected readonly IStore Store;
-        private readonly ReaderWriterLockSlim _queueLock;
+        private readonly ReaderWriterLockSlim queueLock;
         protected Thread BackgroundThread;
         protected Action<Exception> CaptureErrorAction;
         protected IDictionary<Guid, Failure> DictionaryOfFailures = new Dictionary<Guid, Failure>();
@@ -25,7 +25,7 @@ namespace RequestReduce.Module
         public ReducingQueue(IReductionRepository reductionRepository, IStore store)
         {
             RRTracer.Trace("Instantiating new Reducing queue.");
-            _queueLock = new ReaderWriterLockSlim();
+            queueLock = new ReaderWriterLockSlim();
             ReductionRepository = reductionRepository;
             Store = store;
             BackgroundThread = new Thread(ProcessQueue) {IsBackground = true};
@@ -45,7 +45,7 @@ namespace RequestReduce.Module
 
         public void Enqueue(IQueueItem item)
         {
-            _queueLock.EnterWriteLock();
+            queueLock.EnterWriteLock();
 
             try
             {
@@ -55,7 +55,7 @@ namespace RequestReduce.Module
             }
             finally
             {
-                _queueLock.ExitWriteLock();
+                queueLock.ExitWriteLock();
             }
         }
 
@@ -80,7 +80,7 @@ namespace RequestReduce.Module
         {
             get
             {
-                _queueLock.EnterReadLock();
+                queueLock.EnterReadLock();
 
                 try
                 {
@@ -88,7 +88,7 @@ namespace RequestReduce.Module
                 }
                 finally
                 {
-                    _queueLock.ExitReadLock();
+                    queueLock.ExitReadLock();
                 }
             }
         }
@@ -113,7 +113,7 @@ namespace RequestReduce.Module
                 return;
             try
             {
-                _queueLock.EnterWriteLock();
+                queueLock.EnterWriteLock();
 
                 try
                 {
@@ -122,7 +122,7 @@ namespace RequestReduce.Module
                 }
                 finally
                 {
-                    _queueLock.ExitWriteLock();
+                    queueLock.ExitWriteLock();
                 }
 
                 if (itemToReduce != null &&

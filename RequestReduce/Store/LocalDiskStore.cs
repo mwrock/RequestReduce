@@ -162,12 +162,18 @@ namespace RequestReduce.Store
 
         public virtual void Dispose()
         {
-            if(watcher != null)
+            if (configuration.IsFullTrust)
+                ShutdownWatcher();
+            RRTracer.Trace("Local Disk Store Disposed.");
+        }
+
+        private void ShutdownWatcher()
+        {
+            if (watcher != null)
             {
                 watcher.EnableRaisingEvents = false;
                 watcher.Dispose();
             }
-            RRTracer.Trace("Local Disk Store Disposed.");
         }
 
 

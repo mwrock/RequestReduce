@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Moq;
+using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Reducer;
@@ -91,7 +92,13 @@ namespace RequestReduce.Facts.Module
             {
                 Inject<IReductionRepository>(new FakeReductionRepository());
                 MockedReducer = new Mock<IReducer>();
-                RRContainer.Current = new Container(x => x.For<IReducer>().Use(MockedReducer.Object));
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.IsFullTrust).Returns(true);
+                RRContainer.Current = new Container(x =>
+                                                        {
+                                                            x.For<IReducer>().Use(MockedReducer.Object);
+                                                            x.For<IRRConfiguration>().Use(config.Object);
+                                                        });
                 MockedReducer.Setup(x => x.Process(Hasher.Hash("url"), "url")).Returns("reducedUrl");
             }
 
