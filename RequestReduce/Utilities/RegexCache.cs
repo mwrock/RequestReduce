@@ -18,5 +18,7 @@ namespace RequestReduce.Utilities
         internal readonly Regex PseudoElementPattern = new Regex(@":before|:after|:first-line|:first-letter", RegexOptions.Compiled);
         internal readonly Regex HtmlCommentPattern = new Regex(@"<!--.*?-->", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         internal readonly Regex PrivateIpPattern = new Regex(@"^127\.0\.0\.1$|^(10|172\.(1[6-9]|2[0-9]|30|31)|192\.168)\.|^::1$|^fd[0-9a-f]{2}:.+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        internal readonly Regex BodyEndPattern = new Regex(@"</body>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        internal readonly Regex HtmlEndPattern = new Regex(@"</html>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     }
 }

@@ -14,7 +14,7 @@ namespace RequestReduce.Facts.Module
 {
     public class ResponseTransformerFacts
     {
-        private class TestableResponseTransformer : Testable<ResponseTransformer>
+        internal class TestableResponseTransformer : Testable<ResponseTransformer>
         {
             public TestableResponseTransformer()
             {
@@ -810,7 +810,6 @@ namespace RequestReduce.Facts.Module
                 Assert.Equal(transformed, result);
                 RRContainer.Current = null;
             }
-
         }
     }
 }

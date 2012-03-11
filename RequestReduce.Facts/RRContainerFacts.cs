@@ -29,7 +29,12 @@ namespace RequestReduce.Facts
                 get { throw new System.NotImplementedException(); }
             }
 
-            public string TransformedMarkupTag(string url)
+            public int BundleId(string resource)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public string TransformedMarkupTag(string url, int bundle)
             {
                 throw new System.NotImplementedException();
             }
@@ -41,6 +46,18 @@ namespace RequestReduce.Facts
 
 
             public System.Func<string, string, bool> TagValidator { get; set; }
+
+
+            public bool IsLoadDeferred(int bundle)
+            {
+                throw new NotImplementedException();
+            }
+
+
+            public bool IsDynamicLoad(int bundle)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Fact]

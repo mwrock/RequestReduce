@@ -19,7 +19,12 @@ namespace RequestReduce.ResourceTypes
             get { return new[] { "text/css" }; }
         }
 
-        public string TransformedMarkupTag(string url)
+        public int BundleId(string resource)
+        {
+            return 0;
+        }
+
+        public string TransformedMarkupTag(string url, int bundle)
         {
             return string.Format(CssFormat, url);
         }
@@ -31,5 +36,16 @@ namespace RequestReduce.ResourceTypes
 
 
         public Func<string, string, bool> TagValidator { get; set; }
+
+
+        public bool IsLoadDeferred(int bundle)
+        {
+            return false;
+        }
+
+        public bool IsDynamicLoad(int bundle)
+        {
+            return false;
+        }
     }
 }

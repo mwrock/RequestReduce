@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using RequestReduce.Api;
+using RequestReduce.Utilities;
 
 namespace RequestReduce.Module
 {
@@ -15,6 +16,7 @@ namespace RequestReduce.Module
         private readonly HttpContextBase context;
         private readonly Encoding encoding;
         private readonly IResponseTransformer responseTransformer;
+        private static readonly RegexCache Regex = new RegexCache();
         private byte[][] startStringUpper;
         private bool[] currentStartStringsToSkip;
         private byte[][] startStringLower;
@@ -95,6 +97,7 @@ namespace RequestReduce.Module
 
         public override void Close()
         {
+            EmptyDeferredBundles();
             Closed = true;
             BaseStream.Close();
         }
@@ -106,9 +109,10 @@ namespace RequestReduce.Module
             {
                 var transformed =
                     encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
-                BaseStream.Write(transformed, 0, transformed.Length);
+                WriteBaseStream(transformed, 0, transformed.Length);
                 transformBuffer.Clear();
             }
+
             BaseStream.Flush();
             RRTracer.Trace("Flushing Filter");
             var filterQs = context != null && context.Request != null ? context.Request.QueryString["rrfilter"] : null;
@@ -138,10 +142,10 @@ namespace RequestReduce.Module
                     if (endTransformPosition > 0)
                     {
                         if ((actualOffset + actualLength) - endTransformPosition > 0)
-                            BaseStream.Write(buffer, endTransformPosition, (actualOffset + actualLength) - endTransformPosition);
+                            WriteBaseStream(buffer, endTransformPosition, (actualOffset + actualLength) - endTransformPosition);
                     }
                     else
-                        BaseStream.Write(buffer, actualOffset, actualLength);
+                        WriteBaseStream(buffer, actualOffset, actualLength);
                     break;
                 case SearchState.MatchingStart:
                 case SearchState.MatchingStartClose:
@@ -149,7 +153,7 @@ namespace RequestReduce.Module
                 case SearchState.MatchingStop:
                 case SearchState.LookForAdjacentScript:
                     if (startTransformPosition > actualOffset)
-                        BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
+                        WriteBaseStream(buffer, actualOffset, startTransformPosition - actualOffset);
                     break;
             }
             RRTracer.Trace("Ending Filter Write");
@@ -186,7 +190,7 @@ namespace RequestReduce.Module
                 return 0;
             }
             if (i - originalOffset < transformBuffer.Count)
-                BaseStream.Write(transformBuffer.ToArray(), 0, (transformBuffer.Count - (i - originalOffset)));
+                WriteBaseStream(transformBuffer.ToArray(), 0, (transformBuffer.Count - (i - originalOffset)));
             transformBuffer.Clear();
             state = SearchState.LookForStart;
             return 0;
@@ -231,12 +235,12 @@ namespace RequestReduce.Module
         {
             currentStartStringsToSkip = new bool[currentStartStringsToSkip.Length];
             if ((startTransformPosition - actualOffset) >= 0)
-                BaseStream.Write(buffer, actualOffset, startTransformPosition - actualOffset);
+                WriteBaseStream(buffer, actualOffset, startTransformPosition - actualOffset);
             try
             {
                 var transformed =
                     encoding.GetBytes(responseTransformer.Transform(encoding.GetString(transformBuffer.ToArray())));
-                BaseStream.Write(transformed, 0, transformed.Length);
+                WriteBaseStream(transformed, 0, transformed.Length);
             }
             catch (Exception ex)
             {
@@ -247,7 +251,7 @@ namespace RequestReduce.Module
                 RRTracer.Trace(ex.ToString());
                 if (Registry.CaptureErrorAction != null)
                     Registry.CaptureErrorAction(wrappedException);
-                BaseStream.Write(transformBuffer.ToArray(), 0, transformBuffer.Count);
+                WriteBaseStream(transformBuffer.ToArray(), 0, transformBuffer.Count);
             }
             startTransformPosition = 0;
             transformBuffer.Clear();
@@ -297,7 +301,7 @@ namespace RequestReduce.Module
             else
             {
                 if(i-originalOffset < transformBuffer.Count)
-                    BaseStream.Write(transformBuffer.ToArray(), 0, (transformBuffer.Count - (i - originalOffset)));
+                    WriteBaseStream(transformBuffer.ToArray(), 0, (transformBuffer.Count - (i - originalOffset)));
                 transformBuffer.Clear();
             }
             state = SearchState.LookForStart;
@@ -427,6 +431,35 @@ namespace RequestReduce.Module
             {
                 throw new NotSupportedException();
             }
+        }
+
+        private void EmptyDeferredBundles()
+        {
+            string deferred = responseTransformer.EmptyDeferredBundles();
+            byte[] buffer = encoding.GetBytes(deferred);
+            BaseStream.Write(buffer, 0, buffer.Length);
+        }
+
+        private void WriteBaseStream(byte[] inputBuffer, int offset, int count)
+        {
+            string stringToWrite = encoding.GetString(inputBuffer, offset, count);
+
+            stringToWrite = TryEmptyDeferredBundles(stringToWrite, Regex.BodyEndPattern);
+            stringToWrite = TryEmptyDeferredBundles(stringToWrite, Regex.HtmlEndPattern);
+
+            byte[] bufferToWrite = encoding.GetBytes(stringToWrite);
+            BaseStream.Write(bufferToWrite, 0, bufferToWrite.Length);
+        }
+
+        private string TryEmptyDeferredBundles(string str, System.Text.RegularExpressions.Regex regex)
+        {
+            var match = regex.Match(str);
+            if (match.Success)
+            {
+                str = regex.Replace(str, responseTransformer.EmptyDeferredBundles() + match.ToString(), 1);
+            }
+
+            return str;
         }
     }
 }
