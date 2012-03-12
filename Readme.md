@@ -59,19 +59,19 @@ There are a ton of features I intend to add in order to make web performance opt
 ##Acknowledgements
 RequestReduce uses the following excellent OSS and other Free projects:
 
-**RequestReduce Core**
+#RequestReduce Core
 * Microsoft Ajax Minifier licensed under Apache 2.0 : http://ajaxmin.codeplex.com/
 * StructureMap by Jeremy D. Miller, The Shade Tree Developer and Joshua Flanagan licensed under Apache 2.0 : http://structuremap.net/structuremap/
 * nQuant by Matt Wrock licensed under Apache 2.0 : http://nquant.codeplex.com
 
-**RequestReduce.SqlServer**
+#RequestReduce.SqlServer
 * Peta Poco by TopTen Software licensed under Apache 2.0 : http://www.toptensoftware.com/petapoco/
 
-**RequestReduce.SassLessCoffee**
+#RequestReduce.SassLessCoffee
 * .less by Christopher Owen, Erik van Brakel, Daniel Hoelbling and James Foster licensed under Apache 2.0 : http://www.dotlesscss.org/
 * SassAndCoffee by Paul Betts under the Microsoft Public License (Ms-PL) : https://github.com/xpaulbettsx/SassAndCoffee
 
-**RequestReduce Internal Code (testing and building)
+#RequestReduce Internal Code (testing and building)
 * XUnit by Brad Wilson and Jim Newkirk under the Microsoft Public License (Ms-PL) : http://xunit.codeplex.com/
 * Moq by Clarius, Manas and InSTEDD under BSD License: http://code.google.com/p/moq/
 * PSake by James Kovacs under MIT License : http://code.google.com/p/psake/
