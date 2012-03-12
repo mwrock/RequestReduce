@@ -17,6 +17,7 @@
     <releaseNotes>
       * Add compatibility with Azure CDN
       * Add API Method to manually attach ResponseFilter in case application needs it to attach sooner
+      * Make Dashboard work with IIS6
     </releaseNotes>
   </metadata>
 </package>

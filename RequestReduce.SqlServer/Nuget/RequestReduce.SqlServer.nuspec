@@ -15,6 +15,7 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Make Dashboard work with IIS6
       * Remove dependency on Entity Framework. Using Peta Poco instead and now .Net 3.5 compliant
       * Add compatibility with Azure CDN
       * Add API Method to manually attach ResponseFilter in case application needs it to attach sooner

@@ -31,12 +31,12 @@ namespace RequestReduce.Module
         {
             var url = EnsurePath(httpContextWrapper.Request.RawUrl);
             if (IsInRRContentDirectory(httpContextWrapper) && (
-                url.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
-                || url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)))
+                url.ToLowerInvariant().Contains("/flush/")
+                || url.ToLowerInvariant().Contains("/flushfailures/")))
                 HandleRRFlush(httpContextWrapper);
 
             else if (IsInRRContentDirectory(httpContextWrapper)
-                && url.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase))
+                && url.ToLowerInvariant().Contains("/dashboard/"))
                 WriteDashboard(httpContextWrapper);
         }
 
@@ -139,7 +139,7 @@ namespace RequestReduce.Module
                 {
                     repoList.AppendLine("<ul>");
                 }
-                repoList.AppendFormat("<li>{0} || <a href='{1}/flush'>Flush</a></li>{2}",
+                repoList.AppendFormat("<li>{0} || <a href='{1}/flush/index.aspx'>Flush</a></li>{2}",
                                       item, uriBuilder.ParseKey(item).RemoveDashes(), Environment.NewLine);
             }
             if (repoList.Length > 0)
