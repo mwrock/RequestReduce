@@ -15,44 +15,8 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
-      * Replace AbsoluteUrlTransformer with UrlTransformer to trnsform any url and not just ones embedded in css
-      * dont wrap css in media rule if media attribute is All
-      * Fix some casing scenarios to be turkish friendly
-      * fix import expansion when using CSSFilters
-      * ignore external scripts containing inline script
-      * fix casing edge case injecting sprite in preexisting 2 class sprite with mixed case selectors
-      * fix nuget install/uninstall for web site projects with http endpoints
-      * dramatically improve processing perf in some environments where call to getsystemproxy incurs high latency
-      * enable filtering css @imports via API
-      * fix minification issues with Prototype.js
-      * hide connection string passwords from dashboard
-      * add ipfilter and proxylist for authorizing dashboard users via ip when not using login authentication
-      * fix issue with CSS being injected incorrectly when comments are before scripts
-      * Fixed parsing issues with comments in between scripts or css links
-      * Fixed issue where embeded scripts in inline scripts were being transformed
-      * Fixed possible duplicate key error in retrieving saved reductions from local disk
-      * eliminate extra line feeds left over from removed scripts and css links
-      * fixed issue when using google font api
-      * Fix Maped physical path in nested Applications
-      * Strip query string from generated urls sent from browser
-      * Ignore commented scripts
-      * do not inject generated styles into commented section of head
-      * Do not swap external host with content host
-      * fix .net 3.5 in medium trust
-      * fix parsing error on padding and bg position in pre minimized css not ending in a semicolon
-      * support percentage and positive pixel background-positions
-      * default one background position axis to centerif the other is set
-      * adjust quantization settings for better and less grainy quality
-      * upgrade to ajax minifier 4.44 to fix js error with google prettify
-      * fix bug not including child selector as delimitor in css inheritance evaluation
-      * fix bug that throws off sprite offsets when there are duplicate sprites
-      * Add Exception information failed failed processing events in the dashboard
-      * Extend API for overriding URLs generated for CSS embedded URLs
-      * ignore data URIs when absolutizing URLs
-      * Process Existing Sprites that have image and position in separate selectors
-      * Improve performance of Sprite Generation
-      * Support Windows authentication when processing resources
-      * Do not generate 0 byte script when processing a script solely composed of comments
+      * Add compatibility with Azure CDN
+      * Add API Method to manually attach ResponseFilter in case application needs it to attach sooner
     </releaseNotes>
   </metadata>
 </package>
