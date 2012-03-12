@@ -66,9 +66,10 @@ namespace RequestReduce.Facts.Api
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                x.For<HttpContextBase>().Use(context.Object);
             });
 
-            Registry.InstallResponseFilter(context.Object);
+            Registry.InstallResponseFilter();
 
             context.VerifySet((x => x.Response.Filter = It.IsAny<Stream>()), Times.Never());
             RRContainer.Current = null;

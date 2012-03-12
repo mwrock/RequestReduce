@@ -45,9 +45,9 @@ namespace RequestReduce.Api
             get { return RRContainer.Current.GetInstance<IRRConfiguration>(); }
         }
 
-        public static void InstallResponseFilter(HttpContextBase context)
+        public static void InstallResponseFilter()
         {
-            ResponseFilter.InstallFilter(context);
+            ResponseFilter.InstallFilter(RRContainer.Current.GetInstance<HttpContextBase>());
         }
     }
 }
