@@ -320,7 +320,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             hostingEnvironmentWrapper.Setup(x => x.MapPath("/RRContent")).Returns("physical");
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
@@ -347,7 +347,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/page.aspx");
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
@@ -376,7 +376,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/page.aspx");
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.User).Returns(null as IPrincipal);
             var queue = new Mock<IReducingQueue>();
@@ -457,8 +457,8 @@ namespace RequestReduce.Facts.Module
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
-        [InlineData("/RRContent/flush", "00000000-0000-0000-0000-000000000000")]
+        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush/RRFlush.aspx", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
+        [InlineData("/RRContent/flush/page.aspx", "00000000-0000-0000-0000-000000000000")]
         public void WillFlushReductionsOnFlushUrlWhenAuthorizedUsersIsAnonymousAndIpFilterIsEmpty(string url, string key)
         {
             var module = new RequestReduceModule();
@@ -490,8 +490,8 @@ namespace RequestReduce.Facts.Module
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
-        [InlineData("/RRContent/flush", "00000000-0000-0000-0000-000000000000")]
+        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush/RRFlush.aspx", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
+        [InlineData("/RRContent/flush/page.aspx", "00000000-0000-0000-0000-000000000000")]
         public void WillFlushReductionsOnFlushUrlWhenAuthorizedUsersIsAnonymousAndIpFilterIsInvalid(string url, string key)
         {
             var module = new RequestReduceModule();
@@ -558,7 +558,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.AuthorizedUserList).Returns(new string[]{"user1", "user2"});
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -589,7 +589,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.IpFilterList).Returns(new[] { "" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -620,7 +620,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.IpFilterList).Returns(new[] { "9.9.9.9" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -652,7 +652,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.IpFilterList).Returns(new[] { "001.002.003.004" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -684,7 +684,7 @@ namespace RequestReduce.Facts.Module
             config.Setup(x => x.IpFilterList).Returns(new[] { "3780:0:c307:0:2c45:0:81c7:9273" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -747,7 +747,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user3");
@@ -782,7 +782,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -818,7 +818,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush");
+            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);

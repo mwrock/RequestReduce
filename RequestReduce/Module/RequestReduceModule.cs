@@ -139,7 +139,7 @@ namespace RequestReduce.Module
                 {
                     repoList.AppendLine("<ul>");
                 }
-                repoList.AppendFormat("<li>{0} || <a href='{1}/flush/index.aspx'>Flush</a></li>{2}",
+                repoList.AppendFormat("<li>{0} || <a href='{1}/flush/RRflush.aspx'>Flush</a></li>{2}",
                                       item, uriBuilder.ParseKey(item).RemoveDashes(), Environment.NewLine);
             }
             if (repoList.Length > 0)
@@ -187,8 +187,8 @@ namespace RequestReduce.Module
         {
             var url = EnsurePath(httpContextWrapper.Request.RawUrl);
             if (!IsInRRContentDirectory(httpContextWrapper) 
-                || (!url.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
-                && !url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))) return;
+                || (!url.ToLowerInvariant().Contains("/flush/")
+                && !url.ToLowerInvariant().Contains("/flushfailures/"))) return;
 
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
@@ -199,7 +199,7 @@ namespace RequestReduce.Module
             if ((config.AuthorizedUserList.AllowsAnonymous() || config.AuthorizedUserList.Contains(user)) &&
                 ipfilter.IsAuthorizedIpAddress(httpContextWrapper))
             {
-                if(url.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase))
+                if(url.ToLowerInvariant().Contains("/flushfailures/"))
                 {
                     var queue = RRContainer.Current.GetInstance<IReducingQueue>();
                     queue.ClearFailures();
@@ -208,7 +208,9 @@ namespace RequestReduce.Module
                 else
                 {
                     var uriBuilder = RRContainer.Current.GetInstance<IUriBuilder>();
-                    var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush/", "-flush"));
+                    var key = uriBuilder.ParseKey(url.ToLower().Replace("/flush/rrflush.aspx/", "-flush"));
+                    if (key == Guid.Empty)
+                        key = uriBuilder.ParseKey(url.ToLower().Replace("/flush/", "-flush"));
                     var store = RRContainer.Current.GetInstance<IStore>();
                     store.Flush(key);
                     RRTracer.Trace("{0} Flushed {1}", user, key);
@@ -241,9 +243,9 @@ namespace RequestReduce.Module
 
                                                                                                                                                                                                                                                                                                                                             var actionUrl = EnsurePath(url);
             if (!IsInRRContentDirectory(httpContextWrapper)
-                || actionUrl.EndsWith("/flush/", StringComparison.OrdinalIgnoreCase)
-                || actionUrl.EndsWith("/flushfailures/", StringComparison.OrdinalIgnoreCase)
-                || actionUrl.EndsWith("/dashboard/", StringComparison.OrdinalIgnoreCase))
+                || actionUrl.ToLowerInvariant().Contains("/flush/")
+                || actionUrl.ToLowerInvariant().Contains("/flushfailures/")
+                || actionUrl.ToLowerInvariant().Contains("/dashboard/"))
             {
                 return;
             }
