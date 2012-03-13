@@ -30,7 +30,7 @@ namespace RequestReduce.Reducer
                 foreach (var url in urls)
                 {
                     mergedJSBuilder.Append(ProcessJavaScript(url).Trim());
-                    if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] == ')' || mergedJSBuilder[mergedJSBuilder.Length - 1] == '}'))
+                    if (mergedJSBuilder.Length > 0 && (mergedJSBuilder[mergedJSBuilder.Length - 1] != ';'))
                     {
                         mergedJSBuilder.Append(";");
                         RRTracer.Trace("Appending missing semicolon to {0}", url);
