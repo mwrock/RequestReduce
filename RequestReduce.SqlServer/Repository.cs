@@ -24,7 +24,6 @@ namespace RequestReduce.SqlServer
             db = IsConnectionStringName(config.ConnectionStringName)
                      ? new RequestReduceDB(config.ConnectionStringName)
                      : new RequestReduceDB(config.ConnectionStringName, RequestReduceDB.DefaultProviderName);
-            db.OpenSharedConnection();
         }
 
         public RequestReduceDB GetDatabase()

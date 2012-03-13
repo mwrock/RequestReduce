@@ -4,11 +4,6 @@ namespace RequestReduce.SqlServer.ORM
 {
     public class RequestReduceDB : Database
     {
-        public RequestReduceDB()
-            : base("RequestReduceDB")
-        {
-        }
-
         public RequestReduceDB(string connectionStringName)
             : base(connectionStringName)
         {
