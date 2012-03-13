@@ -15,6 +15,7 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
+      * Fix broken dashboard links
       * Add compatibility with Azure CDN
       * Add API Method to manually attach ResponseFilter in case application needs it to attach sooner
       * Make Dashboard work with IIS6

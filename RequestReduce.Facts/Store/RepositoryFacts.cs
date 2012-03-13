@@ -20,6 +20,7 @@ namespace RequestReduce.Facts.Store
             {
                 RequestReduceDB.DefaultProviderName = "System.Data.SQLite";
                 var db = GetDatabase();
+                db.KeepConnectionAlive = true;
                 db.Execute(SqliteHelper.GetSqlLightSafeSql());
             }
 
