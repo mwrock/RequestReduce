@@ -1,6 +1,4 @@
-﻿using PetaPoco;
-
-namespace RequestReduce.SqlServer.ORM
+﻿namespace RequestReduce.SqlServer.ORM
 {
     public class RequestReduceDB : Database
     {

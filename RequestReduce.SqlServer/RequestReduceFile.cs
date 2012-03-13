@@ -1,5 +1,5 @@
 ﻿using System;
-using PetaPoco;
+using RequestReduce.SqlServer.ORM;
 
 namespace RequestReduce.SqlServer
 {

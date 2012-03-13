@@ -22,8 +22,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq.Expressions;
 
-
-namespace PetaPoco
+namespace RequestReduce.SqlServer.ORM
 {
     // Poco's marked [Explicit] require all column properties to be marked
     [AttributeUsage(AttributeTargets.Class)]
