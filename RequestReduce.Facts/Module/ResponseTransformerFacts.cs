@@ -9,6 +9,7 @@ using RequestReduce.ResourceTypes;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using StructureMap;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Module
 {
@@ -735,6 +736,51 @@ namespace RequestReduce.Facts.Module
 
                 testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css^print,screen::http://server/Me2.css::")), Times.Once());
             }
+
+            [Theory]
+            [InlineData("http")]
+            [InlineData("https")]
+            public void WillQueueUrlsIfRepoReturnsNullAndPassHostIfContentHostIsIncluded(string scheme)
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head>
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(
+                    x => x.FindReduction("http://server/Me.css::http://server/Me2.css::"));
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri(string.Format("{0}://server/megah", scheme)));
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://contenthost");
+
+                testable.ClassUnderTest.Transform(transform);
+
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css::http://server/Me2.css::" && y.Host == string.Format("{0}://server/", scheme))), Times.Once());
+            }
+
+            [Theory]
+            [InlineData("")]
+            [InlineData((string)null)]
+            public void WillQueueUrlsWithoutHostIfNoContentHost(string contentHost)
+            {
+                var testable = new TestableResponseTransformer();
+                var transform = @"<head>
+<meta name=""description"" content="""" />
+<link href=""http://server/Me.css"" rel=""Stylesheet"" type=""text/css"" />
+<link href=""http://server/Me2.css"" rel=""Stylesheet"" type=""text/css"" />
+<title>site</title></head>
+                ";
+                testable.Mock<IReductionRepository>().Setup(
+                    x => x.FindReduction("http://server/Me.css::http://server/Me2.css::"));
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns(contentHost);
+
+                testable.ClassUnderTest.Transform(transform);
+
+                testable.Mock<IReducingQueue>().Verify(x => x.Enqueue(It.Is<QueueItem<CssResource>>(y => y.Urls == "http://server/Me.css::http://server/Me2.css::" && y.Host == string.Empty)), Times.Once());
+            }
+
 
             [Fact]
             public void WillNotQueueCssUrlsAppendingMediaIfAllIsOnlyMedia()

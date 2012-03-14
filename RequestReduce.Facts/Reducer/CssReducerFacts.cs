@@ -358,6 +358,62 @@ namespace RequestReduce.Facts.Reducer
             }
 
             [Fact]
+            public void WillInjectContentHostinUnReturnedImagesThatAreLocalToHost()
+            {
+                var testable = new TestableCssReducer();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.ContentHost).Returns("http://contentHost");
+                testable.Inject(config.Object);
+                RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""subnav_on_technet.png"") no-repeat;
+}";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://contentHost/style/subnav_on_technet.png"") no-repeat;
+}";
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://host/style/css2.css")).Returns(css);
+
+                testable.ClassUnderTest.Process(Hasher.Hash("mykey"), "http://host/style/css2.css", "http://host/");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>(expectedcss), Times.Once());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillNotInjectContentHostinUnReturnedImagesThatAreNotLocalToHost()
+            {
+                var testable = new TestableCssReducer();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.ContentHost).Returns("http://contentHost");
+                testable.Inject(config.Object);
+                RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+                var css =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""subnav_on_technet.png"") no-repeat;
+}";
+                var expectedcss =
+                    @"
+.LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
+    background: url(""http://hostyosty/style/subnav_on_technet.png"") no-repeat;
+}";
+                testable.Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>("http://hostyosty/style/css2.css")).Returns(css);
+
+                testable.ClassUnderTest.Process(Hasher.Hash("mykey"), "http://hostyosty/style/css2.css", "http://host/");
+
+                testable.Mock<IMinifier>().Verify(
+                    x =>
+                    x.Minify<CssResource>(expectedcss), Times.Once());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
             public void WillConvertRelativeUrlsToAbsoluteForUnReturnedImagesWhenBracesInComments()
             {
                 var testable = new TestableCssReducer();
