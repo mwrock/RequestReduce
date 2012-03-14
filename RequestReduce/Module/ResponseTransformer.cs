@@ -109,7 +109,7 @@ namespace RequestReduce.Module
                 {
                     var firstScript =
                         RRContainer.Current.GetInstance<JavaScriptResource>().ResourceRegex.Match(noCommentTransform);
-                    var firstScriptIndex = firstScript.Success ? preTransform.IndexOf(firstScript.ToString(), System.StringComparison.Ordinal) : -1;
+                    var firstScriptIndex = firstScript.Success ? preTransform.IndexOf(firstScript.ToString(), StringComparison.Ordinal) : -1;
                     var insertionIdx = (firstScript.Success && firstScriptIndex <
                                         preTransform.IndexOf(transformableMatches[0], StringComparison.Ordinal) && resource is CssResource)
                                            ? firstScriptIndex - 1
@@ -130,7 +130,14 @@ namespace RequestReduce.Module
                 }
                 return result;
             }
-            reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString() });
+            var host = string.Empty;
+            if(!string.IsNullOrEmpty(config.ContentHost))
+            {
+                var uri = context.Request.Url;
+                if(uri != null)
+                    host = string.Format("{0}://{1}/", uri.Scheme, uri.Host);
+            }
+            reducingQueue.Enqueue(new QueueItem<T> { Urls = urls.ToString(), Host = host});
             RRTracer.Trace("No reduction found for {0}. Enqueuing.", urls);
             return preTransform;
         }

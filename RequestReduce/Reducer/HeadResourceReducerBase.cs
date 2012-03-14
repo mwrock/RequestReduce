@@ -27,14 +27,14 @@ namespace RequestReduce.Reducer
         public virtual string Process(string urls)
         {
             var guid = Hasher.Hash(urls);
-            return Process(guid, urls);
+            return Process(guid, urls, string.Empty);
         }
 
-        public virtual string Process(Guid key, string urls)
+        public virtual string Process(Guid key, string urls, string host)
         {
             RRTracer.Trace("beginning reducing process for {0}", urls);
             var urlList = SplitUrls(urls);
-            var processedResource = ProcessResource(key, urlList);
+            var processedResource = ProcessResource(key, urlList, host);
             var virtualfileName = string.Empty;
             if(processedResource != null)
             {
@@ -50,7 +50,7 @@ namespace RequestReduce.Reducer
             return virtualfileName;
         }
 
-        protected abstract string ProcessResource(Guid key, IEnumerable<string> urls);
+        protected abstract string ProcessResource(Guid key, IEnumerable<string> urls, string host);
 
         protected static IEnumerable<string> SplitUrls(string urls)
         {

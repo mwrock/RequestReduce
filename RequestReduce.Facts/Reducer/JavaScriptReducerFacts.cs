@@ -66,7 +66,7 @@ namespace RequestReduce.Facts.Reducer
                 var guid = Guid.NewGuid();
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 
-                var result = testable.ClassUnderTest.Process(guid, "http://host/js1.js::http://host/js2.js");
+                var result = testable.ClassUnderTest.Process(guid, "http://host/js1.js::http://host/js2.js", string.Empty);
 
                 Assert.Equal(guid, builder.ParseKey(result));
             }
@@ -127,7 +127,7 @@ namespace RequestReduce.Facts.Reducer
                 mockWebResponse2.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(new UTF8Encoding().GetBytes("js2")));
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js2.js")).Returns(mockWebResponse2.Object);
-                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("js1\r\njs2\r\n")).Returns("min");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("js1;\r\njs2;\r\n")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
@@ -152,7 +152,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
-                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("js1();\r\njs2\r\n"), Times.Once());
+                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("js1();\r\njs2;\r\n"), Times.Once());
             }
 
             [Fact]
@@ -170,7 +170,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
-                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("{js1()};\r\njs2\r\n"), Times.Once());
+                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("{js1()};\r\njs2;\r\n"), Times.Once());
             }
 
             [Fact]
@@ -188,7 +188,7 @@ namespace RequestReduce.Facts.Reducer
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
-                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("{js1()};\r\njs2\r\n"), Times.Once());
+                testable.Mock<IMinifier>().Verify(x => x.Minify<JavaScriptResource>("{js1()};\r\njs2;\r\n"), Times.Once());
             }
 
 
@@ -312,7 +312,7 @@ namespace RequestReduce.Facts.Reducer
                 mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(encodedArray));
                 mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection() { { "Content-Encoding", "gzip" } });
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
-                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("my response\r\n")).Returns("min");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("my response;\r\n")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::");
 
@@ -340,7 +340,7 @@ namespace RequestReduce.Facts.Reducer
                 mockWebResponse.Setup(x => x.GetResponseStream()).Returns(new MemoryStream(encodedArray));
                 mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection() { { "Content-Encoding", "deflate" } });
                 testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js")).Returns(mockWebResponse.Object);
-                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("my response\r\n")).Returns("min");
+                testable.Mock<IMinifier>().Setup(x => x.Minify<JavaScriptResource>("my response;\r\n")).Returns("min");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::");
 

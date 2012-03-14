@@ -108,7 +108,7 @@ namespace RequestReduce.Facts.Reducer
                 var guid = Guid.NewGuid();
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 
-                var result = testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
+                var result = testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css", string.Empty);
 
                 Assert.Equal(guid, builder.ParseKey(result));
             }
@@ -119,7 +119,7 @@ namespace RequestReduce.Facts.Reducer
                 var testable = new TestableCssReducer();
                 var guid = Guid.NewGuid();
 
-                testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css");
+                testable.ClassUnderTest.Process(guid, "http://host/css1.css::http://host/css2.css", string.Empty);
 
                 testable.Mock<ISpriteManager>().VerifySet(x => x.SpritedCssKey = guid);
             }

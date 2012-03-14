@@ -159,7 +159,7 @@ namespace RequestReduce.Module
                             return;
                         }
 
-                        reducer.Process(key, itemToReduce.Urls);
+                        reducer.Process(key, itemToReduce.Urls, itemToReduce.Host);
                     }
                     RRTracer.Trace("dequeued and processed {0}.", itemToReduce.Urls);
                 }

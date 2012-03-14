@@ -5,5 +5,6 @@ namespace RequestReduce.Module
     {
         Type ResourceType { get; }
         string Urls { get; set; }
+        string Host { get; set; }
     }
 }

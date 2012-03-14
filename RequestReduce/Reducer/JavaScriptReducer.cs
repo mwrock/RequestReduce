@@ -21,7 +21,7 @@ namespace RequestReduce.Reducer
             this.responseDecoder = responseDecoder;
         }
 
-        protected override string ProcessResource(Guid key, IEnumerable<string> urls)
+        protected override string ProcessResource(Guid key, IEnumerable<string> urls, string host)
         {
             RRTracer.Trace("beginning to merge js");
             try

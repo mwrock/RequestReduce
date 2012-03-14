@@ -55,13 +55,21 @@ namespace RequestReduce.Facts.Integration
             var reducer = GetCssReducer();
             var urls = "http://localhost:8877/Styles/style3.css";
             config.ContentHost = "http://localhost:8878";
+            var tempVirtual = config.SpriteVirtualPath;
+            config.SpriteVirtualPath = "/FactContent";
             var key = Hasher.Hash(urls).RemoveDashes();
 
-            var result = reducer.Process(urls);
+            reducer.Process(urls);
 
-            Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".png")));
+            var files = Directory.GetFiles(config.SpritePhysicalPath, key + "*");
+            Assert.NotNull(files);
+            var png = files.SingleOrDefault(x => x.EndsWith(".png"));
+            var css = files.SingleOrDefault(x => x.EndsWith(".css"));
+            Assert.NotNull(png);
+            Assert.True(File.ReadAllText(css).Contains(png.Replace(config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/")));
             reducer.Dispose();
             config.ContentHost = string.Empty;
+            config.SpriteVirtualPath = tempVirtual;
         }
 
         [OutputTraceOnFailFact]
