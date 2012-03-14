@@ -21,7 +21,7 @@ namespace RequestReduce.Utilities
 
         public static string ToAbsolute(string baseUrl, string relativeUrl)
         {
-            return ReplaceContentHost(IsAbsolute(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri, baseUrl);
+            return ToAbsolute(baseUrl, relativeUrl, true);
         }
 
         private static string ReplaceContentHost(string url, string baseUrl)
@@ -60,6 +60,12 @@ namespace RequestReduce.Utilities
         {
             return url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                    url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string ToAbsolute(string baseUrl, string relativeUrl, bool useContentHost)
+        {
+            var absolute = IsAbsolute(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri;
+            return useContentHost ? ReplaceContentHost(absolute, baseUrl) : absolute;
         }
     }
 }

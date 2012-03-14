@@ -50,6 +50,21 @@ namespace RequestReduce.Facts.Integration
         }
 
         [OutputTraceOnFailFact]
+        public void WillSpriteWithForeignContentHost()
+        {
+            var reducer = GetCssReducer();
+            var urls = "http://localhost:8877/Styles/style3.css";
+            config.ContentHost = "http://localhost:8878";
+            var key = Hasher.Hash(urls).RemoveDashes();
+
+            var result = reducer.Process(urls);
+
+            Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".png")));
+            reducer.Dispose();
+            config.ContentHost = string.Empty;
+        }
+
+        [OutputTraceOnFailFact]
         public void WillReturnSavedJavaScript()
         {
             var reducer = GetJavaScriptReducer();

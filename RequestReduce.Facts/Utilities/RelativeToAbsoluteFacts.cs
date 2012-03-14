@@ -149,5 +149,19 @@ namespace RequestReduce.Facts.Utilities
             Registry.UrlTransformer = null;
         }
 
+        [Fact]
+        public void willMakeAbsoluteWithoutContentHostWhenPassingFalseForUseContentHost()
+        {
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.ContentHost).Returns("http://content");
+            RRContainer.Current.Configure(x => x.For<IRRConfiguration>().Use(config.Object));
+
+            var result =
+            RelativeToAbsoluteUtility.ToAbsolute("http://blogs.msdn.com/themes/blogs/MSDN2/css/MSDNblogs.css",
+                                                 "/MSDN2/Images/MSDN/contentpane.png", false);
+
+            Assert.Equal("http://blogs.msdn.com/msdn2/Images/MSDN/contentpane.png", result, StringComparer.OrdinalIgnoreCase);
+            RRContainer.Current = null;
+        }
     }
 }
