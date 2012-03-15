@@ -17,13 +17,15 @@ namespace RequestReduce.Reducer
         private readonly ISpriteManager spriteManager;
         private readonly ICssImageTransformer cssImageTransformer;
         private readonly IRRConfiguration configuration;
+        private readonly IRelativeToAbsoluteUtility relativeToAbsoluteUtility;
         private static readonly RegexCache Regex = new RegexCache();
 
-        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration)
+        public CssReducer(IWebClientWrapper webClientWrapper, IStore store, IMinifier minifier, ISpriteManager spriteManager, ICssImageTransformer cssImageTransformer, IUriBuilder uriBuilder, IRRConfiguration configuration, IRelativeToAbsoluteUtility relativeToAbsoluteUtility)
             : base(webClientWrapper, store, minifier, uriBuilder)
         {
             this.cssImageTransformer = cssImageTransformer;
             this.configuration = configuration;
+            this.relativeToAbsoluteUtility = relativeToAbsoluteUtility;
             this.spriteManager = spriteManager;
         }
 
@@ -90,7 +92,7 @@ namespace RequestReduce.Reducer
                 var url = match.Groups["url"].Value;
                 if(filter != null && filter.IgnoreTarget(new CssJsFilterContext(null, url, match.ToString())))
                     continue;
-                var absoluteUrl = RelativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
+                var absoluteUrl = relativeToAbsoluteUtility.ToAbsolute(parentUrl, url);
                 var importContent = WebClientWrapper.DownloadString<CssResource>(absoluteUrl);
                 importContent = MakeRelativeUrlsAbsolute(importContent, absoluteUrl, false);
                 importContent = RemoveComments(importContent);
@@ -126,7 +128,7 @@ namespace RequestReduce.Reducer
             {
                 var url = match.Groups["url"].Value.Replace("'", "").Replace("\"", "").Trim();
                 if (url.Length <= 0 || url.StartsWith("data:", StringComparison.OrdinalIgnoreCase)) continue;
-                var newUrl = RelativeToAbsoluteUtility.ToAbsolute(parentCssUrl, url, useContentHost);
+                var newUrl = relativeToAbsoluteUtility.ToAbsolute(parentCssUrl, url, useContentHost);
                 originalCss = originalCss.Replace(match.Value, match.Value.Replace(url, newUrl));
             }
             return originalCss;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Web;
 using Moq;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
@@ -27,6 +28,7 @@ namespace RequestReduce.Facts.Reducer
                 Mock<ISpriteManager>().Setup(x => x.GetEnumerator()).Returns(new List<SpritedImage>().GetEnumerator());
                 Inject<IUriBuilder>(new UriBuilder(Mock<IRRConfiguration>().Object));
                 Mock<IWebClientWrapper>().Setup(x => x.DownloadString<CssResource>(It.IsAny<string>())).Returns(string.Empty);
+                Inject<IRelativeToAbsoluteUtility>(new RelativeToAbsoluteUtility(Mock<HttpContextBase>().Object, Mock<IRRConfiguration>().Object));
             }
 
         }
@@ -361,10 +363,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillInjectContentHostinUnReturnedImagesThatAreLocalToHost()
             {
                 var testable = new TestableCssReducer();
-                var config = new Mock<IRRConfiguration>();
-                config.Setup(x => x.ContentHost).Returns("http://contentHost");
-                testable.Inject(config.Object);
-                RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+                testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://contentHost");
                 var css =
                     @"
 .LocalNavigation .TabOn,.LocalNavigation .TabOn:hover {
@@ -382,7 +381,6 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IMinifier>().Verify(
                     x =>
                     x.Minify<CssResource>(expectedcss), Times.Once());
-                RRContainer.Current = null;
             }
 
             [Fact]

@@ -8,7 +8,6 @@ using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using RequestReduce.Module;
-using RequestReduce.Store;
 using RequestReduce.Utilities;
 using StructureMap;
 using Xunit;
@@ -458,7 +457,7 @@ namespace RequestReduce.Facts.Module
                 context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
                 context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
                 context.Setup(x => x.Response.ContentType).Returns("text/html");
-                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection() { { "RRFilter", "disabled" } });
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection { { "RRFilter", "disabled" } });
                 context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
                 RRContainer.Current = new Container(x =>
                 {

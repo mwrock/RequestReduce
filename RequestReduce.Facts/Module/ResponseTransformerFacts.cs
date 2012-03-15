@@ -19,6 +19,7 @@ namespace RequestReduce.Facts.Module
         {
             public TestableResponseTransformer()
             {
+                Inject<IRelativeToAbsoluteUtility>(new RelativeToAbsoluteUtility(Mock<HttpContextBase>().Object, Mock<IRRConfiguration>().Object));
             }
         }
 
@@ -847,14 +848,11 @@ namespace RequestReduce.Facts.Module
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::http://server/script2.js::")).Returns("http://server/script4.js");
                 testable.Mock<IReductionRepository>().Setup(x => x.FindReduction("http://server/script1.js::")).Returns("http://server/script5.js");
                 testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(new Uri("http://server/megah"));
-                var config = new Mock<IRRConfiguration>();
-                config.Setup(x => x.JavaScriptUrlsToIgnore).Returns("server/script3.js");
-                RRContainer.Current = new Container(x => x.For<IRRConfiguration>().Use(config.Object));
+                testable.Mock<IRRConfiguration>().Setup(x => x.JavaScriptUrlsToIgnore).Returns("server/script3.js");
 
                 var result = testable.ClassUnderTest.Transform(transform);
 
                 Assert.Equal(transformed, result);
-                RRContainer.Current = null;
             }
 
         }

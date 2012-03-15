@@ -38,6 +38,7 @@ namespace RequestReduce.IOC
                 x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
                 x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
                 x.For<ICssImageTransformer>().Singleton().Use<CssImageTransformer>();
+                x.For<IRelativeToAbsoluteUtility>().Use<RelativeToAbsoluteUtility>();
 
                 x.For<HttpContextBase>().Use(() => HttpContext.Current == null 
                                                     ? null 
@@ -79,6 +80,7 @@ namespace RequestReduce.IOC
                 y.Assembly("RequestReduce");
                 y.IncludeNamespace("RequestReduce.Utilities");
                 y.IncludeNamespace("RequestReduce.Configuration");
+                y.ExcludeType<IRelativeToAbsoluteUtility>();
                 y.IgnoreStructureMapAttributes();
                 y.With(new SingletonConvention());
             }));

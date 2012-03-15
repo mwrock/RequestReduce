@@ -6,12 +6,27 @@ using RequestReduce.IOC;
 
 namespace RequestReduce.Utilities
 {
-    public static class RelativeToAbsoluteUtility
+    public interface IRelativeToAbsoluteUtility
     {
-        public static string ToAbsolute(Uri baseUrl, string relativeUrl)
+        string ToAbsolute(Uri baseUrl, string relativeUrl);
+        string ToAbsolute(string baseUrl, string relativeUrl);
+        string ToAbsolute(string baseUrl, string relativeUrl, bool useContentHost);
+    }
+
+    public class RelativeToAbsoluteUtility : IRelativeToAbsoluteUtility
+    {
+        private readonly HttpContextBase context;
+        private readonly IRRConfiguration config;
+
+        public RelativeToAbsoluteUtility(HttpContextBase context, IRRConfiguration config)
         {
-            var context = HttpContext.Current;
-            if (context != null)
+            this.context = context;
+            this.config = config;
+        }
+
+        public string ToAbsolute(Uri baseUrl, string relativeUrl)
+        {
+            if (context.Request.Headers != null)
             {
                 if (context.Request.Headers["X-Forwarded-For"] != null && !baseUrl.IsDefaultPort)
                     baseUrl = new System.UriBuilder(baseUrl.Scheme, baseUrl.Host) { Path = baseUrl.PathAndQuery }.Uri;
@@ -19,16 +34,16 @@ namespace RequestReduce.Utilities
             return IsAbsolute(relativeUrl) ? relativeUrl : new Uri(baseUrl, relativeUrl).AbsoluteUri;
         }
 
-        public static string ToAbsolute(string baseUrl, string relativeUrl)
+        public string ToAbsolute(string baseUrl, string relativeUrl)
         {
             return ToAbsolute(baseUrl, relativeUrl, true);
         }
 
-        private static string ReplaceContentHost(string url, string baseUrl)
+        private string ReplaceContentHost(string url, string baseUrl)
         {
-            var contentHost = RRContainer.Current.GetInstance<IRRConfiguration>().ContentHost;
+            var contentHost = config.ContentHost;
             if (string.IsNullOrEmpty(contentHost) && Registry.UrlTransformer != null)
-                return Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(),url, url);
+                return Registry.UrlTransformer(context,url, url);
             if (string.IsNullOrEmpty(contentHost))
 #pragma warning disable 618
                 return Registry.AbsoluteUrlTransformer != null ? Registry.AbsoluteUrlTransformer(url, url) : url;
@@ -39,7 +54,7 @@ namespace RequestReduce.Utilities
             if (!baseHost.Equals(urlHost, StringComparison.OrdinalIgnoreCase))
                 transformedUrl = url;
             if (Registry.UrlTransformer != null)
-                return Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), url, transformedUrl);
+                return Registry.UrlTransformer(context, url, transformedUrl);
 #pragma warning disable 618
             return Registry.AbsoluteUrlTransformer != null
                        ? Registry.AbsoluteUrlTransformer(url, transformedUrl)
@@ -62,7 +77,7 @@ namespace RequestReduce.Utilities
                    url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static string ToAbsolute(string baseUrl, string relativeUrl, bool useContentHost)
+        public string ToAbsolute(string baseUrl, string relativeUrl, bool useContentHost)
         {
             var absolute = IsAbsolute(relativeUrl) ? relativeUrl : new Uri(new Uri(baseUrl), relativeUrl).AbsoluteUri;
             return useContentHost ? ReplaceContentHost(absolute, baseUrl) : absolute;
