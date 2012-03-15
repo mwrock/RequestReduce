@@ -2,7 +2,6 @@
 using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
-using RequestReduce.IOC;
 
 namespace RequestReduce.Utilities
 {

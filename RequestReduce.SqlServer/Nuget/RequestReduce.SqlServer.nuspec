@@ -15,6 +15,8 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
+      * Append all bundled javascript with a semicolon. Not just  ones ending in } or )
+      * Do not inject contentHost in embedded resources in Externalk CSS that cant be sprited
       * Do not hold open DB connection in background thread
       * Move PetaPoco into RequestReduce namespace to avoid collision with hosting application PetaPoco instances
       * Fix broken dashboard links
