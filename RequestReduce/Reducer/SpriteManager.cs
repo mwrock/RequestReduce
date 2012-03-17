@@ -39,7 +39,6 @@ namespace RequestReduce.Reducer
             {
                 var originalImage = SpriteList.First(x => x.Key.Equals(imageKey)).Value;
                 var clonedImage = new SpritedImage(originalImage.AverageColor, image, originalImage.Image) { Position = originalImage.Position, Url = originalImage.Url, Metadata = imageKey };
-                //SpriteContainer.AddImage(clonedImage);
                 SpriteList.Add(new KeyValuePair<ImageMetadata, SpritedImage>(imageKey, clonedImage));
                 return;
             }

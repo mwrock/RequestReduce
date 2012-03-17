@@ -10,7 +10,7 @@ namespace RequestReduce.Api
 
         public Filter(Predicate<T> test)
         {
-            this.Test = test;
+            Test = test;
         }
 
         public virtual bool IgnoreTarget(T context)
