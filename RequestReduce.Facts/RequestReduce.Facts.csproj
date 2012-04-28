@@ -178,9 +178,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="RequestReduce40.sdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="TestImages\delete.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

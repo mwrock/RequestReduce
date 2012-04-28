@@ -31,6 +31,8 @@ namespace RequestReduce.Reducer
             var yOffset = "0";
             if (CssClass.YOffset.PositionMode == PositionMode.Unit && CssClass.YOffset.Offset > 0)
                 yOffset = string.Format("{0}px", CssClass.YOffset.Offset);
+            if (CssClass.YOffset.PositionMode == PositionMode.Percent && CssClass.YOffset.Offset > 0 && CssClass.Height == null)
+                yOffset = string.Format("{0}%", CssClass.YOffset.Offset);
             return newClass.Replace("}",
                                         string.Format(";background-position: -{0}px {1}{2};}}",
                                         Position, yOffset, CssClass.Important ? " !important" : string.Empty));

@@ -688,6 +688,29 @@ h1.LocalNavigation {{
                 Assert.Equal(expected, result);
             }
 
+
+            [Fact]
+            public void WillPreservePercentageOffsetWhenNoHeightGiven()
+            {
+                var testable = new TestableCssImageTransformer();
+                var css =
+                    @"
+.localnavigation {    
+    background: url('http://i1.social.microsoft.com/contentservice/798d3f43-7d1e-41a1-9b09-9dad00d8a996/subnav_technet.png') no-repeat 0 30%;
+    width: 50;
+}";
+                var expected =
+    @"
+.localnavigation {    
+    background: url('spriteUrl') no-repeat 0 30%;
+    width: 50;
+;background-position: -120px 30%;}";
+                var sprite = new SpritedImage(1, new BackgroundImageClass(css, 0), null) { Url = "spriteUrl", Position = 120 };
+
+                var result = testable.ClassUnderTest.InjectSprite(css, sprite);
+
+                Assert.Equal(expected, result);
+            }
         }
     }
 }
