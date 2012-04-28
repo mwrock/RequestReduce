@@ -5,11 +5,15 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
+using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
+
+[assembly: PreApplicationStartMethod(typeof(RequestReduceModule), "Register")]
 
 namespace RequestReduce.Module
 {
@@ -25,6 +29,11 @@ namespace RequestReduce.Module
             context.PreSendRequestHeaders += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.BeginRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.PostAuthenticateRequest += (sender, e) => HandleAuthenticatedActions(new HttpContextWrapper(((HttpApplication)sender).Context));
+        }
+
+        public static void Register()
+        {
+            DynamicModuleUtility.RegisterModule(typeof(RequestReduceModule));
         }
 
         private void HandleAuthenticatedActions(HttpContextWrapper httpContextWrapper)
