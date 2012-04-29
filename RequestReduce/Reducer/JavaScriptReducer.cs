@@ -60,32 +60,35 @@ namespace RequestReduce.Reducer
                     RRTracer.Trace("Response is null for {0}", url);
                     return null;
                 }
-                var expires = response.Headers["Expires"];
-                try
+                if (!config.IgnoreNearFutureJavascriptDisabled)
                 {
-                    if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(6))
+                    var expires = response.Headers["Expires"];
+                    try
                     {
-                        RRTracer.Trace("{0} expires in less than a week", url);
-                        AddUrlToIgnores(url);
-                    }
-                }
-                catch (FormatException) { RRTracer.Trace("Format exception thrown parsing expires of {0}", url); }
-
-                var cacheControl = response.Headers["Cache-Control"];
-                if(!string.IsNullOrEmpty(cacheControl)) 
-                {
-                    var cacheControlVals = cacheControl.ToLower().Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
-                    foreach(var val in cacheControlVals)
-                    {
-                        try
+                        if (!string.IsNullOrEmpty(expires) && DateTime.Parse(expires) < DateTime.Now.AddDays(6))
                         {
-                            if((val.Contains("no-") || (val.Contains("max-age") && Int32.Parse(val.Trim().Remove(0, 8)) < (60*60*24*7))))
-                            {
-                                RRTracer.Trace("{0} max-age in less than a week", url);
-                                AddUrlToIgnores(url);
-                            }
+                            RRTracer.Trace("{0} expires in less than a week", url);
+                            AddUrlToIgnores(url);
                         }
-                        catch (FormatException) { RRTracer.Trace("Format exception thrown parsing max-age of {0}", url); }
+                    }
+                    catch (FormatException) { RRTracer.Trace("Format exception thrown parsing expires of {0}", url); }
+
+                    var cacheControl = response.Headers["Cache-Control"];
+                    if (!string.IsNullOrEmpty(cacheControl))
+                    {
+                        var cacheControlVals = cacheControl.ToLower().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var val in cacheControlVals)
+                        {
+                            try
+                            {
+                                if ((val.Contains("no-") || (val.Contains("max-age") && Int32.Parse(val.Trim().Remove(0, 8)) < (60 * 60 * 24 * 7))))
+                                {
+                                    RRTracer.Trace("{0} max-age in less than a week", url);
+                                    AddUrlToIgnores(url);
+                                }
+                            }
+                            catch (FormatException) { RRTracer.Trace("Format exception thrown parsing max-age of {0}", url); }
+                        }
                     }
                 }
                 using (var responseStream = response.GetResponseStream())

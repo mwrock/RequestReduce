@@ -35,6 +35,7 @@ namespace RequestReduce.Configuration
         event Action PhysicalPathChange;
         string JavaScriptUrlsToIgnore { get; set; }
         bool ImageSpritingDisabled { get; set; }
+        bool IgnoreNearFutureJavascriptDisabled { get; set; }
         string BaseAddress { get; set; }
     }
 
@@ -51,6 +52,7 @@ namespace RequestReduce.Configuration
         public bool ImageOptimizationDisabled { get; set; }
         public bool ImageQuantizationDisabled { get; set; }
         public bool ImageSpritingDisabled { get; set; }
+        public bool IgnoreNearFutureJavascriptDisabled { get; set; }
 
         public int StorePollInterval { get; set; }
 
@@ -76,6 +78,7 @@ namespace RequestReduce.Configuration
             ImageOptimizationDisabled = config != null && config.ImageOptimizationDisabled;
             ImageQuantizationDisabled = config != null && config.ImageQuantizationDisabled;
             ImageSpritingDisabled = config != null && config.ImageSpritingDisabled;
+            IgnoreNearFutureJavascriptDisabled = config != null && config.IgnoreNearFutureJavascriptDisabled;
             SpriteVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);
