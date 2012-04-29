@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Reflection;
+using System.Web;
 using RequestReduce.Utilities;
 using dotless.Core;
 using dotless.Core.Loggers;
@@ -9,10 +10,30 @@ namespace RequestReduce.SassLessCoffee
     public class LessHandler : IHttpHandler
     {
         private readonly IFileWrapper fileWrapper;
+        private readonly ILessEngine engine;
 
         public LessHandler(IFileWrapper fileWrapper)
         {
             this.fileWrapper = fileWrapper;
+            var config = new DotlessConfiguration
+            {
+                CacheEnabled = false,
+                Logger = typeof(LessLogger),
+                Web = HttpContext.Current != null,
+            };
+            if (HttpContext.Current == null)
+                engine = new EngineFactory(config).GetEngine();
+            else
+            {
+                var dotLessAssembly = Assembly.GetAssembly(typeof (ContainerFactory));
+                var factoryType = dotLessAssembly.GetType("dotless.Core.AspNetContainerFactory");
+                var fac = (ContainerFactory)(factoryType.InvokeMember("", BindingFlags.CreateInstance, null, null, null));
+                var locator = factoryType.InvokeMember("GetContainer", BindingFlags.InvokeMethod, null, fac, new object[] {config});
+                engine =
+                    (ILessEngine)
+                    (dotLessAssembly.GetType("Microsoft.Practices.ServiceLocation.IServiceLocator").InvokeMember(
+                        "GetInstance", BindingFlags.InvokeMethod, null, locator, new object[] {typeof (ILessEngine)}));
+            }
         }
 
         public void ProcessRequest(HttpContext context)
@@ -29,13 +50,6 @@ namespace RequestReduce.SassLessCoffee
             try
             {
                 var source = fileWrapper.GetFileString(physicalPath);
-                var engine = new EngineFactory(new DotlessConfiguration
-                                                   {
-                                                       CacheEnabled = false,
-                                                       Logger = typeof (LessLogger),
-                                                       Web = HttpContext.Current != null
-                                                   }
-                    ).GetEngine();
                 var lessEngine = (LessEngine) ((ParameterDecorator) engine).Underlying;
                 ((LessLogger)lessEngine.Logger).Response = response;
                 var result = engine.TransformToCss(source, physicalPath + (string.IsNullOrWhiteSpace(querystring) ? string.Empty : "?" + querystring));
@@ -51,7 +65,7 @@ namespace RequestReduce.SassLessCoffee
             catch (System.Exception ex)
             {
                 response.StatusCode = 500;
-                response.Write("/* Error in less parsing: " + ex.Message + " */");
+                response.Write("/* Error in less parsing: " + ex + " */");
             }
         }
 
@@ -86,5 +100,4 @@ namespace RequestReduce.SassLessCoffee
 
         public HttpResponseBase Response { get; set; }
     }
-
 }
