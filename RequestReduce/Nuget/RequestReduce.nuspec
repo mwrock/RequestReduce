@@ -15,6 +15,7 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
+      * Added ignoreNearFutureJavascriptDisabled which turns off the exclusion of Javascript that has a max-age or expiration of less than a week
       * upgrade to ajaxMin 4.48
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.
       * Append all bundled javascript with a semicolon. Not just  ones ending in } or )
