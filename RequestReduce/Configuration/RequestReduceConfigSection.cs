@@ -197,5 +197,16 @@ namespace RequestReduce.Configuration
                 return result;
             }
         }
+
+        [ConfigurationProperty("ignoreNearFutureJavascriptDisabled")]
+        public bool IgnoreNearFutureJavascriptDisabled
+        {
+            get
+            {
+                bool result;
+                bool.TryParse(base["ignoreNearFutureJavascriptDisabled"].ToString(), out result);
+                return result;
+            }
+        }
     }
 }

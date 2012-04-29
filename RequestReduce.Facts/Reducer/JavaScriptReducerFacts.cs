@@ -281,6 +281,22 @@ namespace RequestReduce.Facts.Reducer
                 testable.Mock<IStore>().Verify(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
             }
 
+            [Theory]
+            [InlineData("max-age=0, public")]
+            [InlineData("public,  max-age=0")]
+            public void WillNotIgnoreNearFutureUrlWhenIgnoreNearFutureJavascriptIsDisabled(string cacheVal)
+            {
+                var testable = new TestableJavaScriptReducer();
+                var mockWebResponse = new Mock<WebResponse>();
+                mockWebResponse.Setup(x => x.Headers).Returns(new WebHeaderCollection() { { "Cache-Control", cacheVal } });
+                testable.Mock<IWebClientWrapper>().Setup(x => x.Download<JavaScriptResource>("http://host/js1.js?qs=875")).Returns(mockWebResponse.Object);
+                testable.Mock<IRRConfiguration>().Setup(x => x.IgnoreNearFutureJavascriptDisabled).Returns(true);
+
+                var result = testable.ClassUnderTest.Process("http://host/js1.js?qs=875::");
+
+                testable.Mock<IRRConfiguration>().VerifySet(x => x.JavaScriptUrlsToIgnore = It.IsAny<string>(), Times.Never());
+            }
+
             [Fact]
             public void WillSwallowFormatExceptionFromParsingCachecontrol()
             {
