@@ -47,6 +47,32 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
+        public void WillGetAndSetResponseFilterIfXHtmlContent()
+        {
+            var module = new RequestReduceModule();
+            var context = new Mock<HttpContextBase>();
+            var config = new Mock<IRRConfiguration>();
+            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+            context.Setup(x => x.Response.ContentType).Returns("application/xhtml+xml");
+            context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
+            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+            RRContainer.Current = new Container(x =>
+            {
+                x.For<IRRConfiguration>().Use(config.Object);
+                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
+                x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+            });
+
+            module.InstallFilter(context.Object);
+
+            context.VerifyGet(x => x.Response.Filter, Times.Once());
+            context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Once());
+            RRContainer.Current = null;
+        }
+
+        [Fact]
         public void WillNotSetResponseFilterIfFaviconIco()
         {
             RRContainer.Current = null;

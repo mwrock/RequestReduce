@@ -295,7 +295,8 @@ namespace RequestReduce.Module
         {
             RRTracer.Trace("Entering Module");
             var request = context.Request;
-            if (context.Response.ContentType != "text/html" || 
+            if ((context.Response.ContentType != "text/html" &&
+                context.Response.ContentType != "application/xhtml+xml") ||
                 request.RawUrl == "/favicon.ico" || 
                 IsInRRContentDirectory(context))
                 return;
