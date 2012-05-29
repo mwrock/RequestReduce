@@ -9,7 +9,7 @@ namespace RequestReduce.Utilities
         private readonly Microsoft.Ajax.Utilities.Minifier minifier = new Microsoft.Ajax.Utilities.Minifier();
         private readonly CodeSettings settings = new CodeSettings {EvalTreatment = EvalTreatment.MakeAllSafe};
 
-        public string Minify<T>(string unMinifiedContent) where T : IResourceType
+        public virtual string Minify<T>(string unMinifiedContent) where T : IResourceType
         {
             if (typeof(T) == typeof(CssResource))
                 return minifier.MinifyStyleSheet(unMinifiedContent);
