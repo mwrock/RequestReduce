@@ -6,8 +6,8 @@
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>http://www.requestreduce.com/</projectUrl>
-    <iconUrl>http://www.requestreduce.com/nuget_icon2.png</iconUrl>
+    <projectUrl>http://www.requestreduce.org/</projectUrl>
+    <iconUrl>http://www.requestreduce.org/nuget_icon2.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       RequestReduce.SqlServer is an add-on to RequestReduce allowing you to store your optimized CSS, JavaScript and sprited images in a SqlServer or SqlServer CE database.

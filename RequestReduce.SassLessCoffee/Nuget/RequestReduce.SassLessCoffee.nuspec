@@ -6,8 +6,8 @@
     <authors>Matt Wrock</authors>
     <owners>Matt Wrock</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>http://www.requestreduce.com/</projectUrl>
-    <iconUrl>http://www.requestreduce.com/nuget_icon2.png</iconUrl>
+    <projectUrl>http://www.requestreduce.org/</projectUrl>
+    <iconUrl>http://www.requestreduce.org/nuget_icon2.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       RequestReduce.SassLessCoffee is an add-on to RequestReduce which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing. Simply reference your .less, .sass, .scss and .coffee files with those extensions and RequestReduce will compile them before performing its reductions.
