@@ -4,8 +4,8 @@ using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Web;
 using Moq;
-using RequestReduce.Api;
 using RequestReduce.Configuration;
+using RequestReduce.Handlers;
 using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Store;
@@ -125,6 +125,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -141,7 +142,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", @"""match""" } });
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection { { "If-None-Match", @"""match""" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -158,6 +159,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -177,7 +179,7 @@ namespace RequestReduce.Facts.Module
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css?somequerystring");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css?somequerystring"));
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", @"""match""" } });
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection { { "If-None-Match", @"""match""" } });
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
@@ -192,6 +194,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -220,6 +223,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IStore>().Use(new Mock<IStore>().Object);
                 x.For<IUriBuilder>().Use(new Mock<IUriBuilder>().Object);
                 x.For<IHostingEnvironmentWrapper>().Use(hostingEnvironment.Object);
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -234,7 +238,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection() { { "If-None-Match", @"""notmatch""" } });
+            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection { { "If-None-Match", @"""notmatch""" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -254,6 +258,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(builder.Object);
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -293,6 +298,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(new UriBuilder(config.Object));
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -328,6 +334,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use(new UriBuilder(config.Object));
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -581,7 +588,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[]{"user1", "user2"});
+            config.Setup(x => x.AuthorizedUserList).Returns(new[]{"user1", "user2"});
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
@@ -611,7 +618,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.IpFilterList).Returns(new[] { "" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
@@ -642,7 +649,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.IpFilterList).Returns(new[] { "9.9.9.9" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
@@ -674,7 +681,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.IpFilterList).Returns(new[] { "001.002.003.004" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
@@ -706,7 +713,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.IpFilterList).Returns(new[] { "3780:0:c307:0:2c45:0:81c7:9273" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
@@ -738,7 +745,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/");
@@ -768,7 +775,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
@@ -802,7 +809,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(new string[] { "user1", "user2" });
+            config.Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             config.Setup(x => x.IpFilterList).Returns(new[] { "1.2.3.4", " 3.4.5.6" });
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
@@ -886,6 +893,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -911,6 +919,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
             module.HandleRRContent(context.Object);
@@ -920,7 +929,7 @@ namespace RequestReduce.Facts.Module
         }
 
         [Fact]
-        public void WillDelegateContentNotInMyDirectoryFriendHandlers()
+        public void WillDelegateContentMappedToHandler()
         {
             var module = new RequestReduceModule();
             var handler = new DefaultHttpHandler();
@@ -932,20 +941,20 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.Items).Returns(new Hashtable());
+            var handlerFactory = new HandlerFactory();
+            handlerFactory.AddHandlerMap(x => x.AbsolutePath.EndsWith(".less") ? handler : null);
+            handlerFactory.AddHandlerMap(x => x.AbsolutePath.EndsWith(".les") ? new DefaultHttpHandler() : null);
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
+                x.For<IHandlerFactory>().Use(handlerFactory);
             });
-            Registry.HandlerMaps.Add(x => x.AbsolutePath.EndsWith(".less") ? handler : null);
-            Registry.HandlerMaps.Add(x => x.AbsolutePath.EndsWith(".les") ? new DefaultHttpHandler() : null);
 
             module.HandleRRContent(context.Object);
 
-            //context.Verify(x => x.RemapHandler(handler), Times.Once());
             Assert.Equal(handler, context.Object.Items["remapped handler"]);
             RRContainer.Current = null;
-            Registry.HandlerMaps.Clear();
         }
 
         public void Dispose()

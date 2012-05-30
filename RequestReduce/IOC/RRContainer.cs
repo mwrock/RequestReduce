@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Web;
+using RequestReduce.Handlers;
 using RequestReduce.Utilities;
 using StructureMap.Pipeline;
 using nQuant;
@@ -36,6 +37,7 @@ namespace RequestReduce.IOC
                 x.For<CssResource>().Singleton().Add<CssResource>();
                 x.For<IReducingQueue>().Singleton().Use<ReducingQueue>();
                 x.For<IReductionRepository>().Singleton().Use<ReductionRepository>();
+                x.For<IHandlerFactory>().Singleton().Use<HandlerFactory>();
                 x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
                 x.For<ICssImageTransformer>().Singleton().Use<CssImageTransformer>();
                 x.For<IRelativeToAbsoluteUtility>().Use<RelativeToAbsoluteUtility>();

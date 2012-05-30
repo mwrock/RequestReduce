@@ -18,8 +18,7 @@ namespace RequestReduce.Facts.SassLessCoffee
         {
             Bootstrapper.Start();
 
-            Assert.Equal(expectedHandler, Registry.HandlerMaps[0](new Uri("http://host/path/file" + extension)) == null ? null : Registry.HandlerMaps[0](new Uri("http://host/path/file" + extension)).GetType());
-            Registry.HandlerMaps.Clear();
+            Assert.Equal(expectedHandler, Registry.HandlerFactory.ResolveHandler(new Uri("http://host/path/file" + extension)) == null ? null : Registry.HandlerFactory.ResolveHandler(new Uri("http://host/path/file" + extension)).GetType());
         }
     }
 }

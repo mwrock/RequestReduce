@@ -103,6 +103,11 @@
     <Compile Include="Api\SpriteFilter.cs" />
     <Compile Include="Api\SpriteFilterContext.cs" />
     <Compile Include="Configuration\RequestReduceConfigSection.cs" />
+    <Compile Include="Handlers\DashboardHandler.cs" />
+    <Compile Include="Handlers\FlushHandler.cs" />
+    <Compile Include="Handlers\HandlerFactory.cs" />
+    <Compile Include="Handlers\IHandlerFactory.cs" />
+    <Compile Include="Handlers\ReducedContentHandler.cs" />
     <Compile Include="IOC\RRContainer.cs" />
     <Compile Include="IOC\RRHttpContextLifecycle.cs" />
     <Compile Include="IOC\RRHybridLifecycle.cs" />
@@ -114,6 +119,7 @@
     <Compile Include="Module\IReductionRepository.cs" />
     <Compile Include="Module\QueueItem.cs" />
     <Compile Include="Module\ReductionRepository.cs" />
+    <Compile Include="Module\RequestGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reducer\CssSelectorAnalyzer.cs" />
     <Compile Include="Reducer\ICssSelectorAnalyzer.cs" />

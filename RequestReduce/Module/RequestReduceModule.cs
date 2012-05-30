@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using RequestReduce.Api;
 using RequestReduce.Configuration;
+using RequestReduce.Handlers;
 using RequestReduce.IOC;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
@@ -224,16 +225,15 @@ namespace RequestReduce.Module
 
         public void HandleRRContent(HttpContextBase httpContextWrapper)
         {
-            if (Registry.HandlerMaps.Count > 0)
+            var handlerFactory = RRContainer.Current.GetInstance<IHandlerFactory>();
+            var handler = handlerFactory.ResolveHandler(httpContextWrapper.Request.Url);
+            if(handler != null)
             {
-                foreach (var handler in Registry.HandlerMaps.Select(map => map(httpContextWrapper.Request.Url)).Where(handler => handler != null))
-                {
-                    if (HttpContext.Current != null)
-                        HttpContext.Current.RemapHandler(handler); //can't use RemapHandler on HttpContextBase due to .net3.5 compat
-                    else //unit testing
-                        httpContextWrapper.Items["remapped handler"] = handler;
-                    return;
-                }
+                if (HttpContext.Current != null)
+                    HttpContext.Current.RemapHandler(handler); //can't use RemapHandler on HttpContextBase due to .net3.5 compat
+                else //unit testing
+                    httpContextWrapper.Items["remapped handler"] = handler;
+                return;
             }
 
             var url = httpContextWrapper.Request.RawUrl;
@@ -241,7 +241,7 @@ namespace RequestReduce.Module
             if (index > 0)
                 url = url.Substring(0, index);
 
-                                                                                                                                                                                                                                                                                                                                            var actionUrl = EnsurePath(url);
+            var actionUrl = EnsurePath(url);
             if (!IsInRRContentDirectory(httpContextWrapper)
                 || actionUrl.ToLowerInvariant().Contains("/flush/")
                 || actionUrl.ToLowerInvariant().Contains("/flushfailures/")

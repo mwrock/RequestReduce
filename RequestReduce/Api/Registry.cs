@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web;
 using RequestReduce.Configuration;
+using RequestReduce.Handlers;
 using RequestReduce.IOC;
 using RequestReduce.Module;
 using RequestReduce.Utilities;
@@ -11,11 +11,6 @@ namespace RequestReduce.Api
     public static class Registry
     {
 
-        static Registry()
-        {
-            HandlerMaps = new List<Func<Uri, IHttpHandler>>();
-        }
-
         public static Action<Exception> CaptureErrorAction { get; set; }
 
         public delegate string UrlTransformFunc(string originalabsoluteUrl, string urlWithContentHost);
@@ -23,7 +18,10 @@ namespace RequestReduce.Api
         [Obsolete("Use RequestReduce.Api.Registry.UrlTransformer")]
         public static UrlTransformFunc AbsoluteUrlTransformer { get; set; }
         public static ContextUrlTransformFunc UrlTransformer { get; set; }
-        internal static IList<Func<Uri, IHttpHandler>> HandlerMaps { get; private set; }
+        internal static IHandlerFactory HandlerFactory
+        {
+            get { return RRContainer.Current.GetInstance<IHandlerFactory>(); }
+        }
 
         public static void RegisterMinifier<T>() where T : IMinifier, new()
         {
