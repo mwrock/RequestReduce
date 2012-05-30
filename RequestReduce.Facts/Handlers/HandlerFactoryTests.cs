@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using Xunit;
+using Xunit.Extensions;
 
 namespace RequestReduce.Facts.Handlers
 {
@@ -51,13 +52,26 @@ namespace RequestReduce.Facts.Handlers
             }
 
             [Fact]
-            public void WillResolveToNullIfThereAreNoMaps()
+            public void WillResolveToNullIfThereAreNoMapsGiven()
             {
                 var testable = new TestableHandlerFactory();
 
                 var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.fake"));
 
                 Assert.Null(result);
+            }
+
+            [Theory]
+            public void WillResolveDefaultMaps(string url, Type expectedHandler)
+            {
+                var testable = new TestableHandlerFactory();
+
+                var result = testable.ClassUnderTest.ResolveHandler(new Uri(url));
+
+                if(expectedHandler != null)
+                    Assert.IsType<Type>(result);
+                else
+                    Assert.Null(result);
             }
         }
     }
