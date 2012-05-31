@@ -40,6 +40,9 @@ namespace RequestReduce.IOC
                 x.For<IHandlerFactory>().Singleton().Use<HandlerFactory>();
                 x.For<IWuQuantizer>().Singleton().Use<WuQuantizer>();
                 x.For<ICssImageTransformer>().Singleton().Use<CssImageTransformer>();
+                x.For<DashboardHandler>().Singleton().Use<DashboardHandler>();
+                x.For<FlushHandler>().Singleton().Use<FlushHandler>();
+                x.For<ReducedContentHandler>().Singleton().Use<ReducedContentHandler>();
                 x.For<IRelativeToAbsoluteUtility>().Use<RelativeToAbsoluteUtility>();
 
                 x.For<HttpContextBase>().Use(() => HttpContext.Current == null 
@@ -82,6 +85,7 @@ namespace RequestReduce.IOC
                 y.Assembly("RequestReduce");
                 y.IncludeNamespace("RequestReduce.Utilities");
                 y.IncludeNamespace("RequestReduce.Configuration");
+                y.IncludeNamespace("RequestReduce.Handlers");
                 y.ExcludeType<IRelativeToAbsoluteUtility>();
                 y.IgnoreStructureMapAttributes();
                 y.With(new SingletonConvention());

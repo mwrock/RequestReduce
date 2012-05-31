@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Security.Principal;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
@@ -210,34 +209,6 @@ namespace RequestReduce.Facts.Module
             module.HandleRRContent(context.Object);
 
             Assert.Equal(handler, context.Object.Items["remapped handler"]);
-            RRContainer.Current = null;
-        }
-
-        [Fact]
-        public void WillNotFlushReductionsIfNotOnFlushUrl()
-        {
-            var module = new RequestReduceModule();
-            var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
-            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/notflush");
-            var identity = new Mock<IIdentity>();
-            identity.Setup(x => x.IsAuthenticated).Returns(false);
-            context.Setup(x => x.User.Identity).Returns(identity.Object);
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            var store = new Mock<IStore>();
-            RRContainer.Current = new Container(x =>
-            {
-                x.For<IRRConfiguration>().Use(config.Object);
-                x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
-                x.For<IStore>().Use(store.Object);
-                x.For<IUriBuilder>().Use<UriBuilder>();
-            });
-
-            module.HandleRRFlush(context.Object);
-
-            store.Verify(x => x.Flush(It.IsAny<Guid>()), Times.Never());
             RRContainer.Current = null;
         }
 
