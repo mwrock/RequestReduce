@@ -114,6 +114,7 @@
     <Compile Include="BitmapPixelComparer.cs" />
     <Compile Include="Handlers\FlushHandlerTests.cs" />
     <Compile Include="Handlers\HandlerFactoryTests.cs" />
+    <Compile Include="Handlers\ReducedContentHandlerTests.cs" />
     <Compile Include="MatchExtensions.cs" />
     <Compile Include="Reducer\BackgroundImageClassFacts.cs" />
     <Compile Include="Reducer\CssSelectorAnalyzerFacts.cs" />
