@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Web;
 using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Handlers;
 using RequestReduce.IOC;
-using RequestReduce.Module;
 using RequestReduce.Store;
 using RequestReduce.Utilities;
 using StructureMap;
 using Xunit;
 using Xunit.Extensions;
-using UriBuilder = System.UriBuilder;
 
 namespace RequestReduce.Facts.Handlers
 {
     class ReducedContentHandlerTests
     {
-        class TestableReducedContentHandler : Testable<RequestReduce.Handlers.ReducedContentHandler>
+        class TestableReducedContentHandler : Testable<ReducedContentHandler>
         {
             public TestableReducedContentHandler()
             {
@@ -40,7 +37,6 @@ namespace RequestReduce.Facts.Handlers
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            var config = new Mock<IRRConfiguration>();
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns(path);
             testable.Mock<IStore>().Setup(
                 x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
@@ -180,11 +176,9 @@ namespace RequestReduce.Facts.Handlers
         }
 
         [Theory]
-        [InlineData("/Content", true)]
-        [InlineData("http://localhost/Content", true)]
         [InlineData("/RRContent", false)]
         [InlineData("http://localhost/RRContent", false)]
-        public void WillNotSetCachabilityIfNotInRRPatOrStoreDoesNotSendContent(string path, bool contentSent)
+        public void WillNotSetCachabilityIfStoreDoesNotSendContent(string path, bool contentSent)
         {
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
@@ -202,36 +196,6 @@ namespace RequestReduce.Facts.Handlers
             testable.ClassUnderTest.ProcessRequest(context.Object);
 
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());
-        }
-
-        [Fact]
-        public void WillNotHandleRequestsNotInMyDirectory()
-        {
-            var testable = new TestableReducedContentHandler();
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContents/someresource");
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-
-            testable.ClassUnderTest.ProcessRequest(context.Object);
-
-            testable.Mock<IStore>().Verify(x => x.SendContent(It.IsAny<string>(), It.IsAny<HttpResponseBase>()), Times.Never());
-        }
-
-        [Fact]
-        public void WillNotHandleRequestsInChildDirectory()
-        {
-            var testable = new TestableReducedContentHandler();
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
-            var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/child/someresource");
-            context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
-            context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-
-            testable.ClassUnderTest.ProcessRequest(context.Object);
-
-            testable.Mock<IStore>().Verify(x => x.SendContent(It.IsAny<string>(), It.IsAny<HttpResponseBase>()), Times.Never());
         }
     }
 }
