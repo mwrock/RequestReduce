@@ -148,7 +148,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
-                x.For<IHandlerFactory>().Use<HandlerFactory>();
+                x.For<IHandlerFactory>().Use(new Mock<IHandlerFactory>().Object);
             });
 
             module.HandleRRContent(context.Object);
@@ -168,13 +168,14 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
+            var factory = new Mock<HandlerFactory>();
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
                 x.For<IHostingEnvironmentWrapper>().Use(new Mock<IHostingEnvironmentWrapper>().Object);
                 x.For<IStore>().Use(store.Object);
                 x.For<IUriBuilder>().Use<UriBuilder>();
-                x.For<IHandlerFactory>().Use<HandlerFactory>();
+                x.For<IHandlerFactory>().Use(new Mock<IHandlerFactory>().Object);
             });
 
             module.HandleRRContent(context.Object);
@@ -196,7 +197,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.Items).Returns(new Hashtable());
-            var handlerFactory = new HandlerFactory();
+            var handlerFactory = new HandlerFactory(config.Object, new UriBuilder(config.Object));
             handlerFactory.AddHandlerMap(x => x.AbsolutePath.EndsWith(".less") ? handler : null);
             handlerFactory.AddHandlerMap(x => x.AbsolutePath.EndsWith(".les") ? new DefaultHttpHandler() : null);
             RRContainer.Current = new Container(x =>

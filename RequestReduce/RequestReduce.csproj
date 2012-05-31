@@ -119,7 +119,6 @@
     <Compile Include="Module\IReductionRepository.cs" />
     <Compile Include="Module\QueueItem.cs" />
     <Compile Include="Module\ReductionRepository.cs" />
-    <Compile Include="Module\RequestGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reducer\CssSelectorAnalyzer.cs" />
     <Compile Include="Reducer\ICssSelectorAnalyzer.cs" />

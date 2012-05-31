@@ -19,7 +19,6 @@ namespace RequestReduce.Facts.Handlers
         {
             public TestableReducedContentHandler()
             {
-                Inject(new HandlerFactory());
             }
         }
 
