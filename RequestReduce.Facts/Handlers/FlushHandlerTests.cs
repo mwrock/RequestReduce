@@ -33,7 +33,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             testable.Mock <IHostingEnvironmentWrapper>().Setup(x => x.MapPath("/RRContent")).Returns("physical");
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
@@ -51,7 +51,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/page.aspx"));
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
@@ -70,7 +70,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/page.aspx"));
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.User).Returns(null as IPrincipal);
 
@@ -87,7 +87,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/FlushFailures/");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/"));
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
@@ -99,8 +99,8 @@ namespace RequestReduce.Facts.Handlers
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
-        [InlineData("/RRContent/flush", "00000000-0000-0000-0000-000000000000")]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a/flush", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
+        [InlineData("http://host/RRContent/flush", "00000000-0000-0000-0000-000000000000")]
         public void WillFlushReductionsOnFlushUrlWhenAndAuthorizedUsersIsAnonymous(string url, string key)
         {
             var testable = new TestableFlushHandler();
@@ -108,7 +108,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns(url);
+            context.Setup(x => x.Request.Url).Returns(new Uri(url));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
@@ -121,8 +121,8 @@ namespace RequestReduce.Facts.Handlers
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush/RRFlush.aspx", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
-        [InlineData("/RRContent/flush/page.aspx", "00000000-0000-0000-0000-000000000000")]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a/flush/RRFlush.aspx", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
+        [InlineData("http://host/RRContent/flush/page.aspx", "00000000-0000-0000-0000-000000000000")]
         public void WillFlushReductionsOnFlushUrlWhenAuthorizedUsersIsAnonymousAndIpFilterIsEmpty(string url, string key)
         {
             var testable = new TestableFlushHandler();
@@ -131,7 +131,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns(url);
+            context.Setup(x => x.Request.Url).Returns(new Uri(url));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
@@ -144,8 +144,8 @@ namespace RequestReduce.Facts.Handlers
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a/flush/RRFlush.aspx", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
-        [InlineData("/RRContent/flush/page.aspx", "00000000-0000-0000-0000-000000000000")]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a/flush/RRFlush.aspx", "f5623565-7406-5742-1d87-5131b8f5ce3a")]
+        [InlineData("http://host/RRContent/flush/page.aspx", "00000000-0000-0000-0000-000000000000")]
         public void WillFlushReductionsOnFlushUrlWhenAuthorizedUsersIsAnonymousAndIpFilterIsInvalid(string url, string key)
         {
             var testable = new TestableFlushHandler();
@@ -154,7 +154,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns(url);
+            context.Setup(x => x.Request.Url).Returns(new Uri(url));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);
@@ -174,7 +174,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -195,7 +195,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -216,7 +216,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -238,7 +238,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -260,7 +260,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -281,7 +281,7 @@ namespace RequestReduce.Facts.Handlers
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -302,7 +302,7 @@ namespace RequestReduce.Facts.Handlers
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user3");
@@ -326,7 +326,7 @@ namespace RequestReduce.Facts.Handlers
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(true);
             identity.Setup(x => x.Name).Returns("user2");
@@ -351,7 +351,7 @@ namespace RequestReduce.Facts.Handlers
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/flush/page.aspx");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
             var identity = new Mock<IIdentity>();
             identity.Setup(x => x.IsAuthenticated).Returns(false);
             context.Setup(x => x.User.Identity).Returns(identity.Object);

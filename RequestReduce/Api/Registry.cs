@@ -18,7 +18,7 @@ namespace RequestReduce.Api
         [Obsolete("Use RequestReduce.Api.Registry.UrlTransformer")]
         public static UrlTransformFunc AbsoluteUrlTransformer { get; set; }
         public static ContextUrlTransformFunc UrlTransformer { get; set; }
-        internal static IHandlerFactory HandlerFactory
+        public static IHandlerFactory HandlerFactory
         {
             get { return RRContainer.Current.GetInstance<IHandlerFactory>(); }
         }

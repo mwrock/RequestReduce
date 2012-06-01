@@ -34,7 +34,7 @@ namespace RequestReduce.Handlers
 
         public void ProcessRequest(HttpContextBase context)
         {
-            var url = context.Request.RawUrl;
+            var url = context.Request.Url.AbsolutePath;
             url = url.EndsWith("/") ? url : url + "/";
             if (string.IsNullOrEmpty(configuration.SpritePhysicalPath))
                 configuration.SpritePhysicalPath = hostingEnvironment.MapPath(configuration.SpriteVirtualPath);

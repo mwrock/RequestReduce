@@ -29,7 +29,6 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
@@ -54,7 +53,6 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection { { "If-None-Match", @"""match""" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
@@ -79,7 +77,6 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css?somequerystring");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css?somequerystring"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection { { "If-None-Match", @"""match""" } });
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
@@ -111,7 +108,7 @@ namespace RequestReduce.Facts.Handlers
             var context = new Mock<HttpContextBase>();
             testable.Mock<IHostingEnvironmentWrapper>().Setup(x => x.MapPath("/Virtual")).Returns("physical");
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
-            context.Setup(x => x.Request.RawUrl).Returns("/Virtual/blah");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/Virtual/blah"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             var cache = new Mock<HttpCachePolicyBase>();
@@ -127,7 +124,6 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/key-match-css.css");
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection { { "If-None-Match", @"""notmatch""" } });
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/key-match-css.css"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
@@ -148,10 +144,10 @@ namespace RequestReduce.Facts.Handlers
         }
 
         [Theory]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-sprite1.png", "image/png", true)]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-RequestReducedStyle.css", "text/css", true)]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-RequestReducedScript.js", "application/x-javascript", true)]
-        [InlineData("/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-RequestReducedStyle.css", null, false)]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-sprite1.png", "image/png", true)]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-RequestReducedStyle.css", "text/css", true)]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-RequestReducedScript.js", "application/x-javascript", true)]
+        [InlineData("http://host/RRContent/f5623565740657421d875131b8f5ce3a-f5623565740657421d875131b8f5ce3a-RequestReducedStyle.css", null, false)]
         public void WillCorrectlySetContentType(string path, string contentType, bool contentInStore)
         {
             var testable = new TestableReducedContentHandler();
@@ -162,7 +158,7 @@ namespace RequestReduce.Facts.Handlers
             response.Setup(x => x.Cache).Returns(new Mock<HttpCachePolicyBase>().Object);
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Response).Returns(response.Object);
-            context.Setup(x => x.Request.RawUrl).Returns(path);
+            context.Setup(x => x.Request.Url).Returns(new Uri(path));
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             testable.Mock<IStore>().Setup(
@@ -181,7 +177,6 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);

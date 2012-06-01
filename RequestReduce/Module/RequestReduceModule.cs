@@ -34,24 +34,24 @@ namespace RequestReduce.Module
             }
         }
 
-        private static bool IsInRRContentDirectory(HttpContextBase httpContextWrapper)
+        private static bool IsInRRContentDirectory(Uri uri)
         {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var rrPath = EnsurePath(config.SpriteVirtualPath);
-            var url = httpContextWrapper.Request.RawUrl;
+            var url = uri.AbsolutePath;
             if(rrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-                url = httpContextWrapper.Request.Url.AbsoluteUri;
+                url = uri.AbsoluteUri;
             return url.StartsWith(rrPath, StringComparison.OrdinalIgnoreCase);
         }
 
         public void InstallFilter(HttpContextBase context)
         {
             RRTracer.Trace("Entering Module");
-            var request = context.Request;
+            var uri = context.Request.Url;
             if ((context.Response.ContentType != "text/html" &&
                 context.Response.ContentType != "application/xhtml+xml") ||
-                request.RawUrl == "/favicon.ico" || 
-                IsInRRContentDirectory(context))
+                uri.AbsolutePath == "/favicon.ico" || 
+                IsInRRContentDirectory(uri))
                 return;
 
             ResponseFilter.InstallFilter(context);

@@ -28,10 +28,7 @@ namespace RequestReduce.Handlers
 
         public void ProcessRequest(HttpContextBase context)
         {
-            var url = context.Request.RawUrl;
-            var index = url.IndexOf('?');
-            if (index > 0)
-                url = url.Substring(0, index);
+            var url = context.Request.Url.AbsolutePath;
 
             if (string.IsNullOrEmpty(config.SpritePhysicalPath))
                 config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);

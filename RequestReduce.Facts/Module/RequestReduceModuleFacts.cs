@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Module
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
-            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/Content/blah"));
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -53,7 +53,7 @@ namespace RequestReduce.Facts.Module
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
-            context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/Content/blah"));
             context.Setup(x => x.Response.ContentType).Returns("application/xhtml+xml");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
@@ -83,7 +83,7 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            context.Setup(x => x.Request.RawUrl).Returns("/favicon.ico");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/favicon.ico"));
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
@@ -103,8 +103,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/css.css");
-            context.Setup(x => x.Request.Url).Returns(new Uri("http://localhost/RRContent/css.css"));
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/css.css"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
@@ -137,7 +136,7 @@ namespace RequestReduce.Facts.Module
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContents/someresource");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/someresource"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
@@ -163,11 +162,10 @@ namespace RequestReduce.Facts.Module
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/RRContent/child/someresource");
+            context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/child/someresource"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var store = new Mock<IStore>();
-            var factory = new Mock<HandlerFactory>();
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
@@ -191,7 +189,6 @@ namespace RequestReduce.Facts.Module
             var config = new Mock<IRRConfiguration>();
             config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
-            context.Setup(x => x.Request.RawUrl).Returns("/content/someresource.less");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/content/someresource.less"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
