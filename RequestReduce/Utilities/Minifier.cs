@@ -6,8 +6,8 @@ namespace RequestReduce.Utilities
 {
     public class Minifier : IMinifier
     {
-        private readonly Microsoft.Ajax.Utilities.Minifier minifier = new Microsoft.Ajax.Utilities.Minifier();
-        private readonly CodeSettings settings = new CodeSettings {EvalTreatment = EvalTreatment.MakeAllSafe};
+        protected readonly Microsoft.Ajax.Utilities.Minifier minifier = new Microsoft.Ajax.Utilities.Minifier();
+        protected readonly CodeSettings settings = new CodeSettings { EvalTreatment = EvalTreatment.MakeAllSafe };
 
         public virtual string Minify<T>(string unMinifiedContent) where T : IResourceType
         {
