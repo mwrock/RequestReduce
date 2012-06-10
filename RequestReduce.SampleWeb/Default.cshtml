@@ -5,7 +5,7 @@
 @{  
     var resourcePath = Server.MapPath("/") + "\\RRContent";
     var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-    config.SpritePhysicalPath = resourcePath;
+    config.ResourcePhysicalPath = resourcePath;
     var reducedCss = RRContainer.Current.GetInstance<CssReducer>().Process("http://i4.social.s-msft.com/contentservice/274f1460-cf18-4ed7-b1df-9ee1013a9f9d/Msdn.css::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=samplesstyles");
     var reducedJS = RRContainer.Current.GetInstance<JavaScriptReducer>().Process("http://code.jquery.com/jquery-1.4.4.min.js::http://i2.code.msdn.s-msft.com/pageresource.css?groupname=samplesscripts");
 }

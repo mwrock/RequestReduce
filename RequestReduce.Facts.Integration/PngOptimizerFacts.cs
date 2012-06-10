@@ -17,7 +17,7 @@ namespace RequestReduce.Facts.Integration
         public void CompressionWillMakeOriginalPngSmaller()
         {
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpritePhysicalPath).Returns("testimages");
+            config.Setup(x => x.ResourcePhysicalPath).Returns("testimages");
             var optimizer = new PngOptimizer(new FileWrapper(), config.Object, new WuQuantizer());
             var original = File.ReadAllBytes("testimages\\menu-sprite.png");
 
@@ -42,7 +42,7 @@ namespace RequestReduce.Facts.Integration
         public void WillCleanupScratchFile()
         {
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpritePhysicalPath).Returns("testimages");
+            config.Setup(x => x.ResourcePhysicalPath).Returns("testimages");
             var optimizer = new PngOptimizer(new FileWrapper(), config.Object, new WuQuantizer());
             var original = File.ReadAllBytes("testimages\\menu-sprite.png");
             var fileCount = Directory.GetFiles("testimages").Length;
@@ -56,7 +56,7 @@ namespace RequestReduce.Facts.Integration
         public void WillNotAlterOriginalImage()
         {
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpritePhysicalPath).Returns("testimages");
+            config.Setup(x => x.ResourcePhysicalPath).Returns("testimages");
             var optimizer = new PngOptimizer(new FileWrapper(), config.Object, new WuQuantizer());
             var original = File.ReadAllBytes("testimages\\menu-sprite.png");
 

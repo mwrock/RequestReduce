@@ -30,7 +30,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             testable.Mock <IHostingEnvironmentWrapper>().Setup(x => x.MapPath("/RRContent")).Returns("physical");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/page.aspx"));
@@ -40,7 +40,7 @@ namespace RequestReduce.Facts.Handlers
 
             testable.ClassUnderTest.ProcessRequest(context.Object);
 
-            testable.Mock<IRRConfiguration>().VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
+            testable.Mock<IRRConfiguration>().VerifySet(x => x.ResourcePhysicalPath = "physical", Times.Once());
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/page.aspx"));
@@ -67,7 +67,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/page.aspx"));
@@ -84,7 +84,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/FlushFailures/"));
@@ -105,7 +105,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri(url));
@@ -128,7 +128,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri(url));
@@ -151,7 +151,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "invalid" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri(url));
@@ -171,7 +171,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
@@ -192,7 +192,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
@@ -213,7 +213,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "9.9.9.9" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
@@ -235,7 +235,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "001.002.003.004" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
@@ -257,7 +257,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "3780:0:c307:0:2c45:0:81c7:9273" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/page.aspx"));
@@ -278,7 +278,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Response).Returns(new Mock<HttpResponseBase>().Object);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/flush/"));
@@ -298,7 +298,7 @@ namespace RequestReduce.Facts.Handlers
         {
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
@@ -322,7 +322,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(new[] { "user1", "user2" });
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "1.2.3.4", " 3.4.5.6" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);
@@ -347,7 +347,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableFlushHandler();
             testable.Mock<IRRConfiguration>().Setup(x => x.AuthorizedUserList).Returns(RRConfiguration.Anonymous);
             testable.Mock<IRRConfiguration>().Setup(x => x.IpFilterList).Returns(new[] { "1.2.3.4", " 3.4.5.6" });
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             var response = new Mock<HttpResponseBase>();
             response.SetupProperty(x => x.StatusCode);

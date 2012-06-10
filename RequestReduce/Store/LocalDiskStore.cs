@@ -37,12 +37,12 @@ namespace RequestReduce.Store
 
         protected virtual void SetupWatcher()
         {
-            if (string.IsNullOrEmpty(configuration.SpritePhysicalPath)) return;
+            if (string.IsNullOrEmpty(configuration.ResourcePhysicalPath)) return;
             watcher = new FileSystemWatcher();
             if (configuration != null)
             {
-                RRTracer.Trace("Setting up File System Watcher for {0}", configuration.SpritePhysicalPath);
-                watcher.Path = configuration.SpritePhysicalPath;
+                RRTracer.Trace("Setting up File System Watcher for {0}", configuration.ResourcePhysicalPath);
+                watcher.Path = configuration.ResourcePhysicalPath;
             }
             watcher.IncludeSubdirectories = true;
             watcher.Filter = "*RequestReduce*";
@@ -114,10 +114,10 @@ namespace RequestReduce.Store
         {
             RRTracer.Trace("LocalDiskStore Looking for previously saved content.");
             var dic = new Dictionary<Guid, string>();
-            if (configuration == null || string.IsNullOrEmpty(configuration.SpritePhysicalPath))
+            if (configuration == null || string.IsNullOrEmpty(configuration.ResourcePhysicalPath))
                 return dic;
 
-            var activeFiles = FileWrapper.GetDatedFiles(configuration.SpritePhysicalPath, "*RequestReduce*");
+            var activeFiles = FileWrapper.GetDatedFiles(configuration.ResourcePhysicalPath, "*RequestReduce*");
             return (from files in activeFiles
                     where !files.FileName.Contains("-Expired-") && uriBuilder.ParseKey(files.FileName.Replace("\\", "/")) != Guid.Empty
                     group files by uriBuilder.ParseKey(files.FileName.Replace("\\", "/"))
@@ -144,7 +144,7 @@ namespace RequestReduce.Store
 
             ReductionRepository.RemoveReduction(keyGuid); 
             var files =
-                FileWrapper.GetFiles(configuration.SpritePhysicalPath).Where(
+                FileWrapper.GetFiles(configuration.ResourcePhysicalPath).Where(
                     x => x.Contains(keyGuid.RemoveDashes()) && !x.Contains("Expired"));
             foreach (var file in files)
                 FileWrapper.RenameFile(file, file.Replace(keyGuid.RemoveDashes(), keyGuid.RemoveDashes() + "-Expired"));
@@ -155,7 +155,7 @@ namespace RequestReduce.Store
             if (url.EndsWith("/")) return url;
             var idx = url.LastIndexOf('/');
             return idx > -1
-                       ? string.Format("{0}\\{1}", configuration.SpritePhysicalPath, url.Substring(idx + 1)).
+                       ? string.Format("{0}\\{1}", configuration.ResourcePhysicalPath, url.Substring(idx + 1)).
                              ToLower(CultureInfo.InvariantCulture)
                        : url;
         }

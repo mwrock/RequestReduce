@@ -70,8 +70,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] {1};
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
 
                 testable.ClassUnderTest.Save(content, "/url/myid-style.cc", null);
@@ -85,8 +85,8 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] { 1 };
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("http://host/url/myid-style.cc")).Returns("style");
 
                 testable.ClassUnderTest.Save(content, "http://host/url/myid-style.cc", null);
@@ -99,8 +99,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] { 1 };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IFileWrapper>().Setup(x => x.FileExists("c:\\web\\url\\myid-Expired-style.cc")).Returns(
                     true);
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
@@ -115,8 +115,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] { 1 };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
                 var expectedKey = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("/url/myid-style.cc")).Returns(expectedKey);
@@ -131,8 +131,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] { 1 };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.png")).Returns("style");
                 var expectedKey = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("/url/myid-style.png")).Returns(expectedKey);
@@ -147,8 +147,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] { 1 };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/url/myid-style.cc")).Returns("style");
                 var expectedKey = Guid.NewGuid();
                 testable.Mock<IUriBuilder>().Setup(x => x.ParseKey("/url/myid-style.cc")).Returns(expectedKey);
@@ -167,8 +167,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 var content = new byte[] { 1 };
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 var response = new Mock<HttpResponseBase>();
 
                 var result = testable.ClassUnderTest.SendContent("/url/myid-style.cc", response.Object);
@@ -181,8 +181,8 @@ namespace RequestReduce.Facts.Store
             public void WillReturnFalseIfFileotFound()
             {
                 var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 var response = new Mock<HttpResponseBase>();
                 response.Setup(x => x.TransmitFile("c:\\web\\url\\myid-style.cc")).Throws(new FileNotFoundException());
                 response.Setup(x => x.TransmitFile("c:\\web\\url\\myid-Expired-style.cc")).Throws(new FileNotFoundException());
@@ -196,8 +196,8 @@ namespace RequestReduce.Facts.Store
             public void WillTransmitExpiredFileIfFileotFoundandExpired()
             {
                 var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/url");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/url");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\url");
                 var response = new Mock<HttpResponseBase>();
                 response.Setup(x => x.TransmitFile("c:\\web\\url\\myid-style.cc")).Throws(new FileNotFoundException());
 
@@ -214,7 +214,7 @@ namespace RequestReduce.Facts.Store
             public void WillCreateUrlsFromAllKeysInDirectory()
             {
                 var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("dir");
                 var guid1 = Guid.NewGuid();
                 var guid2 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
@@ -243,7 +243,7 @@ namespace RequestReduce.Facts.Store
             public void WillExcludeFilesWithNoKeys()
             {
                 var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("dir");
                 var guid1 = Guid.Empty;
                 var guid2 = Guid.NewGuid();
                 var sig1 = Guid.Empty.RemoveDashes();
@@ -272,7 +272,7 @@ namespace RequestReduce.Facts.Store
             public void WillResolveFilesInLowerCase()
             {
                 var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("dir");
                 var guid1 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
                 testable.Mock<IUriBuilder>().Setup(x => x.BuildResourceUrl(guid1, sig1, typeof(CssResource))).Returns("url1");
@@ -294,7 +294,7 @@ namespace RequestReduce.Facts.Store
             public void WillPullMostRecentActiveUrlPerKey()
             {
                 var testable = new TestableLocalDiskStore();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("dir");
                 var guid1 = Guid.NewGuid();
                 var guid2 = Guid.NewGuid();
                 var sig1 = Guid.NewGuid().RemoveDashes();
@@ -334,8 +334,8 @@ namespace RequestReduce.Facts.Store
                 var testable = new TestableLocalDiskStore();
                 var key = Guid.NewGuid();
                 var urlBuilder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\RRContent");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\RRContent");
                 testable.Inject<IUriBuilder>(urlBuilder);
                 var file1 = urlBuilder.BuildResourceUrl<CssResource>(key, new byte[] { 1 }).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
                 var file2 = urlBuilder.BuildSpriteUrl(key, new byte[]{1}).Replace("/RRContent", "c:\\RRContent").Replace('/', '\\');
@@ -367,8 +367,8 @@ namespace RequestReduce.Facts.Store
                 testable.Inject(urlBuilder);
                 var guid1 = Guid.NewGuid();
                 var guid2 = Guid.NewGuid();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/dir");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\web\\dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/dir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\web\\dir");
                 testable.Inject<IUriBuilder>(urlBuilder);
                 var file1 = new DatedFileEntry(urlBuilder.BuildResourceUrl<CssResource>(guid1, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\'), DateTime.Now);
                 var file2 = new DatedFileEntry(urlBuilder.BuildResourceUrl<CssResource>(guid2, new byte[] { 1 }).Replace("/dir", "c:\\dir").Replace('/', '\\'), DateTime.Now);
@@ -389,8 +389,8 @@ namespace RequestReduce.Facts.Store
             {
                 var testable = new TestableLocalDiskStore();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://Server");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RequestReduce");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpritePhysicalPath).Returns("c:\\phys\\rr");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RequestReduce");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourcePhysicalPath).Returns("c:\\phys\\rr");
 
                 var result = testable.ClassUnderTest.GetFileNameFromConfig("http://serVer/requestreDuce/fiLe");
 

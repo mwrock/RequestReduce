@@ -95,7 +95,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedCssUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableCssReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 
@@ -106,7 +106,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedCssUrlWithKeyInPath()
             {
                 var testable = new TestableCssReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
                 var guid = Guid.NewGuid();
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 
@@ -130,7 +130,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillUseHashOfUrlsIfNoKeyIsGiven()
             {
                 var testable = new TestableCssReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
                 var guid = Hasher.Hash("http://host/css1.css::http://host/css2.css");
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 

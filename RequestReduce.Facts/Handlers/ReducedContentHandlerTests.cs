@@ -35,7 +35,7 @@ namespace RequestReduce.Facts.Handlers
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns(path);
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns(path);
             testable.Mock<IStore>().Setup(
                 x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
                 Returns(true);
@@ -59,7 +59,7 @@ namespace RequestReduce.Facts.Handlers
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/RRContent/key-match-css.css")).Returns("match");
 
             testable.ClassUnderTest.ProcessRequest(context.Object);
@@ -83,7 +83,7 @@ namespace RequestReduce.Facts.Handlers
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var store = new Mock<IStore>();
             var builder = new Mock<IUriBuilder>();
             testable.Mock<IUriBuilder>().Setup(x => x.ParseSignature("/RRContent/key-match-css.css")).Returns("match");
@@ -107,7 +107,7 @@ namespace RequestReduce.Facts.Handlers
             var testable = new TestableReducedContentHandler();
             var context = new Mock<HttpContextBase>();
             testable.Mock<IHostingEnvironmentWrapper>().Setup(x => x.MapPath("/Virtual")).Returns("physical");
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/Virtual/blah"));
             context.Setup(x => x.Response.Headers).Returns(new NameValueCollection());
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
@@ -116,7 +116,7 @@ namespace RequestReduce.Facts.Handlers
 
             testable.ClassUnderTest.ProcessRequest(context.Object);
 
-            testable.Mock<IRRConfiguration>().VerifySet(x => x.SpritePhysicalPath = "physical", Times.Once());
+            testable.Mock<IRRConfiguration>().VerifySet(x => x.ResourcePhysicalPath = "physical", Times.Once());
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace RequestReduce.Facts.Handlers
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             testable.Mock<IStore>().Setup(
                 x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
                 Returns(true);
@@ -160,7 +160,7 @@ namespace RequestReduce.Facts.Handlers
             context.Setup(x => x.Response).Returns(response.Object);
             context.Setup(x => x.Request.Url).Returns(new Uri(path));
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             testable.Mock<IStore>().Setup(
                 x => x.SendContent(It.IsAny<string>(), response.Object)).
                 Returns(contentInStore);
@@ -182,7 +182,7 @@ namespace RequestReduce.Facts.Handlers
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
-            testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns(path);
+            testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns(path);
             testable.Mock<IStore>().Setup(
                 x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
                 Returns(contentSent);

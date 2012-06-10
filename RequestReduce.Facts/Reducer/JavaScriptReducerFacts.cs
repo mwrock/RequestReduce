@@ -51,7 +51,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedJsUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableJavaScriptReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 
@@ -62,7 +62,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedJsUrlWithKeyInPath()
             {
                 var testable = new TestableJavaScriptReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
                 var guid = Guid.NewGuid();
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 
@@ -75,7 +75,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillUseHashOfUrlsIfNoKeyIsGiven()
             {
                 var testable = new TestableJavaScriptReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
                 var guid = Hasher.Hash("http://host/js1.js::http://host/js2.js");
                 var builder = new UriBuilder(testable.Mock<IRRConfiguration>().Object);
 

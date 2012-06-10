@@ -20,7 +20,7 @@ namespace RequestReduce.Facts.Integration
         {
             config = RRContainer.Current.GetInstance<IRRConfiguration>();
             var rrFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\RequestReduce.SampleWeb\\FactContent";
-            config.SpritePhysicalPath = rrFolder;
+            config.ResourcePhysicalPath = rrFolder;
         }
 
         private static IReducer GetCssReducer()
@@ -44,8 +44,8 @@ namespace RequestReduce.Facts.Integration
             var result = reducer.Process(urls);
 
             Assert.Equal(result,
-                         Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".css")).Replace(
-                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"), StringComparer.OrdinalIgnoreCase);
+                         Directory.GetFiles(config.ResourcePhysicalPath, key + "*").Single(x => x.EndsWith(".css")).Replace(
+                             config.ResourcePhysicalPath, config.ResourceVirtualPath).Replace("\\", "/"), StringComparer.OrdinalIgnoreCase);
             reducer.Dispose();
         }
 
@@ -55,21 +55,21 @@ namespace RequestReduce.Facts.Integration
             var reducer = GetCssReducer();
             var urls = "http://localhost:8877/Styles/style3.css";
             config.ContentHost = "http://localhost:8878";
-            var tempVirtual = config.SpriteVirtualPath;
-            config.SpriteVirtualPath = "/FactContent";
+            var tempVirtual = config.ResourceVirtualPath;
+            config.ResourceVirtualPath = "/FactContent";
             var key = Hasher.Hash(urls).RemoveDashes();
 
             reducer.Process(urls);
 
-            var files = Directory.GetFiles(config.SpritePhysicalPath, key + "*");
+            var files = Directory.GetFiles(config.ResourcePhysicalPath, key + "*");
             Assert.NotNull(files);
             var png = files.SingleOrDefault(x => x.EndsWith(".png"));
             var css = files.SingleOrDefault(x => x.EndsWith(".css"));
             Assert.NotNull(png);
-            Assert.True(File.ReadAllText(css).Contains(png.Replace(config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/")));
+            Assert.True(File.ReadAllText(css).Contains(png.Replace(config.ResourcePhysicalPath, config.ResourceVirtualPath).Replace("\\", "/")));
             reducer.Dispose();
             config.ContentHost = string.Empty;
-            config.SpriteVirtualPath = tempVirtual;
+            config.ResourceVirtualPath = tempVirtual;
         }
 
         [OutputTraceOnFailFact]
@@ -82,8 +82,8 @@ namespace RequestReduce.Facts.Integration
             var result = reducer.Process(urls);
 
             Assert.Equal(result,
-                         Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".js")).Replace(
-                             config.SpritePhysicalPath, config.SpriteVirtualPath).Replace("\\", "/"), StringComparer.OrdinalIgnoreCase);
+                         Directory.GetFiles(config.ResourcePhysicalPath, key + "*").Single(x => x.EndsWith(".js")).Replace(
+                             config.ResourcePhysicalPath, config.ResourceVirtualPath).Replace("\\", "/"), StringComparer.OrdinalIgnoreCase);
             reducer.Dispose();
         }
 
@@ -96,7 +96,7 @@ namespace RequestReduce.Facts.Integration
 
             reducer.Process(urls);
 
-            Assert.NotNull(Directory.GetFiles(config.SpritePhysicalPath,  key + "*").Single(x => x.EndsWith(".png")));
+            Assert.NotNull(Directory.GetFiles(config.ResourcePhysicalPath,  key + "*").Single(x => x.EndsWith(".png")));
             reducer.Dispose();
         }
 
@@ -110,7 +110,7 @@ namespace RequestReduce.Facts.Integration
             reducer.Process(urls);
 
             reducer.Dispose();
-            using(var image = new Bitmap(Directory.GetFiles(config.SpritePhysicalPath, key + "*").Single(x => x.EndsWith(".png"))))
+            using(var image = new Bitmap(Directory.GetFiles(config.ResourcePhysicalPath, key + "*").Single(x => x.EndsWith(".png"))))
             {
                 Assert.Equal(1040, image.Width);
                 Assert.Equal(33, image.Height);
@@ -122,12 +122,12 @@ namespace RequestReduce.Facts.Integration
         {
             try
             {
-                Directory.Delete(config.SpritePhysicalPath, true);
+                Directory.Delete(config.ResourcePhysicalPath, true);
             }
             catch(IOException)
             {
                 Thread.Sleep(100);
-                Directory.Delete(config.SpritePhysicalPath, true);
+                Directory.Delete(config.ResourcePhysicalPath, true);
             }
             RRContainer.Current = null;
         }

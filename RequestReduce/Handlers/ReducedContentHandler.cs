@@ -30,8 +30,8 @@ namespace RequestReduce.Handlers
         {
             var url = context.Request.Url.AbsolutePath;
 
-            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
+            if (string.IsNullOrEmpty(config.ResourcePhysicalPath))
+                config.ResourcePhysicalPath = hostingEnvironment.MapPath(config.ResourceVirtualPath);
 
             RRTracer.Trace("Beginning to serve {0}", url);
             var sig = uriBuilder.ParseSignature(url);

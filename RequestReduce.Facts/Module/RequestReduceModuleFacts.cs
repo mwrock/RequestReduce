@@ -25,7 +25,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/Content/blah"));
             context.Setup(x => x.Response.ContentType).Returns("text/html");
@@ -51,7 +51,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/Content/blah"));
             context.Setup(x => x.Response.ContentType).Returns("application/xhtml+xml");
@@ -78,7 +78,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
             context.Setup(x => x.Response.ContentType).Returns("text/html");
             context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
@@ -109,7 +109,7 @@ namespace RequestReduce.Facts.Module
             var cache = new Mock<HttpCachePolicyBase>();
             context.Setup(x => x.Response.Cache).Returns(cache.Object);
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns(path);
+            config.Setup(x => x.ResourceVirtualPath).Returns(path);
             var store = new Mock<IStore>();
             store.Setup(
                 x => x.SendContent(It.IsAny<string>(), context.Object.Response)).
@@ -134,7 +134,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/someresource"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
@@ -160,7 +160,7 @@ namespace RequestReduce.Facts.Module
         {
             var module = new RequestReduceModule();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/RRContent/child/someresource"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());
@@ -187,7 +187,7 @@ namespace RequestReduce.Facts.Module
             var module = new RequestReduceModule();
             var handler = new DefaultHttpHandler();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             var context = new Mock<HttpContextBase>();
             context.Setup(x => x.Request.Url).Returns(new Uri("http://host/content/someresource.less"));
             context.Setup(x => x.Request.Headers).Returns(new NameValueCollection());

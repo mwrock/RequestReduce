@@ -19,7 +19,7 @@ namespace RequestReduce.Facts.Handlers
         {
             public TestableHandlerFactory()
             {
-                Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/RRContent");
+                Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
             }
         }
 

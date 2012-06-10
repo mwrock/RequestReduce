@@ -60,7 +60,7 @@ namespace RequestReduce.Facts.Api
         {
             var context = new Mock<HttpContextBase>();
             var config = new Mock<IRRConfiguration>();
-            config.Setup(x => x.SpriteVirtualPath).Returns("/Virtual");
+            config.Setup(x => x.ResourceVirtualPath).Returns("/Virtual");
             context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(true);
             RRContainer.Current = new Container(x =>
             {

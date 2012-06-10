@@ -15,8 +15,12 @@ namespace RequestReduce.Configuration
     }
     public interface IRRConfiguration
     {
+        [Obsolete("Use ResourceVirtualPath")]
         string SpriteVirtualPath { get; set; }
+        [Obsolete("Use ResourcePhysicalPath")]
         string SpritePhysicalPath { get; set; }
+        string ResourceVirtualPath { get; set; }
+        string ResourcePhysicalPath { get; set; }
         string ContentHost { get; set; }
         string ConnectionStringName { get; set; }
         Store ContentStore { get; }
@@ -79,7 +83,7 @@ namespace RequestReduce.Configuration
             ImageQuantizationDisabled = config != null && config.ImageQuantizationDisabled;
             ImageSpritingDisabled = config != null && config.ImageSpritingDisabled;
             IgnoreNearFutureJavascriptDisabled = config != null && config.IgnoreNearFutureJavascriptDisabled;
-            SpriteVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
+            ResourceVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
                                     ? GetAbsolutePath("~/RequestReduceContent")
                                     : GetAbsolutePath(config.SpriteVirtualPath);
             JavaScriptUrlsToIgnore = config == null || string.IsNullOrEmpty(config.JavaScriptUrlsToIgnore)
@@ -118,9 +122,19 @@ namespace RequestReduce.Configuration
         public IEnumerable<string> IpFilterList { get; set; }
         public IEnumerable<string> ProxyList { get; set; }
 
-        public string SpriteVirtualPath { get; set; }
-
+        public string SpriteVirtualPath
+        {
+            get { return ResourceVirtualPath; }
+            set { ResourceVirtualPath = value; }
+        }
         public string SpritePhysicalPath
+        {
+            get { return ResourcePhysicalPath; }
+            set { ResourcePhysicalPath = value; }
+        }
+        public string ResourceVirtualPath { get; set; }
+
+        public string ResourcePhysicalPath
         {
             get { return spritePhysicalPath; }
             set

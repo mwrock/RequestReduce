@@ -36,8 +36,8 @@ namespace RequestReduce.Handlers
         {
             var url = context.Request.Url.AbsolutePath;
             url = url.EndsWith("/") ? url : url + "/";
-            if (string.IsNullOrEmpty(configuration.SpritePhysicalPath))
-                configuration.SpritePhysicalPath = hostingEnvironment.MapPath(configuration.SpriteVirtualPath);
+            if (string.IsNullOrEmpty(configuration.ResourcePhysicalPath))
+                configuration.ResourcePhysicalPath = hostingEnvironment.MapPath(configuration.ResourceVirtualPath);
             var user = context.User == null ? string.Empty : context.User.Identity.Name;
             if ((configuration.AuthorizedUserList.AllowsAnonymous() || configuration.AuthorizedUserList.Contains(user)) &&
                 ipFilter.IsAuthorizedIpAddress(context))
@@ -56,7 +56,7 @@ namespace RequestReduce.Handlers
                     RRTracer.Trace("{0} Flushed {1}", user, key);
                 }
                 if (HttpContext.Current != null)
-                    context.Response.Redirect(string.Format("{0}/dashboard", configuration.SpriteVirtualPath));
+                    context.Response.Redirect(string.Format("{0}/dashboard", configuration.ResourceVirtualPath));
             }
             else
                 context.Response.StatusCode = 401;

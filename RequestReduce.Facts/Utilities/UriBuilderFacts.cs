@@ -27,7 +27,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = new byte[] {1};
 
@@ -41,7 +41,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = new byte[0];
 
@@ -55,7 +55,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
@@ -69,7 +69,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = new byte[] { 1 };
 
@@ -83,7 +83,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = new byte[0];
 
@@ -97,7 +97,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
@@ -111,7 +111,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
@@ -130,7 +130,7 @@ namespace RequestReduce.Facts.Utilities
                     return y.Replace(newUrlHost, "funny." + newUrlHost);
                 };
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = "abc";
 
@@ -148,7 +148,7 @@ namespace RequestReduce.Facts.Utilities
             {
                 var testable = new TestableUriBuilder();
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = new byte[] {1};
 
@@ -167,7 +167,7 @@ namespace RequestReduce.Facts.Utilities
                     return y.Replace(newUrlHost, "funny." + newUrlHost);
                 };
                 testable.Mock<IRRConfiguration>().Setup(x => x.ContentHost).Returns("http://host");
-                testable.Mock<IRRConfiguration>().Setup(x => x.SpriteVirtualPath).Returns("/vpath");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/vpath");
                 var guid = Guid.NewGuid();
                 var content = new byte[] { 1 };
 

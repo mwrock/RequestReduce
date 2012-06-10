@@ -446,8 +446,8 @@ namespace RequestReduce.Module
                 return;
 
             var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
-            if (string.IsNullOrEmpty(config.SpritePhysicalPath))
-                config.SpritePhysicalPath = hostingEnvironment.MapPath(config.SpriteVirtualPath);
+            if (string.IsNullOrEmpty(config.ResourcePhysicalPath))
+                config.ResourcePhysicalPath = hostingEnvironment.MapPath(config.ResourceVirtualPath);
 
             var oldFilter = context.Response.Filter; //suppresses a asp.net3.5 bugg 
             context.Response.Filter = RRContainer.Current.GetInstance<AbstractFilter>();

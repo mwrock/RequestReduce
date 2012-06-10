@@ -60,7 +60,7 @@ namespace RequestReduce.Handlers
 
         private bool IsInRRContentDirectory(Uri uri)
         {
-            var rrPath = EnsurePath(config.SpriteVirtualPath);
+            var rrPath = EnsurePath(config.ResourceVirtualPath);
             var url = uri.PathAndQuery;
             if (rrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 url = uri.AbsoluteUri;

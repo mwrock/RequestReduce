@@ -47,7 +47,7 @@ namespace RequestReduce.Utilities
 
                  if (fileWrapper.FileExists(optiPngLocation))
                  {
-                    var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.SpritePhysicalPath, Hasher.Hash(bytes));
+                    var scratchFile = string.Format("{0}\\scratch-{1}.png", configuration.ResourcePhysicalPath, Hasher.Hash(bytes));
                     try
                     {
                         fileWrapper.Save(optimizedBytes, scratchFile);

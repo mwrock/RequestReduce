@@ -48,7 +48,7 @@ namespace RequestReduce.Utilities
             var resource = RRContainer.Current.GetInstance(resourceType) as IResourceType;
             if (resource == null)
                 throw new ArgumentException("resourceType must derrive from IResourceType", "resourceType");
-            var url = string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), signature, resource.FileName);
+            var url = string.Format("{0}{1}/{2}-{3}-{4}", configuration.ContentHost, configuration.ResourceVirtualPath, key.RemoveDashes(), signature, resource.FileName);
             return Registry.UrlTransformer != null
                                    ? Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), null, url)
                                    : url;
@@ -56,7 +56,7 @@ namespace RequestReduce.Utilities
 
         public string BuildSpriteUrl(Guid key, byte[] bytes)
         {
-            var url =  string.Format("{0}{1}/{2}-{3}.png", configuration.ContentHost, configuration.SpriteVirtualPath, key.RemoveDashes(), Hasher.Hash(bytes).RemoveDashes());
+            var url =  string.Format("{0}{1}/{2}-{3}.png", configuration.ContentHost, configuration.ResourceVirtualPath, key.RemoveDashes(), Hasher.Hash(bytes).RemoveDashes());
             return Registry.UrlTransformer != null
                                    ? Registry.UrlTransformer(RRContainer.Current.GetInstance<HttpContextBase>(), null, url)
                                    : url;
