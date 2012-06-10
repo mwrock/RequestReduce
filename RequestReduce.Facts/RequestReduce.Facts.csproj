@@ -197,8 +197,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if NOT "%25PROGRAMFILES%25"=="%25SYSTEMDRIVE%25\Program Files" xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"
-if %25PROCESSOR_ARCHITECTURE%25==AMD64 xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>if NOT "%25PROGRAMFILES%25"=="%25SYSTEMDRIVE%25\Program Files" xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.81.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"
+if %25PROCESSOR_ARCHITECTURE%25==AMD64 xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.81.0\lib\net40\System.Data.SQLite.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

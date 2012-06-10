@@ -56,7 +56,7 @@ namespace RequestReduce.Handlers
                     RRTracer.Trace("{0} Flushed {1}", user, key);
                 }
                 if (HttpContext.Current != null)
-                    context.Response.Redirect(string.Format("{0}/dashboard", configuration.ResourceVirtualPath));
+                    context.Response.Redirect(string.Format("{0}/dashboard", configuration.ResourceAbsolutePath));
             }
             else
                 context.Response.StatusCode = 401;

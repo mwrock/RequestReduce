@@ -95,7 +95,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedCssUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableCssReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceAbsolutePath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Process("http://host/css1.css::http://host/css2.css");
 

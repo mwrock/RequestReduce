@@ -336,7 +336,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveSpriteUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableSpriteManager();
-                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceAbsolutePath).Returns("spritedir");
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var url = string.Empty;
                 testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback
@@ -351,7 +351,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillSaveSpriteUrlWithKeyInPath()
             {
                 var testable = new TestableSpriteManager();
-                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceAbsolutePath).Returns("spritedir");
                 testable.ClassUnderTest.MockSpriteContainer.Setup(x => x.Size).Returns(1);
                 var url = string.Empty;
                 testable.Mock<IStore>().Setup(x => x.Save(It.IsAny<byte[]>(), It.IsAny<string>(), null)).Callback

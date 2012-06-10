@@ -51,7 +51,7 @@ namespace RequestReduce.Facts.Reducer
             public void WillReturnProcessedJsUrlInCorrectConfigDirectory()
             {
                 var testable = new TestableJavaScriptReducer();
-                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("spritedir");
+                testable.Mock<IRRConfiguration>().Setup(x => x.ResourceAbsolutePath).Returns("spritedir");
 
                 var result = testable.ClassUnderTest.Process("http://host/js1.js::http://host/js2.js");
 

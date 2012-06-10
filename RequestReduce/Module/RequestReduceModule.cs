@@ -37,7 +37,7 @@ namespace RequestReduce.Module
         private static bool IsInRRContentDirectory(Uri uri)
         {
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
-            var rrPath = EnsurePath(config.ResourceVirtualPath);
+            var rrPath = EnsurePath(config.ResourceAbsolutePath);
             var url = uri.AbsolutePath;
             if(rrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 url = uri.AbsoluteUri;

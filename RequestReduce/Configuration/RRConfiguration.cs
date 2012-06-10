@@ -20,6 +20,7 @@ namespace RequestReduce.Configuration
         [Obsolete("Use ResourcePhysicalPath")]
         string SpritePhysicalPath { get; set; }
         string ResourceVirtualPath { get; set; }
+        string ResourceAbsolutePath { get; }
         string ResourcePhysicalPath { get; set; }
         string ContentHost { get; set; }
         string ConnectionStringName { get; set; }
@@ -48,6 +49,7 @@ namespace RequestReduce.Configuration
         private readonly RequestReduceConfigSection config = ConfigurationManager.GetSection("RequestReduce") as RequestReduceConfigSection;
         private string spritePhysicalPath;
         private readonly Store contentStore = Store.LocalDiskStore;
+        private string resourceVirtualPath;
         public static readonly IEnumerable<string> Anonymous = new[] { "Anonymous" };
 
         public string BaseAddress { get; set; }
@@ -83,9 +85,7 @@ namespace RequestReduce.Configuration
             ImageQuantizationDisabled = config != null && config.ImageQuantizationDisabled;
             ImageSpritingDisabled = config != null && config.ImageSpritingDisabled;
             IgnoreNearFutureJavascriptDisabled = config != null && config.IgnoreNearFutureJavascriptDisabled;
-            ResourceVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath)
-                                    ? GetAbsolutePath("~/RequestReduceContent")
-                                    : GetAbsolutePath(config.SpriteVirtualPath);
+            ResourceVirtualPath = config == null || string.IsNullOrEmpty(config.SpriteVirtualPath) ? "~/RequestReduceContent" : config.SpriteVirtualPath;
             JavaScriptUrlsToIgnore = config == null || string.IsNullOrEmpty(config.JavaScriptUrlsToIgnore)
                                     ? "ajax.googleapis.com/ajax/libs/jquery/,ajax.aspnetcdn.com/ajax/jQuery/"
                                     : config.JavaScriptUrlsToIgnore;
@@ -132,7 +132,17 @@ namespace RequestReduce.Configuration
             get { return ResourcePhysicalPath; }
             set { ResourcePhysicalPath = value; }
         }
-        public string ResourceVirtualPath { get; set; }
+        public string ResourceVirtualPath
+        {
+            get { return resourceVirtualPath; }
+            set 
+            { 
+                resourceVirtualPath = value;
+                ResourceAbsolutePath = GetAbsolutePath(value);
+            }
+        }
+
+        public string ResourceAbsolutePath { get; private set; }
 
         public string ResourcePhysicalPath
         {
