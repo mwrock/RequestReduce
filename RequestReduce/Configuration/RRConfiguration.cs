@@ -47,7 +47,7 @@ namespace RequestReduce.Configuration
     public class RRConfiguration : IRRConfiguration
     {
         private readonly RequestReduceConfigSection config = ConfigurationManager.GetSection("RequestReduce") as RequestReduceConfigSection;
-        private string spritePhysicalPath;
+        private string resourcePhysicalPath;
         private readonly Store contentStore = Store.LocalDiskStore;
         private string resourceVirtualPath;
         public static readonly IEnumerable<string> Anonymous = new[] { "Anonymous" };
@@ -89,7 +89,7 @@ namespace RequestReduce.Configuration
             JavaScriptUrlsToIgnore = config == null || string.IsNullOrEmpty(config.JavaScriptUrlsToIgnore)
                                     ? "ajax.googleapis.com/ajax/libs/jquery/,ajax.aspnetcdn.com/ajax/jQuery/"
                                     : config.JavaScriptUrlsToIgnore;
-            spritePhysicalPath = config == null ? null : string.IsNullOrEmpty(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
+            resourcePhysicalPath = config == null ? null : string.IsNullOrEmpty(config.SpritePhysicalPath) ? null : config.SpritePhysicalPath;
             if (config != null && !string.IsNullOrEmpty(config.ContentStore))
             {
                 try
@@ -108,11 +108,11 @@ namespace RequestReduce.Configuration
             CreatePhysicalPath();
         }
 
-        private string GetAbsolutePath(string spriteVirtualPath)
+        private string GetAbsolutePath(string resourceVirtualPath)
         {
             if (HttpContext.Current != null)
-                return VirtualPathUtility.ToAbsolute(spriteVirtualPath);
-            return spriteVirtualPath.Replace("~", "");
+                return resourceVirtualPath.Replace("~", HttpRuntime.AppDomainAppVirtualPath);
+            return resourceVirtualPath.Replace("~", "");
         }
 
         public int SpriteColorLimit { get; set; }
@@ -146,10 +146,10 @@ namespace RequestReduce.Configuration
 
         public string ResourcePhysicalPath
         {
-            get { return spritePhysicalPath; }
+            get { return resourcePhysicalPath; }
             set
             {
-                spritePhysicalPath = value;
+                resourcePhysicalPath = value;
                 CreatePhysicalPath();
                 if (PhysicalPathChange != null)
                     PhysicalPathChange();
@@ -170,13 +170,13 @@ namespace RequestReduce.Configuration
         public bool IsFullTrust { get; private set; }
         private void CreatePhysicalPath()
         {
-            if (!string.IsNullOrEmpty(spritePhysicalPath) && !Directory.Exists(spritePhysicalPath))
+            if (!string.IsNullOrEmpty(resourcePhysicalPath) && !Directory.Exists(resourcePhysicalPath))
             {
-                Directory.CreateDirectory(spritePhysicalPath);
-                while (!Directory.Exists(spritePhysicalPath))
+                Directory.CreateDirectory(resourcePhysicalPath);
+                while (!Directory.Exists(resourcePhysicalPath))
                     Thread.Sleep(5000);
-                if(!Directory.Exists(spritePhysicalPath))
-                    throw new IOException(string.Format("unable to create {0}", spritePhysicalPath));
+                if(!Directory.Exists(resourcePhysicalPath))
+                    throw new IOException(string.Format("unable to create {0}", resourcePhysicalPath));
             }
         }
 
