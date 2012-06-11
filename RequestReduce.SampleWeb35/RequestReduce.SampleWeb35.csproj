@@ -45,6 +45,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64" Condition="$(PROCESSOR_ARCHITEW6432) == 'AMD64' or $(PROCESSOR_ARCHITECTURE) == 'AMD64'">
+      <HintPath>..\packages\System.Data.SQLite.x64.1.0.81.0\lib\net20\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86" Condition="$(PROCESSOR_ARCHITEW6432) == 'x86' or $(PROCESSOR_ARCHITECTURE) == 'x86'">
+      <HintPath>..\packages\System.Data.SQLite.1.0.81.0\lib\net20\System.Data.SQLite.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="AjaxMin">
       <HintPath>..\RequestReduce\bin\v3.5\Release\AjaxMin.dll</HintPath>
@@ -61,14 +72,6 @@
     </Reference>
     <Reference Include="StructureMap">
       <HintPath>..\RequestReduce\bin\v3.5\Release\StructureMap.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Data.SQLite.x64.1.0.81.0\lib\net20\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.81.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Data.SQLite.x64.1.0.81.0\lib\net20\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -129,8 +132,7 @@
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if NOT "%25PROGRAMFILES%25"=="%25SYSTEMDRIVE%25\Program Files" xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net20\System.Data.SQLite.dll" "$(TargetDir)"
-if %25PROCESSOR_ARCHITECTURE%25==AMD64 xcopy /s /y "$(SolutionDir)packages\System.Data.SQLite.x64.1.0.79.0\lib\net20\System.Data.SQLite.dll" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
