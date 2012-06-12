@@ -110,9 +110,8 @@ namespace RequestReduce.Configuration
 
         private string GetAbsolutePath(string resourceVirtualPath)
         {
-            if (HttpContext.Current != null)
-                return resourceVirtualPath.Replace("~", HttpRuntime.AppDomainAppVirtualPath);
-            return resourceVirtualPath.Replace("~", "");
+            var vPath = HttpRuntime.AppDomainAppVirtualPath;
+            return resourceVirtualPath.Replace("~", vPath == "/" ? string.Empty : vPath);
         }
 
         public int SpriteColorLimit { get; set; }
