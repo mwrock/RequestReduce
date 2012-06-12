@@ -189,11 +189,13 @@ task Update-Website-Download-Links {
 }
 
 task Unit-Tests -depends Build-Solution {
-    exec { .\ExternalBinaries\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
+	$runnerDir = ([array](dir $currentDir\packages\xunit.runners.*))[-1];
+    exec { .$runnerDir\tools\xunit.console.clr4.exe "RequestReduce.Facts\bin\$configuration\RequestReduce.Facts.dll" }
 }
 
 task Integration-Tests -depends Build-Solution {
-    exec {.\ExternalBinaries\xunit.Runner\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
+	$runnerDir = ([array](dir $currentDir\packages\xunit.runners.*))[-1];
+    exec {.$runnerDir\tools\xunit.console.clr4.exe "RequestReduce.Facts.Integration\bin\$configuration\RequestReduce.Facts.Integration.dll" /-trait "type=manual_adhoc" }
 }
 
 function roboexec([scriptblock]$cmd) {
