@@ -15,7 +15,9 @@
     <summary>An add-on which compiles DotLess and Sass CSS as well as Coffee scripts to be included in the RequestDeuce sprite generation, minification and bundling processing.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript Less DotLess Sass Coffee SassAndCoffee RequestReduce</tags>
     <releaseNotes>
-      * upgrade to ajaxMin 4.48
+      * Fix bug creating requestReduce folder within a virtual app
+      * Fix issue with cache not refreshing upon deleting cache files
+      * upgrade to ajaxMin 4.55
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.
       * upgrade to dotless 1.3.0.2
       * Append all bundled javascript with a semicolon. Not just  ones ending in } or )

@@ -15,10 +15,12 @@
     <summary>RequestReduce is a .Net Library and HttpModule providing automatic CSS background image optimization and spriting as well as CSS and Javascript merging and minification.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript YSLOW AjaxMin ASP.NET Speed Combine</tags>
     <releaseNotes>
+      * Fix issue when calling HandlerFactory within a virtual app
+      * Fix issue with cache not refreshing upon deleting cache files
       * Fix mal construction of rewritten URLs
       * support a true Module Less install by manually attaching filter and remaping request to RR Handlers
       * Process xhtml
-      * Upgrade to AjaxMin 4.53
+      * Upgrade to AjaxMin 4.55
       * Allow custom minifiers to inherit default Minifier
       * Added ignoreNearFutureJavascriptDisabled which turns off the exclusion of Javascript that has a max-age or expiration of less than a week
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.
