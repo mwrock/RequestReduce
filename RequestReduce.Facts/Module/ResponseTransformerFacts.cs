@@ -300,6 +300,24 @@ namespace RequestReduce.Facts.Module
                 Assert.Equal(transformed, result);
             }
 
+            [Theory]
+            [InlineData("href")]
+            [InlineData("src")]
+            public void WillIgnoreHrefOrSrcAtributesInsideInlineScripts(string attribute)
+            {
+                var testable = new TestableResponseTransformer();
+                var uri = new Uri("http://server/megah");
+                var transform = string.Format(@"<script type=""text/javascript"" ><a {0}=""abc""></a></script><script src=""http://server/Me.js"" type=""text/javascript"" ></script><script src=""http://server/Me2.js"" type=""text/javascript"" ></script>", attribute);
+                testable.Mock<HttpContextBase>().Setup(x => x.Request.Url).Returns(uri);
+                testable.Inject<IRelativeToAbsoluteUtility>(new Mock<IRelativeToAbsoluteUtility>().Object);
+                testable.Mock<IRelativeToAbsoluteUtility>().Setup(x => x.ToAbsolute(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Returns("url");
+
+                testable.ClassUnderTest.Transform(transform);
+
+                testable.Mock<IRelativeToAbsoluteUtility>().Verify(x => x.ToAbsolute(uri, "abc"), Times.Never());
+            }
+
             [Fact]
             public void WillIgnoreExternalScriptsWithInlineScript()
             {
