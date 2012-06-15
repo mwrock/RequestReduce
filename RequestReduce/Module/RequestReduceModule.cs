@@ -21,16 +21,26 @@ namespace RequestReduce.Module
             context.PostAuthenticateRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
         }
 
-        public void HandleRRContent(HttpContextBase httpContextWrapper)
+        public void HandleRRContent(HttpContextBase httpContext)
         {
             var handlerFactory = RRContainer.Current.GetInstance<IHandlerFactory>();
-            var handler = handlerFactory.ResolveHandler(httpContextWrapper.Request.Url);
+            var uri = httpContext.Request.Url;
+            var handler = handlerFactory.ResolveHandler(uri);
             if(handler != null)
             {
                 if (HttpContext.Current != null)
-                    HttpContext.Current.RemapHandler(handler); //can't use RemapHandler on HttpContextBase due to .net3.5 compat
+                {
+                    if(IsInRRContentDirectory(uri))
+                    {
+                        handler.ProcessRequest(HttpContext.Current);
+                        if (httpContext.ApplicationInstance != null)
+                            httpContext.ApplicationInstance.CompleteRequest();
+                    }
+                    else
+                        HttpContext.Current.RemapHandler(handler);
+                }
                 else //unit testing
-                    httpContextWrapper.Items["remapped handler"] = handler;
+                    httpContext.Items["remapped handler"] = handler;
             }
         }
 
