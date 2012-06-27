@@ -21,19 +21,11 @@ namespace RequestReduce.SassLessCoffee
                 Logger = typeof(LessLogger),
                 Web = HttpContext.Current != null,
             };
+            var engineFactory = new EngineFactory(config);
             if (HttpContext.Current == null)
-                engine = new EngineFactory(config).GetEngine();
+                engine = engineFactory.GetEngine();
             else
-            {
-                var dotLessAssembly = Assembly.GetAssembly(typeof (ContainerFactory));
-                var factoryType = dotLessAssembly.GetType("dotless.Core.AspNetContainerFactory");
-                var fac = (ContainerFactory)(factoryType.InvokeMember("", BindingFlags.CreateInstance, null, null, null));
-                var locator = factoryType.InvokeMember("GetContainer", BindingFlags.InvokeMethod, null, fac, new object[] {config});
-                engine =
-                    (ILessEngine)
-                    (dotLessAssembly.GetType("Microsoft.Practices.ServiceLocation.IServiceLocator").InvokeMember(
-                        "GetInstance", BindingFlags.InvokeMethod, null, locator, new object[] {typeof (ILessEngine)}));
-            }
+                engine = engineFactory.GetEngine(new AspNetContainerFactory());
         }
 
         public void ProcessRequest(HttpContext context)
@@ -85,17 +77,37 @@ namespace RequestReduce.SassLessCoffee
         {
         }
 
+        public void Info(string message, params object[] args)
+        {
+            Info(string.Format(message, args));
+        }
+
         public void Debug(string message)
         {
+        }
+
+        public void Debug(string message, params object[] args)
+        {
+            Debug(string.Format(message, args));
         }
 
         public void Warn(string message)
         {
         }
 
+        public void Warn(string message, params object[] args)
+        {
+            Warn(string.Format(message, args));
+        }
+
         public void Error(string message)
         {
             Response.Write("LESS Error: <br/>" + message);
+        }
+
+        public void Error(string message, params object[] args)
+        {
+            Error(string.Format(message, args));
         }
 
         public HttpResponseBase Response { get; set; }

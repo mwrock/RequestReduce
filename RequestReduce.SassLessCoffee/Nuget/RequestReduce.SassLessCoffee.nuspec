@@ -19,7 +19,7 @@
       * Fix issue with cache not refreshing upon deleting cache files
       * upgrade to ajaxMin 4.56
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.
-      * upgrade to dotless 1.3.0.2
+      * upgrade to dotless 1.3.0.4
       * Append all bundled javascript with a semicolon. Not just  ones ending in } or )
       * Do not inject contentHost in embedded resources in Externalk CSS that cant be sprited
       * Fix broken dashboard links
@@ -31,7 +31,7 @@
     </releaseNotes>
     <dependencies>
       <dependency id="RequestReduce" version="$version$" />
-      <dependency id="dotless" version="1.3.0.2" />
+      <dependency id="dotless" version="1.3.0.4" />
       <dependency id="SassAndCoffee.Core" version="2.0.2.0" />
       <dependency id="SassAndCoffee.JavaScript" version="2.0.2.0" />
       <dependency id="SassAndCoffee.Ruby" version="2.0.2.0" />
