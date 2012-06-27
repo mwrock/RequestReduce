@@ -438,12 +438,16 @@ namespace RequestReduce.Module
             var request = context.Request;
             var config = RRContainer.Current.GetInstance<IRRConfiguration>();
             if (context.Items.Contains(ContextKey) ||
-                (request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase)) ||
                 (config.CssProcessingDisabled && config.JavaScriptProcessingDisabled) ||
-                context.Response.StatusCode == 302 ||
-                context.Response.StatusCode == 301 ||
+                context.Response.IsRequestBeingRedirected ||
                 RRContainer.Current.GetAllInstances<IFilter>().Where(x => x is PageFilter).FirstOrDefault(y => y.IgnoreTarget(new PageFilterContext(context.Request))) != null)
                 return;
+
+            if(request.QueryString["RRFilter"] != null && request.QueryString["RRFilter"].Equals("disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                context.Response.Cache.SetCacheability(HttpCacheability.Private);
+                return;
+            }
 
             var hostingEnvironment = RRContainer.Current.GetInstance<IHostingEnvironmentWrapper>();
             if (string.IsNullOrEmpty(config.ResourcePhysicalPath))

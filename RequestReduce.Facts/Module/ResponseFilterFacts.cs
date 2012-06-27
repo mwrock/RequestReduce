@@ -396,10 +396,8 @@ namespace RequestReduce.Facts.Module
                 RRContainer.Current = null;
             }
 
-            [Theory]
-            [InlineData(301)]
-            [InlineData(302)]
-            public void WillNotSetResponseFilterIfStatusIs302Or301(int status)
+            [Fact]
+            public void WillNotSetResponseFilterIfStatusIs302Or301()
             {
                 RRContainer.Current = null;
                 var context = new Mock<HttpContextBase>();
@@ -410,7 +408,7 @@ namespace RequestReduce.Facts.Module
                 context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection());
                 context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
                 context.Setup(x => x.Request.RawUrl).Returns("/content/blah");
-                context.Setup(x => x.Response.StatusCode).Returns(status);
+                context.Setup(x => x.Response.IsRequestBeingRedirected).Returns(true);
                 RRContainer.Current = new Container(x =>
                 {
                     x.For<IRRConfiguration>().Use(config.Object);
@@ -459,6 +457,7 @@ namespace RequestReduce.Facts.Module
                 context.Setup(x => x.Response.ContentType).Returns("text/html");
                 context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection { { "RRFilter", "disabled" } });
                 context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                context.Setup(x => x.Response.Cache).Returns(new Mock<HttpCachePolicyBase>().Object);
                 RRContainer.Current = new Container(x =>
                 {
                     x.For<IRRConfiguration>().Use(config.Object);
@@ -468,6 +467,31 @@ namespace RequestReduce.Facts.Module
                 ResponseFilter.InstallFilter(context.Object);
 
                 context.VerifySet(x => x.Response.Filter = It.IsAny<Stream>(), Times.Never());
+                RRContainer.Current = null;
+            }
+
+            [Fact]
+            public void WillDisableOutputCachingIfRRFilterQSIsDisabled()
+            {
+                var context = new Mock<HttpContextBase>();
+                var config = new Mock<IRRConfiguration>();
+                config.Setup(x => x.ResourceVirtualPath).Returns("/Virtual");
+                context.Setup(x => x.Request.RawUrl).Returns("/NotVirtual/blah");
+                context.Setup(x => x.Items.Contains(ResponseFilter.ContextKey)).Returns(false);
+                context.Setup(x => x.Response.ContentType).Returns("text/html");
+                context.Setup(x => x.Request.QueryString).Returns(new NameValueCollection { { "RRFilter", "disabled" } });
+                context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
+                var cache = new Mock<HttpCachePolicyBase>();
+                context.Setup(x => x.Response.Cache).Returns(cache.Object);
+                RRContainer.Current = new Container(x =>
+                {
+                    x.For<IRRConfiguration>().Use(config.Object);
+                    x.For<AbstractFilter>().Use(new Mock<AbstractFilter>().Object);
+                });
+
+                ResponseFilter.InstallFilter(context.Object);
+
+                cache.Verify(x => x.SetCacheability(HttpCacheability.Private), Times.Once());
                 RRContainer.Current = null;
             }
 
