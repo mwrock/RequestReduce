@@ -15,7 +15,7 @@
     <summary>An add-on allowing storage of the optimized CSS, Javascript and sprited images in SqlServer or SqlServer CE database.</summary>
     <tags>CSS Minification Sprites Website Performance Optimization Compression Minify Javascript SqlServer RequestReduce</tags>
     <releaseNotes>
-      * upgrade to ajaxMin 4.48
+      * upgrade to ajaxMin 4.56
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.
       * Append all bundled javascript with a semicolon. Not just  ones ending in } or )
       * Do not inject contentHost in embedded resources in Externalk CSS that cant be sprited

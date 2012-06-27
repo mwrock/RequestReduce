@@ -22,7 +22,7 @@
       * Fix mal construction of rewritten URLs
       * support a true Module Less install by manually attaching filter and remaping request to RR Handlers
       * Process xhtml
-      * Upgrade to AjaxMin 4.55
+      * Upgrade to AjaxMin 4.56
       * Allow custom minifiers to inherit default Minifier
       * Added ignoreNearFutureJavascriptDisabled which turns off the exclusion of Javascript that has a max-age or expiration of less than a week
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.

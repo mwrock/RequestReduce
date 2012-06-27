@@ -17,7 +17,7 @@
     <releaseNotes>
       * Fix bug creating requestReduce folder within a virtual app
       * Fix issue with cache not refreshing upon deleting cache files
-      * upgrade to ajaxMin 4.55
+      * upgrade to ajaxMin 4.56
       * Background images with vertical offsets will have their offsets preserved if the containing selector has no explicit height.
       * upgrade to dotless 1.3.0.2
       * Append all bundled javascript with a semicolon. Not just  ones ending in } or )
