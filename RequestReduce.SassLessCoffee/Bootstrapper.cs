@@ -27,7 +27,7 @@ namespace RequestReduce.SassLessCoffee
 
         public static void Start()
         {
-            Registry.HandlerFactory.AddHandlerMap(x =>
+            Registry.HandlerFactory.AddHandlerMap((x,y) =>
                                          {
                                              var path = x.AbsolutePath.ToLower();
                                              if (path.EndsWith(".sass") || path.EndsWith("scss"))

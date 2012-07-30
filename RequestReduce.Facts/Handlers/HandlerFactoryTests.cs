@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Web;
-using Moq;
 using RequestReduce.Configuration;
 using RequestReduce.Handlers;
 using RequestReduce.IOC;
-using RequestReduce.Module;
 using RequestReduce.Utilities;
 using StructureMap;
 using StructureMap.AutoMocking;
@@ -19,7 +17,7 @@ namespace RequestReduce.Facts.Handlers
         {
             public TestableHandlerFactory()
             {
-                Mock<IRRConfiguration>().Setup(x => x.ResourceVirtualPath).Returns("/RRContent");
+                Mock<IRRConfiguration>().Setup(x => x.ResourceAbsolutePath).Returns("/RRContent");
             }
         }
 
@@ -41,9 +39,9 @@ namespace RequestReduce.Facts.Handlers
             public void WillResolveAddedMap()
             {
                 var testable = new TestableHandlerFactory();
-                testable.ClassUnderTest.AddHandlerMap(x => x.AbsolutePath.EndsWith(".fake") ? new FakeHandler() : null);
+                testable.ClassUnderTest.AddHandlerMap((x,y) => x.AbsolutePath.EndsWith(".fake") ? new FakeHandler() : null);
 
-                var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.fake"));
+                var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.fake"), false);
 
                 Assert.IsType<FakeHandler>(result);
             }
@@ -52,9 +50,9 @@ namespace RequestReduce.Facts.Handlers
             public void WillResolveToNullIfThereAreNoMatchingMaps()
             {
                 var testable = new TestableHandlerFactory();
-                testable.ClassUnderTest.AddHandlerMap(x => x.AbsolutePath.EndsWith(".fake") ? new FakeHandler() : null);
+                testable.ClassUnderTest.AddHandlerMap((x, y) => x.AbsolutePath.EndsWith(".fake") ? new FakeHandler() : null);
 
-                var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.notfake"));
+                var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.notfake"), false);
 
                 Assert.Null(result);
             }
@@ -64,20 +62,23 @@ namespace RequestReduce.Facts.Handlers
             {
                 var testable = new TestableHandlerFactory();
 
-                var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.fake"));
+                var result = testable.ClassUnderTest.ResolveHandler(new Uri("http://host.com/page.fake"), false);
 
                 Assert.Null(result);
             }
 
             [Theory]
-            [InlineData("http://host/RRContent/dashboard", typeof(DashboardHandler))]
-            [InlineData("http://host/content/someresource.less", null)]
-            [InlineData("http://host/RRContent/child/someresource", null)]
-            [InlineData("http://host/RRContents/someresource", null)]
-            [InlineData("http://host/RRContent/flush/9879879879879987", typeof(FlushHandler))]
-            [InlineData("http://host/RRContent/flushfailures", typeof(FlushHandler))]
-            [InlineData("http://host/RRContent/2a24329d1c2973c42028f780dbf86641-e8eb6b1157423f3ce5bebd3289395822-RequestReducedStyle.css", typeof(ReducedContentHandler))]
-            public void WillResolveDefaultMaps(string url, Type expectedHandler)
+            [InlineData("http://host/RRContent/dashboard", true, typeof(DashboardHandler))]
+            [InlineData("http://host/RRContent/dashboard", false, null)]
+            [InlineData("http://host/content/someresource.less", false, null)]
+            [InlineData("http://host/RRContent/child/someresource", false, null)]
+            [InlineData("http://host/RRContents/someresource", false, null)]
+            [InlineData("http://host/RRContent/flush/9879879879879987", true, typeof(FlushHandler))]
+            [InlineData("http://host/RRContent/flushfailures", true, typeof(FlushHandler))]
+            [InlineData("http://host/RRContent/flush/9879879879879987", false, null)]
+            [InlineData("http://host/RRContent/flushfailures", false, null)]
+            [InlineData("http://host/RRContent/2a24329d1c2973c42028f780dbf86641-e8eb6b1157423f3ce5bebd3289395822-RequestReducedStyle.css", false, typeof(ReducedContentHandler))]
+            public void WillResolveDefaultMaps(string url, bool postAuth, Type expectedHandler)
             {
                 var testable = new TestableHandlerFactory();
                 testable.Mock<IUriBuilder>().Setup(
@@ -92,7 +93,7 @@ namespace RequestReduce.Facts.Handlers
                     x.For<ReducedContentHandler>().Use(new MoqAutoMocker<ReducedContentHandler>().ClassUnderTest);
                 });
 
-                var result = testable.ClassUnderTest.ResolveHandler(new Uri(url));
+                var result = testable.ClassUnderTest.ResolveHandler(new Uri(url), postAuth);
 
                 if(expectedHandler != null)
                     Assert.IsType(expectedHandler, result);

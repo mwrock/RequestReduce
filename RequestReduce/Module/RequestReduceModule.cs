@@ -17,15 +17,15 @@ namespace RequestReduce.Module
         {
             context.ReleaseRequestState += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
             context.PreSendRequestHeaders += (sender, e) => InstallFilter(new HttpContextWrapper(((HttpApplication)sender).Context));
-            context.BeginRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
-            context.PostAuthenticateRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context));
+            context.BeginRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context), false);
+            context.PostAuthenticateRequest += (sender, e) => HandleRRContent(new HttpContextWrapper(((HttpApplication)sender).Context), true);
         }
 
-        public void HandleRRContent(HttpContextBase httpContext)
+        public void HandleRRContent(HttpContextBase httpContext, bool postAuth)
         {
             var handlerFactory = RRContainer.Current.GetInstance<IHandlerFactory>();
             var uri = httpContext.Request.Url;
-            var handler = handlerFactory.ResolveHandler(uri);
+            var handler = handlerFactory.ResolveHandler(uri, postAuth);
             if(handler != null)
             {
                 if (HttpContext.Current != null)

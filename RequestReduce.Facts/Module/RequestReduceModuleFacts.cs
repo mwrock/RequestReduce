@@ -123,7 +123,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHandlerFactory>().Use<HandlerFactory>();
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRContent(context.Object, false);
 
             cache.Verify(x => x.SetCacheability(HttpCacheability.Public), Times.Never());
             RRContainer.Current = null;
@@ -149,7 +149,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHandlerFactory>().Use(new Mock<IHandlerFactory>().Object);
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRContent(context.Object, false);
 
             store.Verify(x => x.SendContent(It.IsAny<string>(), It.IsAny<HttpResponseBase>()), Times.Never());
             RRContainer.Current = null;
@@ -175,7 +175,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHandlerFactory>().Use(new Mock<IHandlerFactory>().Object);
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRContent(context.Object, false);
 
             store.Verify(x => x.SendContent(It.IsAny<string>(), It.IsAny<HttpResponseBase>()), Times.Never());
             RRContainer.Current = null;
@@ -194,8 +194,8 @@ namespace RequestReduce.Facts.Module
             context.Setup(x => x.Server).Returns(new Mock<HttpServerUtilityBase>().Object);
             context.Setup(x => x.Items).Returns(new Hashtable());
             var handlerFactory = new HandlerFactory(config.Object, new UriBuilder(config.Object));
-            handlerFactory.AddHandlerMap(x => x.AbsolutePath.EndsWith(".less") ? handler : null);
-            handlerFactory.AddHandlerMap(x => x.AbsolutePath.EndsWith(".les") ? new DefaultHttpHandler() : null);
+            handlerFactory.AddHandlerMap((x,y) => x.AbsolutePath.EndsWith(".less") ? handler : null);
+            handlerFactory.AddHandlerMap((x,y) => x.AbsolutePath.EndsWith(".les") ? new DefaultHttpHandler() : null);
             RRContainer.Current = new Container(x =>
             {
                 x.For<IRRConfiguration>().Use(config.Object);
@@ -203,7 +203,7 @@ namespace RequestReduce.Facts.Module
                 x.For<IHandlerFactory>().Use(handlerFactory);
             });
 
-            module.HandleRRContent(context.Object);
+            module.HandleRRContent(context.Object, false);
 
             Assert.Equal(handler, context.Object.Items["remapped handler"]);
             RRContainer.Current = null;

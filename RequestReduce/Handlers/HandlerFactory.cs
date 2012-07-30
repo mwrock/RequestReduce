@@ -11,7 +11,7 @@ namespace RequestReduce.Handlers
     {
         private readonly IRRConfiguration config;
         private readonly IUriBuilder uriBuilder;
-        readonly List<Func<Uri, IHttpHandler>> handlerMaps = new List<Func<Uri, IHttpHandler>>();
+        readonly List<Func<Uri, bool, IHttpHandler>> handlerMaps = new List<Func<Uri, bool, IHttpHandler>>();
 
         public HandlerFactory(IRRConfiguration config, IUriBuilder uriBuilder)
         {
@@ -20,31 +20,31 @@ namespace RequestReduce.Handlers
             AddHandlerMap(DefaultMap);
         }
 
-        private IHttpHandler DefaultMap(Uri uri)
+        private IHttpHandler DefaultMap(Uri uri, bool postAuth)
         {
             if (!IsInRRContentDirectory(uri))
                 return null;
             var url = uri.AbsoluteUri;
             var actionUrl = EnsurePath(url);
             var sig = uriBuilder.ParseSignature(url);
-            if (actionUrl.ToLowerInvariant().Contains("/flush/")
-                || actionUrl.ToLowerInvariant().Contains("/flushfailures/"))
+            if ((actionUrl.ToLowerInvariant().Contains("/flush/")
+                || actionUrl.ToLowerInvariant().Contains("/flushfailures/")) && postAuth)
                 return RRContainer.Current.GetInstance<FlushHandler>();
-            if (actionUrl.ToLowerInvariant().Contains("/dashboard/"))
+            if (actionUrl.ToLowerInvariant().Contains("/dashboard/") && postAuth)
                 return RRContainer.Current.GetInstance<DashboardHandler>();
             return sig != Guid.Empty.RemoveDashes() && sig != null ? RRContainer.Current.GetInstance<ReducedContentHandler>() : null;
         }
 
-        public void AddHandlerMap(Func<Uri, IHttpHandler> map)
+        public void AddHandlerMap(Func<Uri, bool, IHttpHandler> map)
         {
             handlerMaps.Add(map);
         }
 
-        public IHttpHandler ResolveHandler(Uri uri)
+        public IHttpHandler ResolveHandler(Uri uri, bool postAuth)
         {
             foreach (var handlerMap in handlerMaps)
             {
-                var handler = handlerMap(uri);
+                var handler = handlerMap(uri, postAuth);
                 if (handler != null)
                     return handler;
             }
