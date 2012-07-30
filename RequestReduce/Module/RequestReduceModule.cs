@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web;
-using RequestReduce.Api;
 using RequestReduce.Configuration;
 using RequestReduce.Handlers;
 using RequestReduce.IOC;
@@ -58,6 +57,7 @@ namespace RequestReduce.Module
         {
             RRTracer.Trace("Entering Module");
             var uri = context.Request.Url;
+            if(uri==null) return;
             if ((context.Response.ContentType != "text/html" &&
                 context.Response.ContentType != "application/xhtml+xml") ||
                 uri.AbsolutePath == "/favicon.ico" || 
@@ -65,13 +65,6 @@ namespace RequestReduce.Module
                 return;
 
             ResponseFilter.InstallFilter(context);
-        }
-
-        [Obsolete("Use RequestReduce.Api.Registry.CaptureErrorAction")]
-        public static Action<Exception> CaptureErrorAction
-        {
-            set { Registry.CaptureErrorAction = value; }
-            get { return Registry.CaptureErrorAction;  }
         }
 
         private static string EnsurePath(string path)

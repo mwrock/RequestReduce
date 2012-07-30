@@ -2,12 +2,11 @@
 <%@ Import Namespace="RequestReduce" %>
 <%@ Import Namespace="RequestReduce.Api" %>
 <%@ Import Namespace="RequestReduce.Configuration" %>
-<%@ Import Namespace="RequestReduce.Module" %>
 <%@ Import Namespace="System.IO" %>
 
 <script runat="server">
 
-    private static StringBuilder errorBuffer = new StringBuilder();
+    private static readonly StringBuilder ErrorBuffer = new StringBuilder();
     private static StringWriter traceBuffer = new StringWriter();
 
     private static System.Diagnostics.TextWriterTraceListener listener =
@@ -16,7 +15,7 @@
     
     void Application_Start(object sender, EventArgs e) 
     {
-        RequestReduceModule.CaptureErrorAction = BuildErrorMessage;
+        Registry.CaptureErrorAction = BuildErrorMessage;
         if (RRConfiguration.GetCurrentTrustLevel() == AspNetHostingPermissionLevel.Unrestricted)
         {
             SetupTracing();
@@ -33,7 +32,7 @@
     
     private void BuildErrorMessage(Exception ex)
     {
-        errorBuffer.AppendLine(ex.ToString());
+        ErrorBuffer.AppendLine(ex.ToString());
         if(ex.InnerException != null)
             BuildErrorMessage(ex.InnerException);
     }
@@ -71,8 +70,8 @@
         
         if (Request.QueryString["OutputError"] != null)
         {
-            Response.Write(errorBuffer.ToString());
-            errorBuffer.Remove(0, errorBuffer.Length);
+            Response.Write(ErrorBuffer.ToString());
+            ErrorBuffer.Remove(0, ErrorBuffer.Length);
         }
         if (Request.QueryString["OutputTrace"] != null)
         {

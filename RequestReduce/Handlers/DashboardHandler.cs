@@ -33,7 +33,7 @@ namespace RequestReduce.Handlers
             ProcessRequest(new HttpContextWrapper(context));
         }
 
-        public void ProcessRequest(HttpContextBase context)
+        private void ProcessRequest(HttpContextBase context)
         {
             var dashboardHtml = Resources.ResourceStrings.Dashboard;
             var user = context.User == null ? string.Empty : context.User.Identity.Name;
@@ -90,7 +90,7 @@ namespace RequestReduce.Handlers
                     configList.Append("<td>");
                     foreach (var mem in array)
                     {
-                        configList.Append(mem.ToString());
+                        configList.Append(mem);
                         configList.Append("<br/>");
                     }
                     configList.Append("</td>");
