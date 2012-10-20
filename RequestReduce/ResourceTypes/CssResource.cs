@@ -11,7 +11,15 @@ namespace RequestReduce.ResourceTypes
 
         public string FileName
         {
-            get { return "RequestReducedStyle.css"; }
+            get
+            {
+                String originalFileName = "RequestReducedScript.css";
+                if (Registry.FileNameTransformer != null)
+                {
+                    return Registry.FileNameTransformer(originalFileName);
+                }
+                return originalFileName;
+            }
         }
 
         public IEnumerable<string> SupportedMimeTypes
