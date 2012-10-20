@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System;
+using RequestReduce.Api;
 
 namespace RequestReduce.ResourceTypes
 {
