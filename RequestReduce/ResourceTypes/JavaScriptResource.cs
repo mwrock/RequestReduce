@@ -26,12 +26,11 @@ namespace RequestReduce.ResourceTypes
         {
             get 
             {
-                String originalFileName =  "RequestReducedScript.js";
                 if (Registry.FileNameTransformer != null)
                 {
-                    return Registry.FileNameTransformer(originalFileName);
+                    return String.Format("{0}RequestReducedScript.js", Registry.FileNameTransformer());
                 }
-                return originalFileName;
+                return "RequestReducedScript.js";
             }
         }
 

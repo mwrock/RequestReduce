@@ -14,12 +14,12 @@ namespace RequestReduce.ResourceTypes
         {
             get
             {
-                String originalFileName = "RequestReducedScript.css";
+                
                 if (Registry.FileNameTransformer != null)
                 {
-                    return Registry.FileNameTransformer(originalFileName);
+                    return String.Format("{0}RequestReducedStyle{0}.css", Registry.FileNameTransformer());
                 }
-                return originalFileName;
+                return "RequestReducedStyle.css";
             }
         }
 
