@@ -1,8 +1,8 @@
-﻿<configuration>
+<configuration>
   <configSections>
     <section name="RequestReduce" type="RequestReduce.Configuration.RequestReduceConfigSection, RequestReduce" requirePermission="false" />
   </configSections>
-  <!-- The below connectionStringName should either correspond to one of your connectionStrings configsm a database name in sql express 
+  <!-- The below connectionStringName should either correspond to one of your connectionStrings configs, a database name in sql express 
   or a full sql connection string. The database must contain the RequestReduceFiles table which you can create using the script in the 
   Tools directory of the Nuget package install. -->
   <RequestReduce contentStore="SqlServerStore" storePollInterval="60000" />
@@ -13,8 +13,8 @@
   </system.web>
   <system.webServer>
     <validation validateIntegratedModeConfiguration="false"/>
-		<modules>
-      <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
-		</modules>
-	</system.webServer>
+      <modules>
+        <add name="RequestReduce" type="RequestReduce.Module.RequestReduceModule, RequestReduce" />
+      </modules>
+  </system.webServer>
 </configuration>
