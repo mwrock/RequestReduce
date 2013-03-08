@@ -189,6 +189,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="..\ExternalBinaries\PngOptimization\optipng.exe">
+      <Link>optipng.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="TestImages\delete.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -21,7 +21,7 @@ namespace RequestReduce.Facts.Utilities
 
                 var result = wrapper.DownloadString("http://localhost:8877/styles/style1.css");
 
-                Assert.False(result.StartsWith(Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble())));
+                Assert.NotEqual(Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble())[0],result[0]);
             }
 
             [Fact]

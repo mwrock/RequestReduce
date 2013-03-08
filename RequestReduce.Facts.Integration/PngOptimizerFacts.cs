@@ -4,7 +4,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using Moq;
 using RequestReduce.Configuration;
-using RequestReduce.Reducer;
 using RequestReduce.Utilities;
 using nQuant;
 using Xunit;
