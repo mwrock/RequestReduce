@@ -12,6 +12,11 @@ namespace RequestReduce.SassLessCoffee
         private readonly IFileWrapper fileWrapper;
         private readonly ILessEngine engine;
 
+        public LessHandler() : this(new FileWrapper())
+        {
+            
+        }
+
         public LessHandler(IFileWrapper fileWrapper)
         {
             this.fileWrapper = fileWrapper;
