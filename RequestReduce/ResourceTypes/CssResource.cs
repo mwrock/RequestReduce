@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System;
+using RequestReduce.Api;
 
 namespace RequestReduce.ResourceTypes
 {
@@ -11,7 +12,15 @@ namespace RequestReduce.ResourceTypes
 
         public string FileName
         {
-            get { return "RequestReducedStyle.css"; }
+            get
+            {
+                
+                if (Registry.FileNameTransformer != null)
+                {
+                    return String.Format("{0}RequestReducedStyle{0}.css", Registry.FileNameTransformer());
+                }
+                return "RequestReducedStyle.css";
+            }
         }
 
         public IEnumerable<string> SupportedMimeTypes

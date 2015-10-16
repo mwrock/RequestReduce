@@ -15,9 +15,11 @@ namespace RequestReduce.Api
 
         public delegate string UrlTransformFunc(string originalabsoluteUrl, string urlWithContentHost);
         public delegate string ContextUrlTransformFunc(HttpContextBase httpRequest, string originalabsoluteUrl, string urlWithContentHost);
+        public delegate string ResourceFileNameTransformerFunc();
         [Obsolete("Use RequestReduce.Api.Registry.UrlTransformer")]
         public static UrlTransformFunc AbsoluteUrlTransformer { get; set; }
         public static ContextUrlTransformFunc UrlTransformer { get; set; }
+        public static ResourceFileNameTransformerFunc FileNameTransformer { get; set; }
         public static IHandlerFactory HandlerFactory
         {
             get { return RRContainer.Current.GetInstance<IHandlerFactory>(); }

@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using RequestReduce.Configuration;
 using RequestReduce.IOC;
 using System;
+using RequestReduce.Api;
 
 namespace RequestReduce.ResourceTypes
 {
@@ -23,7 +24,14 @@ namespace RequestReduce.ResourceTypes
 
         public string FileName
         {
-            get { return "RequestReducedScript.js"; }
+            get 
+            {
+                if (Registry.FileNameTransformer != null)
+                {
+                    return String.Format("{0}RequestReducedScript.js", Registry.FileNameTransformer());
+                }
+                return "RequestReducedScript.js";
+            }
         }
 
         public IEnumerable<string> SupportedMimeTypes
